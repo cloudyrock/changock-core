@@ -1,4 +1,4 @@
-package io.changock.driver.base.common;
+package io.changock.driver.core.common;
 
 import io.changock.utils.Process;
 

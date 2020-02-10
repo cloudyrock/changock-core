@@ -1,4 +1,4 @@
-package io.changock.driver.base.lock;
+package io.changock.driver.core.lock;
 
 import io.changock.migration.api.exception.ChangockException;
 

@@ -1,4 +1,4 @@
-package io.changock.driver.base.decorator;
+package io.changock.driver.core.decorator;
 
 @FunctionalInterface
 public interface VoidSupplier {

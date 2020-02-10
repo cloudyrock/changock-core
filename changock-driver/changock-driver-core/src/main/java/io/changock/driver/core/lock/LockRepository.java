@@ -1,6 +1,6 @@
-package io.changock.driver.base.lock;
+package io.changock.driver.core.lock;
 
-import io.changock.driver.base.common.Repository;
+import io.changock.driver.core.common.Repository;
 
 /**
  * <p>Repository class to manage lock in database</p>

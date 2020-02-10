@@ -1,9 +1,9 @@
-package io.changock.driver.base.driver;
+package io.changock.driver.core.driver;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.base.lock.DefaultLockManager;
-import io.changock.driver.base.lock.LockRepository;
+import io.changock.driver.core.lock.DefaultLockManager;
+import io.changock.driver.core.lock.LockRepository;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.TimeService;
 
