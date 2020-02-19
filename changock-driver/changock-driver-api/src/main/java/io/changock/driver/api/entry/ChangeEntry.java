@@ -1,6 +1,6 @@
 package io.changock.driver.api.entry;
 
-import io.changock.driver.api.changelog.ChangeSetItem;
+import io.changock.migration.api.ChangeSetItem;
 
 import java.util.Date;
 

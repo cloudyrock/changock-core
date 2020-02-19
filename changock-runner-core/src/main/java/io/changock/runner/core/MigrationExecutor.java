@@ -1,7 +1,7 @@
 package io.changock.runner.core;
 
-import io.changock.driver.api.changelog.ChangeLogItem;
-import io.changock.driver.api.changelog.ChangeSetItem;
+import io.changock.migration.api.ChangeLogItem;
+import io.changock.migration.api.ChangeSetItem;
 import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;

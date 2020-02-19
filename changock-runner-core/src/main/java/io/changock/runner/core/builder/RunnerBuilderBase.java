@@ -2,6 +2,8 @@ package io.changock.runner.core.builder;
 
 import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.migration.api.AnnotationManager;
+import io.changock.migration.api.ChangockAnnotationManager;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.DependencyManager;
@@ -29,6 +31,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
   protected Map<String, Object> metadata;
   protected ConnectionDriver driver;
+  private AnnotationManager legacyAnnotationManager;
 
   protected RunnerBuilderBase(){}
 
@@ -156,6 +159,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
+  public BUILDER_TYPE withLegacyAnnotationManager(AnnotationManager legacyAnnotationManager) {
+    this.legacyAnnotationManager = legacyAnnotationManager;
+    return returnInstance();
+  }
+
 
   protected final MigrationExecutor buildExecutorDefault() {
     return new MigrationExecutor(
@@ -171,7 +179,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return new ChangeLogService(
         Collections.singletonList(changeLogsScanPackage),
         startSystemVersion,
-        endSystemVersion
+        endSystemVersion,
+        legacyAnnotationManager != null ? legacyAnnotationManager :  new ChangockAnnotationManager()
     );
   }
 

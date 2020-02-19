@@ -1,4 +1,4 @@
-package io.changock.driver.api.changelog;
+package io.changock.migration.api;
 
 import java.util.List;
 

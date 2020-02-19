@@ -1,6 +1,6 @@
 package io.changock.runner.core;
 
-import io.changock.driver.api.changelog.ChangeLogItem;
+import io.changock.migration.api.ChangeLogItem;
 import io.changock.driver.api.lock.LockCheckException;
 import io.changock.migration.api.exception.ChangockException;
 import org.junit.Assert;
