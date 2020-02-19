@@ -31,7 +31,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
   protected Map<String, Object> metadata;
   protected ConnectionDriver driver;
-  private AnnotationManager legacyAnnotationManager;
+  private AnnotationManager annotationManager;
 
   protected RunnerBuilderBase(){}
 
@@ -159,8 +159,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
-  public BUILDER_TYPE withLegacyAnnotationManager(AnnotationManager legacyAnnotationManager) {
-    this.legacyAnnotationManager = legacyAnnotationManager;
+  public BUILDER_TYPE withLegacyAnnotationManager(AnnotationManager annotationManager) {
+    this.annotationManager = annotationManager;
     return returnInstance();
   }
 
@@ -180,7 +180,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         Collections.singletonList(changeLogsScanPackage),
         startSystemVersion,
         endSystemVersion,
-        legacyAnnotationManager != null ? legacyAnnotationManager :  new ChangockAnnotationManager()
+        annotationManager != null ? annotationManager :  new ChangockAnnotationManager()
     );
   }
 
