@@ -180,7 +180,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         Collections.singletonList(changeLogsScanPackage),
         startSystemVersion,
         endSystemVersion,
-        annotationManager != null ? annotationManager :  new ChangockAnnotationManager()
+        annotationManager// if null, it will take default ChangockAnnotationManager
     );
   }
 

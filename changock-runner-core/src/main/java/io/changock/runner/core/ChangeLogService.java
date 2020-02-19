@@ -71,7 +71,7 @@ public class ChangeLogService implements Validable {
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
     this.changeLogFilter = changeLogFilter;
     this.changeSetFilter = changeSetFilter;
-    this.annotationManager = annotationManager;
+    this.annotationManager = annotationManager != null ? annotationManager : new ChangockAnnotationManager();
   }
 
 
