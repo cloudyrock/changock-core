@@ -11,17 +11,25 @@ import io.changock.utils.TimeService;
 public abstract class ConnectionDriverBase implements ConnectionDriver {
 
   private LockManager lockManager = null;
+  private long lockAcquiredForMinutes;
+  private long maxWaitingForLockMinutes;
+  private int maxTries;
 
   @Override
-  public void initialize(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
+  public void setLockSettings(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
+    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
+    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
+    this.maxTries = maxTries;
+  }
+
+  @Override
+  public void initialize() {
     if (lockManager == null) {
       TimeService timeService = new TimeService();
       lockManager = new DefaultLockManager(this.getLockRepository(), timeService)
           .setLockAcquiredForMillis(timeService.minutesToMillis(lockAcquiredForMinutes))
           .setLockMaxTries(maxTries)
           .setLockMaxWaitMillis(timeService.minutesToMillis(maxWaitingForLockMinutes));
-    } else {
-      throw new ChangockException("LockManager already initialised");
     }
   }
 

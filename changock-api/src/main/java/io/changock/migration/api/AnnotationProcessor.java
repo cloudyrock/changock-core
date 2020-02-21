@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public interface AnnotationManager {
+public interface AnnotationProcessor {
 
   Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
 

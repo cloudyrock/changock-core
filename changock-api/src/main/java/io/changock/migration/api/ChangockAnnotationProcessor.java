@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ChangockAnnotationManager implements AnnotationManager {
+public class ChangockAnnotationProcessor implements AnnotationProcessor {
 
   public Collection<Class<? extends Annotation>> getChangeLogAnnotationClass() {
     return Collections.singletonList(ChangeLog.class);

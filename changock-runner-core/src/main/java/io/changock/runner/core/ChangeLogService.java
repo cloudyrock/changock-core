@@ -1,10 +1,10 @@
 package io.changock.runner.core;
 
 import io.changock.driver.api.common.Validable;
-import io.changock.migration.api.AnnotationManager;
+import io.changock.migration.api.AnnotationProcessor;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.ChangockAnnotationManager;
+import io.changock.migration.api.ChangockAnnotationProcessor;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.CollectionUtils;
 import io.changock.utils.StringUtils;
@@ -39,7 +39,7 @@ public class ChangeLogService implements Validable {
   private final ArtifactVersion endSystemVersion;
   private final Function<Class, Boolean> changeLogFilter;
   private final Function<Method, Boolean> changeSetFilter;
-  private final AnnotationManager annotationManager;
+  private final AnnotationProcessor annotationManager;
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
@@ -47,17 +47,17 @@ public class ChangeLogService implements Validable {
    * @param endSystemVersionInclusive   inclusive ending systemVersion
    */
   public ChangeLogService(List<String> changeLogsBasePackageList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
-    this(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new ChangockAnnotationManager());
+    this(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new ChangockAnnotationProcessor());
   }
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
    * @param startSystemVersionInclusive inclusive starting systemVersion
    * @param endSystemVersionInclusive   inclusive ending systemVersion
-   * @param annotationManager in case the annotations are different from the ones define in changock-api, its required a class to manage them
+   * @param annotationProcessor in case the annotations are different from the ones define in changock-api, its required a class to manage them
    */
-  public ChangeLogService(List<String> changeLogsBasePackageList, String startSystemVersionInclusive, String endSystemVersionInclusive, AnnotationManager annotationManager) {
-    this(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationManager);
+  public ChangeLogService(List<String> changeLogsBasePackageList, String startSystemVersionInclusive, String endSystemVersionInclusive, AnnotationProcessor annotationProcessor) {
+    this(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor);
   }
 
   protected ChangeLogService(List<String> changeLogsBasePackageList,
@@ -65,13 +65,13 @@ public class ChangeLogService implements Validable {
                              String endSystemVersionInclusive,
                              Function<Class, Boolean> changeLogFilter,
                              Function<Method, Boolean> changeSetFilter,
-                             AnnotationManager annotationManager) {
+                             AnnotationProcessor annotationProcessor) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
     this.changeLogFilter = changeLogFilter;
     this.changeSetFilter = changeSetFilter;
-    this.annotationManager = annotationManager != null ? annotationManager : new ChangockAnnotationManager();
+    this.annotationManager = annotationProcessor != null ? annotationProcessor : new ChangockAnnotationProcessor();
   }
 
 
@@ -159,9 +159,9 @@ public class ChangeLogService implements Validable {
 
   private static class ChangeLogComparator implements Comparator<Class<?>>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
-    private final AnnotationManager annotationManager;
+    private final AnnotationProcessor annotationManager;
 
-    ChangeLogComparator(AnnotationManager annotationManager) {
+    ChangeLogComparator(AnnotationProcessor annotationManager) {
       this.annotationManager =  annotationManager;
     }
 
@@ -187,9 +187,9 @@ public class ChangeLogService implements Validable {
 
   private static class ChangeSetComparator implements Comparator<Method>, Serializable {
     private static final long serialVersionUID = -854690868262484102L;
-    private final AnnotationManager annotationManager;
+    private final AnnotationProcessor annotationManager;
 
-    ChangeSetComparator(AnnotationManager annotationManager) {
+    ChangeSetComparator(AnnotationProcessor annotationManager) {
       this.annotationManager =  annotationManager;
     }
 

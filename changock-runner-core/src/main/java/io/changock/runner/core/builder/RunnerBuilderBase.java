@@ -2,8 +2,7 @@ package io.changock.runner.core.builder;
 
 import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.AnnotationManager;
-import io.changock.migration.api.ChangockAnnotationManager;
+import io.changock.migration.api.AnnotationProcessor;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.DependencyManager;
@@ -16,7 +15,7 @@ import java.util.Collections;
 import java.util.Map;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CHANGOCK_TYPE extends ChangockBase>
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase>
     implements DriverBuilderConfigurable<BUILDER_TYPE>, RunnerBuilderConfigurable<BUILDER_TYPE>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
@@ -31,7 +30,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
   protected Map<String, Object> metadata;
   protected ConnectionDriver driver;
-  private AnnotationManager annotationManager;
+  protected AnnotationProcessor annotationProcessor;
 
   protected RunnerBuilderBase(){}
 
@@ -159,8 +158,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
-  public BUILDER_TYPE withLegacyAnnotationManager(AnnotationManager annotationManager) {
-    this.annotationManager = annotationManager;
+  public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
+    this.annotationProcessor = annotationProcessor;
     return returnInstance();
   }
 
@@ -180,7 +179,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         Collections.singletonList(changeLogsScanPackage),
         startSystemVersion,
         endSystemVersion,
-        annotationManager// if null, it will take default ChangockAnnotationManager
+        annotationProcessor// if null, it will take default ChangockAnnotationManager
     );
   }
 
@@ -206,7 +205,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   protected abstract BUILDER_TYPE returnInstance();
-  public abstract CHANGOCK_TYPE build();
 
 
 }

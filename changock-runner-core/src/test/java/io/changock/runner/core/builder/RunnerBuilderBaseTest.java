@@ -33,7 +33,7 @@ public class RunnerBuilderBaseTest {
 }
 
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ChangockBase> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder> {
 
 
   void validate() {
@@ -54,7 +54,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ChangockB
     return this;
   }
 
-  @Override
+
   public ChangockBase build() {
     return null;
   }

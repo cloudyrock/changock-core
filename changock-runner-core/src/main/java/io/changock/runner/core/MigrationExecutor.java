@@ -80,7 +80,8 @@ public class MigrationExecutor implements Validable {
 
   private void initialize() {
     this.executionInProgress = true;
-    driver.initialize(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
+    driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
+    driver.initialize();
     this.dependencyManager.addConnectorDependency(driver.getDependencies());
   }
 
