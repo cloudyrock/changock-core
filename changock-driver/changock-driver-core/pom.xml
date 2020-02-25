@@ -3,7 +3,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.changock</groupId>
+    <groupId>com.github.cloudyrock.changock</groupId>
     <artifactId>changock-driver</artifactId>
     <version>0.0.3-BETA-SNAPSHOT</version>
   </parent>
@@ -12,17 +12,17 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.changock</groupId>
+      <groupId>com.github.cloudyrock.changock</groupId>
       <artifactId>changock-driver-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.changock</groupId>
+      <groupId>com.github.cloudyrock.changock</groupId>
       <artifactId>changock-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.changock</groupId>
+      <groupId>com.github.cloudyrock.changock</groupId>
       <artifactId>changock-utils</artifactId>
       <version>${project.version}</version>
     </dependency>
