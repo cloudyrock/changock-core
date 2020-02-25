@@ -5,7 +5,7 @@
 
   <name>Changock core</name>
   <description>Migration runner classes base for</description>
-  <url>https://github.com/cloudyrock/mongock</url>
+  <url>https://github.com/cloudyrock/changock-core</url>
   <modules>
     <module>changock-api</module>
     <module>changock-utils</module>
@@ -15,7 +15,7 @@
 
   <groupId>io.changock</groupId>
   <artifactId>changock-core</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.3-BETA-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <licenses>
@@ -27,10 +27,10 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:cloudyrock/mongock.git</connection>
-    <developerConnection>scm:git:git@github.com:cloudyrock/mongock.git</developerConnection>
-    <url>https://github.com/cloudyrock/mongock</url>
-    <tag>mongock-1.13</tag>
+    <connection>scm:git:git@github.com:cloudyrock/changock-core.git</connection>
+    <developerConnection>scm:git:git@github.com:cloudyrock/changock-core.git</developerConnection>
+    <url>https://github.com/cloudyrock/changock-core</url>
+    <tag>changock-core-0.0.3-BETA</tag>
   </scm>
   <developers>
     <developer>
@@ -98,6 +98,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -114,6 +115,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -132,6 +134,7 @@
           </dependency>
         </dependencies>
       </plugin>
+
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -143,6 +146,7 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -156,6 +160,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -165,36 +170,6 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.2</version>
-        <configuration>
-          <append>true</append>
-        </configuration>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>prepare-agent-integration</id>
-            <goals>
-              <goal>prepare-agent-integration</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jacoco-site</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -204,6 +179,7 @@
           <skipTests>true</skipTests>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 
@@ -236,6 +212,7 @@
         </plugins>
       </build>
     </profile>
+
   </profiles>
 
 </project>
