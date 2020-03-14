@@ -35,7 +35,7 @@ public class ChangockBase {
     return enabled;
   }
 
-  public final void execute() throws ChangockException {
+  public void execute() throws ChangockException {
     if (!isEnabled()) {
       logger.info("Changock is disabled. Exiting.");
     } else {
