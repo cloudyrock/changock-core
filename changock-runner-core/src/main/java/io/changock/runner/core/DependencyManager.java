@@ -19,7 +19,7 @@ public class DependencyManager {
     connectorDependencies = new LinkedHashSet<>();
   }
 
-  public DependencyManager addConnectorDependency(Collection<ChangeSetDependency> dependencies) {
+  public DependencyManager addConnectorDependency(Collection<? extends ChangeSetDependency> dependencies) {
     dependencies.forEach(this::addConnectorDependency);
     return this;
   }
@@ -28,7 +28,7 @@ public class DependencyManager {
     return addDependency(connectorDependencies, dependency);
   }
 
-  public DependencyManager addStandardDependency(Collection<ChangeSetDependency> dependencies) {
+  public DependencyManager addStandardDependency(Collection<? extends ChangeSetDependency> dependencies) {
     dependencies.forEach(this::addStandardDependency);
     return this;
   }
@@ -37,7 +37,7 @@ public class DependencyManager {
     return addDependency(standardDependencies, dependency);
   }
 
-  private DependencyManager addDependency(Collection<ChangeSetDependency> dependencyStore, ChangeSetDependency dependency) {
+  private <T extends ChangeSetDependency> DependencyManager addDependency(Collection<T> dependencyStore, T dependency) {
     if(!dependencyStore.add(dependency)) {
       dependencyStore.remove(dependency);
       dependencyStore.add(dependency);
