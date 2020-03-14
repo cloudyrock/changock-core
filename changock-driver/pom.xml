@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.github.cloudyrock.changock</groupId>
     <artifactId>changock-core</artifactId>
-    <version>0.0.4-BETA</version>
+    <version>0.0.5-BETA-SNAPSHOT</version>
   </parent>
   <artifactId>changock-driver</artifactId>
   <packaging>pom</packaging>
