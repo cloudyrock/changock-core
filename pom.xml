@@ -15,7 +15,7 @@
 
   <groupId>com.github.cloudyrock.changock</groupId>
   <artifactId>changock-core</artifactId>
-  <version>0.0.5-BETA-SNAPSHOT</version>
+  <version>1.0.0-BETA-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
