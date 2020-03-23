@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -133,6 +134,21 @@ public class MigrationExecutorTest {
     verify(lockManager, new Times(1)).close();
   }
 
+
+  @Test(expected = ChangockException.class)
+  public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfDriverNotValidated() {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
+    when(changeEntryService.isNewChange("newChangeSet", "executor")).thenReturn(true);
+    doThrow(ChangockException.class).when(driver).runValidation();
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+
+
+  }
+
   private List<ChangeLogItem> createInitialChangeLogs(Class<ExecutorChangeLog> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();
@@ -143,5 +159,4 @@ public class MigrationExecutorTest {
     dependencies.add(new ChangeSetDependency(type, instance));
     when(driver.getDependencies()).thenReturn(dependencies);
   }
-
 }

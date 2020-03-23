@@ -56,4 +56,11 @@ public @interface ChangeSet {
    */
   String systemVersion() default "0";
 
+  /**
+   * If true, will make the entire migration to break if the changeSet produce an exception or the validation doesn't
+   * success. Migration will continue otherwise.
+   * @return failFast
+   */
+  boolean failFast() default true;
+
 }
