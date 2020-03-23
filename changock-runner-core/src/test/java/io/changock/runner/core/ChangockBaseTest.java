@@ -66,18 +66,6 @@ public class ChangockBaseTest {
   }
 
   @Test(expected = ChangockException.class)
-  public void shouldPropagateException_IfExecutorNotValidated() {
-
-    MigrationExecutor executor = mock(MigrationExecutor.class);
-    ChangeLogService changeLogService = mock(ChangeLogService.class);
-
-    doThrow(ChangockException.class).when(executor).runValidation();
-
-    new ChangockBase(executor, changeLogService, true, true).execute();
-
-  }
-
-  @Test(expected = ChangockException.class)
   public void shouldPropagateException_IfFetchingLogsFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
@@ -125,18 +113,6 @@ public class ChangockBaseTest {
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(ChangockException.class).when(changeLogService).runValidation();
-
-    new ChangockBase(executor, changeLogService, false, true).execute();
-
-  }
-
-  @Test(expected = ChangockException.class)
-  public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfExecutorNotValidated() {
-
-    MigrationExecutor executor = mock(MigrationExecutor.class);
-    ChangeLogService changeLogService = mock(ChangeLogService.class);
-
-    doThrow(ChangockException.class).when(executor).runValidation();
 
     new ChangockBase(executor, changeLogService, false, true).execute();
 

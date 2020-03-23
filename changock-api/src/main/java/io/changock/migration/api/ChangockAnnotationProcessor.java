@@ -26,6 +26,6 @@ public class ChangockAnnotationProcessor implements AnnotationProcessor {
 
   public ChangeSetItem getChangeSet(Method method) {
     ChangeSet ann = method.getAnnotation(ChangeSet.class);
-    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), method);
+    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), method);
   }
 }

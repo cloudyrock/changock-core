@@ -1,28 +1,34 @@
 package io.changock.migration.api;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public class ChangeSetItem {
 
-  private String id;
+  private final String id;
 
-  private String author;
+  private final String author;
 
-  private String order;
+  private final String order;
 
-  private  boolean runAlways;
+  private final boolean runAlways;
 
-  private String systemVersion;
+  private final String systemVersion;
 
-  private Method method;
+  private final Method method;
 
-  public ChangeSetItem(String id, String author, String order, boolean runAlways, String systemVersion, Method method) {
+  private final boolean failFast;
+
+
+
+  public ChangeSetItem(String id, String author, String order, boolean runAlways, String systemVersion, boolean  failFast, Method method) {
     this.id = id;
     this.author = author;
     this.order = order;
     this.runAlways = runAlways;
     this.systemVersion = systemVersion;
     this.method = method;
+    this.failFast = failFast;
   }
 
   public String getId() {
@@ -49,6 +55,23 @@ public class ChangeSetItem {
     return method;
   }
 
+  public boolean isFailFast() {
+    return failFast;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ChangeSetItem that = (ChangeSetItem) o;
+    return Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+
   @Override
   public String toString() {
     return "ChangeSetItem{" +
@@ -57,6 +80,8 @@ public class ChangeSetItem {
         ", order='" + order + '\'' +
         ", runAlways=" + runAlways +
         ", systemVersion='" + systemVersion + '\'' +
+        ", method=" + method +
+        ", failFast=" + failFast +
         '}';
   }
 }
