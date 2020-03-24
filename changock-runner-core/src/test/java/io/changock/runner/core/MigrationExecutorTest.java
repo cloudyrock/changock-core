@@ -9,6 +9,7 @@ import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
+import io.changock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import io.changock.runner.core.util.DummyDependencyClass;
 import org.junit.Before;
 import org.junit.Rule;
@@ -145,11 +146,40 @@ public class MigrationExecutorTest {
     // when
     new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
-
-
   }
 
-  private List<ChangeLogItem> createInitialChangeLogs(Class<ExecutorChangeLog> executorChangeLogClass) {
+  @Test
+  public void shouldContinueMigration_whenAChangeSetFails_ifItIsNonFailFast() throws InterruptedException {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
+    when(changeEntryService.isNewChange("newChangeSet1", "executor")).thenReturn(true);
+    when(changeEntryService.isNewChange("changeSetNonFailFast", "executor")).thenReturn(true);
+    when(changeEntryService.isNewChange("newChangeSet2", "executor")).thenReturn(true);
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
+
+    assertTrue("Changelog's methods have not been fully executed", ExecutorWithNonFailFastChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
+    // then
+    ArgumentCaptor<ChangeEntry> captor = ArgumentCaptor.forClass(ChangeEntry.class);
+    verify(changeEntryService, new Times(2)).save(captor.capture());
+
+    List<ChangeEntry> entries = captor.getAllValues();
+    ChangeEntry entry = entries.get(0);
+    assertEquals("newChangeSet1", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet1", entry.getChangeSetMethodName());
+
+    entry = entries.get(1);
+    assertEquals("newChangeSet2", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet2", entry.getChangeSetMethodName());
+  }
+
+  private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();
   }
