@@ -57,20 +57,17 @@ public class MigrationExecutor implements Validable {
     runValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       lockManager.acquireLockDefault();
-      String executionId = String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
+      String executionId = generateExecutionId();
       logger.info("Changock starting the data migration sequence id[{}]...", executionId);
       for (ChangeLogItem changeLog : changeLogs) {
-        try {
-          for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
-            executeIfNewOrRunAlways(executionId, changeLog.getInstance(), changeSet);
+        for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
+          try {
+            executeChangeSet(executionId, changeLog.getInstance(), changeSet);
+          } catch (Exception e) {
+            processExceptionOnChangeSetExecution(e, changeSet.isFailFast());
           }
-        } catch (InvocationTargetException e) {
-          throw new ChangockException(e.getTargetException().getMessage(), e);
-        } catch (DependencyInjectionException ex) {
-          throw new ChangockException(String.format("Method[%s] using argument[%s] not injected", ex.getMethod(), ex.getParameterType()));
-        } catch (Exception e) {
-          throw new ChangockException(e.getMessage(), e);
         }
+
       }
     } finally {
       this.executionInProgress = false;
@@ -78,14 +75,18 @@ public class MigrationExecutor implements Validable {
     }
   }
 
-  private void initialize() {
+  protected void initialize() {
     this.executionInProgress = true;
     driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
     driver.initialize();
     this.dependencyManager.addConnectorDependency(driver.getDependencies());
   }
 
-  private void executeIfNewOrRunAlways(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected String generateExecutionId() {
+    return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
+  }
+
+  protected void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     if (driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor())) {
       final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
       ChangeEntry changeEntry = ChangeEntry.createInstance(executionId, changeSetItem, executionTimeMillis, metadata);
@@ -103,7 +104,7 @@ public class MigrationExecutor implements Validable {
     }
   }
 
-  private long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
+  protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();
     List<Object> changelogInvocationParameters = new ArrayList<>(changeSetMethod.getParameterTypes().length);
     for (Class<?> parameterType : changeSetMethod.getParameterTypes()) {
@@ -117,6 +118,26 @@ public class MigrationExecutor implements Validable {
     LogUtils.logMethodWithArguments(logger, changeSetMethod.getName(), changelogInvocationParameters);
     changeSetMethod.invoke(changeLogInstance, changelogInvocationParameters.toArray());
     return System.currentTimeMillis() - startingTime;
+  }
+
+  protected void processExceptionOnChangeSetExecution(Exception exception, boolean throwException) {
+    String message;
+    if (exception instanceof InvocationTargetException) {
+      message =  ((InvocationTargetException)exception).getTargetException().getMessage();
+
+    } else if (exception instanceof DependencyInjectionException) {
+      DependencyInjectionException ex = (DependencyInjectionException)exception;
+      message = String.format("Method[%s] using argument[%s] not injected", ex.getMethod(), ex.getParameterType());
+
+    } else {
+      message = exception.getMessage();
+    }
+    if(throwException)  {
+      throw new ChangockException(message, exception);
+
+    } else {
+      logger.warn(message, exception);
+    }
   }
 
   @Override
