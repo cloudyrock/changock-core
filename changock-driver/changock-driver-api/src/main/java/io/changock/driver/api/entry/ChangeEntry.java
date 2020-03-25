@@ -16,18 +16,20 @@ public class ChangeEntry {
   private final String changeId;
   private final String author;
   private final Date timestamp;
+  private final ChangeState state;
   private final String changeLogClass;
   private final String changeSetMethodName;
   private final Object metadata;
   private final long executionMillis;
 
 
-  public static ChangeEntry createInstance(String executionId, ChangeSetItem changeSet, long executionMillis, Object metadata) {
+  public static ChangeEntry createInstance(String executionId, ChangeState state, ChangeSetItem changeSet, long executionMillis, Object metadata) {
     return new ChangeEntry(
         executionId,
         changeSet.getId(),
         changeSet.getAuthor(),
         new Date(),
+        state,
         changeSet.getMethod().getDeclaringClass().getName(),
         changeSet.getMethod().getName(),
         executionMillis,
@@ -39,6 +41,7 @@ public class ChangeEntry {
                      String changeId,
                      String author,
                      Date timestamp,
+                     ChangeState state,
                      String changeLogClass,
                      String changeSetMethodName,
                      long executionMillis,
@@ -47,6 +50,7 @@ public class ChangeEntry {
     this.changeId = changeId;
     this.author = author;
     this.timestamp = new Date(timestamp.getTime());
+    this.state = state;
     this.changeLogClass = changeLogClass;
     this.changeSetMethodName = changeSetMethodName;
     this.executionMillis = executionMillis;
@@ -70,6 +74,10 @@ public class ChangeEntry {
     return this.timestamp;
   }
 
+  public ChangeState getState() {
+    return state;
+  }
+
   public String getChangeLogClass() {
     return this.changeLogClass;
   }
@@ -86,18 +94,18 @@ public class ChangeEntry {
     return metadata;
   }
 
-
   @Override
   public String toString() {
-
-    return String.format(
-        "Changock change[%s] for method[%s.%s] in execution[%s] at %s for [%d]ms by %s",
-        changeId,
-        changeLogClass,
-        changeSetMethodName,
-        executionId,
-        timestamp,
-        executionMillis,
-        author);
+    return "ChangeEntry{" +
+        "executionId='" + executionId + '\'' +
+        ", changeId='" + changeId + '\'' +
+        ", author='" + author + '\'' +
+        ", timestamp=" + timestamp +
+        ", state=" + state +
+        ", changeLogClass='" + changeLogClass + '\'' +
+        ", changeSetMethodName='" + changeSetMethodName + '\'' +
+        ", metadata=" + metadata +
+        ", executionMillis=" + executionMillis +
+        '}';
   }
 }

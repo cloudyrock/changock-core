@@ -1,5 +1,6 @@
 package io.changock.runner.core;
 
+import io.changock.driver.api.entry.ChangeState;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.driver.api.common.Validable;
@@ -89,13 +90,13 @@ public class MigrationExecutor implements Validable {
   protected void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     if (driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor())) {
       final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
-      ChangeEntry changeEntry = ChangeEntry.createInstance(executionId, changeSetItem, executionTimeMillis, metadata);
+      ChangeEntry changeEntry = ChangeEntry.createInstance(executionId, ChangeState.EXECUTED, changeSetItem, executionTimeMillis, metadata);
       driver.getChangeEntryService().save(changeEntry);
       logger.info("APPLIED - {}", changeEntry);
 
     } else if (changeSetItem.isRunAlways()) {
       final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
-      ChangeEntry changeEntry = ChangeEntry.createInstance(executionId, changeSetItem, executionTimeMillis, metadata);
+      ChangeEntry changeEntry = ChangeEntry.createInstance(executionId, ChangeState.EXECUTED, changeSetItem, executionTimeMillis, metadata);
       driver.getChangeEntryService().save(changeEntry);
       logger.info("RE-APPLIED - {}", changeEntry);
 
