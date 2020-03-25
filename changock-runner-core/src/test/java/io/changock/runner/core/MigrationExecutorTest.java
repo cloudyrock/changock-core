@@ -1,6 +1,7 @@
 package io.changock.runner.core;
 
 
+import io.changock.driver.api.entry.ChangeState;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
@@ -75,18 +76,21 @@ public class MigrationExecutorTest {
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet", entry.getChangeSetMethodName());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethodName());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
 
     entry = entries.get(2);
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeSetMethodName());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
   }
 
   @Test
