@@ -12,14 +12,31 @@ import java.util.Date;
  */
 public class ChangeEntry {
 
+  @Field("executionId")
   private final String executionId;
+
+  @Field("changeId")
   private final String changeId;
+
+  @Field("author")
   private final String author;
+
+  @Field("timestamp")
   private final Date timestamp;
+
+  @Field("state")
   private final ChangeState state;
+
+  @Field("changeLogClass")
   private final String changeLogClass;
+
+  @Field("changeSetMethod")
   private final String changeSetMethodName;
+
+  @Field("metadata")
   private final Object metadata;
+
+  @Field("executionMillis")
   private final long executionMillis;
 
 

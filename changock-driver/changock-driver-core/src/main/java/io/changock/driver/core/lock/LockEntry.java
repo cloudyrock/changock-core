@@ -1,5 +1,7 @@
 package io.changock.driver.core.lock;
 
+import io.changock.driver.api.entry.Field;
+
 import java.util.Date;
 
 /**
@@ -9,9 +11,16 @@ import java.util.Date;
  */
 public class LockEntry{
 
+  @Field("key")
   private final String key;
+
+  @Field("status")
   private final String status;
+
+  @Field("owner")
   private final String owner;
+
+  @Field("expiresAt")
   private final Date expiresAt;
 
   public LockEntry(String key, String status, String owner, Date expiresAt) {
