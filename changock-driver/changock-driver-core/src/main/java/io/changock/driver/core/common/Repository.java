@@ -2,6 +2,9 @@ package io.changock.driver.core.common;
 
 import io.changock.utils.Process;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public interface Repository<DOMAIN_CLASS, ENTITY_CLASS>  extends Process {
 
   /**
@@ -9,6 +12,15 @@ public interface Repository<DOMAIN_CLASS, ENTITY_CLASS>  extends Process {
    * @param domain domain object that requires to be persisted
    * @return persistence representation of the domain object
    */
-  ENTITY_CLASS toEntity(DOMAIN_CLASS domain);
+  default ENTITY_CLASS toEntity(DOMAIN_CLASS domain) {
+    return mapFieldInstances(
+        FieldUtil.getAllFields(domain.getClass())
+            .stream()
+            .map(field -> new FieldInstance(field, domain))
+            .collect(Collectors.toList())
+    );
+  }
+
+  ENTITY_CLASS mapFieldInstances(List<FieldInstance> fieldInstanceList);
 
 }
