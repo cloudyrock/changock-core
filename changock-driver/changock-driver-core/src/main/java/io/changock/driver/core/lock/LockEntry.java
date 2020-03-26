@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * @since 27/07/2014
  */
-public class LockEntry{
+public class LockEntry {
 
   @Field("key")
   private final String key;
