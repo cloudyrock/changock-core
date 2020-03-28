@@ -1,4 +1,4 @@
-package io.changock.runner.core.changelogs.executor.test1;
+package io.changock.runner.core.changelogs.executor.test4_with_failfast;
 
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
@@ -7,7 +7,7 @@ import io.changock.runner.core.util.DummyDependencyClass;
 import java.util.concurrent.CountDownLatch;
 
 @ChangeLog(order = "0")
-public class ExecutorChangeLog {
+public class ExecutorWithFailFastChangeLog {
 
   public final static  CountDownLatch latch = new CountDownLatch(3);
 
@@ -21,14 +21,15 @@ public class ExecutorChangeLog {
     latch.countDown();
   }
 
-  @ChangeSet(author = "executor", id = "alreadyExecuted", order = "3")
-  public void alreadyExecuted(DummyDependencyClass dependency) {
-    throw new RuntimeException("This method should not be executed, as it's supposed to be already executed");
+  @ChangeSet(author = "executor", id = "throwsException", order = "3")
+  public void throwsException(DummyDependencyClass dependency) {
+    latch.countDown();
+    throw new RuntimeException("This method throws an exception");
   }
 
   @ChangeSet(author = "executor", id = "runAlwaysAndAlreadyExecutedChangeSet", order = "4", runAlways = true)
   public void runAlwaysAndAlreadyExecutedChangeSet(DummyDependencyClass dependency) {
-    latch.countDown();
+    throw new RuntimeException("This method should not be executed");
   }
 
 
