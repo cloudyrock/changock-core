@@ -8,9 +8,9 @@
   <url>https://github.com/cloudyrock/changock-core</url>
   <modules>
     <module>changock-api</module>
-    <module>changock-utils</module>
-    <module>changock-runner-core</module>
     <module>changock-driver</module>
+    <module>changock-runner</module>
+    <module>changock-utils</module>
   </modules>
 
   <groupId>com.github.cloudyrock.changock</groupId>
