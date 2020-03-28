@@ -23,7 +23,7 @@ public class ExecutorWithNonFailFastChangeLog {
     throw new RuntimeException("Exception from changeSetNonFailFast");
   }
 
-  @ChangeSet(author = "executor", id = "newChangeSet2", order = "2")
+  @ChangeSet(author = "executor", id = "newChangeSet2", order = "3")
   public void newChangeSet2(DummyDependencyClass dependency) {
     latch.countDown();
   }
