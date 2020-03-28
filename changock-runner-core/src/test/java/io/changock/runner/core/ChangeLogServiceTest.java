@@ -81,14 +81,17 @@ public class ChangeLogServiceTest {
 
     List<ChangeSetItem> systemVersionedChangeSets = getChangeSetItems("2", "4");
     Assert.assertEquals(3, systemVersionedChangeSets.size());
-    Assert.assertEquals("ChangeSet_2", systemVersionedChangeSets.get(0).getId());
-    Assert.assertEquals("ChangeSet_3.0", systemVersionedChangeSets.get(1).getId());
-    Assert.assertEquals("ChangeSet_4", systemVersionedChangeSets.get(2).getId());
+    systemVersionedChangeSets.stream()
+        .map(ChangeSetItem::getId)
+        .collect(Collectors.toList())
+        .containsAll(Arrays.asList("ChangeSet_2", "ChangeSet_3.0", "ChangeSet_4"));
 
     systemVersionedChangeSets = getChangeSetItems("3", "4");
     Assert.assertEquals(2, systemVersionedChangeSets.size());
-    Assert.assertEquals("ChangeSet_3.0", systemVersionedChangeSets.get(0).getId());
-    Assert.assertEquals("ChangeSet_4", systemVersionedChangeSets.get(1).getId());
+    systemVersionedChangeSets.stream()
+        .map(ChangeSetItem::getId)
+        .collect(Collectors.toList())
+        .containsAll(Arrays.asList("ChangeSet_3.0", "ChangeSet_4"));
 
     systemVersionedChangeSets = getChangeSetItems("3", "2018");
     Assert.assertEquals(5, systemVersionedChangeSets.size());
