@@ -10,8 +10,10 @@ import io.changock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChangeLogServiceTest {
 
@@ -90,11 +92,10 @@ public class ChangeLogServiceTest {
 
     systemVersionedChangeSets = getChangeSetItems("3", "2018");
     Assert.assertEquals(5, systemVersionedChangeSets.size());
-    Assert.assertEquals("ChangeSet_3.0", systemVersionedChangeSets.get(0).getId());
-    Assert.assertEquals("ChangeSet_4", systemVersionedChangeSets.get(1).getId());
-    Assert.assertEquals("ChangeSet_5", systemVersionedChangeSets.get(2).getId());
-    Assert.assertEquals("ChangeSet_6", systemVersionedChangeSets.get(3).getId());
-    Assert.assertEquals("ChangeSet_2018", systemVersionedChangeSets.get(4).getId());
+    systemVersionedChangeSets.stream()
+        .map(ChangeSetItem::getId)
+        .collect(Collectors.toList())
+        .containsAll(Arrays.asList("ChangeSet_3.0", "ChangeSet_4", "ChangeSet_5", "ChangeSet_6", "ChangeSet_2018"));
   }
 
   private List<ChangeSetItem> getChangeSetItems(String startingVersion, String endingVersion) {
