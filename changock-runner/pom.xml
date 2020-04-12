@@ -15,7 +15,7 @@
     <module>changock-runner-core</module>
     <module>changock-test-runner</module>
     <module>changock-standalone-runner</module>
-    <module>changock-spring-runner</module>
+    <module>spring-runners</module>
   </modules>
 
 
