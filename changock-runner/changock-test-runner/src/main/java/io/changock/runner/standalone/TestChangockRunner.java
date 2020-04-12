@@ -25,6 +25,7 @@ public class TestChangockRunner extends ChangockBase {
   public static class Builder extends RunnerBuilderBase<Builder> {
 
     private DependencyManager dependencyManager = new DependencyManager();
+    private String executionId;
 
     private Builder() {
     }
@@ -34,18 +35,24 @@ public class TestChangockRunner extends ChangockBase {
       return returnInstance();
     }
 
+    public Builder setExecutionId(String executionId) {
+      this.executionId = executionId;
+      return this;
+    }
+
     public TestChangockRunner build() {
       return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled);
     }
 
     protected MigrationExecutor buildExecutorForTest() {
-      return new MigrationExecutor(
-              driver,
-              dependencyManager,
-              lockAcquiredForMinutes,
-              maxTries,
-              maxWaitingForLockMinutes,
-              metadata
+      return new TestMigrationExecutor(
+          executionId,
+          driver,
+          dependencyManager,
+          lockAcquiredForMinutes,
+          maxTries,
+          maxWaitingForLockMinutes,
+          metadata
       );
     }
 
