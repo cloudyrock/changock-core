@@ -13,6 +13,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>changock-mongo-v3-driver</module>
+    <module>changock-mongo-springdata-v2-driver</module>
   </modules>
 
   <properties>
