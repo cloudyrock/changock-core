@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>changock-runner</artifactId>
+    <groupId>com.github.cloudyrock.changock</groupId>
+    <version>1.0.0-BETA-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>changock-spring-runner</artifactId>
+  <packaging>pom</packaging>
+  <name>Changock Spring 5 runner</name>
+  <description>Spring runner for changock</description>
+  <modules>
+    <module>changock-spring-runner-util</module>
+    <module>changock-spring-v5-runner</module>
+  </modules>
+
+  <properties>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+    <spring.version>5.0.10.RELEASE</spring.version>
+    <springboot.version>2.0.6.RELEASE</springboot.version>
+
+    <changock.core.version>${project.version}</changock.core.version>
+  </properties>
+
+
+
+</project>
