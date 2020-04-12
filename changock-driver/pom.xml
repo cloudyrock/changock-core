@@ -12,6 +12,7 @@
   <modules>
     <module>changock-driver-api</module>
     <module>changock-driver-core</module>
+    <module>mongo-drivers</module>
   </modules>
 
   <properties>
