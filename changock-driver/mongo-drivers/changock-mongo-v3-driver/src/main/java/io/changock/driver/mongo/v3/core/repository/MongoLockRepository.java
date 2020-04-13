@@ -79,7 +79,7 @@ public class MongoLockRepository extends MongoRepositoryBase<LockEntry> implemen
     collection.deleteMany(Filters.and(Filters.eq(KEY_FIELD, lockKey), Filters.eq(OWNER_FIELD, owner)));
   }
 
-  private void insertUpdate(LockEntry newLock, boolean onlyIfSameOwner)  {
+  protected void insertUpdate(LockEntry newLock, boolean onlyIfSameOwner)  {
     boolean lockHeld;
     try {
 
@@ -106,7 +106,7 @@ public class MongoLockRepository extends MongoRepositoryBase<LockEntry> implemen
     }
   }
 
-  private Bson getAcquireLockQuery(String lockKey, String owner, boolean onlyIfSameOwner) {
+  protected Bson getAcquireLockQuery(String lockKey, String owner, boolean onlyIfSameOwner) {
     Bson expiresAtCond = Filters.lt(EXPIRES_AT_FIELD, new Date());
     Bson ownerCond = Filters.eq(OWNER_FIELD, owner);
     Bson orCond = onlyIfSameOwner ? Filters.or(ownerCond) : Filters.or(expiresAtCond, ownerCond);

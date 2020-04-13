@@ -59,7 +59,7 @@ public class MongoChangeEntryRepository extends MongoRepositoryBase<ChangeEntry>
    * @param author author
    * @return search document for changeSetId, author and state==EXECUTED
    */
-  private Document buildSearchQueryDBObject(String changeSetId, String author) {
+  protected Document buildSearchQueryDBObject(String changeSetId, String author) {
     return new Document()
         .append(KEY_CHANGE_ID, changeSetId)
         .append(KEY_AUTHOR, author)

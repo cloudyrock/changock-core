@@ -1,5 +1,9 @@
 package io.changock.runner.core;
 
+import static io.changock.driver.api.entry.ChangeState.EXECUTED;
+import static io.changock.driver.api.entry.ChangeState.IGNORED;
+import static io.changock.driver.api.entry.ChangeState.FAILED;
+
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
@@ -90,31 +94,46 @@ public class MigrationExecutor implements Validable {
   protected void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     try {
-      if (driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor())) {
+      if (driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor()) || changeSetItem.isRunAlways()) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
-        changeEntry = ChangeEntry.createInstance(executionId, ChangeState.EXECUTED, changeSetItem, executionTimeMillis, metadata);
-        logger.info("APPLIED - {}", changeEntry);
-
-      } else if (changeSetItem.isRunAlways()) {
-        final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
-        changeEntry = ChangeEntry.createInstance(executionId, ChangeState.EXECUTED, changeSetItem, executionTimeMillis, metadata);
-        logger.info("RE-APPLIED - {}", changeEntry);
+        changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
 
       } else {
-        logger.info("PASSED OVER - {}", changeSetItem);
-        changeEntry = ChangeEntry.createInstance(executionId, ChangeState.IGNORED, changeSetItem, 0L, metadata);
+        changeEntry = createChangeEntryInstance(executionId, changeSetItem, -1L, IGNORED);
 
       }
     } catch (Exception ex) {
-      changeEntry = ChangeEntry.createInstance(executionId, ChangeState.FAILED, changeSetItem, 0L, metadata);
+      changeEntry = createChangeEntryInstance(executionId, changeSetItem, -1L, FAILED);
       throw ex;
     } finally {
       if(changeEntry != null) {
+        logChangeEntry(changeEntry, changeSetItem);
         driver.getChangeEntryService().save(changeEntry);
       }
-
     }
+  }
 
+  protected void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem) {
+    switch (changeEntry.getState()) {
+      case EXECUTED:
+        if(changeSetItem.isRunAlways()) {
+          logger.info("RE-APPLIED - {}", changeEntry);
+
+        } else {
+          logger.info("APPLIED - {}", changeEntry);
+        }
+        break;
+      case IGNORED:
+        logger.info("PASSED OVER - {}", changeSetItem);
+        break;
+      case FAILED:
+        logger.info("FAILED OVER - {}", changeSetItem);
+        break;
+    }
+  }
+
+  protected ChangeEntry createChangeEntryInstance(String executionId, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState executed) {
+    return ChangeEntry.createInstance(executionId, executed, changeSetItem, executionTimeMillis, metadata);
   }
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
