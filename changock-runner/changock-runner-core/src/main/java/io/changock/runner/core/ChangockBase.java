@@ -5,15 +5,15 @@ import io.changock.driver.api.lock.LockCheckException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChangockBase {
+public class ChangockBase<EXECUTOR extends MigrationExecutor> {
   private static final Logger logger = LoggerFactory.getLogger(ChangockBase.class);
 
   private final boolean enabled;
-  private final MigrationExecutor executor;
+  private final EXECUTOR executor;
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
 
-  protected ChangockBase(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
+  protected ChangockBase(EXECUTOR executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
     this.executor = executor;
     this.chanLogService = changeLogService;
     this.enabled = enabled;
