@@ -1,6 +1,7 @@
 package io.changock.driver.core.driver;
 
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.lock.DefaultLockManager;
 import io.changock.driver.core.lock.LockRepository;
@@ -8,7 +9,7 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.TimeService;
 
 
-public abstract class ConnectionDriverBase implements ConnectionDriver {
+public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
   private LockManager lockManager = null;
   private long lockAcquiredForMinutes;
