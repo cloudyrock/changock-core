@@ -59,7 +59,7 @@ public abstract class MongoRepositoryBase<DOMAIN_CLASS> implements Repository<DO
     return StreamSupport.stream(collection.listIndexes().spliterator(), false).noneMatch(this::isRightIndex);
   }
 
-  void createRequiredUniqueIndex() {
+  protected void createRequiredUniqueIndex() {
     collection.createIndex(getIndexDocument(uniqueFields), new IndexOptions().unique(true));
     logger.debug("Index in collection {} was recreated", getCollectionName());
   }

@@ -9,7 +9,7 @@ import org.bson.Document;
 
 import java.lang.reflect.Field;
 
-public class MongoChangeEntryRepository extends MongoRepositoryBase<ChangeEntry> implements ChangeEntryRepository<Document> {
+public class MongoChangeEntryRepository<CHANGE_ENTRY extends ChangeEntry> extends MongoRepositoryBase<CHANGE_ENTRY> implements ChangeEntryRepository<CHANGE_ENTRY, Document> {
 
   private static String KEY_EXECUTION_ID;
   private static String KEY_CHANGE_ID;
@@ -49,7 +49,7 @@ public class MongoChangeEntryRepository extends MongoRepositoryBase<ChangeEntry>
   }
 
   @Override
-  public void save(ChangeEntry changeEntry) throws ChangockException {
+  public void save(CHANGE_ENTRY changeEntry) throws ChangockException {
     collection.insertOne(toEntity(changeEntry));
   }
 

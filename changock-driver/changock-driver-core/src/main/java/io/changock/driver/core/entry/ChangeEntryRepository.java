@@ -4,6 +4,6 @@ import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.core.common.Repository;
 
-public interface ChangeEntryRepository<ENTITY_CLASS> extends ChangeEntryService, Repository<ChangeEntry, ENTITY_CLASS> {
+public interface ChangeEntryRepository<CHANGE_ENTRY extends ChangeEntry, ENTITY_CLASS> extends ChangeEntryService<CHANGE_ENTRY>, Repository<CHANGE_ENTRY, ENTITY_CLASS> {
 
 }
