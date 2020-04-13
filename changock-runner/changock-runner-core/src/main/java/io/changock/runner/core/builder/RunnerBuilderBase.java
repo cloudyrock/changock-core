@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.Map;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase>
-    implements DriverBuilderConfigurable<BUILDER_TYPE>, RunnerBuilderConfigurable<BUILDER_TYPE>, Validable {
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver>
+    implements DriverBuilderConfigurable<BUILDER_TYPE, DRIVER>, RunnerBuilderConfigurable<BUILDER_TYPE>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   //Mandatory
@@ -29,7 +29,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase>
   protected String startSystemVersion = "0";
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
   protected Map<String, Object> metadata;
-  protected ConnectionDriver driver;
+  protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
 
   protected RunnerBuilderBase(){}
@@ -41,7 +41,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase>
    * @param driver connection driver
    * @return builder for fluent interface
    */
-  public BUILDER_TYPE setDriver(ConnectionDriver driver) {
+  @Override
+  public BUILDER_TYPE setDriver(DRIVER driver) {
     this.driver = driver;
     return returnInstance();
   }
@@ -164,7 +165,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase>
   }
 
 
-  protected final MigrationExecutor buildExecutorDefault() {
+  protected MigrationExecutor buildExecutorDefault() {
     return new MigrationExecutor(
         driver,
         new DependencyManager(),
@@ -174,7 +175,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase>
         metadata
     );
   }
-  protected final ChangeLogService buildChangeLogServiceDefault() {
+  protected ChangeLogService buildChangeLogServiceDefault() {
     return new ChangeLogService(
         Collections.singletonList(changeLogsScanPackage),
         startSystemVersion,

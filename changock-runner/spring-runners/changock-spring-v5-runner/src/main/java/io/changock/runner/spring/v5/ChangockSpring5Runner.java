@@ -1,5 +1,6 @@
 package io.changock.runner.spring.v5;
 
+import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
@@ -23,14 +24,14 @@ abstract class ChangockSpring5Runner extends ChangockBase {
         super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
     }
 
-    public static DriverBuilderConfigurable<Builder> builder() {
+    public static DriverBuilderConfigurable<Builder, ConnectionDriver> builder() {
         return new ChangockSpring5Runner.Builder();
     }
 
     /**
      * SpringChangockRunner builder
      */
-    public static class Builder extends RunnerBuilderBase<Builder> {
+    public static class Builder extends RunnerBuilderBase<Builder, ConnectionDriver> {
 
         private static final String DEFAULT_PROFILE = "default";
         private ApplicationContext springContext;
