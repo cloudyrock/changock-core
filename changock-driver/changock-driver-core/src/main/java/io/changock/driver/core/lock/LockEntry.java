@@ -1,6 +1,6 @@
 package io.changock.driver.core.lock;
 
-import io.changock.driver.api.entry.Field;
+import io.changock.utils.field.Field;
 
 import java.util.Date;
 

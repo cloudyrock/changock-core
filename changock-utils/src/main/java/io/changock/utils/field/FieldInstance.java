@@ -1,4 +1,4 @@
-package io.changock.driver.core.common;
+package io.changock.utils.field;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +18,7 @@ public class FieldInstance {
   }
 
   public String getName() {
-    return field.getAnnotation(io.changock.driver.api.entry.Field.class).value();
+    return field.getAnnotation(io.changock.utils.field.Field.class).value();
   }
 
   public Object getValue() {

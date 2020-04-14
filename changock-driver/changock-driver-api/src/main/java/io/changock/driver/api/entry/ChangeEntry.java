@@ -1,6 +1,7 @@
 package io.changock.driver.api.entry;
 
 import io.changock.migration.api.ChangeSetItem;
+import io.changock.utils.field.Field;
 
 import java.util.Date;
 

@@ -20,19 +20,19 @@ public class MongoChangeEntryRepository<CHANGE_ENTRY extends ChangeEntry> extend
     try {
        Field field = ChangeEntry.class.getDeclaredField("executionId");
        field.setAccessible(true);
-      KEY_EXECUTION_ID = field.getAnnotation(io.changock.driver.api.entry.Field.class).value();
+      KEY_EXECUTION_ID = field.getAnnotation(io.changock.utils.field.Field.class).value();
 
       field = ChangeEntry.class.getDeclaredField("changeId");
       field.setAccessible(true);
-      KEY_CHANGE_ID = field.getAnnotation(io.changock.driver.api.entry.Field.class).value();
+      KEY_CHANGE_ID = field.getAnnotation(io.changock.utils.field.Field.class).value();
 
       field = ChangeEntry.class.getDeclaredField("state");
       field.setAccessible(true);
-      KEY_STATE = field.getAnnotation(io.changock.driver.api.entry.Field.class).value();
+      KEY_STATE = field.getAnnotation(io.changock.utils.field.Field.class).value();
 
       field = ChangeEntry.class.getDeclaredField("author");
       field.setAccessible(true);
-      KEY_AUTHOR = field.getAnnotation(io.changock.driver.api.entry.Field.class).value();
+      KEY_AUTHOR = field.getAnnotation(io.changock.utils.field.Field.class).value();
     } catch (NoSuchFieldException e) {
       throw new ChangockException(e);
     }

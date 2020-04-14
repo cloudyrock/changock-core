@@ -2,7 +2,7 @@ package io.changock.driver.mongo.v3.core.repository;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
-import io.changock.driver.core.common.FieldInstance;
+import io.changock.utils.field.FieldInstance;
 import io.changock.driver.core.common.Repository;
 import org.bson.Document;
 import org.slf4j.Logger;
