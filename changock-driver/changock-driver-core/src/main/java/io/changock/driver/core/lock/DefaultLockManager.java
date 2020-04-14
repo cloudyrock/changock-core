@@ -93,13 +93,13 @@ public class DefaultLockManager implements LockManager {
     do {
       try {
         logger.info("Changock trying to acquire the lock");
-        final Date newLockExpiresAt = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
+        Date newLockExpiresAt = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
         repository.insertUpdate(new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, newLockExpiresAt));
         logger.info("Changock acquired the lock until: {}", newLockExpiresAt);
         updateStatus(newLockExpiresAt);
         keepLooping = false;
       } catch (LockPersistenceException ex) {
-        handleLockException(true);
+        handleLockException(true, ex);
       }
     } while (keepLooping);
   }
@@ -121,14 +121,14 @@ public class DefaultLockManager implements LockManager {
       if (needsRefreshLock()) {
         try {
           logger.info("Changock trying to refresh the lock");
-          final Date lockExpiresAtTemp = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
-          final LockEntry lockEntry = new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, lockExpiresAtTemp);
+          Date lockExpiresAtTemp = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
+          LockEntry lockEntry = new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, lockExpiresAtTemp);
           repository.updateIfSameOwner(lockEntry);
           updateStatus(lockExpiresAtTemp);
           logger.info("Changock refreshed the lock until: {}", lockExpiresAtTemp);
           keepLooping = false;
         } catch (LockPersistenceException ex) {
-          handleLockException(false);
+          handleLockException(false, ex);
         }
       } else {
         keepLooping = false;
@@ -211,30 +211,31 @@ public class DefaultLockManager implements LockManager {
     return this;
   }
 
-  private void handleLockException(boolean acquiringLock) {
+  private void handleLockException(boolean acquiringLock, Exception ex) {
 
     this.tries++;
     if (this.tries >= lockMaxTries) {
       updateStatus(null);
-      throw new LockCheckException("MaxTries(" + lockMaxTries + ") reached");
+      throw new LockCheckException(String.format("MaxTries(%d) reached : due to exception: %s", lockMaxTries, ex.getMessage()));
+    } else {
+      logger.warn("Error acquiring lock({} try of {} max tries) due to exception: {}", tries, lockMaxTries, ex.getMessage(), ex);
     }
 
-    final LockEntry currentLock = repository.findByKey(getDefaultKey());
+    LockEntry currentLock = repository.findByKey(getDefaultKey());
 
     if (currentLock != null && !currentLock.isOwner(owner)) {
-      final Date currentLockExpiresAt = currentLock.getExpiresAt();
+      Date currentLockExpiresAt = currentLock.getExpiresAt();
       logger.info("Lock is taken by other process until: {}", currentLockExpiresAt);
       if (!acquiringLock) {
-        throw new LockCheckException("Lock held by other process. Cannot ensure lock");
+        throw new LockCheckException("Lock held by other process. Cannot ensure lock: " + ex.getMessage());
       }
       waitForLock(currentLockExpiresAt);
     }
-
   }
 
   private void waitForLock(Date expiresAtMillis) {
-    final long diffMillis = expiresAtMillis.getTime() - timeUtils.currentTime().getTime();
-    final long sleepingMillis = (diffMillis > 0 ? diffMillis : 0) + MINIMUM_SLEEP_THREAD;
+    long diffMillis = expiresAtMillis.getTime() - timeUtils.currentTime().getTime();
+    long sleepingMillis = (diffMillis > 0 ? diffMillis : 0) + MINIMUM_SLEEP_THREAD;
     try {
       if (sleepingMillis > lockMaxWaitMillis) {
         throw new LockCheckException(String.format(MAX_WAIT_EXCEEDED_ERROR_MSG, sleepingMillis, lockMaxWaitMillis));
