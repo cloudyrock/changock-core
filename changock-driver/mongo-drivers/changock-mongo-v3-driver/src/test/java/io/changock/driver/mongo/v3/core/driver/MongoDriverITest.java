@@ -100,7 +100,8 @@ public class MongoDriverITest extends IntegrationTestBase {
   public void shouldUseDifferentChangeLogCollectionName_whenSettingChangeLogCollectionName() {
     String newChangeLogCollectionName = "newChangeLogCollectionName";
     collection = this.getDataBase().getCollection(newChangeLogCollectionName);
-    ChangockMongoDriver driver = new ChangockMongoDriver(this.getDataBase()).setChangeLogCollectionName(newChangeLogCollectionName);
+    ChangockMongoDriver driver = new ChangockMongoDriver(this.getDataBase());
+    driver.setChangeLogCollectionName(newChangeLogCollectionName);
     runChanges(driver, ChangeLogSuccess.class, newChangeLogCollectionName, Collections.emptyList());
   }
 

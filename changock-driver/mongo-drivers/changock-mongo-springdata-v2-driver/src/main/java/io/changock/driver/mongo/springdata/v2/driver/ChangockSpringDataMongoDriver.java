@@ -22,14 +22,12 @@ public class ChangockSpringDataMongoDriver extends ChangockMongoDriver {
     }
 
     @Override
-    public ChangockSpringDataMongoDriver setChangeLogCollectionName(String changeLogCollectionName) {
+    public void setChangeLogCollectionName(String changeLogCollectionName) {
         super.setChangeLogCollectionName(changeLogCollectionName);
-        return this;
     }
 
-    public ChangockSpringDataMongoDriver setLockCollectionName(String lockCollectionName) {
+    public void setLockCollectionName(String lockCollectionName) {
         super.setLockCollectionName(lockCollectionName);
-        return this;
     }
 
     @Override
