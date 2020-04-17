@@ -22,61 +22,52 @@ import java.util.Set;
 @NotThreadSafe
 public abstract class ChangockMongoDriverBase<CHANGE_ENTRY extends ChangeEntry> extends ConnectionDriverBase<CHANGE_ENTRY> {
 
-    private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "changockChangeLog";
-    private final static String DEFAULT_LOCK_COLLECTION_NAME = "changockLock";
+  private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "changockChangeLog";
+  private final static String DEFAULT_LOCK_COLLECTION_NAME = "changockLock";
 
-    private final MongoDatabase mongoDatabase;
-    private String changeLogCollectionName = DEFAULT_CHANGELOG_COLLECTION_NAME;
-    private String lockCollectionName = DEFAULT_LOCK_COLLECTION_NAME;
-    private MongoChangeEntryRepository<CHANGE_ENTRY> changeEntryRepository;
-    private MongoLockRepository lockRepository;
+  protected final MongoDatabase mongoDatabase;
+  protected String changeLogCollectionName = DEFAULT_CHANGELOG_COLLECTION_NAME;
+  protected String lockCollectionName = DEFAULT_LOCK_COLLECTION_NAME;
+  protected MongoLockRepository lockRepository;
 
-    public ChangockMongoDriverBase(MongoDatabase mongoDatabase) {
-        this.mongoDatabase = mongoDatabase;
+  public ChangockMongoDriverBase(MongoDatabase mongoDatabase) {
+    this.mongoDatabase = mongoDatabase;
+  }
+
+  public void setChangeLogCollectionName(String changeLogCollectionName) {
+    this.changeLogCollectionName = changeLogCollectionName;
+  }
+
+  public void setLockCollectionName(String lockCollectionName) {
+    this.lockCollectionName = lockCollectionName;
+  }
+
+  @Override
+  public void runValidation() throws ChangockException {
+    if (mongoDatabase == null) {
+      throw new ChangockException("MongoDatabase cannot be null");
     }
-
-    public void setChangeLogCollectionName(String changeLogCollectionName) {
-        this.changeLogCollectionName = changeLogCollectionName;
+    if (this.getLockManager() == null) {
+      throw new ChangockException("Internal error: Driver needs to be initialized by the runner");
     }
+  }
 
-    public void setLockCollectionName(String lockCollectionName) {
-        this.lockCollectionName = lockCollectionName;
+  @Override
+  protected LockRepository getLockRepository() {
+    if (lockRepository == null) {
+      MongoCollection<Document> collection = mongoDatabase.getCollection(lockCollectionName);
+      this.lockRepository = new MongoLockRepository(collection);
     }
+    return lockRepository;
+  }
 
-    @Override
-    public void runValidation() throws ChangockException {
-        if (mongoDatabase == null) {
-            throw new ChangockException("MongoDatabase cannot be null");
-        }
-        if (this.getLockManager() == null) {
-            throw new ChangockException("Internal error: Driver needs to be initialized by the runner");
-        }
-    }
-
-    @Override
-    protected LockRepository getLockRepository() {
-        if (lockRepository == null) {
-            MongoCollection<Document> collection = mongoDatabase.getCollection(lockCollectionName);
-            this.lockRepository = new MongoLockRepository(collection);
-        }
-        return lockRepository;
-    }
-
-    @Override
-    public Set<ChangeSetDependency> getDependencies() {
-        LockManager lockManager = this.getLockManager();
-        LockMethodInvoker invoker = new LockMethodInvoker(lockManager);
-        Set<ChangeSetDependency> dependencies = new HashSet<>();
-        MongoDataBaseDecoratorImpl mongoDataBaseDecorator = new MongoDataBaseDecoratorImpl(mongoDatabase, invoker);
-        dependencies.add(new ChangeSetDependency(MongoDatabase.class, mongoDataBaseDecorator));
-        return dependencies;
-    }
-
-    @Override
-    public ChangeEntryService<CHANGE_ENTRY> getChangeEntryService() {
-        if (changeEntryRepository == null) {
-            this.changeEntryRepository = new MongoChangeEntryRepository(mongoDatabase.getCollection(changeLogCollectionName));
-        }
-        return changeEntryRepository;
-    }
+  @Override
+  public Set<ChangeSetDependency> getDependencies() {
+    LockManager lockManager = this.getLockManager();
+    LockMethodInvoker invoker = new LockMethodInvoker(lockManager);
+    Set<ChangeSetDependency> dependencies = new HashSet<>();
+    MongoDataBaseDecoratorImpl mongoDataBaseDecorator = new MongoDataBaseDecoratorImpl(mongoDatabase, invoker);
+    dependencies.add(new ChangeSetDependency(MongoDatabase.class, mongoDataBaseDecorator));
+    return dependencies;
+  }
 }
