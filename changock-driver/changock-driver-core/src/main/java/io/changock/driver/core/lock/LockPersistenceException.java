@@ -1,20 +1,55 @@
 package io.changock.driver.core.lock;
 
-import io.changock.migration.api.exception.ChangockException;
-
 /**
  *
  * @since 04/04/2018
  */
 public class LockPersistenceException extends RuntimeException {
 
-  private static final long serialVersionUID = -4232386506613422980L;
+  /**
+   * Condition to update/insert lock
+   */
+  private final String acquireLockQuery;
 
-  public LockPersistenceException(String msg) {
-    super(msg);
+  /**
+   * NewLock entity
+   */
+  private final String newLockEntity;
+
+  /**
+   * Further db error detail
+   */
+  private final String dbErrorDetail;
+
+  public LockPersistenceException(String acquireLockQuery, String newLockEntity, String dbErrorDetail) {
+    this.acquireLockQuery = acquireLockQuery;
+    this.newLockEntity = newLockEntity;
+    this.dbErrorDetail = dbErrorDetail;
   }
 
-  public LockPersistenceException(ChangockException ex) {
-    super(ex);
+  public String getAcquireLockQuery() {
+    return acquireLockQuery;
+  }
+
+  public String getNewLockEntity() {
+    return newLockEntity;
+  }
+
+  public String getDbErrorDetail() {
+    return dbErrorDetail;
+  }
+
+  @Override
+  public String getMessage() {
+    return toString();
+  }
+
+  @Override
+  public String toString() {
+    return "LockPersistenceException{" +
+        ", acquireLockQuery='" + acquireLockQuery + '\'' +
+        ", newLockEntity='" + newLockEntity + '\'' +
+        ", dbErrorDetail='" + dbErrorDetail + '\'' +
+        "} ";
   }
 }

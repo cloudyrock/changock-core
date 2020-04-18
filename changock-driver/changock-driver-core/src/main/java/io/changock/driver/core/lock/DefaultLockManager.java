@@ -32,6 +32,9 @@ public class DefaultLockManager implements LockManager {
   private static final String GOING_TO_SLEEP_MSG =
       "Changock is going to sleep to wait for the lock:  {} ms({} minutes)";
   private static final String EXPIRATION_ARG_ERROR_MSG = "Lock expiration period must be greater than %d ms";
+  private static final String MAX_TRIES_ERROR_TEMPLATE = "MaxTries(%d) reached due to LockPersistenceException: \n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
+  private static final String LOCK_HELD_BY_OTHER_PROCESS = "Lock held by other process. Cannot ensure lock.\n\tCurrent try: %d\n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
+
 
   //injections
   private final LockRepository repository;
@@ -211,26 +214,39 @@ public class DefaultLockManager implements LockManager {
     return this;
   }
 
-  private void handleLockException(boolean acquiringLock, Exception ex) {
+  private void handleLockException(boolean acquiringLock, LockPersistenceException ex) {
 
     this.tries++;
-    if (this.tries >= lockMaxTries) {
-      updateStatus(null);
-      throw new LockCheckException(String.format("MaxTries(%d) reached : due to exception: %s", lockMaxTries, ex.getMessage()));
-    } else {
-      logger.warn("Error acquiring lock({} try of {} max tries) due to exception: {}", tries, lockMaxTries, ex.getMessage(), ex);
-    }
 
     LockEntry currentLock = repository.findByKey(getDefaultKey());
 
+    if (this.tries >= lockMaxTries) {
+      updateStatus(null);
+      throw new LockCheckException(String.format(
+          MAX_TRIES_ERROR_TEMPLATE,
+          lockMaxTries,
+          currentLock != null ? currentLock.toString() : "none",
+          ex.getNewLockEntity(),
+          ex.getAcquireLockQuery(),
+          ex.getDbErrorDetail()));
+    }
+
+
     if (currentLock != null && !currentLock.isOwner(owner)) {
       Date currentLockExpiresAt = currentLock.getExpiresAt();
-      logger.info("Lock is taken by other process until: {}", currentLockExpiresAt);
+      logger.warn("Lock is taken by other process until: {}", currentLockExpiresAt);
       if (!acquiringLock) {
-        throw new LockCheckException("Lock held by other process. Cannot ensure lock: " + ex.getMessage());
+        throw new LockCheckException(String.format(
+            LOCK_HELD_BY_OTHER_PROCESS,
+            this.tries,
+            currentLock.toString(),
+            ex.getNewLockEntity(),
+            ex.getAcquireLockQuery(),
+            ex.getDbErrorDetail()));
       }
       waitForLock(currentLockExpiresAt);
     }
+
   }
 
   private void waitForLock(Date expiresAtMillis) {

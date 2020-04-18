@@ -81,35 +81,39 @@ public class MongoLockRepository extends MongoRepositoryBase<LockEntry> implemen
 
   protected void insertUpdate(LockEntry newLock, boolean onlyIfSameOwner)  {
     boolean lockHeld;
+    String debErrorDetail = "not db error";
+    Bson acquireLockQuery = getAcquireLockQuery(newLock.getKey(), newLock.getOwner(), onlyIfSameOwner);
+    Document newLockDocumentSet = new Document().append("$set", toEntity(newLock));
     try {
-
-      Bson acquireLockQuery = getAcquireLockQuery(newLock.getKey(), newLock.getOwner(), onlyIfSameOwner);
-
-      UpdateResult result = collection.updateMany(
-          acquireLockQuery,
-          new Document().append("$set", toEntity(newLock)),
-          new UpdateOptions().upsert(!onlyIfSameOwner));
+      UpdateResult result = collection.updateMany(acquireLockQuery, newLockDocumentSet, new UpdateOptions().upsert(!onlyIfSameOwner));
       lockHeld = result.getModifiedCount() <= 0 && result.getUpsertedId() == null;
 
     } catch (MongoWriteException ex) {
       lockHeld = ex.getError().getCategory() == ErrorCategory.DUPLICATE_KEY;
+
       if (!lockHeld) {
         throw ex;
       }
+      debErrorDetail = ex.getError().toString();
 
     } catch (DuplicateKeyException ex) {
       lockHeld = true;
+      debErrorDetail = ex.getMessage();
     }
 
     if (lockHeld) {
-      throw new LockPersistenceException("Lock is held");
+      throw new LockPersistenceException(
+          acquireLockQuery.toString(),
+          newLockDocumentSet.toString(),
+          debErrorDetail
+      );
     }
   }
 
   protected Bson getAcquireLockQuery(String lockKey, String owner, boolean onlyIfSameOwner) {
-    Bson expiresAtCond = Filters.lt(EXPIRES_AT_FIELD, new Date());
+    Bson alreadyExpiredCond = Filters.lt(EXPIRES_AT_FIELD, new Date());
     Bson ownerCond = Filters.eq(OWNER_FIELD, owner);
-    Bson orCond = onlyIfSameOwner ? Filters.or(ownerCond) : Filters.or(expiresAtCond, ownerCond);
+    Bson orCond = onlyIfSameOwner ? Filters.or(ownerCond) : Filters.or(alreadyExpiredCond, ownerCond);
     return Filters.and(Filters.eq(KEY_FIELD, lockKey), Filters.eq(STATUS_FIELD, LockStatus.LOCK_HELD.toString()), orCond);
   }
 }
