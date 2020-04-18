@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @NotThreadSafe
-public class MigrationExecutor implements Validable {
+public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutor.class);
 
@@ -39,7 +39,7 @@ public class MigrationExecutor implements Validable {
   private final long lockAcquiredForMinutes;
   protected boolean executionInProgress = false;
 
-  public MigrationExecutor(ConnectionDriver driver,
+  public MigrationExecutor(ConnectionDriver<CHANGE_ENTRY> driver,
                            DependencyManager dependencyManager,
                            long lockAcquiredForMinutes,
                            int maxTries,
@@ -91,7 +91,7 @@ public class MigrationExecutor implements Validable {
     return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
   }
 
-  protected void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected  void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     try {
       if (driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor()) || changeSetItem.isRunAlways()) {

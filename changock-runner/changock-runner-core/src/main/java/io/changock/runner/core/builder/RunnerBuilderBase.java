@@ -7,7 +7,6 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.DependencyManager;
 import io.changock.runner.core.MigrationExecutor;
-import io.changock.runner.core.ChangockBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
