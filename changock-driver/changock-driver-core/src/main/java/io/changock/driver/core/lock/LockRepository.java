@@ -3,15 +3,23 @@ package io.changock.driver.core.lock;
 import io.changock.driver.core.common.Repository;
 
 /**
- * <p>Repository class to manage lock in database</p>
- *
- * @since 04/04/2018
+ * <p>Repository interface to manage lock in database, which will be used by LockManager</p>
  */
 public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTITY_CLASS> {
 
+
   /**
-   * If there is a lock in the database with the same key, updates it if either is expired or both share the same owner.
-   * If there is no lock with the same key, it's inserted.
+   * a) If there is an existing lock in the database for the same key and owner(existingLock.key==newLock.key &&
+   * existingLoc.owner==newLock.owner), then the lock in database is updated/refreshed with the new values. The most
+   * common scenario is to extend the lock's expiry date.
+   *
+   * b) If there is a existing lock in the database for the same key and different owner, but expired(existingLock.key==newLock.key &&
+   * existingLoc.owner!=newLock.owner && expiresAt > now), the lock is replaced with the newLock, so the owner of the lock for
+   * that key is newLock.owner
+   *
+   * c) If scenario b, but lock is not expired yet, should throw an LockPersistenceException.
+   *
+   * d) If there isn't any lock with key=newLock.key, newLock is inserted.
    *
    * @param newLock lock to replace the existing one or be inserted.
    * @throws LockPersistenceException if there is a lock in database with same key, but is expired and belong to
@@ -20,11 +28,14 @@ public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTI
   void insertUpdate(LockEntry newLock) throws LockPersistenceException;
 
   /**
-   * If there is a lock in the database with the same key and owner, updates it.Otherwise throws a LockPersistenceException
+   * The only goal of this method is to update(mainly to extend the expiry date) the lock in case is already owned. So
+   * it requires a Lock for the same key and owner(existingLock.key==newLock.key && existingLoc.owner==newLock.owner).
    *
-   * @param newLock lock to replace the existing one.
-   * @throws LockPersistenceException if there is no lock in the database with the same key and owner or cannot update
-   *                                  the lock for any other reason
+   * If there is no lock for the key or it doesn't belong to newLock.owner, a LockPersistenceException is thrown.
+   *
+   * @param newLock lock to replace the existing one or be inserted.
+   * @throws LockPersistenceException if there is a lock in database with same key, but is expired and belong to
+   *                                  another owner or cannot insert/update the lock for any other reason
    */
   void updateIfSameOwner(LockEntry newLock) throws LockPersistenceException;
 
