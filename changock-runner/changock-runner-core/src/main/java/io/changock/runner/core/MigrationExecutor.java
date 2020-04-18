@@ -94,7 +94,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
   protected  void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     try {
-      if (driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor()) || changeSetItem.isRunAlways()) {
+      if (changeSetItem.isRunAlways() || driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor())) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
 
@@ -132,8 +132,8 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
     }
   }
 
-  protected ChangeEntry createChangeEntryInstance(String executionId, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState executed) {
-    return ChangeEntry.createInstance(executionId, executed, changeSetItem, executionTimeMillis, metadata);
+  protected ChangeEntry createChangeEntryInstance(String executionId, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {
+    return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, metadata);
   }
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
