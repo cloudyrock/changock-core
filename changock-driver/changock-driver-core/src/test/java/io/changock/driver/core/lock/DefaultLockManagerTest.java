@@ -86,7 +86,7 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = 0L;
-    doThrow(new LockPersistenceException("Faked"))
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail"))
         .doNothing()
         .when(lockRepository).insertUpdate(any(LockEntry.class));
 
@@ -112,7 +112,7 @@ public class DefaultLockManagerTest {
     lockManager.setLockMaxTries(1);
     long expiresAt = 3000L;
     long waitingTime = 1000L;
-    doThrow(new LockPersistenceException("Faked"))
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail"))
         .doNothing()
         .when(lockRepository).insertUpdate(any(LockEntry.class));
 
@@ -142,7 +142,7 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1000L;
-    doThrow(new LockPersistenceException("Faked"))
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail"))
         .doNothing()
         .when(lockRepository).insertUpdate(any(LockEntry.class));
 
@@ -174,7 +174,7 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = maxWaitMillis + 1;
-    doThrow(new LockPersistenceException("Faked")).when(lockRepository).insertUpdate(any(LockEntry.class));
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).when(lockRepository).insertUpdate(any(LockEntry.class));
 
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
     Date newExpirationAt = new Date(100000L);
@@ -205,7 +205,7 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1;
-    doThrow(new LockPersistenceException("Faked")).when(lockRepository).insertUpdate(any(LockEntry.class));
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).when(lockRepository).insertUpdate(any(LockEntry.class));
 
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
     Date newExpirationAt = new Date(100000L);
@@ -275,7 +275,7 @@ public class DefaultLockManagerTest {
     long waitingTime = 1000L;
 
     doNothing().when(lockRepository).insertUpdate(any(LockEntry.class));
-    doThrow(new LockPersistenceException("Faked")).doNothing().when(lockRepository).updateIfSameOwner(any(LockEntry.class));
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).doNothing().when(lockRepository).updateIfSameOwner(any(LockEntry.class));
 
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
     Date newExpirationAt = new Date(100000L);
@@ -298,7 +298,7 @@ public class DefaultLockManagerTest {
     long expiresAt = 3000L;
     long waitingTime = 1000L;
     doNothing().when(lockRepository).insertUpdate(any(LockEntry.class));
-    doThrow(new LockPersistenceException("Faked")).doNothing()
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).doNothing()
         .when(lockRepository).updateIfSameOwner(any(LockEntry.class));
 
     when(lockRepository.findByKey(anyString()))
@@ -326,7 +326,7 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1;
-    doThrow(new LockPersistenceException("Faked")).when(lockRepository).updateIfSameOwner(any(LockEntry.class));
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).when(lockRepository).updateIfSameOwner(any(LockEntry.class));
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithSameOwner(expiresAt));
     Date newExpirationAt = new Date(100000L);
     when(timeUtils.currentTimePlusMillis(anyLong())).thenReturn(newExpirationAt);

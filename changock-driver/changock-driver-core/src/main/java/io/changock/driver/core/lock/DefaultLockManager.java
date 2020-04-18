@@ -211,7 +211,7 @@ public class DefaultLockManager implements LockManager {
     return this;
   }
 
-  private void handleLockException(boolean acquiringLock, Exception ex) {
+  private void handleLockException(boolean acquiringLock, LockPersistenceException ex) {
 
     this.tries++;
     if (this.tries >= lockMaxTries) {
