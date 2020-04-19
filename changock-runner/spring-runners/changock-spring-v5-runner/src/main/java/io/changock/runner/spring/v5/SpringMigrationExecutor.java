@@ -17,8 +17,8 @@ public class SpringMigrationExecutor extends MigrationExecutor {
     }
 
     @Override
-    public void runValidation() throws ChangockException {
-        super.runValidation();
+    public void initializationAndValidation() throws ChangockException {
+        super.initializationAndValidation();
         ((SpringDependencyManager) this.dependencyManager).runValidation();
     }
 }

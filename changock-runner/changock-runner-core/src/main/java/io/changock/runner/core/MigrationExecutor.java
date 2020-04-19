@@ -7,7 +7,6 @@ import static io.changock.driver.api.entry.ChangeState.FAILED;
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
-import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
@@ -27,7 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @NotThreadSafe
-public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Validable {
+public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutor.class);
 
@@ -58,8 +57,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
   }
 
   public void executeMigration(List<ChangeLogItem> changeLogs) {
-    initialize();
-    runValidation();
+    initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       lockManager.acquireLockDefault();
       String executionId = generateExecutionId();
@@ -80,18 +78,11 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
     }
   }
 
-  protected void initialize() {
-    this.executionInProgress = true;
-    driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
-    driver.initialize();
-    this.dependencyManager.addConnectorDependency(driver.getDependencies());
-  }
-
   protected String generateExecutionId() {
     return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
   }
 
-  protected  void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     try {
       if (changeSetItem.isRunAlways() || driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor())) {
@@ -106,7 +97,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
       changeEntry = createChangeEntryInstance(executionId, changeSetItem, -1L, FAILED);
       throw ex;
     } finally {
-      if(changeEntry != null) {
+      if (changeEntry != null) {
         logChangeEntry(changeEntry, changeSetItem);
         driver.getChangeEntryService().save(changeEntry);
       }
@@ -116,7 +107,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
   protected void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem) {
     switch (changeEntry.getState()) {
       case EXECUTED:
-        if(changeSetItem.isRunAlways()) {
+        if (changeSetItem.isRunAlways()) {
           logger.info("RE-APPLIED - {}", changeEntry);
 
         } else {
@@ -155,16 +146,16 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
   protected void processExceptionOnChangeSetExecution(Exception exception, boolean throwException) {
     String message;
     if (exception instanceof InvocationTargetException) {
-      message =  ((InvocationTargetException)exception).getTargetException().getMessage();
+      message = ((InvocationTargetException) exception).getTargetException().getMessage();
 
     } else if (exception instanceof DependencyInjectionException) {
-      DependencyInjectionException ex = (DependencyInjectionException)exception;
+      DependencyInjectionException ex = (DependencyInjectionException) exception;
       message = String.format("Method[%s] using argument[%s] not injected", ex.getMethod(), ex.getParameterType());
 
     } else {
       message = exception.getMessage();
     }
-    if(throwException)  {
+    if (throwException) {
       throw new ChangockException(message, exception);
 
     } else {
@@ -172,8 +163,11 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> implements Vali
     }
   }
 
-  @Override
-  public void runValidation() throws ChangockException {
+  protected void initializationAndValidation() throws ChangockException {
+    this.executionInProgress = true;
+    driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
+    driver.initialize();
     driver.runValidation();
+    this.dependencyManager.addConnectorDependency(driver.getDependencies());
   }
 }
