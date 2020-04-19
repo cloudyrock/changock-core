@@ -1,4 +1,4 @@
-package io.changock.driver.core.decorator;
+package io.changock.driver.core.interceptor.decorator;
 
 import io.changock.driver.api.lock.LockManager;
 

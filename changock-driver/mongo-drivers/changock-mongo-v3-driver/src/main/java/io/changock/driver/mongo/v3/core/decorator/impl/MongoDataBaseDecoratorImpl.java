@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.MongoDatabase;
-import io.changock.driver.core.decorator.MethodInvoker;
+import io.changock.driver.core.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.MongoDatabaseDecorator;
 
 public class MongoDataBaseDecoratorImpl implements MongoDatabaseDecorator {

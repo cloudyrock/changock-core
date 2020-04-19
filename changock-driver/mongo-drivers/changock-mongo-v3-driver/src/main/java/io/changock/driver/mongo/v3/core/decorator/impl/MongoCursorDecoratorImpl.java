@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.MongoCursor;
-import io.changock.driver.core.decorator.MethodInvoker;
+import io.changock.driver.core.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.MongoCursorDecorator;
 
 public class MongoCursorDecoratorImpl<T> implements MongoCursorDecorator<T> {

@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.springdata.v2.decorator.impl;
 
-import io.changock.driver.core.decorator.MethodInvoker;
+import io.changock.driver.core.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.IndexOperationsProviderDecorator;
 import org.springframework.data.mongodb.core.index.IndexOperationsProvider;
 

@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.springdata.v2.decorator;
 
-import io.changock.driver.core.decorator.MethodInvoker;
+import io.changock.driver.core.interceptor.decorator.MethodInvoker;
 import org.springframework.data.mongodb.core.ScriptOperations;
 import org.springframework.data.mongodb.core.script.ExecutableMongoScript;
 import org.springframework.data.mongodb.core.script.NamedMongoScript;

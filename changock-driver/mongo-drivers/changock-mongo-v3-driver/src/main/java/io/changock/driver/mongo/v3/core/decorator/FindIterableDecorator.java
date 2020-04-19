@@ -9,7 +9,7 @@ import org.bson.conversions.Bson;
 import java.util.concurrent.TimeUnit;
 
 /*
-None of the methods in this class need to be re-wrapped in a decorator because it's returning the instance
+None of the methods in this class need to be re-wrapped in a interceptor because it's returning the instance
 itself.
 They neither need to be encapsulated with the invoker because they don't hit the database.
  */

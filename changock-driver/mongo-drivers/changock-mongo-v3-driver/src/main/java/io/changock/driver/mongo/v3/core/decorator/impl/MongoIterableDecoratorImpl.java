@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.MongoIterable;
-import io.changock.driver.core.decorator.MethodInvoker;
+import io.changock.driver.core.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.MongoIterableDecorator;
 
 public class MongoIterableDecoratorImpl<T> implements MongoIterableDecorator<T> {
