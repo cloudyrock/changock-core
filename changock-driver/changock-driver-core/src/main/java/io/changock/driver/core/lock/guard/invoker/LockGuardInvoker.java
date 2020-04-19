@@ -4,11 +4,11 @@ import io.changock.driver.api.lock.LockManager;
 
 import java.util.function.Supplier;
 
-public class LockMethodInvoker implements MethodInvoker {
+public class LockGuardInvoker implements MethodInvoker {
 
   private final LockManager lockManager;
 
-  public LockMethodInvoker(LockManager lockManager) {
+  public LockGuardInvoker(LockManager lockManager) {
     this.lockManager = lockManager;
   }
 

@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.core.lock.guard.invoker.LockMethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.MongoTemplateDecoratorImpl;
 import io.changock.driver.mongo.v3.core.driver.ChangockMongoDriver;
 import io.changock.migration.api.exception.ChangockException;
@@ -47,7 +47,7 @@ public class ChangockSpringDataMongoDriver extends ChangockMongoDriver {
         MongoTemplate mongoTemplateDecorator = new MongoTemplateDecoratorImpl(
                 mongoTemplate.getMongoDbFactory(),
                 mongoTemplate.getConverter(),
-                new LockMethodInvoker(this.getLockManager()));
+                new LockGuardInvoker(this.getLockManager()));
         dependencies.add(new ChangeSetDependency(MongoTemplate.class, mongoTemplateDecorator));
         return dependencies;
     }

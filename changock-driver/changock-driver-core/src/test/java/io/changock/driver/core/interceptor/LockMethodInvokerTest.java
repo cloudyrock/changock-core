@@ -2,7 +2,7 @@ package io.changock.driver.core.interceptor;
 
 
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.core.lock.guard.invoker.LockMethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.core.lock.guard.invoker.VoidSupplier;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -21,7 +21,7 @@ public class LockMethodInvokerTest {
     Supplier supplierMock = Mockito.mock(Supplier.class);
 
     // when
-    new LockMethodInvoker(lockManagerMock).invoke(supplierMock);
+    new LockGuardInvoker(lockManagerMock).invoke(supplierMock);
 
     //then
     Mockito.verify(lockManagerMock, new Times(1)).ensureLockDefault();
@@ -36,7 +36,7 @@ public class LockMethodInvokerTest {
     VoidSupplier supplierMock = Mockito.mock(VoidSupplier.class);
 
     // when
-    new LockMethodInvoker(lockManagerMock).invoke(supplierMock);
+    new LockGuardInvoker(lockManagerMock).invoke(supplierMock);
 
     //then
     Mockito.verify(lockManagerMock, new Times(1)).ensureLockDefault();
