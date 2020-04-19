@@ -7,7 +7,7 @@ import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.driver.ConnectionDriverBase;
 import io.changock.driver.core.lock.LockRepository;
-import io.changock.driver.core.lock.interceptor.decorator.LockMethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockMethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoDataBaseDecoratorImpl;
 import io.changock.driver.mongo.v3.core.repository.MongoLockRepository;
 import io.changock.migration.api.exception.ChangockException;

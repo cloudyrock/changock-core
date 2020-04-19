@@ -12,7 +12,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.CreateViewOptions;
-import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.AggregateIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.ChangeStreamIterableDecoratorImple;
 import io.changock.driver.mongo.v3.core.decorator.impl.ListCollectionsIterableDecoratorImpl;

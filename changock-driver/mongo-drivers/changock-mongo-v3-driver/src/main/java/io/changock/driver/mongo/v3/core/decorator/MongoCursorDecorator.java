@@ -3,7 +3,7 @@ package io.changock.driver.mongo.v3.core.decorator;
 import com.mongodb.ServerAddress;
 import com.mongodb.ServerCursor;
 import com.mongodb.client.MongoCursor;
-import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
 
 public interface MongoCursorDecorator<T> extends MongoCursor<T> {
 

@@ -1,4 +1,4 @@
-package io.changock.driver.core.lock.interceptor.proxy;
+package io.changock.driver.core.lock.guard.proxy;
 
 import io.changock.driver.api.lock.LockManager;
 

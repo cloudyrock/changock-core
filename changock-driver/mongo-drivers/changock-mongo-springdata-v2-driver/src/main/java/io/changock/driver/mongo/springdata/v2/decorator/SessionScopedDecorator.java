@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.decorator;
 
 import com.mongodb.client.ClientSession;
-import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.ClientSessionDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.SessionCallbackDecoratorImpl;
 import org.springframework.data.mongodb.core.SessionCallback;

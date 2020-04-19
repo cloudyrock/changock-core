@@ -1,8 +1,8 @@
 package io.changock.driver.mongo.springdata.v2.driver;
 
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
-import io.changock.driver.core.lock.interceptor.decorator.VoidSupplier;
+import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.VoidSupplier;
 
 import java.util.function.Supplier;
 

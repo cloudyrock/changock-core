@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.decorator;
 
 import com.mongodb.bulk.BulkWriteResult;
-import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.BulkOperationsDecoratorImpl;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.FindAndReplaceOptions;

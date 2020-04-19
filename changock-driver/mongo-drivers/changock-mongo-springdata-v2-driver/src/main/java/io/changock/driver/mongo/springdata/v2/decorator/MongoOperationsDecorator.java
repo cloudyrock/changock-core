@@ -6,7 +6,7 @@ import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.BulkOperationsDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.CloseableIteratorDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.IndexOperationsDecoratorImpl;
@@ -517,7 +517,7 @@ public interface MongoOperationsDecorator extends MongoOperations {
         return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement, options, entityType, collectionName, resultType));
     }
 
-    //TODO create interceptor for MapReduceWithMapFunction
+    //TODO create guard for MapReduceWithMapFunction
     @Override
     default <T> MapReduceWithMapFunction<T> mapReduce(Class<T> domainType) {
         return getInvoker().invoke(() -> new MapReduceWithMapFunctionDecoratorImpl<>(getImpl().mapReduce(domainType), getInvoker()));
@@ -559,7 +559,7 @@ public interface MongoOperationsDecorator extends MongoOperations {
     }
 
 
-    //TODO create interceptor for sessionScoped
+    //TODO create guard for sessionScoped
     @Override
     default SessionScoped withSession(ClientSessionOptions sessionOptions) {
         return getImpl().withSession(sessionOptions);//todo remove this
