@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.ChangeStreamIterable;
-import io.changock.driver.core.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.ChangeStreamIterableDecorator;
 
 public class ChangeStreamIterableDecoratorImple<T> implements ChangeStreamIterableDecorator<T> {

@@ -9,7 +9,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import io.changock.driver.core.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoCollectionDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoDataBaseDecoratorImpl;
 import org.bson.Document;

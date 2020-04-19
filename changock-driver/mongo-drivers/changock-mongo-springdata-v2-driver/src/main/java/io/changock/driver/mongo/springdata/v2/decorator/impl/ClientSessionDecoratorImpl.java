@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.decorator.impl;
 
 import com.mongodb.client.ClientSession;
-import io.changock.driver.core.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.ClientSessionDecorator;
 
 public class ClientSessionDecoratorImpl implements ClientSessionDecorator {

@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.v3.core.decorator;
 
-import io.changock.driver.core.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
 
 import java.util.Iterator;
 

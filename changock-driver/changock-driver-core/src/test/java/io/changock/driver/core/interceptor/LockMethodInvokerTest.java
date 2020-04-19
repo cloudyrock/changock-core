@@ -2,8 +2,8 @@ package io.changock.driver.core.interceptor;
 
 
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.core.interceptor.decorator.LockMethodInvoker;
-import io.changock.driver.core.interceptor.decorator.VoidSupplier;
+import io.changock.driver.core.lock.interceptor.decorator.LockMethodInvoker;
+import io.changock.driver.core.lock.interceptor.decorator.VoidSupplier;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;

@@ -6,7 +6,7 @@ import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import io.changock.driver.core.interceptor.decorator.MethodInvoker;
+import io.changock.driver.core.lock.interceptor.decorator.MethodInvoker;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.BulkOperationsDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.CloseableIteratorDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.decorator.impl.IndexOperationsDecoratorImpl;
