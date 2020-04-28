@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.integration.test3;
 
 import com.mongodb.client.MongoDatabase;
-import io.changock.driver.mongo.springdata.v2.decorator.impl.MongoTemplateDecoratorImpl;
+import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.MongoTemplateDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.util.CallVerifier;
 import io.changock.driver.mongo.v3.core.decorator.MongoDatabaseDecorator;
 import io.changock.migration.api.annotations.ChangeLog;
