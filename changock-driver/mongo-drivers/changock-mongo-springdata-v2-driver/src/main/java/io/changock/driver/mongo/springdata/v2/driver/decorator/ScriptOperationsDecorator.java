@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ScriptOperations;
 import org.springframework.data.mongodb.core.script.ExecutableMongoScript;
 import org.springframework.data.mongodb.core.script.NamedMongoScript;
@@ -12,7 +12,7 @@ public interface ScriptOperationsDecorator extends ScriptOperations {
 
     ScriptOperations getImpl();
 
-    MethodInvoker getInvoker();
+    LockGuardInvoker getInvoker();
 
 
     @Override

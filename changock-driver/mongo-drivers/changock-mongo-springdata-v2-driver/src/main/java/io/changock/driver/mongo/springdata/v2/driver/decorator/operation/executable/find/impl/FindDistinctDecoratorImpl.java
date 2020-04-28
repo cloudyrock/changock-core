@@ -1,16 +1,16 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.FindDistinctDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 
 public class FindDistinctDecoratorImpl implements FindDistinctDecorator {
 
   private final ExecutableFindOperation.FindDistinct impl;
 
-  private final MethodInvoker invoker;
+  private final LockGuardInvoker invoker;
 
-  public FindDistinctDecoratorImpl(ExecutableFindOperation.FindDistinct impl, MethodInvoker invoker) {
+  public FindDistinctDecoratorImpl(ExecutableFindOperation.FindDistinct impl, LockGuardInvoker invoker) {
     this.impl = impl;
     this.invoker = invoker;
   }
@@ -21,7 +21,7 @@ public class FindDistinctDecoratorImpl implements FindDistinctDecorator {
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return invoker;
   }
 }

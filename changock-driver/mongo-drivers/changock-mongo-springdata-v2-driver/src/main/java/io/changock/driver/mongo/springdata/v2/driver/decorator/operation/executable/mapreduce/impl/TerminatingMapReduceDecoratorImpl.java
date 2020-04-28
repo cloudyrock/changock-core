@@ -1,17 +1,17 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.TerminatingMapReduceDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableMapReduceOperation;
 
 public class TerminatingMapReduceDecoratorImpl<T> implements TerminatingMapReduceDecorator<T> {
 
     private final ExecutableMapReduceOperation.TerminatingMapReduce<T> impl;
-    private final MethodInvoker invoker;
+    private final LockGuardInvoker invoker;
 
-    public TerminatingMapReduceDecoratorImpl(ExecutableMapReduceOperation.TerminatingMapReduce<T> implementation, MethodInvoker methodInvoker) {
+    public TerminatingMapReduceDecoratorImpl(ExecutableMapReduceOperation.TerminatingMapReduce<T> implementation, LockGuardInvoker lockGuardInvoker) {
         this.impl = implementation;
-        this.invoker = methodInvoker;
+        this.invoker = lockGuardInvoker;
     }
     @Override
     public ExecutableMapReduceOperation.TerminatingMapReduce<T> getImpl() {
@@ -19,7 +19,7 @@ public class TerminatingMapReduceDecoratorImpl<T> implements TerminatingMapReduc
     }
 
     @Override
-    public MethodInvoker getInvoker() {
+    public LockGuardInvoker getInvoker() {
         return invoker;
     }
 }

@@ -3,13 +3,13 @@ package io.changock.driver.mongo.v3.core.decorator;
 import com.mongodb.ServerAddress;
 import com.mongodb.ServerCursor;
 import com.mongodb.client.MongoCursor;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 
 public interface MongoCursorDecorator<T> extends MongoCursor<T> {
 
   MongoCursor<T> getImpl();
 
-  MethodInvoker getInvoker();
+  LockGuardInvoker getInvoker();
 
   @Override
   default void close() {

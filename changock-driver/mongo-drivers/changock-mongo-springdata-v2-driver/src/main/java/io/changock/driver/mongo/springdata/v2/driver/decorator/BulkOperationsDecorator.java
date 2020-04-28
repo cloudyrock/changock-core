@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.BulkOperationsDecoratorImpl;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.bulk.BulkWriteResult;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.FindAndReplaceOptions;
@@ -15,7 +15,7 @@ public interface BulkOperationsDecorator extends BulkOperations {
 
     BulkOperations getImpl();
 
-    MethodInvoker getInvoker();
+    LockGuardInvoker getInvoker();
 
     @Override
     default BulkOperations insert(Object documents) {

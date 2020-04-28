@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.MongoOperationsDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.MongoOperations;
 
 public class MongoOperationsDecoratorImpl implements MongoOperationsDecorator {
 
     private final MongoOperations impl;
-    private final MethodInvoker invoker;
+    private final LockGuardInvoker invoker;
 
-    public MongoOperationsDecoratorImpl(MongoOperations impl, MethodInvoker invoker) {
+    public MongoOperationsDecoratorImpl(MongoOperations impl, LockGuardInvoker invoker) {
         this.impl = impl;
         this.invoker = invoker;
     }
@@ -20,7 +20,7 @@ public class MongoOperationsDecoratorImpl implements MongoOperationsDecorator {
     }
 
     @Override
-    public MethodInvoker getInvoker() {
+    public LockGuardInvoker getInvoker() {
         return invoker;
     }
 }

@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.ClientSessionDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.client.ClientSession;
 
 public class ClientSessionDecoratorImpl implements ClientSessionDecorator {
 
     private final ClientSession impl;
-    private final MethodInvoker invoker;
+    private final LockGuardInvoker invoker;
 
-    public ClientSessionDecoratorImpl(ClientSession impl, MethodInvoker invoker) {
+    public ClientSessionDecoratorImpl(ClientSession impl, LockGuardInvoker invoker) {
         this.impl = impl;
         this.invoker = invoker;
     }
@@ -19,7 +19,7 @@ public class ClientSessionDecoratorImpl implements ClientSessionDecorator {
     }
 
     @Override
-    public MethodInvoker getInvoker() {
+    public LockGuardInvoker getInvoker() {
         return invoker;
     }
 }

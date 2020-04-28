@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.ServerAddress;
 import com.mongodb.TransactionOptions;
@@ -13,7 +13,7 @@ import org.bson.BsonTimestamp;
 public interface ClientSessionDecorator extends ClientSession {
 
     ClientSession getImpl();
-    MethodInvoker getInvoker();
+    LockGuardInvoker getInvoker();
 
     @Override
     default ServerAddress getPinnedServerAddress() {

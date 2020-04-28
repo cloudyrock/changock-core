@@ -2,7 +2,7 @@ package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.ClientSessionDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.SessionCallbackDecoratorImpl;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.client.ClientSession;
 import org.springframework.data.mongodb.core.SessionCallback;
 import org.springframework.data.mongodb.core.SessionScoped;
@@ -13,7 +13,7 @@ public interface SessionScopedDecorator extends SessionScoped {
 
     SessionScoped getImpl();
 
-    MethodInvoker getInvoker();
+    LockGuardInvoker getInvoker();
 
     @Override
     default  <T> T execute(SessionCallback<T> action, Consumer<ClientSession> doFinally) {

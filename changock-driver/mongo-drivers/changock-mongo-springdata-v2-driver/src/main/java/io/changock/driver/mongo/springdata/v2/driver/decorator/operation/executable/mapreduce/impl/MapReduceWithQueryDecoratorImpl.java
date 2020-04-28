@@ -1,17 +1,17 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.MapReduceWithQueryDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableMapReduceOperation;
 
 public class MapReduceWithQueryDecoratorImpl<T> implements MapReduceWithQueryDecorator<T> {
 
-    private final MethodInvoker invoker;
+    private final LockGuardInvoker invoker;
     private final ExecutableMapReduceOperation.MapReduceWithQuery<T> impl;
 
-    public MapReduceWithQueryDecoratorImpl(ExecutableMapReduceOperation.MapReduceWithQuery<T> impl, MethodInvoker methodInvoker) {
+    public MapReduceWithQueryDecoratorImpl(ExecutableMapReduceOperation.MapReduceWithQuery<T> impl, LockGuardInvoker lockGuardInvoker) {
         this.impl = impl;
-        this.invoker = methodInvoker;
+        this.invoker = lockGuardInvoker;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class MapReduceWithQueryDecoratorImpl<T> implements MapReduceWithQueryDec
     }
 
     @Override
-    public MethodInvoker getInvoker() {
+    public LockGuardInvoker getInvoker() {
         return invoker;
     }
 }

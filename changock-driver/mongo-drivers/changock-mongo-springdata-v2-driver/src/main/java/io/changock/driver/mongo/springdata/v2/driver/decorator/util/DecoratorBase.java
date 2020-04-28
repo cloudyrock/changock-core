@@ -1,18 +1,18 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.util;
 
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 
 public abstract class DecoratorBase<T> implements Invokable {
 
-  private final MethodInvoker invoker;
+  private final LockGuardInvoker invoker;
   private final T impl;
 
-  public DecoratorBase(T impl, MethodInvoker invoker) {
+  public DecoratorBase(T impl, LockGuardInvoker invoker) {
     this.invoker = invoker;
     this.impl = impl;
   }
 
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return invoker;
   }
 

@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.TerminatingDistinctDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 
 public class TerminatingDistinctDecoratorImpl<T> implements TerminatingDistinctDecorator<T> {
 
   private final ExecutableFindOperation.TerminatingDistinct<T> impl;
-  private final MethodInvoker invoker;
+  private final LockGuardInvoker invoker;
 
-  public TerminatingDistinctDecoratorImpl(ExecutableFindOperation.TerminatingDistinct<T> impl, MethodInvoker invoker) {
+  public TerminatingDistinctDecoratorImpl(ExecutableFindOperation.TerminatingDistinct<T> impl, LockGuardInvoker invoker) {
     this.impl = impl;
     this.invoker = invoker;
   }
@@ -20,7 +20,7 @@ public class TerminatingDistinctDecoratorImpl<T> implements TerminatingDistinctD
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return invoker;
   }
 }

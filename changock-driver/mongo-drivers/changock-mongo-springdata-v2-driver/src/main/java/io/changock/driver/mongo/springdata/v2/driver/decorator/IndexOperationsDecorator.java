@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
 import org.springframework.data.mongodb.core.index.IndexInfo;
 import org.springframework.data.mongodb.core.index.IndexOperations;
@@ -11,7 +11,7 @@ public interface IndexOperationsDecorator extends IndexOperations {
 
     IndexOperations getImpl();
 
-    MethodInvoker getInvoker();
+    LockGuardInvoker getInvoker();
 
     @Override
     default String ensureIndex(IndexDefinition indexDefinition) {

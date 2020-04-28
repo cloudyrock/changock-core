@@ -7,7 +7,7 @@ import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executa
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.remove.impl.ExecutableRemoveDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.ExecutableUpdateDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.util.DecoratorBase;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
@@ -62,7 +62,7 @@ import java.util.function.Supplier;
 public class MongockTemplate extends DecoratorBase<MongoTemplate> implements MongoOperations, ApplicationContextAware, IndexOperationsProvider {
 
 
-  public MongockTemplate(MongoTemplate impl, MethodInvoker invoker) {
+  public MongockTemplate(MongoTemplate impl, LockGuardInvoker invoker) {
     super(impl, invoker);
   }
 

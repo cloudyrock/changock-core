@@ -12,7 +12,7 @@ import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executa
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.impl.MapReduceWithMapFunctionDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.remove.impl.ExecutableRemoveDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.ExecutableUpdateDecoratorImpl;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.ReadPreference;
 import com.mongodb.client.ClientSession;
@@ -56,7 +56,7 @@ public interface MongoOperationsDecorator extends MongoOperations {
 
     MongoOperations getImpl();
 
-    MethodInvoker getInvoker();
+    LockGuardInvoker getInvoker();
 
 
     @Override

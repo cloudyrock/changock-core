@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.SessionScopedDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.SessionScoped;
 
 public class SessionScopedDecoratorImpl implements SessionScopedDecorator {
 
     private final SessionScoped impl;
-    private final MethodInvoker invoker;
+    private final LockGuardInvoker invoker;
 
-    public SessionScopedDecoratorImpl(SessionScoped impl, MethodInvoker invoker) {
+    public SessionScopedDecoratorImpl(SessionScoped impl, LockGuardInvoker invoker) {
         this.impl = impl;
         this.invoker = invoker;
     }
@@ -19,7 +19,7 @@ public class SessionScopedDecoratorImpl implements SessionScopedDecorator {
     }
 
     @Override
-    public MethodInvoker getInvoker() {
+    public LockGuardInvoker getInvoker() {
         return invoker;
     }
 }

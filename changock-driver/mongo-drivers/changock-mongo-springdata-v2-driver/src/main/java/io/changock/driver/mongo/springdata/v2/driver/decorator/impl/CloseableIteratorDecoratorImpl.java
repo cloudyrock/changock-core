@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.CloseableIteratorDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.util.CloseableIterator;
 
 public class CloseableIteratorDecoratorImpl<T> implements CloseableIteratorDecorator<T> {
 
-  private final MethodInvoker invoker;
+  private final LockGuardInvoker invoker;
   private final CloseableIterator<T> impl;
 
-  public CloseableIteratorDecoratorImpl(CloseableIterator<T> implementation, MethodInvoker invoker) {
+  public CloseableIteratorDecoratorImpl(CloseableIterator<T> implementation, LockGuardInvoker invoker) {
     this.impl = implementation;
     this.invoker = invoker;
   }
@@ -20,7 +20,7 @@ public class CloseableIteratorDecoratorImpl<T> implements CloseableIteratorDecor
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return invoker;
   }
 

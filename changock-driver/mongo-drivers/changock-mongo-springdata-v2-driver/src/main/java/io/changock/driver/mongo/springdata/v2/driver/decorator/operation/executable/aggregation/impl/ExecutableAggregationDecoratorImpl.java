@@ -2,13 +2,13 @@ package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.execut
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.aggregation.ExecutableAggregationDecorator;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.util.DecoratorBase;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableAggregationOperation;
 
 public class ExecutableAggregationDecoratorImpl<T>
     extends DecoratorBase<ExecutableAggregationOperation.ExecutableAggregation<T>>
     implements ExecutableAggregationDecorator<T> {
-  public ExecutableAggregationDecoratorImpl(ExecutableAggregationOperation.ExecutableAggregation<T> impl, MethodInvoker invoker) {
+  public ExecutableAggregationDecoratorImpl(ExecutableAggregationOperation.ExecutableAggregation<T> impl, LockGuardInvoker invoker) {
     super(impl, invoker);
   }
 }

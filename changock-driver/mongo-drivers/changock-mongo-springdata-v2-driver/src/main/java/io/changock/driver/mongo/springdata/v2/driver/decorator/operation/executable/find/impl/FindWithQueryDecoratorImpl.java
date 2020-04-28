@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.FindWithQueryDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 
 public class FindWithQueryDecoratorImpl<T> implements FindWithQueryDecorator<T> {
 
   private final ExecutableFindOperation.FindWithQuery<T> impl;
-  private final MethodInvoker invoker;
+  private final LockGuardInvoker invoker;
 
-  public FindWithQueryDecoratorImpl(ExecutableFindOperation.FindWithQuery<T> impl, MethodInvoker invoker) {
+  public FindWithQueryDecoratorImpl(ExecutableFindOperation.FindWithQuery<T> impl, LockGuardInvoker invoker) {
     this.impl = impl;
     this.invoker = invoker;
   }
@@ -20,7 +20,7 @@ public class FindWithQueryDecoratorImpl<T> implements FindWithQueryDecorator<T> 
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return invoker;
   }
 }

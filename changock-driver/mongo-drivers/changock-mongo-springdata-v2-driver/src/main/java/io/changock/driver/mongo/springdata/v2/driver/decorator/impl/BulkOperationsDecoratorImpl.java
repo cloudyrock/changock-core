@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.BulkOperationsDecorator;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.BulkOperations;
 
 public class BulkOperationsDecoratorImpl implements BulkOperationsDecorator {
 
     private final BulkOperations impl;
-    private final MethodInvoker invoker;
+    private final LockGuardInvoker invoker;
 
-    public BulkOperationsDecoratorImpl(BulkOperations impl, MethodInvoker invoker) {
+    public BulkOperationsDecoratorImpl(BulkOperations impl, LockGuardInvoker invoker) {
         this.impl = impl;
         this.invoker = invoker;
     }
@@ -19,7 +19,7 @@ public class BulkOperationsDecoratorImpl implements BulkOperationsDecorator {
     }
 
     @Override
-    public MethodInvoker getInvoker() {
+    public LockGuardInvoker getInvoker() {
         return invoker;
     }
 }

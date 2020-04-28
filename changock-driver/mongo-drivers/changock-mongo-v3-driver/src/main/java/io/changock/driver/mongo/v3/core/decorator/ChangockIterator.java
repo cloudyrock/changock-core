@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.v3.core.decorator;
 
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 
 import java.util.Iterator;
 
@@ -8,7 +8,7 @@ public interface ChangockIterator<T> extends Iterator<T> {
 
   Iterator<T> getImpl();
 
-  MethodInvoker getInvoker();
+  LockGuardInvoker getInvoker();
 
   @Override
   default boolean hasNext() {

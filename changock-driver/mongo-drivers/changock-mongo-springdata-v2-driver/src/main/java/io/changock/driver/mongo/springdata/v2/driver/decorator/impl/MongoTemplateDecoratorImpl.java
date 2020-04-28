@@ -6,7 +6,7 @@ import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executa
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.impl.ExecutableMapReduceDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.remove.impl.ExecutableRemoveDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.ExecutableUpdateDecoratorImpl;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.MongoClient;
 import com.mongodb.ReadPreference;
@@ -65,41 +65,41 @@ import java.util.function.Supplier;
 public class MongoTemplateDecoratorImpl extends MongoTemplate implements MongoOperations, ApplicationContextAware, IndexOperationsProvider {
 
 
-  private final MethodInvoker methodInvoker;
-  private static MethodInvoker defaultMethodInvoker;
+  private final LockGuardInvoker lockGuardInvoker;
+  private static LockGuardInvoker defaultLockGuardInvoker;
 
-  public static void setDefaultMethodInvoker(MethodInvoker defaultMethodInvoker) {
-    MongoTemplateDecoratorImpl.defaultMethodInvoker = defaultMethodInvoker;
+  public static void setDefaultLockGuardInvoker(LockGuardInvoker defaultLockGuardInvoker) {
+    MongoTemplateDecoratorImpl.defaultLockGuardInvoker = defaultLockGuardInvoker;
   }
 
   @Deprecated
-  public MongoTemplateDecoratorImpl(MongoClient mongoClient, String databaseName, MethodInvoker methodInvoker) {
-    this(new MongoDbFactoryDecoratorImpl(new SimpleMongoDbFactory(mongoClient, databaseName), methodInvoker), methodInvoker);
+  public MongoTemplateDecoratorImpl(MongoClient mongoClient, String databaseName, LockGuardInvoker lockGuardInvoker) {
+    this(new MongoDbFactoryDecoratorImpl(new SimpleMongoDbFactory(mongoClient, databaseName), lockGuardInvoker), lockGuardInvoker);
   }
 
 
-  public MongoTemplateDecoratorImpl(com.mongodb.client.MongoClient mongoClient, String databaseName, MethodInvoker methodInvoker) {
-    this(new MongoDbFactoryDecoratorImpl(new SimpleMongoClientDbFactory(mongoClient, databaseName), methodInvoker), methodInvoker);
+  public MongoTemplateDecoratorImpl(com.mongodb.client.MongoClient mongoClient, String databaseName, LockGuardInvoker lockGuardInvoker) {
+    this(new MongoDbFactoryDecoratorImpl(new SimpleMongoClientDbFactory(mongoClient, databaseName), lockGuardInvoker), lockGuardInvoker);
   }
 
-  public MongoTemplateDecoratorImpl(MongoTemplate mongoTemplate, MethodInvoker methodInvoker) {
-    this(mongoTemplate.getMongoDbFactory(), mongoTemplate.getConverter(), methodInvoker);
+  public MongoTemplateDecoratorImpl(MongoTemplate mongoTemplate, LockGuardInvoker lockGuardInvoker) {
+    this(mongoTemplate.getMongoDbFactory(), mongoTemplate.getConverter(), lockGuardInvoker);
   }
 
-  public MongoTemplateDecoratorImpl(MongoDbFactory mongoDbFactory, MethodInvoker methodInvoker) {
-    this(new MongoDbFactoryDecoratorImpl(mongoDbFactory, methodInvoker), null, methodInvoker);
+  public MongoTemplateDecoratorImpl(MongoDbFactory mongoDbFactory, LockGuardInvoker lockGuardInvoker) {
+    this(new MongoDbFactoryDecoratorImpl(mongoDbFactory, lockGuardInvoker), null, lockGuardInvoker);
   }
 
-  public MongoTemplateDecoratorImpl(MongoDbFactory mongoDbFactory, MongoConverter mongoConverter, MethodInvoker methodInvoker) {
-    super(new MongoDbFactoryDecoratorImpl(mongoDbFactory, methodInvoker), mongoConverter);
-    this.methodInvoker = methodInvoker;
+  public MongoTemplateDecoratorImpl(MongoDbFactory mongoDbFactory, MongoConverter mongoConverter, LockGuardInvoker lockGuardInvoker) {
+    super(new MongoDbFactoryDecoratorImpl(mongoDbFactory, lockGuardInvoker), mongoConverter);
+    this.lockGuardInvoker = lockGuardInvoker;
   }
 
 
 
   //This a temporally Hack needed because when it creates the decorator, it create the indexes with the own MongoTemplate
-  private MethodInvoker getInvoker() {
-    return methodInvoker != null ? methodInvoker : MongoTemplateDecoratorImpl.defaultMethodInvoker;
+  private LockGuardInvoker getInvoker() {
+    return lockGuardInvoker != null ? lockGuardInvoker : MongoTemplateDecoratorImpl.defaultLockGuardInvoker;
   }
 
 
