@@ -1,13 +1,12 @@
 package io.changock.driver.mongo.springdata.v2.integration.test3;
 
 import com.mongodb.client.MongoDatabase;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.MongoTemplateDecoratorImpl;
+import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.MongockTemplate;
 import io.changock.driver.mongo.springdata.v2.util.CallVerifier;
 import io.changock.driver.mongo.v3.core.decorator.MongoDatabaseDecorator;
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
 import org.junit.Assert;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 @ChangeLog
 public class ChangeLogEnsureDecorator {
@@ -18,8 +17,8 @@ public class ChangeLogEnsureDecorator {
   }
 
   @ChangeSet(author = "testuser", id = "ensure_mongo_template", order = "00")
-  public void ensureMongoTemplateDecorator(MongoTemplate mongoTemplate, CallVerifier callVerifier) {
-    Assert.assertTrue(MongoTemplateDecoratorImpl.class.isAssignableFrom(mongoTemplate.getClass()));
+  public void ensureMongoTemplateDecorator(MongockTemplate mongockTemplate, CallVerifier callVerifier) {
+    Assert.assertTrue(MongockTemplate.class.isAssignableFrom(mongockTemplate.getClass()));
     callVerifier.counter++;
   }
 
