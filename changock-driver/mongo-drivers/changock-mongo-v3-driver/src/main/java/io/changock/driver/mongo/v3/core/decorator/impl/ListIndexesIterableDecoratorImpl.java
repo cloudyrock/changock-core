@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.ListIndexesIterable;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.ListIndexesIterableDecorator;
 
 public class ListIndexesIterableDecoratorImpl<T> implements ListIndexesIterableDecorator<T> {
 
   private final ListIndexesIterable<T> impl;
-  private final MethodInvoker checker;
+  private final LockGuardInvoker checker;
 
-  public ListIndexesIterableDecoratorImpl(ListIndexesIterable<T> implementation, MethodInvoker lockerCheckInvoker) {
+  public ListIndexesIterableDecoratorImpl(ListIndexesIterable<T> implementation, LockGuardInvoker lockerCheckInvoker) {
     this.impl = implementation;
     this.checker = lockerCheckInvoker;
   }
@@ -20,7 +20,7 @@ public class ListIndexesIterableDecoratorImpl<T> implements ListIndexesIterableD
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return checker;
   }
 

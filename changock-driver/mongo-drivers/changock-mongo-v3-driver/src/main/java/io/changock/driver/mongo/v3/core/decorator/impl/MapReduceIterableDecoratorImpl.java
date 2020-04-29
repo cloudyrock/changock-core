@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.MapReduceIterable;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.MapReduceIterableDecorator;
 
 public class MapReduceIterableDecoratorImpl<T> implements MapReduceIterableDecorator<T> {
 
   private final MapReduceIterable<T> impl;
-  private final MethodInvoker checker;
+  private final LockGuardInvoker checker;
 
-  public MapReduceIterableDecoratorImpl(MapReduceIterable<T> implementation, MethodInvoker lockerCheckInvoker) {
+  public MapReduceIterableDecoratorImpl(MapReduceIterable<T> implementation, LockGuardInvoker lockerCheckInvoker) {
     this.impl = implementation;
     this.checker = lockerCheckInvoker;
   }
@@ -20,7 +20,7 @@ public class MapReduceIterableDecoratorImpl<T> implements MapReduceIterableDecor
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return checker;
   }
 }

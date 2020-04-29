@@ -32,7 +32,7 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.AggregateIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.ChangeStreamIterableDecoratorImple;
 import io.changock.driver.mongo.v3.core.decorator.impl.DistinctIterableDecoratorImpl;
@@ -50,7 +50,7 @@ public interface MongoCollectionDecorator<T> extends MongoCollection<T> {
 
   MongoCollection<T> getImpl();
 
-  MethodInvoker getInvoker();
+  LockGuardInvoker getInvoker();
 
   @Override
   default MongoNamespace getNamespace() {

@@ -1,15 +1,15 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.MongoCollection;
-import io.changock.driver.core.lock.guard.invoker.MethodInvoker;
+import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.MongoCollectionDecorator;
 
 public class MongoCollectionDecoratorImpl<T> implements MongoCollectionDecorator<T> {
 
   private final MongoCollection<T> impl;
-  private final MethodInvoker lockChecker;
+  private final LockGuardInvoker lockChecker;
 
-  public MongoCollectionDecoratorImpl(MongoCollection<T> implementation, MethodInvoker lockerCheckInvoker) {
+  public MongoCollectionDecoratorImpl(MongoCollection<T> implementation, LockGuardInvoker lockerCheckInvoker) {
     this.impl = implementation;
     this.lockChecker = lockerCheckInvoker;
   }
@@ -20,7 +20,7 @@ public class MongoCollectionDecoratorImpl<T> implements MongoCollectionDecorator
   }
 
   @Override
-  public MethodInvoker getInvoker() {
+  public LockGuardInvoker getInvoker() {
     return lockChecker;
   }
 

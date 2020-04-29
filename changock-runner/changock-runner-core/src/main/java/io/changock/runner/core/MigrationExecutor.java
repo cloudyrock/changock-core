@@ -163,6 +163,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected void initializationAndValidation() throws ChangockException {
     this.executionInProgress = true;
     driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
