@@ -1,6 +1,7 @@
 package io.changock.driver.core.lock.guard.proxy;
 
 import io.changock.driver.api.lock.LockManager;
+import io.changock.driver.core.lock.guard.NonDecorable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,14 +20,24 @@ public class LockGuardProxy<T> implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     lockManager.ensureLockDefault();
-    return method.invoke(implementation, args);
+    Class<?> returningType = method.getReturnType();
+    Object result = method.invoke(implementation, args);
+    return isDecorableMethod(method, returningType, result) ? getRawProxy(result, returningType, lockManager) : result;
+  }
+
+  private boolean isDecorableMethod(Method method, Class<?> returningType, Object result) {
+    return result != null && returningType.isInterface()  && !method.isAnnotationPresent(NonDecorable.class);
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> T getProxy(T t, Class<? super T> interfaceType, LockManager lockManager) {
-    return (T) Proxy.newProxyInstance(
+  private static <R> R getRawProxy(Object r, Class<? super R> interfaceType, LockManager lockManager) {
+    return (R) Proxy.newProxyInstance(
         interfaceType.getClassLoader(),
-        new Class<?>[]{interfaceType}, new LockGuardProxy(t, lockManager)
+        new Class<?>[]{interfaceType}, new LockGuardProxy(r, lockManager)
     );
+  }
+
+  public static <R> R getProxy(R r, Class<? super R> interfaceType, LockManager lockManager) {
+    return getRawProxy(r, interfaceType, lockManager);
   }
 }
