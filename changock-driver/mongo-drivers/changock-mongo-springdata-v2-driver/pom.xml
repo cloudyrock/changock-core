@@ -69,6 +69,12 @@
     <!-- TEST -->
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
+      <artifactId>changock-test-util</artifactId>
+      <version>${changock.core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.cloudyrock.changock</groupId>
       <artifactId>changock-test-runner</artifactId>
       <version>${changock.core.version}</version>
       <scope>test</scope>

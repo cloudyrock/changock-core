@@ -11,6 +11,7 @@
     <module>changock-driver</module>
     <module>changock-runner</module>
     <module>changock-utils</module>
+    <module>changock-test-util</module>
   </modules>
 
   <groupId>com.github.cloudyrock.changock</groupId>
