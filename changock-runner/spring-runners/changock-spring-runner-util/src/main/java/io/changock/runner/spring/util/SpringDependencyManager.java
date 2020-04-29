@@ -23,12 +23,15 @@ public class SpringDependencyManager extends DependencyManager implements Valida
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Optional<Object> getDependency(Class type) {
         Optional<Object> dependencyOpt = super.getDependency(type);
         if (dependencyOpt.isPresent()) {
             return dependencyOpt;
         } else if (springContext != null) {
             try {
+              //TODO check if type is an interface
+              // return a proxy(
                 return Optional.of(springContext.getBean(type));
             } catch (Exception ex) {
                 logger.warn("Dependency not found: {}", ex.getMessage());
