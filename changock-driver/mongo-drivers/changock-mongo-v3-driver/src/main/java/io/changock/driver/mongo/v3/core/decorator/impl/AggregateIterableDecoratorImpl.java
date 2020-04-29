@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.AggregateIterable;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.AggregateIterableDecorator;
 
 public class AggregateIterableDecoratorImpl<T> implements AggregateIterableDecorator<T> {

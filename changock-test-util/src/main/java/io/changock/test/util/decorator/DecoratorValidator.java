@@ -1,8 +1,8 @@
 package io.changock.test.util.decorator;
 
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvokerImpl;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import org.mockito.Mockito;
 import org.mockito.invocation.Invocation;
 

@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.v3.core.decorator;
 
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 
 import java.util.Iterator;
 

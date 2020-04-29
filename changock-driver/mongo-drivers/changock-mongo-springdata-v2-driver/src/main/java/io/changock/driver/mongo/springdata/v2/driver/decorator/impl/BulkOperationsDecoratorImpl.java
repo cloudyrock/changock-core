@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.BulkOperationsDecorator;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.BulkOperations;
 
 public class BulkOperationsDecoratorImpl implements BulkOperationsDecorator {

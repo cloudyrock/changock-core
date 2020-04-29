@@ -1,4 +1,4 @@
-package io.changock.driver.core.lock.guard.invoker;
+package io.changock.driver.api.lock.guard.invoker;
 
 import java.util.function.Supplier;
 

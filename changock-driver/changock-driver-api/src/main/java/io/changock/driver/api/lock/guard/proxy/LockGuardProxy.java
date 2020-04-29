@@ -1,20 +1,21 @@
-package io.changock.driver.core.lock.guard.proxy;
+package io.changock.driver.api.lock.guard.proxy;
 
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.core.lock.guard.NonDecorable;
+import io.changock.driver.api.lock.guard.NonDecorable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 public class LockGuardProxy<T> implements InvocationHandler {
 
   private final LockManager lockManager;
   private final T implementation;
+  private final LockGuardProxyFactory proxyFactory;
 
-  public LockGuardProxy(T implementation, LockManager lockManager) {
+  public LockGuardProxy(T implementation, LockManager lockManager, LockGuardProxyFactory proxyFactory) {
     this.implementation = implementation;
     this.lockManager = lockManager;
+    this.proxyFactory = proxyFactory;
   }
 
   @Override
@@ -22,22 +23,12 @@ public class LockGuardProxy<T> implements InvocationHandler {
     lockManager.ensureLockDefault();
     Class<?> returningType = method.getReturnType();
     Object result = method.invoke(implementation, args);
-    return isDecorableMethod(method, returningType, result) ? getRawProxy(result, returningType, lockManager) : result;
+    return isDecorableMethod(method, returningType, result) ? proxyFactory.getRawProxy(result, returningType) : result;
   }
 
   private boolean isDecorableMethod(Method method, Class<?> returningType, Object result) {
     return result != null && returningType.isInterface()  && !method.isAnnotationPresent(NonDecorable.class);
   }
 
-  @SuppressWarnings("unchecked")
-  private static <R> R getRawProxy(Object r, Class<? super R> interfaceType, LockManager lockManager) {
-    return (R) Proxy.newProxyInstance(
-        interfaceType.getClassLoader(),
-        new Class<?>[]{interfaceType}, new LockGuardProxy(r, lockManager)
-    );
-  }
 
-  public static <R> R getProxy(R r, Class<? super R> interfaceType, LockManager lockManager) {
-    return getRawProxy(r, interfaceType, lockManager);
-  }
 }

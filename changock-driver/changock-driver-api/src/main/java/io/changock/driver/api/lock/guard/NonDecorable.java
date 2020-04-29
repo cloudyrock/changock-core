@@ -1,4 +1,4 @@
-package io.changock.driver.core.lock.guard;
+package io.changock.driver.api.lock.guard;
 
 import io.changock.migration.api.annotations.ChangeLog;
 
