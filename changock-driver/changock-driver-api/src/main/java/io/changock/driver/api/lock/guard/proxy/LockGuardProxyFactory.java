@@ -4,6 +4,7 @@ import io.changock.driver.api.lock.LockManager;
 
 import java.lang.reflect.Proxy;
 
+//TODO tests
 public class LockGuardProxyFactory {
 
   private final LockManager lockManager;
@@ -13,7 +14,7 @@ public class LockGuardProxyFactory {
   }
 
   @SuppressWarnings("unchecked")
-  public <R> R getRawProxy(Object r, Class<? super R> interfaceType) {
+  <R> R getRawProxy(Object r, Class<? super R> interfaceType) {
     return (R) Proxy.newProxyInstance(
         interfaceType.getClassLoader(),
         new Class<?>[]{interfaceType}, new LockGuardProxy(r, lockManager, this)
