@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.impl;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.MapReduceWithProjectionDecorator;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableMapReduceOperation;
 
 public class MapReduceWithProjectionDecoratorImpl<T> implements MapReduceWithProjectionDecorator<T> {

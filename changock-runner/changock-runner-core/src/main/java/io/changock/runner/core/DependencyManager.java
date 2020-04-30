@@ -19,6 +19,8 @@ public class DependencyManager {
     connectorDependencies = new LinkedHashSet<>();
   }
 
+
+
   public DependencyManager addConnectorDependency(Collection<? extends ChangeSetDependency> dependencies) {
     dependencies.forEach(this::addConnectorDependency);
     return this;

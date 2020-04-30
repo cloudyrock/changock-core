@@ -4,7 +4,7 @@ import com.mongodb.Block;
 import com.mongodb.Function;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoIterable;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoCursorDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoIterableDecoratorImpl;
 

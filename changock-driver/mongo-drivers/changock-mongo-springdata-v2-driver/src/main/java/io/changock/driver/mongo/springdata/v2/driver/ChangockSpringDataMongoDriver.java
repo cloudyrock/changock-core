@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvokerImpl;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.MongockTemplate;
 import io.changock.driver.mongo.v3.core.driver.ChangockMongoDriver;
 import io.changock.migration.api.exception.ChangockException;

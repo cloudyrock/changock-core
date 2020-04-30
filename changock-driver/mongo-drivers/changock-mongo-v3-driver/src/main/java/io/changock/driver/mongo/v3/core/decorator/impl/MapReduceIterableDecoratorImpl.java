@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.v3.core.decorator.impl;
 
 import com.mongodb.client.MapReduceIterable;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvoker;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.MapReduceIterableDecorator;
 
 public class MapReduceIterableDecoratorImpl<T> implements MapReduceIterableDecorator<T> {

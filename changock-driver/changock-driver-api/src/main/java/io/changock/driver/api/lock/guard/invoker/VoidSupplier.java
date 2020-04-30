@@ -1,4 +1,4 @@
-package io.changock.driver.core.lock.guard.invoker;
+package io.changock.driver.api.lock.guard.invoker;
 
 @FunctionalInterface
 public interface VoidSupplier {

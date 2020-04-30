@@ -2,7 +2,7 @@ package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
 import com.mongodb.client.ClientSession;
 import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.core.lock.guard.invoker.LockGuardInvokerImpl;
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.BulkOperationsDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.ClientSessionDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.CloseableIteratorDecoratorImpl;
