@@ -14,34 +14,17 @@ import java.lang.annotation.Target;
  * @see ChangeLog
  * @since 27/07/2014
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NonLockGuarded {
 
 
   /**
    * Indicates the grade of non-lock-guard.
-   * @return type
+   * @return value
    */
-  Type[] type() default {Type.METHOD};
+  NonLockGuardedType[] value() default {NonLockGuardedType.METHOD};
 
 
-  enum Type {
-    /**
-     * Indicates the returned object shouldn't be decorated for lock guard. So clean instance is returned.
-     * But still the method needs to bbe lock-guarded
-     */
-    RETURN,
-
-    /**
-     * Indicates the method shouldn't be lock-guarded, but still should decorate the returned object(if applies)
-     */
-    METHOD,
-
-    /**
-     * Indicates the method shouldn't be lock-guarded neither the returned object should be decorated for lock guard.
-     */
-    NONE
-  }
 
 }

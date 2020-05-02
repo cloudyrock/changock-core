@@ -3,6 +3,7 @@ package io.changock.test.util.decorator;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class DecoratorDefinition {
@@ -46,5 +47,20 @@ public class DecoratorDefinition {
 
   public List<String> getNoLockGardMethods() {
     return noLockGardMethods;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    DecoratorDefinition that = (DecoratorDefinition) o;
+    return interfaceType.equals(that.interfaceType) &&
+        implementingType.equals(that.implementingType);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(interfaceType, implementingType);
   }
 }

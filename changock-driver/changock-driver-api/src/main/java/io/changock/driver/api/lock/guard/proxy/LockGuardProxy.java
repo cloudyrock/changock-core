@@ -2,6 +2,7 @@ package io.changock.driver.api.lock.guard.proxy;
 
 import io.changock.driver.api.lock.LockManager;
 import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -25,8 +26,8 @@ public class LockGuardProxy<T> implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
-    List<NonLockGuarded.Type> noGuardedLockTypes = nonLockGuarded != null ? Arrays.asList(nonLockGuarded.type()) : Collections.emptyList();
-    if(shouldMethodBeLockGuarded(noGuardedLockTypes)) {
+    List<NonLockGuardedType> noGuardedLockTypes = nonLockGuarded != null ? Arrays.asList(nonLockGuarded.value()) : Collections.emptyList();
+    if (shouldMethodBeLockGuarded(noGuardedLockTypes)) {
       lockManager.ensureLockDefault();
     }
     Class<?> returningType = method.getReturnType();
@@ -34,22 +35,23 @@ public class LockGuardProxy<T> implements InvocationHandler {
     return shouldReturnObjectBeGuarded(result, returningType, noGuardedLockTypes) ? proxyFactory.getRawProxy(result, returningType) : result;
   }
 
-  private static boolean shouldReturnObjectBeGuarded(Object result, Class<?> returningType, List<NonLockGuarded.Type> noGuardedLockTypes) {
+  private static boolean shouldReturnObjectBeGuarded(Object result, Class<?> returningType, List<NonLockGuardedType> methodNoGuardedLockTypes) {
     return result != null
         && returningType.isInterface()
         && !isJdk8StandardInterface(returningType)
-        && (!noGuardedLockTypes.contains(NonLockGuarded.Type.RETURN) || !noGuardedLockTypes.contains(NonLockGuarded.Type.NONE));
+        && !methodNoGuardedLockTypes.contains(NonLockGuardedType.RETURN)
+        && !methodNoGuardedLockTypes.contains(NonLockGuardedType.NONE)
+        && !returningType.isAnnotationPresent(NonLockGuarded.class);
   }
 
-  private static boolean shouldMethodBeLockGuarded(List<NonLockGuarded.Type> noGuardedLockTypes) {
-    return !noGuardedLockTypes.contains(NonLockGuarded.Type.METHOD) && !noGuardedLockTypes.contains(NonLockGuarded.Type.NONE);
+  private static boolean shouldMethodBeLockGuarded(List<NonLockGuardedType> noGuardedLockTypes) {
+    return !noGuardedLockTypes.contains(NonLockGuardedType.METHOD) && !noGuardedLockTypes.contains(NonLockGuardedType.NONE);
   }
 
   // TODO returns true if it's any of the interfaces in these packages: java.util, java.lang and any JDK standard interface
   private static boolean isJdk8StandardInterface(Class<?> returningType) {
     return false;
   }
-
 
 
 }

@@ -14,14 +14,15 @@ public class LockGuardProxyFactory {
   }
 
   @SuppressWarnings("unchecked")
-  <R> R getRawProxy(Object r, Class<? super R> interfaceType) {
-    return (R) Proxy.newProxyInstance(
+  Object getRawProxy(Object r, Class interfaceType) {
+    return Proxy.newProxyInstance(
         interfaceType.getClassLoader(),
         new Class<?>[]{interfaceType}, new LockGuardProxy(r, lockManager, this)
     );
   }
 
-  public <R> R getProxy(R r, Class<? super R> interfaceType) {
-    return getRawProxy(r, interfaceType);
+  @SuppressWarnings("unchecked")
+  public <T> T getProxy(T r, Class<? super T> interfaceType) {
+    return (T)getRawProxy(r, interfaceType);
   }
 }
