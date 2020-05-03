@@ -31,10 +31,10 @@ public class DecoratorValidator {
 
   private final Collection<Class> typeDecorators;
   private final Map<Class, Object> instancesMap;
-  private LockManager lockManager;
-
+  private final LockManager lockManager;
   private final DecoratorTestCollection trackedDecorators;
   private final Collection<Class> ignoredTypes;
+  private final boolean ignorePrimitives;
   private DecoratorTestCollection decoratorsNextToProcess;
 
   public DecoratorValidator(DecoratorTestCollection decorators,
@@ -42,21 +42,27 @@ public class DecoratorValidator {
                             Collection<Class> typeDecorators,
                             Map<Class, Object> instancesMap,
                             LockManager lockManager) {
+    this(decorators, ignoredTypes, typeDecorators, instancesMap, true, lockManager);
+  }
 
+  public DecoratorValidator(DecoratorTestCollection decorators,
+                            Collection<Class> ignoredTypes,
+                            Collection<Class> typeDecorators,
+                            Map<Class, Object> instancesMap,
+                            boolean ignorePrimitives,
+                            LockManager lockManager) {
     decoratorsNextToProcess = decorators;
     this.ignoredTypes = ignoredTypes;
     this.typeDecorators = typeDecorators;
     this.instancesMap = instancesMap;
+    this.ignorePrimitives = ignorePrimitives;
     this.lockManager = lockManager;
     trackedDecorators = new DecoratorTestCollection();
-
   }
 
 
   public List<DecoratorMethodFailure> checkAndReturnFailedDecorators() {
     List<DecoratorMethodFailure> result = new ArrayList<>();
-
-    int i = 1;
     while (decoratorsNextToProcess.size() > 0) {
       DecoratorTestCollection decoratorsToProcess = new DecoratorTestCollection(decoratorsNextToProcess);
       trackedDecorators.addAll(decoratorsToProcess);
@@ -123,7 +129,7 @@ public class DecoratorValidator {
   }
 
   private void addResultToValidateIfRequired(Object result, Method method) {
-    if (!ignoredTypes.contains(method.getReturnType())
+    if (shouldNotBeIgnored(method)
         && result != null //if null, it will throw an NullPointerException
         && !trackedDecorators.contains(method.getReturnType(), result.getClass())
         && !decoratorsNextToProcess.contains(method.getReturnType(), result.getClass())
@@ -220,10 +226,20 @@ public class DecoratorValidator {
     List<NonLockGuardedType> noGuardedLockTypes = getNonLockGuardedTypes(method);
 
     return !Void.TYPE.equals(method.getReturnType())
-        && !ignoredTypes.contains(method.getReturnType())
+        && shouldNotBeIgnored(method)
         && !noGuardedLockTypes.contains(NonLockGuardedType.RETURN)
         && !noGuardedLockTypes.contains(NonLockGuardedType.NONE)
         && !method.getReturnType().isAnnotationPresent(NonLockGuarded.class);
+  }
+
+
+  private boolean shouldNotBeIgnored(Method method) {
+    Class<?> returnType = method.getReturnType();
+    return !(isPrimitiveIgnored(returnType) || ignoredTypes.contains(returnType));
+  }
+
+  private boolean isPrimitiveIgnored(Class c) {
+    return ignorePrimitives && (c.isPrimitive() || String.class.equals(c));
   }
 
 

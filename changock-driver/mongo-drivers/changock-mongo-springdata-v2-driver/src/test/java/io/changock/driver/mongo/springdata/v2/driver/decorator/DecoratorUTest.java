@@ -36,6 +36,7 @@ import org.springframework.data.util.CloseableIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,70 +45,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-
-//TODO generify this and move to testUtils lib for other projects
 public class DecoratorUTest {
 
 
   private DecoratorTestCollection getDecoratorsToTest() {
-    //executableFindOperations
     return new DecoratorTestCollection()
-        //MongockTemplate
-        .addDecorator(MongoOperations.class, MongockTemplate.class)
-//        .addDecorator(IndexOperationsProvider.class, MongockTemplate.class, mongockTemplate)
-//        .addDecorator(ExecutableFindOperation.ExecutableFind.class, ExecutableFindDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.FindDistinct.class, FindDistinctDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.FindWithCollection.class, FindWithCollectionDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.FindWithProjection.class, FindWithProjectionDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.FindWithQuery.class, FindWithQueryDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.TerminatingFind.class, TerminatingFindDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.TerminatingFindNear.class, TerminatingFindNearDecoratorImpl.class)
-//        .addDecorator(ExecutableFindOperation.TerminatingDistinct.class, TerminatingDistinctDecoratorImpl.class)
-//        //executableAggregation
-//        .addDecorator(ExecutableAggregationOperation.AggregationWithCollection.class, AggregationWithCollectionDecoratorImpl.class)
-//        .addDecorator(ExecutableAggregationOperation.AggregationWithAggregation.class, AggregationWithAggregationDecoratorImpl.class)
-//        .addDecorator(ExecutableAggregationOperation.ExecutableAggregation.class, ExecutableAggregationDecoratorImpl.class)
-//        .addDecorator(ExecutableAggregationOperation.TerminatingAggregation.class, TerminatingAggregationDecoratorImpl.class)
-//        //executableInsert
-//        .addDecorator(ExecutableInsertOperation.ExecutableInsert.class, ExecutableInsertDecoratorImpl.class)
-//        .addDecorator(ExecutableInsertOperation.InsertWithBulkMode.class, InsertWithBulkModeDecoratorImpl.class)
-//        .addDecorator(ExecutableInsertOperation.InsertWithCollection.class, InsertWithCollectionDecoratorImpl.class)
-//        .addDecorator(ExecutableInsertOperation.TerminatingInsert.class, TerminatingInsertDecoratorImpl.class)
-//        .addDecorator(ExecutableInsertOperation.TerminatingBulkInsert.class, TerminatingBulkInsertDecoratorImpl.class)
-//        //executableRemove
-//        .addDecorator(ExecutableRemoveOperation.ExecutableRemove.class, ExecutableRemoveDecoratorImpl.class)
-//        .addDecorator(ExecutableRemoveOperation.RemoveWithCollection.class, RemoveWithCollectionDecoratorImpl.class)
-//        .addDecorator(ExecutableRemoveOperation.RemoveWithQuery.class, RemoveWithQueryDecoratorImpl.class)
-//        .addDecorator(ExecutableRemoveOperation.TerminatingRemove.class, TerminatingRemoveDecoratorImpl.class)
-//        //executableUpdate
-//        .addDecorator(ExecutableUpdateOperation.ExecutableUpdate.class, ExecutableUpdateDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.UpdateWithQuery.class, UpdateWithQueryDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.UpdateWithCollection.class, UpdateWithCollectionDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.UpdateWithUpdate.class, UpdateWithUpdateDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.FindAndReplaceWithProjection.class, FindAndReplaceWithProjectionDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.TerminatingUpdate.class, TerminatingUpdateDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.FindAndReplaceWithOptions.class, FindAndReplaceWithOptionsDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.TerminatingFindAndModify.class, TerminatingFindAndModifyDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.TerminatingFindAndReplace.class, TerminatingFindAndReplaceDecoratorImpl.class)
-//        .addDecorator(ExecutableUpdateOperation.FindAndModifyWithOptions.class, FindAndModifyWithOptionsDecoratorImpl.class)
-//        //executableMapReduce
-//        .addDecorator(ExecutableMapReduceOperation.ExecutableMapReduce.class, ExecutableMapReduceDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.MapReduceWithOptions.class, MapReduceWithOptionsDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.MapReduceWithCollection.class, MapReduceWithCollectionDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.MapReduceWithReduceFunction.class, MapReduceWithReduceFunctionDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.MapReduceWithMapFunction.class, MapReduceWithMapFunctionDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.MapReduceWithProjection.class, MapReduceWithProjectionDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.MapReduceWithQuery.class, MapReduceWithQueryDecoratorImpl.class)
-//        .addDecorator(ExecutableMapReduceOperation.TerminatingMapReduce.class, TerminatingMapReduceDecoratorImpl.class)
-//        //basic
-//        .addDecorator(BulkOperations.class, BulkOperationsDecoratorImpl.class)
-//        .addDecorator(ClientSession.class, ClientSessionDecoratorImpl.class, "getPinnedServerAddress", "setPinnedServerAddress", "hasActiveTransaction", "notifyMessageSent", "getTransactionOptions")
-//        .addDecorator(CloseableIterator.class, CloseableIteratorDecoratorImpl.class)
-//        .addDecorator(IndexOperations.class, IndexOperationsDecoratorImpl.class)
-//        .addDecorator(ScriptOperations.class, ScriptOperationsDecoratorImpl.class)
-//        .addDecorator(SessionCallback.class, SessionCallbackDecoratorImpl.class)
-//        .addDecorator(SessionScoped.class, SessionScopedDecoratorImpl.class, "lambda$execute$0")
-        ;
+        .addDecorator(MongoOperations.class, MongockTemplate.class);
 
   }
 
@@ -118,7 +61,7 @@ public class DecoratorUTest {
     List<DecoratorMethodFailure> failedDecorators = new DecoratorValidator(
         getDecoratorsToTest(),
         getIgnoredTypes(),
-        Arrays.asList(MongockTemplate.class),
+        Collections.singletonList(MongockTemplate.class),
         getInstancesMap(lockManager),
         lockManager)
         .checkAndReturnFailedDecorators();
@@ -162,19 +105,7 @@ public class DecoratorUTest {
     return ignored;
   }
 
-  //TODO class.isPrimitive()
   private Collection<Class> javaTypes = Arrays.asList(
-      int.class,
-      long.class,
-      double.class,
-      float.class,
-      boolean.class,
-      Integer.class,
-      String.class,
-      Long.class,
-      Double.class,
-      Float.class,
-      Boolean.class,
       List.class,
       Collection.class,
       Map.class,
