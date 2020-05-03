@@ -4,12 +4,12 @@ import com.mongodb.client.ChangeStreamIterable;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.ChangeStreamIterableDecorator;
 
-public class ChangeStreamIterableDecoratorImple<T> implements ChangeStreamIterableDecorator<T> {
+public class ChangeStreamIterableDecoratorImpl<T> implements ChangeStreamIterableDecorator<T> {
 
   private final ChangeStreamIterable<T> impl;
   private final LockGuardInvoker checker;
 
-  public ChangeStreamIterableDecoratorImple(ChangeStreamIterable<T> implementation, LockGuardInvoker lockerCheckInvoker) {
+  public ChangeStreamIterableDecoratorImpl(ChangeStreamIterable<T> implementation, LockGuardInvoker lockerCheckInvoker) {
     this.impl = implementation;
     this.checker = lockerCheckInvoker;
   }

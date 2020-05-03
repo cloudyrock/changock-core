@@ -1,6 +1,6 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find;
 
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.Invokable;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 

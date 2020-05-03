@@ -2,7 +2,7 @@ package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.ClientSessionDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.MongoDbFactoryDecoratorImpl;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.Invokable;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.DB;
 import com.mongodb.client.ClientSession;

@@ -1,6 +1,8 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator;
 
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.springframework.data.mongodb.core.ScriptOperations;
 import org.springframework.data.mongodb.core.script.ExecutableMongoScript;
 import org.springframework.data.mongodb.core.script.NamedMongoScript;
@@ -16,6 +18,7 @@ public interface ScriptOperationsDecorator extends ScriptOperations {
 
 
     @Override
+    @NonLockGuarded(NonLockGuardedType.NONE)
     default NamedMongoScript register(ExecutableMongoScript script) {
         return getInvoker().invoke(()-> getImpl().register(script));
     }

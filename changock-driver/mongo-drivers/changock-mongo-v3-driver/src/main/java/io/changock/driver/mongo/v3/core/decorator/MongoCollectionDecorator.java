@@ -34,12 +34,14 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.AggregateIterableDecoratorImpl;
-import io.changock.driver.mongo.v3.core.decorator.impl.ChangeStreamIterableDecoratorImple;
+import io.changock.driver.mongo.v3.core.decorator.impl.ChangeStreamIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.DistinctIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.FindIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.ListIndexesIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MapReduceIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoCollectionDecoratorImpl;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
@@ -53,56 +55,67 @@ public interface MongoCollectionDecorator<T> extends MongoCollection<T> {
   LockGuardInvoker getInvoker();
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   default MongoNamespace getNamespace() {
     return getImpl().getNamespace();
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   default Class<T> getDocumentClass() {
     return getImpl().getDocumentClass();
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   default CodecRegistry getCodecRegistry() {
     return getImpl().getCodecRegistry();
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   default ReadPreference getReadPreference() {
     return getImpl().getReadPreference();
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   default WriteConcern getWriteConcern() {
     return getImpl().getWriteConcern();
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   default ReadConcern getReadConcern() {
     return getImpl().getReadConcern();
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.METHOD)
   default <NewTDocument> MongoCollection<NewTDocument> withDocumentClass(Class<NewTDocument> aClass) {
     return new MongoCollectionDecoratorImpl<>(getImpl().withDocumentClass(aClass), getInvoker());
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.METHOD)
   default MongoCollection<T> withCodecRegistry(CodecRegistry codecRegistry) {
     return new MongoCollectionDecoratorImpl<>(getImpl().withCodecRegistry(codecRegistry), getInvoker());
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.METHOD)
   default MongoCollection<T> withReadPreference(ReadPreference readPreference) {
     return new MongoCollectionDecoratorImpl<>(getImpl().withReadPreference(readPreference), getInvoker());
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.METHOD)
   default MongoCollection<T> withWriteConcern(WriteConcern writeConcern) {
     return new MongoCollectionDecoratorImpl<>(getImpl().withWriteConcern(writeConcern), getInvoker());
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.METHOD)
   default MongoCollection<T> withReadConcern(ReadConcern readConcern) {
     return new MongoCollectionDecoratorImpl<>(getImpl().withReadConcern(readConcern), getInvoker());
   }
@@ -432,46 +445,45 @@ public interface MongoCollectionDecorator<T> extends MongoCollection<T> {
     return new AggregateIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().aggregate(clientSession, list, aClass)), getInvoker());
   }
 
-  //TODO implement ChangeStreamIterable
   @Override
   default ChangeStreamIterable<T> watch() {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch()), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch()), getInvoker());
   }
 
   @Override
   default <TResult> ChangeStreamIterable<TResult> watch(Class<TResult> aClass) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(aClass)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(aClass)), getInvoker());
 
   }
 
   @Override
   default ChangeStreamIterable<T> watch(List<? extends Bson> list) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(list)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(list)), getInvoker());
   }
 
   @Override
   default <TResult> ChangeStreamIterable<TResult> watch(List<? extends Bson> list, Class<TResult> aClass) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(list, aClass)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(list, aClass)), getInvoker());
   }
 
   @Override
   default ChangeStreamIterable<T> watch(ClientSession clientSession) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(clientSession)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(clientSession)), getInvoker());
   }
 
   @Override
   default <TResult> ChangeStreamIterable<TResult> watch(ClientSession clientSession, Class<TResult> aClass) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(clientSession, aClass)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(clientSession, aClass)), getInvoker());
   }
 
   @Override
   default ChangeStreamIterable<T> watch(ClientSession clientSession, List<? extends Bson> list) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(clientSession, list)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(clientSession, list)), getInvoker());
   }
 
   @Override
   default <TResult> ChangeStreamIterable<TResult> watch(ClientSession clientSession, List<? extends Bson> list, Class<TResult> aClass) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke(()-> getImpl().watch(clientSession, list, aClass)), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke(()-> getImpl().watch(clientSession, list, aClass)), getInvoker());
   }
 
   @Override

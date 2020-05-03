@@ -171,7 +171,7 @@ public class MigrationExecutorTest {
 
     //then
     exceptionExpected.expect(ChangockException.class);
-    exceptionExpected.expectMessage("argument type mismatch");
+    exceptionExpected.expectMessage("argument value mismatch");
 
     // when
     new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())

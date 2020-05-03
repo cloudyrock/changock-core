@@ -1,23 +1,30 @@
 package io.changock.test.util.decorator;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-public class DecoratorTestCollection extends HashMap<Class<?>, DecoratorDefinition> {
+public class DecoratorTestCollection extends ArrayList<DecoratorDefinition> {
 
+  public DecoratorTestCollection() {
+  }
 
-  public <T> DecoratorTestCollection addDecorator(Class<T> interfaceType, Class<? extends T> implementingClass, String... noLockGardMethods) {
-    this.put(interfaceType, new DecoratorDefinition(interfaceType, implementingClass, noLockGardMethods));
-    return this;
+  public DecoratorTestCollection(DecoratorTestCollection initial) {
+    super(initial);
   }
 
   public <T> DecoratorTestCollection addDecorator(Class<T> interfaceType, Class<? extends T> implementingClass) {
-    this.put(interfaceType, new DecoratorDefinition(interfaceType, implementingClass));
+    this.add(new DecoratorDefinition(interfaceType, implementingClass));
     return this;
   }
 
-  public <T, R extends T> DecoratorTestCollection addDecorator(Class<T> interfaceType, Class<R> implementingClass, R instance, String... noLockGardMethods) {
-    this.put(interfaceType, new DecoratorDefinition(interfaceType, implementingClass, instance, noLockGardMethods));
+
+  public DecoratorTestCollection addRawDecorator(Class interfaceType, Class implementingClass) {
+    this.add(new DecoratorDefinition(interfaceType, implementingClass));
     return this;
   }
+
+  public boolean contains(Class interfaceType, Class implementingClass) {
+    return this.contains(new DecoratorDefinition(interfaceType, implementingClass));
+  }
+
 
 }

@@ -6,7 +6,7 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import com.mongodb.client.model.changestream.FullDocument;
-import io.changock.driver.mongo.v3.core.decorator.impl.ChangeStreamIterableDecoratorImple;
+import io.changock.driver.mongo.v3.core.decorator.impl.ChangeStreamIterableDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoChangeStreamCursorDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoIterableDecoratorImpl;
 import org.bson.BsonDocument;
@@ -25,23 +25,23 @@ public interface ChangeStreamIterableDecorator<T> extends MongoIterableDecorator
   }
 
   default ChangeStreamIterable<T> fullDocument(FullDocument var1){
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().fullDocument(var1))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().fullDocument(var1))), getInvoker());
   }
 
   default ChangeStreamIterable<T> resumeAfter(BsonDocument var1){
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().resumeAfter(var1))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().resumeAfter(var1))), getInvoker());
   }
 
   default ChangeStreamIterable<T> batchSize(int var1) {
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().batchSize(var1))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().batchSize(var1))), getInvoker());
   }
 
   default ChangeStreamIterable<T> maxAwaitTime(long var1, TimeUnit var3){
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().maxAwaitTime(var1, var3))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().maxAwaitTime(var1, var3))), getInvoker());
   }
 
   default ChangeStreamIterable<T> collation(Collation var1){
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().collation(var1))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().collation(var1))), getInvoker());
   }
 
   default <TDocument> MongoIterable<TDocument> withDocumentClass(Class<TDocument> var1){
@@ -49,11 +49,11 @@ public interface ChangeStreamIterableDecorator<T> extends MongoIterableDecorator
   }
 
   default ChangeStreamIterable<T> startAtOperationTime(BsonTimestamp var1){
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().startAtOperationTime(var1))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().startAtOperationTime(var1))), getInvoker());
   }
 
   default ChangeStreamIterable<T> startAfter(BsonDocument var1){
-    return new ChangeStreamIterableDecoratorImple<>(getInvoker().invoke((()-> getImpl().startAfter(var1))), getInvoker());
+    return new ChangeStreamIterableDecoratorImpl<>(getInvoker().invoke((()-> getImpl().startAfter(var1))), getInvoker());
   }
 
 }

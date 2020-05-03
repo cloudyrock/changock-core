@@ -30,7 +30,7 @@ public class SpringDependencyManager extends DependencyManager implements Valida
             return dependencyOpt;
         } else if (springContext != null) {
             try {
-              //TODO check if type is an interface
+              //TODO check if value is an interface
               // return a proxy(
                 return Optional.of(springContext.getBean(type));
             } catch (Exception ex) {

@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.aggregation;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.CloseableIteratorDecoratorImpl;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.Invokable;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableAggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.util.CloseableIterator;
