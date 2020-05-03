@@ -2,7 +2,7 @@ package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.execut
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.impl.TerminatingFindDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.impl.TerminatingFindNearDecoratorImpl;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.Invokable;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;

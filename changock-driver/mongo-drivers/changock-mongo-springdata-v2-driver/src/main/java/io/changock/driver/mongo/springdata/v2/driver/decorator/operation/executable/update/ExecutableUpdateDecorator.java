@@ -4,7 +4,7 @@ import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executa
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.TerminatingUpdateDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.UpdateWithQueryDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.UpdateWithUpdateDecoratorImpl;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.Invokable;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;

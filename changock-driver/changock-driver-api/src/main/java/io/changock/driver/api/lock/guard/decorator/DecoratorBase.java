@@ -1,4 +1,4 @@
-package io.changock.driver.mongo.springdata.v2.driver.decorator.util;
+package io.changock.driver.api.lock.guard.decorator;
 
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 

@@ -76,7 +76,7 @@ public class DecoratorUTest {
   }
 
   private Collection<Class> getIgnoredTypes() {
-    Collection<Class> ignored = new ArrayList<>(Arrays.asList(
+    return new ArrayList<>(Arrays.asList(
         Document.class
         , MongoConverter.class
         , GroupByResults.class
@@ -101,21 +101,8 @@ public class DecoratorUTest {
 
         ,SessionScoped.class// TODO remove this
     ));
-    ignored.addAll(javaTypes);
-    return ignored;
   }
 
-  private Collection<Class> javaTypes = Arrays.asList(
-      List.class,
-      Collection.class,
-      Map.class,
-      HashMap.class,
-      Set.class,
-      HashSet.class,
-      Stream.class,
-      Object.class,
-      Class.class
 
-  );
 
 }

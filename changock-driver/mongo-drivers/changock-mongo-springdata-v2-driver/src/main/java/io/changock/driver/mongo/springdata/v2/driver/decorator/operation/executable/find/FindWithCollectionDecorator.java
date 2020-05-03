@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find;
 
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.find.impl.FindWithProjectionDecoratorImpl;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.Invokable;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 
 public interface FindWithCollectionDecorator<T> extends Invokable, ExecutableFindOperation.FindWithCollection<T>, FindWithQueryDecorator<T> {

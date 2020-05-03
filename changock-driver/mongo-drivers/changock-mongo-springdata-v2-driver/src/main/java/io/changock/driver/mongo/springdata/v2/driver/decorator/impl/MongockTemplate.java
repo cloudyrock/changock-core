@@ -6,7 +6,7 @@ import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executa
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.mapreduce.impl.ExecutableMapReduceDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.remove.impl.ExecutableRemoveDecoratorImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.operation.executable.update.impl.ExecutableUpdateDecoratorImpl;
-import io.changock.driver.mongo.springdata.v2.driver.decorator.util.DecoratorBase;
+import io.changock.driver.api.lock.guard.decorator.DecoratorBase;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.ReadPreference;

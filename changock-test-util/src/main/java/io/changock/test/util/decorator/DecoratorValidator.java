@@ -1,6 +1,7 @@
 package io.changock.test.util.decorator;
 
 import io.changock.driver.api.lock.LockManager;
+import io.changock.driver.api.lock.guard.decorator.DecoratorBase;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import io.changock.migration.api.annotations.NonLockGuarded;
@@ -14,19 +15,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-//TODO make this validate all the interfaces coming from a set of sources
-// for example from MongockTemplate, check all the methods(obviously) but also check all the returningTypes.
-// any method which returningType shouldn't be validated, should be annotated with @NotDecoratorReturn
-// any method that should nt be validated at allo, should be annotated with @NotDecorated
-// alternatively to this approach, a set of methods could be added to the DecoratorDefinition. This approach
-// it's less intrusive
 public class DecoratorValidator {
 
   private final Collection<Class> typeDecorators;
@@ -35,6 +32,8 @@ public class DecoratorValidator {
   private final DecoratorTestCollection trackedDecorators;
   private final Collection<Class> ignoredTypes;
   private final boolean ignorePrimitives;
+  private final boolean ignoreJavaStructures;
+
   private DecoratorTestCollection decoratorsNextToProcess;
 
   public DecoratorValidator(DecoratorTestCollection decorators,
@@ -42,7 +41,7 @@ public class DecoratorValidator {
                             Collection<Class> typeDecorators,
                             Map<Class, Object> instancesMap,
                             LockManager lockManager) {
-    this(decorators, ignoredTypes, typeDecorators, instancesMap, true, lockManager);
+    this(decorators, ignoredTypes, typeDecorators, instancesMap, true, true, lockManager);
   }
 
   public DecoratorValidator(DecoratorTestCollection decorators,
@@ -50,16 +49,17 @@ public class DecoratorValidator {
                             Collection<Class> typeDecorators,
                             Map<Class, Object> instancesMap,
                             boolean ignorePrimitives,
+                            boolean ignoreJavaStructures,
                             LockManager lockManager) {
     decoratorsNextToProcess = decorators;
     this.ignoredTypes = ignoredTypes;
     this.typeDecorators = typeDecorators;
     this.instancesMap = instancesMap;
     this.ignorePrimitives = ignorePrimitives;
+    this.ignoreJavaStructures = ignoreJavaStructures;
     this.lockManager = lockManager;
     trackedDecorators = new DecoratorTestCollection();
   }
-
 
   public List<DecoratorMethodFailure> checkAndReturnFailedDecorators() {
     List<DecoratorMethodFailure> result = new ArrayList<>();
@@ -76,7 +76,6 @@ public class DecoratorValidator {
     }
     return result;
   }
-
 
   private Collection<DecoratorMethodFailure> getMethodErrorsFromDecorator(DecoratorDefinition decorator, Class interfaceType) {
     Method[] declaredMethods = interfaceType.getDeclaredMethods();
@@ -97,27 +96,17 @@ public class DecoratorValidator {
         .collect(Collectors.toList());
   }
 
-  @SuppressWarnings("unchecked")
   private Optional<DecoratorMethodFailure> getMethodErrorOptional(Method interfaceMethod, DecoratorDefinition decorator) {
-    Method method;
     try {
-      method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
-      method.setAccessible(true);
+      Method method = getAccessibleMethod(interfaceMethod, decorator);
       List<NonLockGuardedType> noGuardedLockTypes = getNonLockGuardedTypes(method);
-      if(noGuardedLockTypes.contains(NonLockGuardedType.NONE)) {
+      if (noGuardedLockTypes.contains(NonLockGuardedType.NONE)) {
         return Optional.empty();
       }
+      //Note: Keep execution order of next statements
       Object result = executeMethod(method, decorator);
-      boolean errorEnsuringLock = isErrorEnsuringLock(noGuardedLockTypes, decorator);
       addResultToValidateIfRequired(result, method);
-      boolean errorReturningDecorator = isErrorReturningDecorator(method, result, decorator);
-      String otherErrorDetail = shouldReturnObjectBeGuarded(method)
-          && result == null
-          ? "returns null"
-          : "";
-      return errorEnsuringLock || errorReturningDecorator
-          ? Optional.of(new DecoratorMethodFailure(decorator.getImplementingType(), method, errorReturningDecorator, errorEnsuringLock, otherErrorDetail))
-          : Optional.empty();
+      return packageResult(decorator, method, result, isErrorEnsuringLock(noGuardedLockTypes), isErrorReturningDecorator(method, result, decorator));
     } catch (Exception ex) {
       return Optional.of(DecoratorMethodFailure.otherError(decorator.getImplementingType(), interfaceMethod, ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName()));
     }
@@ -138,10 +127,12 @@ public class DecoratorValidator {
     }
   }
 
-  private boolean isErrorEnsuringLock(List<NonLockGuardedType> noGuardedLockTypes, DecoratorDefinition decorator) throws NoSuchMethodException {
-    if (noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE)) {
-      return false;
-    }
+  private boolean isErrorEnsuringLock(List<NonLockGuardedType> noGuardedLockTypes) throws NoSuchMethodException {
+    return !(noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE))
+        && checkLockInvocations();
+  }
+
+  private boolean checkLockInvocations() throws NoSuchMethodException {
     Collection<Invocation> invocations = Mockito.mockingDetails(lockManager).getInvocations();
     return (invocations.size() != 1 || !invocations.iterator()
         .next()
@@ -152,7 +143,6 @@ public class DecoratorValidator {
   private boolean isErrorReturningDecorator(Method method, Object result, DecoratorDefinition decorator) throws Exception {
     Mockito.reset(lockManager);
     return shouldReturnObjectBeGuarded(method) && (result == null || !isDecoratorImplementation(result));
-
   }
 
   private Object executeMethod(Method method, DecoratorDefinition decorator) throws IllegalAccessException, InvocationTargetException {
@@ -161,7 +151,6 @@ public class DecoratorValidator {
         : getDecoratorInstance(decorator, new LockGuardInvokerImpl(lockManager));
     return method.invoke(instance, getDefaultParametersFromMethod(method));
   }
-
 
   @SuppressWarnings("unchecked")
   private Object getDecoratorInstance(DecoratorDefinition decorator, LockGuardInvoker invokerMock) {
@@ -174,51 +163,32 @@ public class DecoratorValidator {
     }
   }
 
-  //TODO improve the way to validate if it's validator
+  //TODO make all the decorator implements DecoratorBase, so we remove: resultClass.getSimpleName().endsWith("DecoratorImpl")
   private boolean isDecoratorImplementation(Object result) {
     Class<?> resultClass = result.getClass();
-    return typeDecorators.contains(resultClass) || resultClass.getSimpleName().endsWith("DecoratorImpl");
+    return typeDecorators.contains(resultClass)
+        || resultClass.getSimpleName().endsWith("DecoratorImpl")
+        || DecoratorBase.class.isAssignableFrom(resultClass);
   }
 
   private static Object[] getDefaultParametersFromMethod(Method method) {
     Class[] parametersType = method.getParameterTypes();
     Object[] parameters = new Object[parametersType.length];
     for (int i = 0; i < parametersType.length; i++) {
-      if (parametersType[i].isPrimitive()) {
-        parameters[i] = getDefaultPrimitiveValue(parametersType[i]);
-      } else {
-        parameters[i] = parametersType[i].cast(null);
-
-      }
+      parameters[i] = parametersType[i].isPrimitive() ? getDefaultPrimitiveValue(parametersType[i]) : parametersType[i].cast(null);
     }
     return parameters;
   }
 
   private static Object getDefaultPrimitiveValue(Class clazz) {
-    if (clazz == Integer.TYPE)
-      return Integer.MIN_VALUE;
-
-    if (clazz == Long.TYPE)
-      return Long.MIN_VALUE;
-
-    if (clazz == Boolean.TYPE)
-      return false;
-
-    if (clazz == Byte.TYPE)
-      return Byte.MIN_VALUE;
-
-    if (clazz == Character.TYPE)
-      return 'c';
-
-    if (clazz == Float.TYPE)
-      return Float.MIN_VALUE;
-
-    if (clazz == Double.TYPE)
-      return Double.MIN_VALUE;
-
-    if (clazz == Short.TYPE)
-      return Short.MIN_VALUE;
-
+    if (clazz == Integer.TYPE) return Integer.MIN_VALUE;
+    if (clazz == Long.TYPE) return Long.MIN_VALUE;
+    if (clazz == Boolean.TYPE) return false;
+    if (clazz == Byte.TYPE) return Byte.MIN_VALUE;
+    if (clazz == Character.TYPE) return 'c';
+    if (clazz == Float.TYPE) return Float.MIN_VALUE;
+    if (clazz == Double.TYPE) return Double.MIN_VALUE;
+    if (clazz == Short.TYPE) return Short.MIN_VALUE;
     return null;
   }
 
@@ -232,15 +202,44 @@ public class DecoratorValidator {
         && !method.getReturnType().isAnnotationPresent(NonLockGuarded.class);
   }
 
-
   private boolean shouldNotBeIgnored(Method method) {
     Class<?> returnType = method.getReturnType();
-    return !(isPrimitiveIgnored(returnType) || ignoredTypes.contains(returnType));
+    return !(ignoredTypes.contains(returnType) || isPrimitiveIgnored(returnType) || isJavaStructureIgnored(returnType));
   }
 
   private boolean isPrimitiveIgnored(Class c) {
     return ignorePrimitives && (c.isPrimitive() || String.class.equals(c));
   }
 
+  private boolean isJavaStructureIgnored(Class c) {
+    return ignoreJavaStructures && javaStructuresTypes.contains(c);
+  }
 
+  //TODO keep adding more on demand
+  private Collection<Class> javaStructuresTypes = Arrays.asList(
+      List.class,
+      Collection.class,
+      Map.class,
+      HashMap.class,
+      Set.class,
+      HashSet.class,
+      Stream.class,
+      Object.class,
+      Class.class
+  );
+
+  private Optional<DecoratorMethodFailure> packageResult(DecoratorDefinition decorator, Method method, Object result, boolean errorEnsuringLock, boolean errorReturningDecorator) {
+    String otherErrorDetail = shouldReturnObjectBeGuarded(method) && result == null ? "returns null" : "";;
+    return errorEnsuringLock || errorReturningDecorator
+        ? Optional.of(new DecoratorMethodFailure(decorator.getImplementingType(), method, errorReturningDecorator, errorEnsuringLock, otherErrorDetail))
+        : Optional.empty();
+  }
+
+  @SuppressWarnings("unchecked")
+  private Method getAccessibleMethod(Method interfaceMethod, DecoratorDefinition decorator) throws NoSuchMethodException {
+    Method method;
+    method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+    method.setAccessible(true);
+    return method;
+  }
 }
