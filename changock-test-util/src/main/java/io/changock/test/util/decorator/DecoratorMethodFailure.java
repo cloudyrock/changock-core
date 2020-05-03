@@ -59,14 +59,20 @@ public class DecoratorMethodFailure {
   @Override
   public String toString() {
 
-    StringBuilder sb = new StringBuilder(type.getSimpleName()).append(".").append(method.getName()).append(" -> ");
+    StringBuilder sb = new StringBuilder()
+        .append(method.getReturnType().getSimpleName())
+        .append(" ")
+        .append(type.getSimpleName())
+        .append(".")
+        .append(method.getName())
+        .append(" -> ");
     boolean coma = false;
     if (errorReturningDecorator) {
-      sb.append(" no_decorator");
+      sb.append(" no returned decorator");
       coma = true;
     }
     if (errorEnsuringLock) {
-      sb.append(coma ? ", " : "").append(" no_lock");
+      sb.append(coma ? ", " : "").append(" no ensured lock");
       coma = true;
     }
     if (otherError) {

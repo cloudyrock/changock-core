@@ -18,6 +18,8 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoCollectionDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoDataBaseDecoratorImpl;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.bson.Document;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -66,31 +68,35 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
     super(impl, invoker);
   }
 
-
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public void setWriteResultChecking(WriteResultChecking resultChecking) {
     getImpl().setWriteResultChecking(resultChecking);
   }
 
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public void setWriteConcern(WriteConcern writeConcern) {
     getImpl().setWriteConcern(writeConcern);
   }
 
-
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public void setWriteConcernResolver(WriteConcernResolver writeConcernResolver) {
     getImpl().setWriteConcernResolver(writeConcernResolver);
   }
 
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public void setReadPreference(ReadPreference readPreference) {
     getImpl().setReadPreference(readPreference);
   }
 
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     getImpl().setApplicationContext(applicationContext);
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public MongoConverter getConverter() {
     return getImpl().getConverter();
   }
@@ -106,6 +112,7 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
   }
 
   @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public String getCollectionName(Class<?> entityClass) {
     return getImpl().getCollectionName(entityClass);
   }
@@ -537,10 +544,12 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
     return new MongoDataBaseDecoratorImpl(getInvoker().invoke(getImpl()::getDb), getInvoker());
   }
 
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public PersistenceExceptionTranslator getExceptionTranslator() {
     return getImpl().getExceptionTranslator();
   }
 
+  @NonLockGuarded(NonLockGuardedType.NONE)
   public MongoDbFactory getMongoDbFactory() {
     return getImpl().getMongoDbFactory();
   }
@@ -567,7 +576,7 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
   }
 
   @Override
-  public MongockTemplate withSession(ClientSession session) {
+  public MongoOperations withSession(ClientSession session) {
     return getInvoker().invoke(() -> new MongockTemplate(getImpl().withSession(session), getInvoker()));
   }
 

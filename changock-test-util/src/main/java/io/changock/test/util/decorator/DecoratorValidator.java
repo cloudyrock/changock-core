@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,25 +29,24 @@ import java.util.stream.Stream;
 // it's less intrusive
 public class DecoratorValidator {
 
+  private final Collection<Class> typeDecorators;
+  private final Map<Class, Object> instancesMap;
   private LockManager lockManager;
 
   private final DecoratorTestCollection trackedDecorators;
   private final Collection<Class> ignoredTypes;
   private DecoratorTestCollection decoratorsNextToProcess;
-  private DecoratorTestCollection decoratorsToProcess;
-
-  public DecoratorValidator(DecoratorTestCollection decorators,
-                            LockManager lockManager) {
-    this(decorators, Collections.emptyList(), lockManager);
-  }
-
 
   public DecoratorValidator(DecoratorTestCollection decorators,
                             Collection<Class> ignoredTypes,
+                            Collection<Class> typeDecorators,
+                            Map<Class, Object> instancesMap,
                             LockManager lockManager) {
 
     decoratorsNextToProcess = decorators;
     this.ignoredTypes = ignoredTypes;
+    this.typeDecorators = typeDecorators;
+    this.instancesMap = instancesMap;
     this.lockManager = lockManager;
     trackedDecorators = new DecoratorTestCollection();
 
@@ -56,8 +56,9 @@ public class DecoratorValidator {
   public List<DecoratorMethodFailure> checkAndReturnFailedDecorators() {
     List<DecoratorMethodFailure> result = new ArrayList<>();
 
+    int i = 1;
     while (decoratorsNextToProcess.size() > 0) {
-      decoratorsToProcess = new DecoratorTestCollection(decoratorsNextToProcess);
+      DecoratorTestCollection decoratorsToProcess = new DecoratorTestCollection(decoratorsNextToProcess);
       trackedDecorators.addAll(decoratorsToProcess);
       decoratorsNextToProcess = new DecoratorTestCollection();
       List<DecoratorMethodFailure> partialResult = decoratorsToProcess
@@ -66,6 +67,7 @@ public class DecoratorValidator {
           .flatMap(Collection::stream)
           .collect(Collectors.toList());
       result.addAll(partialResult);
+      System.out.println("Loop " + (i++));
     }
     return result;
   }
@@ -90,8 +92,9 @@ public class DecoratorValidator {
         .collect(Collectors.toList());
   }
 
-  private Optional<DecoratorMethodFailure> getMethodErrorOptional(Method method, DecoratorDefinition decorator) {
+  private Optional<DecoratorMethodFailure> getMethodErrorOptional(Method interfaceMethod, DecoratorDefinition decorator) {
     try {
+      Method method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
       method.setAccessible(true);
       Object result = executeMethod(method, decorator);
       boolean errorEnsuringLock = isErrorEnsuringLock(method, decorator);
@@ -105,7 +108,7 @@ public class DecoratorValidator {
           ? Optional.of(new DecoratorMethodFailure(decorator.getImplementingType(), method, errorReturningDecorator, errorEnsuringLock, otherErrorDetail))
           : Optional.empty();
     } catch (Exception ex) {
-      return Optional.of(DecoratorMethodFailure.otherError(decorator.getImplementingType(), method, ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName()));
+      return Optional.of(DecoratorMethodFailure.otherError(decorator.getImplementingType(), interfaceMethod, ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName()));
     }
   }
 
@@ -113,6 +116,7 @@ public class DecoratorValidator {
     if (!ignoredTypes.contains(method.getReturnType())
         && result != null //if null, it will throw an NullPointerException
         && !trackedDecorators.contains(method.getReturnType(), result.getClass())
+        && !decoratorsNextToProcess.contains(method.getReturnType(), result.getClass())
         && shouldReturnObjectBeGuarded(method)) {
       decoratorsNextToProcess.addRawDecorator(method.getReturnType(), result.getClass());
     }
@@ -120,8 +124,13 @@ public class DecoratorValidator {
 
   private boolean isErrorEnsuringLock(Method method, DecoratorDefinition decorator) throws NoSuchMethodException {
 
+    NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
+    List<NonLockGuardedType> noGuardedLockTypes = nonLockGuarded != null ? Arrays.asList(nonLockGuarded.value()) : Collections.emptyList();
+    if (noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE)) {
+      return false;
+    }
     Collection<Invocation> invocations = Mockito.mockingDetails(lockManager).getInvocations();
-    return !decorator.getNoLockGardMethods().contains(method.getName()) && (invocations.size() != 1 || !invocations.iterator()
+    return (invocations.size() != 1 || !invocations.iterator()
         .next()
         .getMethod()
         .equals(LockManager.class.getMethod("ensureLockDefault")));
@@ -134,9 +143,10 @@ public class DecoratorValidator {
   }
 
   private Object executeMethod(Method method, DecoratorDefinition decorator) throws IllegalAccessException, InvocationTargetException {
-    return method.invoke(
-        decorator.getInstance().orElseGet(() -> getDecoratorInstance(decorator, new LockGuardInvokerImpl(lockManager))),
-        getNullParametersFromMethod(method));
+    Object instance = instancesMap.containsKey(decorator.getImplementingType())
+        ? instancesMap.get(decorator.getImplementingType())
+        : getDecoratorInstance(decorator, new LockGuardInvokerImpl(lockManager));
+    return method.invoke(instance, getDefaultParametersFromMethod(method));
   }
 
 
@@ -151,21 +161,54 @@ public class DecoratorValidator {
     }
   }
 
-  //TODO change the way to validate if it's a validator...maybe implementing interface Validator
+  //TODO improve the way to validate if it's validator
   private boolean isDecoratorImplementation(Object result) {
-    return decoratorsToProcess.stream().map(DecoratorDefinition::getImplementingType).anyMatch(result.getClass()::equals);
+    Class<?> resultClass = result.getClass();
+    return typeDecorators.contains(resultClass) || resultClass.getSimpleName().endsWith("DecoratorImpl");
   }
 
-  private static Object[] getNullParametersFromMethod(Method method) {
+  private static Object[] getDefaultParametersFromMethod(Method method) {
     Class[] parametersType = method.getParameterTypes();
     Object[] parameters = new Object[parametersType.length];
     for (int i = 0; i < parametersType.length; i++) {
-      parameters[i] = parametersType[i].cast(null);
+      if (parametersType[i].isPrimitive()) {
+        parameters[i] = getDefaultPrimitiveValue(parametersType[i]);
+      } else {
+        parameters[i] = parametersType[i].cast(null);
+
+      }
     }
     return parameters;
   }
 
-  //It should return false also if it's an standard JDK interface and even if it't not an interface at all, to force annotations
+  private static Object getDefaultPrimitiveValue(Class clazz) {
+    if (clazz == Integer.TYPE)
+      return Integer.MIN_VALUE;
+
+    if (clazz == Long.TYPE)
+      return Long.MIN_VALUE;
+
+    if (clazz == Boolean.TYPE)
+      return false;
+
+    if (clazz == Byte.TYPE)
+      return Byte.MIN_VALUE;
+
+    if (clazz == Character.TYPE)
+      return 'c';
+
+    if (clazz == Float.TYPE)
+      return Float.MIN_VALUE;
+
+    if (clazz == Double.TYPE)
+      return Double.MIN_VALUE;
+
+    if (clazz == Short.TYPE)
+      return Short.MIN_VALUE;
+
+    return null;
+  }
+
   private boolean shouldReturnObjectBeGuarded(Method method) {
     NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
     List<NonLockGuardedType> noGuardedLockTypes = nonLockGuarded != null ? Arrays.asList(nonLockGuarded.value()) : Collections.emptyList();

@@ -19,4 +19,9 @@ public interface ChangockIterator<T> extends Iterator<T> {
   default T next() {
     return getInvoker().invoke(()-> getImpl().next());
   }
+
+  @Override
+  default void remove() {
+    throw new UnsupportedOperationException("remove");
+  }
 }

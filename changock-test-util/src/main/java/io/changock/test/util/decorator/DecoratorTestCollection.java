@@ -1,8 +1,6 @@
 package io.changock.test.util.decorator;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 
 public class DecoratorTestCollection extends ArrayList<DecoratorDefinition> {
 
@@ -13,20 +11,11 @@ public class DecoratorTestCollection extends ArrayList<DecoratorDefinition> {
     super(initial);
   }
 
-  public <T> DecoratorTestCollection addDecorator(Class<T> interfaceType, Class<? extends T> implementingClass, String... noLockGardMethods) {
-    this.add(new DecoratorDefinition(interfaceType, implementingClass, noLockGardMethods));
-    return this;
-  }
-
   public <T> DecoratorTestCollection addDecorator(Class<T> interfaceType, Class<? extends T> implementingClass) {
     this.add(new DecoratorDefinition(interfaceType, implementingClass));
     return this;
   }
 
-  public <T, R extends T> DecoratorTestCollection addDecorator(Class<T> interfaceType, Class<R> implementingClass, R instance, String... noLockGardMethods) {
-    this.add(new DecoratorDefinition(interfaceType, implementingClass, instance, noLockGardMethods));
-    return this;
-  }
 
   public DecoratorTestCollection addRawDecorator(Class interfaceType, Class implementingClass) {
     this.add(new DecoratorDefinition(interfaceType, implementingClass));

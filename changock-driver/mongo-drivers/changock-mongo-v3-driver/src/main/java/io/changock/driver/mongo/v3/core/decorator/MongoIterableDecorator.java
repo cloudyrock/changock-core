@@ -7,8 +7,14 @@ import com.mongodb.client.MongoIterable;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoCursorDecoratorImpl;
 import io.changock.driver.mongo.v3.core.decorator.impl.MongoIterableDecoratorImpl;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 
 public interface MongoIterableDecorator<T> extends MongoIterable<T> {
 
@@ -49,5 +55,18 @@ public interface MongoIterableDecorator<T> extends MongoIterable<T> {
   @Override
   default MongoCursor<T> cursor() {
     return new MongoCursorDecoratorImpl<>(getInvoker().invoke(() -> getImpl().cursor()), getInvoker());
+  }
+
+
+  @Override
+  @NonLockGuarded
+  default void forEach(Consumer<? super T> action) {
+    getImpl().forEach(action);
+  }
+
+  @Override
+  @NonLockGuarded(NonLockGuardedType.RETURN)
+  default Spliterator<T> spliterator() {
+    return Spliterators.spliteratorUnknownSize(iterator(), 0);
   }
 }
