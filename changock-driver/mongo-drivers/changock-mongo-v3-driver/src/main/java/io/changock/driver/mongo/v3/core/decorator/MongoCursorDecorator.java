@@ -6,7 +6,7 @@ import com.mongodb.client.MongoCursor;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.migration.api.annotations.NonLockGuarded;
 
-public interface MongoCursorDecorator<T> extends MongoCursor<T> {
+public interface MongoCursorDecorator<T> extends MongoCursor<T>, ChangockIterator<T> {
 
   MongoCursor<T> getImpl();
 

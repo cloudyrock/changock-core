@@ -67,7 +67,6 @@ public class DecoratorValidator {
           .flatMap(Collection::stream)
           .collect(Collectors.toList());
       result.addAll(partialResult);
-      System.out.println("Loop " + (i++));
     }
     return result;
   }
@@ -92,12 +91,18 @@ public class DecoratorValidator {
         .collect(Collectors.toList());
   }
 
+  @SuppressWarnings("unchecked")
   private Optional<DecoratorMethodFailure> getMethodErrorOptional(Method interfaceMethod, DecoratorDefinition decorator) {
+    Method method;
     try {
-      Method method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+      method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
       method.setAccessible(true);
+      List<NonLockGuardedType> noGuardedLockTypes = getNonLockGuardedTypes(method);
+      if(noGuardedLockTypes.contains(NonLockGuardedType.NONE)) {
+        return Optional.empty();
+      }
       Object result = executeMethod(method, decorator);
-      boolean errorEnsuringLock = isErrorEnsuringLock(method, decorator);
+      boolean errorEnsuringLock = isErrorEnsuringLock(noGuardedLockTypes, decorator);
       addResultToValidateIfRequired(result, method);
       boolean errorReturningDecorator = isErrorReturningDecorator(method, result, decorator);
       String otherErrorDetail = shouldReturnObjectBeGuarded(method)
@@ -112,6 +117,11 @@ public class DecoratorValidator {
     }
   }
 
+  private List<NonLockGuardedType> getNonLockGuardedTypes(Method method) {
+    NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
+    return nonLockGuarded != null ? Arrays.asList(nonLockGuarded.value()) : Collections.emptyList();
+  }
+
   private void addResultToValidateIfRequired(Object result, Method method) {
     if (!ignoredTypes.contains(method.getReturnType())
         && result != null //if null, it will throw an NullPointerException
@@ -122,10 +132,7 @@ public class DecoratorValidator {
     }
   }
 
-  private boolean isErrorEnsuringLock(Method method, DecoratorDefinition decorator) throws NoSuchMethodException {
-
-    NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
-    List<NonLockGuardedType> noGuardedLockTypes = nonLockGuarded != null ? Arrays.asList(nonLockGuarded.value()) : Collections.emptyList();
+  private boolean isErrorEnsuringLock(List<NonLockGuardedType> noGuardedLockTypes, DecoratorDefinition decorator) throws NoSuchMethodException {
     if (noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE)) {
       return false;
     }
@@ -210,18 +217,13 @@ public class DecoratorValidator {
   }
 
   private boolean shouldReturnObjectBeGuarded(Method method) {
-    NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
-    List<NonLockGuardedType> noGuardedLockTypes = nonLockGuarded != null ? Arrays.asList(nonLockGuarded.value()) : Collections.emptyList();
+    List<NonLockGuardedType> noGuardedLockTypes = getNonLockGuardedTypes(method);
 
     return !Void.TYPE.equals(method.getReturnType())
         && !ignoredTypes.contains(method.getReturnType())
         && !noGuardedLockTypes.contains(NonLockGuardedType.RETURN)
         && !noGuardedLockTypes.contains(NonLockGuardedType.NONE)
         && !method.getReturnType().isAnnotationPresent(NonLockGuarded.class);
-  }
-
-  private static boolean shouldMethodBeLockGuarded(List<NonLockGuardedType> noGuardedLockTypes) {
-    return !noGuardedLockTypes.contains(NonLockGuardedType.METHOD) && !noGuardedLockTypes.contains(NonLockGuardedType.NONE);
   }
 
 

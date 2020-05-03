@@ -28,7 +28,7 @@ public interface DistinctIterableDecorator<T> extends MongoIterableDecorator<T>,
   @Override
   @NonLockGuarded
   default DistinctIterable<T> batchSize(int batchSize) {
-    return new DistinctIterableDecoratorImpl<>(getImpl().batchSize(batchSize).batchSize(batchSize), getInvoker());
+    return new DistinctIterableDecoratorImpl<>(getImpl().batchSize(batchSize), getInvoker());
   }
 
   @Override
