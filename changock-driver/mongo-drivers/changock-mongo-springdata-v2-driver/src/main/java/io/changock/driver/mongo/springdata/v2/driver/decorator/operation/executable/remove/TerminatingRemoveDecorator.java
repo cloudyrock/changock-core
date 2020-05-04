@@ -17,7 +17,7 @@ public interface TerminatingRemoveDecorator<T> extends Invokable, ExecutableRemo
 
   @Override
   default DeleteResult one() {
-    return getInvoker().invoke(()-> getImpl().all());
+    return getInvoker().invoke(()-> getImpl().one());
   }
 
   @Override

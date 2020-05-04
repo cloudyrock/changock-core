@@ -69,7 +69,13 @@ public interface BulkOperationsDecorator extends BulkOperations {
 
     @Override
     default BulkOperations replaceOne(Query query, Object replacement, FindAndReplaceOptions options) {
-        return new BulkOperationsDecoratorImpl(getInvoker().invoke(() -> getImpl().replaceOne(query, replacement)), getInvoker());
+        return new BulkOperationsDecoratorImpl(getInvoker().invoke(() -> getImpl().replaceOne(query, replacement, options)), getInvoker());
+    }
+
+    @Override
+
+    default BulkOperations replaceOne(Query query, Object replacement) {
+      return new BulkOperationsDecoratorImpl(getInvoker().invoke(() -> getImpl().replaceOne(query, replacement)), getInvoker());
     }
 
     @Override

@@ -4,6 +4,7 @@ import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.decorator.DecoratorBase;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
+import io.changock.migration.api.annotations.DecoratorDiverted;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.mockito.Mockito;
@@ -110,8 +111,7 @@ public class DecoratorValidator {
       Object instance = getDecoratorInstance(decorator);
       Object result = executeMethod(method, instance, decorator);
       addResultToValidateIfRequired(result, method);
-      boolean errorCallingRightImplMethod = !isCallingRightImplMethod(instance, method);
-      return packageResult(decorator, method, result, isErrorEnsuringLock(noGuardedLockTypes), isErrorReturningDecorator(method, result, decorator), errorCallingRightImplMethod);
+      return packageResult(decorator, method, result, isErrorEnsuringLock(noGuardedLockTypes), isErrorReturningDecorator(method, result, decorator), !isCallingRightImplMethod(instance, method));
     } catch (Exception ex) {
       return Optional.of(DecoratorMethodFailure.otherError(decorator.getImplementingType(), interfaceMethod, ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName()));
     }
@@ -133,8 +133,7 @@ public class DecoratorValidator {
   }
 
   private boolean isErrorEnsuringLock(List<NonLockGuardedType> noGuardedLockTypes) throws NoSuchMethodException {
-    return !(noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE))
-        && errorInLockInvocations();
+    return !(noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE)) && errorInLockInvocations();
   }
 
   private boolean errorInLockInvocations() throws NoSuchMethodException {
@@ -155,24 +154,41 @@ public class DecoratorValidator {
 
 
   private boolean isCallingRightImplMethod(Object instance, Method decoratorMethod) throws Exception {
+    if (decoratorMethod.isAnnotationPresent(DecoratorDiverted.class)) {
+      return true;
+    }
     Object implMock = instance.getClass().getMethod("getImpl").invoke(instance);
-    return areBothMethodsEquivalent(
+    return areEquivalent(
         Mockito.mockingDetails(implMock).getInvocations().iterator().next().getMethod(),
         decoratorMethod);
   }
 
-  private boolean areBothMethodsEquivalent(Method implMethod, Method decoratorMethod) {
-    return false;
+  private boolean areEquivalent(Method implMethod, Method decoratorMethod) {
+    for (int i = 0; i < implMethod.getParameterTypes().length; i++) {
+      if (!implMethod.getParameterTypes()[i].equals(decoratorMethod.getParameterTypes()[i])) {
+        return false;
+      }
+    }
+    String name = implMethod.getName();
+    String name1 = decoratorMethod.getName();
+    return implMethod.getParameterTypes().length == decoratorMethod.getParameterTypes().length
+        && name.equals(name1)
+        && decoratorMethod.getReturnType().isAssignableFrom(implMethod.getReturnType());
+
   }
 
   @SuppressWarnings("unchecked")
   private Object getDecoratorInstance(DecoratorDefinition decorator) {
     try {
-      return instancesMap.containsKey(decorator.getImplementingType())
-          ? instancesMap.get(decorator.getImplementingType())
-          : decorator.getImplementingType()
-          .getConstructor(decorator.getInterfaceType(), LockGuardInvoker.class)
-          .newInstance(Mockito.mock(decorator.getImplementingType()), new LockGuardInvokerImpl(lockManager));
+      if (instancesMap.containsKey(decorator.getImplementingType())) {
+        Object instance = instancesMap.get(decorator.getImplementingType());
+        Mockito.reset(instance.getClass().getMethod("getImpl").invoke(instance));
+        return instance;
+      } else {
+        return decorator.getImplementingType()
+            .getConstructor(decorator.getInterfaceType(), LockGuardInvoker.class)
+            .newInstance(Mockito.mock(decorator.getInterfaceType()), new LockGuardInvokerImpl(lockManager));
+      }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -182,9 +198,7 @@ public class DecoratorValidator {
   //TODO make all the decorator implements DecoratorBase, so we remove: resultClass.getSimpleName().endsWith("DecoratorImpl")
   private boolean isDecoratorImplementation(Object result) {
     Class<?> resultClass = result.getClass();
-    return decoratorsWithDifferentNameConvention.contains(resultClass)
-        || resultClass.getSimpleName().endsWith("DecoratorImpl")
-        || DecoratorBase.class.isAssignableFrom(resultClass);
+    return decoratorsWithDifferentNameConvention.contains(resultClass) || resultClass.getSimpleName().endsWith("DecoratorImpl") || DecoratorBase.class.isAssignableFrom(resultClass);
   }
 
   private static Object[] getDefaultParametersFromMethod(Method method) {
@@ -231,19 +245,6 @@ public class DecoratorValidator {
     return ignoreJavaStructures && javaStructuresTypes.contains(c);
   }
 
-  //TODO keep adding more on demand
-  private Collection<Class> javaStructuresTypes = Arrays.asList(
-      List.class,
-      Collection.class,
-      Map.class,
-      HashMap.class,
-      Set.class,
-      HashSet.class,
-      Stream.class,
-      Object.class,
-      Class.class
-  );
-
   private Optional<DecoratorMethodFailure> packageResult(DecoratorDefinition decorator,
                                                          Method method,
                                                          Object result,
@@ -265,4 +266,17 @@ public class DecoratorValidator {
     method.setAccessible(true);
     return method;
   }
+
+  //TODO keep adding more on demand
+  private Collection<Class> javaStructuresTypes = Arrays.asList(
+      List.class,
+      Collection.class,
+      Map.class,
+      HashMap.class,
+      Set.class,
+      HashSet.class,
+      Stream.class,
+      Object.class,
+      Class.class
+  );
 }

@@ -365,7 +365,7 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
 
   @Override
   public UpdateResult updateFirst(final Query query, final Update update, final String collectionName) {
-    return getInvoker().invoke(() -> getImpl().upsert(query, update, collectionName));
+    return getInvoker().invoke(() -> getImpl().updateFirst(query, update, collectionName));
   }
 
   @Override

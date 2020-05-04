@@ -1,4 +1,4 @@
-package io.changock.driver.mongo.v3.core.decorator;
+package io.changock.driver.mongo.syncv4.core.decorator;
 
 import com.mongodb.MongoNamespace;
 import com.mongodb.ReadConcern;
@@ -9,10 +9,12 @@ import com.mongodb.WriteConcern;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertManyResult;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
-import io.changock.driver.mongo.v3.core.decorator.impl.MongoDataBaseDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.MongoDataBaseDecoratorImpl;
 import io.changock.test.util.decorator.DecoratorMethodFailure;
 import io.changock.test.util.decorator.DecoratorTestCollection;
 import io.changock.test.util.decorator.DecoratorValidator;
@@ -65,20 +67,23 @@ public class DecoratorUTest {
   private Collection<Class> getIgnoredTypes() {
     return new ArrayList<>(Arrays.asList(
         Document.class
+        , BsonDocument.class
         , DeleteResult.class
         , UpdateResult.class
-        , MongoNamespace.class
+        , InsertOneResult.class
+        , InsertManyResult.class
+        , BulkWriteResult.class
         , CodecRegistry.class
         , ReadPreference.class
         , ReadConcern.class
         , WriteConcern.class
-        , BulkWriteResult.class
-        , BsonDocument.class
         , ServerCursor.class
         , ServerAddress.class
+        , MongoNamespace.class
         , Optional.class
     ));
   }
+
 
 
 }
