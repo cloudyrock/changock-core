@@ -45,6 +45,7 @@ public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTI
    * @param lockKey key
    * @return LockEntry
    */
+  //TODO Optional
   LockEntry findByKey(String lockKey);
 
   /**
