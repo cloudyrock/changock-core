@@ -1,18 +1,16 @@
-package io.changock.driver.mongo.v3.core.decorator;
+package io.changock.driver.mongo.syncv4.core.decorator;
 
-import com.mongodb.Block;
 import com.mongodb.Function;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoIterable;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
-import io.changock.driver.mongo.v3.core.decorator.impl.MongoCursorDecoratorImpl;
-import io.changock.driver.mongo.v3.core.decorator.impl.MongoIterableDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.MongoCursorDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.MongoIterableDecoratorImpl;
 import io.changock.migration.api.annotations.DecoratorDiverted;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.annotations.NonLockGuardedType;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -36,11 +34,6 @@ public interface MongoIterableDecorator<T> extends MongoIterable<T> {
   @Override
   default <U> MongoIterable<U> map(Function<T, U> mapper) {
     return new MongoIterableDecoratorImpl<>(getInvoker().invoke(() -> getImpl().map(mapper)), getInvoker());
-  }
-
-  @Override
-  default void forEach(Block<? super T> block) {
-    getInvoker().invoke(() -> getImpl().forEach(block));
   }
 
   @Override

@@ -4,6 +4,7 @@ import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface TerminatingFindDecorator<T> extends ExecutableFindOperation.TerminatingFind<T> {
@@ -13,8 +14,18 @@ public interface TerminatingFindDecorator<T> extends ExecutableFindOperation.Ter
   LockGuardInvoker getInvoker();
 
   @Override
+  default Optional<T> one() {
+    return getInvoker().invoke(()-> getImpl().one());
+  }
+
+  @Override
   default T oneValue() {
     return getInvoker().invoke(()-> getImpl().oneValue());
+  }
+
+  @Override
+  default Optional<T> first() {
+    return getInvoker().invoke(()-> getImpl().first());
   }
 
   @Override

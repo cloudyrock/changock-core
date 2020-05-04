@@ -1,11 +1,10 @@
-package io.changock.driver.mongo.v3.core.decorator;
+package io.changock.driver.mongo.syncv4.core.decorator;
 
 import com.mongodb.CursorType;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Collation;
-import io.changock.driver.mongo.v3.core.decorator.impl.FindIterableDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.FindIterableDecoratorImpl;
 import io.changock.migration.api.annotations.NonLockGuarded;
-import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.bson.conversions.Bson;
 
 import java.util.concurrent.TimeUnit;
@@ -48,13 +47,6 @@ public interface FindIterableDecorator<T> extends MongoIterableDecorator<T>, Fin
   @NonLockGuarded
   default FindIterable<T> maxAwaitTime(long maxAwaitTime, TimeUnit timeUnit) {
     return new FindIterableDecoratorImpl<>(getImpl().maxAwaitTime(maxAwaitTime, timeUnit), getInvoker());
-  }
-
-  @Override
-  @Deprecated
-  @NonLockGuarded
-  default FindIterable<T> modifiers(Bson modifiers) {
-    return new FindIterableDecoratorImpl<>(getImpl().modifiers(modifiers), getInvoker());
   }
 
   @Override
@@ -131,12 +123,6 @@ public interface FindIterableDecorator<T> extends MongoIterableDecorator<T>, Fin
 
   @Override
   @NonLockGuarded
-  default FindIterable<T> maxScan(long maxScan) {
-    return new FindIterableDecoratorImpl<>(getImpl().maxScan(maxScan), getInvoker());
-  }
-
-  @Override
-  @NonLockGuarded
   default FindIterable<T> returnKey(boolean returnKey) {
     return new FindIterableDecoratorImpl<>(getImpl().returnKey(returnKey), getInvoker());
   }
@@ -147,9 +133,11 @@ public interface FindIterableDecorator<T> extends MongoIterableDecorator<T>, Fin
     return new FindIterableDecoratorImpl<>(getImpl().showRecordId(showRecordId), getInvoker());
   }
 
+  //from v4.0.2
   @Override
   @NonLockGuarded
-  default FindIterable<T> snapshot(boolean snapshot) {
-    return new FindIterableDecoratorImpl<>(getImpl().snapshot(snapshot), getInvoker());
+  default FindIterable<T> hintString(String s) {
+    return new FindIterableDecoratorImpl<>(getImpl().hintString(s), getInvoker());
   }
+
 }

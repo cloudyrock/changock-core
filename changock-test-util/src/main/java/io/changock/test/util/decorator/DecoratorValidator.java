@@ -4,6 +4,7 @@ import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.decorator.DecoratorBase;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
+import io.changock.migration.api.annotations.DecoratorDiverted;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.mockito.Mockito;
@@ -24,6 +25,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+//TODO validate deocrator is calling the same method in the implementation(same name, same parameters)
 public class DecoratorValidator {
 
   private final Collection<Class> decoratorsWithDifferentNameConvention;
@@ -105,9 +108,10 @@ public class DecoratorValidator {
       }
       //Note: Keep execution order of next statements
       Mockito.reset(lockManager);
-      Object result = executeMethod(method, decorator);
+      Object instance = getDecoratorInstance(decorator);
+      Object result = executeMethod(method, instance, decorator);
       addResultToValidateIfRequired(result, method);
-      return packageResult(decorator, method, result, isErrorEnsuringLock(noGuardedLockTypes), isErrorReturningDecorator(method, result, decorator));
+      return packageResult(decorator, method, result, isErrorEnsuringLock(noGuardedLockTypes), isErrorReturningDecorator(method, result, decorator), !isCallingRightImplMethod(instance, method));
     } catch (Exception ex) {
       return Optional.of(DecoratorMethodFailure.otherError(decorator.getImplementingType(), interfaceMethod, ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName()));
     }
@@ -129,11 +133,10 @@ public class DecoratorValidator {
   }
 
   private boolean isErrorEnsuringLock(List<NonLockGuardedType> noGuardedLockTypes) throws NoSuchMethodException {
-    return !(noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE))
-        && checkLockInvocations();
+    return !(noGuardedLockTypes.contains(NonLockGuardedType.METHOD) || noGuardedLockTypes.contains(NonLockGuardedType.NONE)) && errorInLockInvocations();
   }
 
-  private boolean checkLockInvocations() throws NoSuchMethodException {
+  private boolean errorInLockInvocations() throws NoSuchMethodException {
     Collection<Invocation> invocations = Mockito.mockingDetails(lockManager).getInvocations();
     return (invocations.size() != 1 || !invocations.iterator()
         .next()
@@ -145,30 +148,57 @@ public class DecoratorValidator {
     return shouldReturnObjectBeGuarded(method) && (result == null || !isDecoratorImplementation(result));
   }
 
-  private Object executeMethod(Method method, DecoratorDefinition decorator) throws IllegalAccessException, InvocationTargetException {
-    Object instance = instancesMap.containsKey(decorator.getImplementingType())
-        ? instancesMap.get(decorator.getImplementingType())
-        : getDecoratorInstance(decorator, new LockGuardInvokerImpl(lockManager));
+  private Object executeMethod(Method method, Object instance, DecoratorDefinition decorator) throws IllegalAccessException, InvocationTargetException {
     return method.invoke(instance, getDefaultParametersFromMethod(method));
   }
 
+
+  private boolean isCallingRightImplMethod(Object instance, Method decoratorMethod) throws Exception {
+    if (decoratorMethod.isAnnotationPresent(DecoratorDiverted.class)) {
+      return true;
+    }
+    Object implMock = instance.getClass().getMethod("getImpl").invoke(instance);
+    return areEquivalent(
+        Mockito.mockingDetails(implMock).getInvocations().iterator().next().getMethod(),
+        decoratorMethod);
+  }
+
+  private boolean areEquivalent(Method implMethod, Method decoratorMethod) {
+    for (int i = 0; i < implMethod.getParameterTypes().length; i++) {
+      if (!implMethod.getParameterTypes()[i].equals(decoratorMethod.getParameterTypes()[i])) {
+        return false;
+      }
+    }
+    String name = implMethod.getName();
+    String name1 = decoratorMethod.getName();
+    return implMethod.getParameterTypes().length == decoratorMethod.getParameterTypes().length
+        && name.equals(name1)
+        && decoratorMethod.getReturnType().isAssignableFrom(implMethod.getReturnType());
+
+  }
+
   @SuppressWarnings("unchecked")
-  private Object getDecoratorInstance(DecoratorDefinition decorator, LockGuardInvoker invokerMock) {
+  private Object getDecoratorInstance(DecoratorDefinition decorator) {
     try {
-      return decorator.getImplementingType()
-          .getConstructor(decorator.getInterfaceType(), LockGuardInvoker.class)
-          .newInstance(Mockito.mock(decorator.getImplementingType()), invokerMock);
+      if (instancesMap.containsKey(decorator.getImplementingType())) {
+        Object instance = instancesMap.get(decorator.getImplementingType());
+        Mockito.reset(instance.getClass().getMethod("getImpl").invoke(instance));
+        return instance;
+      } else {
+        return decorator.getImplementingType()
+            .getConstructor(decorator.getInterfaceType(), LockGuardInvoker.class)
+            .newInstance(Mockito.mock(decorator.getInterfaceType()), new LockGuardInvokerImpl(lockManager));
+      }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+
   }
 
   //TODO make all the decorator implements DecoratorBase, so we remove: resultClass.getSimpleName().endsWith("DecoratorImpl")
   private boolean isDecoratorImplementation(Object result) {
     Class<?> resultClass = result.getClass();
-    return decoratorsWithDifferentNameConvention.contains(resultClass)
-        || resultClass.getSimpleName().endsWith("DecoratorImpl")
-        || DecoratorBase.class.isAssignableFrom(resultClass);
+    return decoratorsWithDifferentNameConvention.contains(resultClass) || resultClass.getSimpleName().endsWith("DecoratorImpl") || DecoratorBase.class.isAssignableFrom(resultClass);
   }
 
   private static Object[] getDefaultParametersFromMethod(Method method) {
@@ -215,6 +245,28 @@ public class DecoratorValidator {
     return ignoreJavaStructures && javaStructuresTypes.contains(c);
   }
 
+  private Optional<DecoratorMethodFailure> packageResult(DecoratorDefinition decorator,
+                                                         Method method,
+                                                         Object result,
+                                                         boolean errorEnsuringLock,
+                                                         boolean errorReturningDecorator,
+                                                         boolean errorCallingRightImplMethod) {
+    String otherErrorDetail = errorCallingRightImplMethod
+        ? "not calling the right impl method"
+        : shouldReturnObjectBeGuarded(method) && result == null ? "returns null" : "";
+    return errorEnsuringLock || errorReturningDecorator || errorCallingRightImplMethod || !otherErrorDetail.isEmpty()
+        ? Optional.of(new DecoratorMethodFailure(decorator.getImplementingType(), method, errorReturningDecorator, errorEnsuringLock, otherErrorDetail))
+        : Optional.empty();
+  }
+
+  @SuppressWarnings("unchecked")
+  private Method getAccessibleMethod(Method interfaceMethod, DecoratorDefinition decorator) throws NoSuchMethodException {
+    Method method;
+    method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+    method.setAccessible(true);
+    return method;
+  }
+
   //TODO keep adding more on demand
   private Collection<Class> javaStructuresTypes = Arrays.asList(
       List.class,
@@ -227,19 +279,4 @@ public class DecoratorValidator {
       Object.class,
       Class.class
   );
-
-  private Optional<DecoratorMethodFailure> packageResult(DecoratorDefinition decorator, Method method, Object result, boolean errorEnsuringLock, boolean errorReturningDecorator) {
-    String otherErrorDetail = shouldReturnObjectBeGuarded(method) && result == null ? "returns null" : "";;
-    return errorEnsuringLock || errorReturningDecorator
-        ? Optional.of(new DecoratorMethodFailure(decorator.getImplementingType(), method, errorReturningDecorator, errorEnsuringLock, otherErrorDetail))
-        : Optional.empty();
-  }
-
-  @SuppressWarnings("unchecked")
-  private Method getAccessibleMethod(Method interfaceMethod, DecoratorDefinition decorator) throws NoSuchMethodException {
-    Method method;
-    method = decorator.getImplementingType().getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
-    method.setAccessible(true);
-    return method;
-  }
 }
