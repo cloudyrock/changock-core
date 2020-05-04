@@ -47,8 +47,7 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
-      <version>${mongo.driver}
-      </version><!-- Make sure that decorators are adapted to new systemVersion(see file dependency_upgrade_considerations -->
+      <version>${mongo.driver}</version>
     </dependency>
 
     <dependency>
