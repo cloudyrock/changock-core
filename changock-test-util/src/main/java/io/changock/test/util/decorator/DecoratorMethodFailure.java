@@ -2,6 +2,7 @@ package io.changock.test.util.decorator;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DecoratorMethodFailure {
 
@@ -65,7 +66,14 @@ public class DecoratorMethodFailure {
         .append(type.getSimpleName())
         .append(".")
         .append(method.getName())
-        .append(" -> ");
+        .append("(");
+
+    boolean commaParams = false;
+    for(int i = 0 ; i< method.getParameterTypes().length ; i++) {
+      sb.append(commaParams ? ", " : "").append(method.getParameterTypes()[i].getSimpleName());
+      commaParams = true;
+    }
+    sb.append(")").append(" -> ");
     boolean coma = false;
     if (errorReturningDecorator) {
       sb.append(" no returned decorator");

@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 
 public class DecoratorValidator {
 
-  private final Collection<Class> typeDecorators;
+  private final Collection<Class> decoratorsWithDifferentNameConvention;
   private final Map<Class, Object> instancesMap;
   private final LockManager lockManager;
   private final DecoratorTestCollection trackedDecorators;
@@ -38,22 +38,22 @@ public class DecoratorValidator {
 
   public DecoratorValidator(DecoratorTestCollection decorators,
                             Collection<Class> ignoredTypes,
-                            Collection<Class> typeDecorators,
+                            Collection<Class> decoratorsWithDifferentNameConvention,
                             Map<Class, Object> instancesMap,
                             LockManager lockManager) {
-    this(decorators, ignoredTypes, typeDecorators, instancesMap, true, true, lockManager);
+    this(decorators, ignoredTypes, decoratorsWithDifferentNameConvention, instancesMap, true, true, lockManager);
   }
 
   public DecoratorValidator(DecoratorTestCollection decorators,
                             Collection<Class> ignoredTypes,
-                            Collection<Class> typeDecorators,
+                            Collection<Class> decoratorsWithDifferentNameConvention,
                             Map<Class, Object> instancesMap,
                             boolean ignorePrimitives,
                             boolean ignoreJavaStructures,
                             LockManager lockManager) {
     decoratorsNextToProcess = decorators;
     this.ignoredTypes = ignoredTypes;
-    this.typeDecorators = typeDecorators;
+    this.decoratorsWithDifferentNameConvention = decoratorsWithDifferentNameConvention;
     this.instancesMap = instancesMap;
     this.ignorePrimitives = ignorePrimitives;
     this.ignoreJavaStructures = ignoreJavaStructures;
@@ -104,6 +104,7 @@ public class DecoratorValidator {
         return Optional.empty();
       }
       //Note: Keep execution order of next statements
+      Mockito.reset(lockManager);
       Object result = executeMethod(method, decorator);
       addResultToValidateIfRequired(result, method);
       return packageResult(decorator, method, result, isErrorEnsuringLock(noGuardedLockTypes), isErrorReturningDecorator(method, result, decorator));
@@ -141,7 +142,6 @@ public class DecoratorValidator {
   }
 
   private boolean isErrorReturningDecorator(Method method, Object result, DecoratorDefinition decorator) throws Exception {
-    Mockito.reset(lockManager);
     return shouldReturnObjectBeGuarded(method) && (result == null || !isDecoratorImplementation(result));
   }
 
@@ -166,7 +166,7 @@ public class DecoratorValidator {
   //TODO make all the decorator implements DecoratorBase, so we remove: resultClass.getSimpleName().endsWith("DecoratorImpl")
   private boolean isDecoratorImplementation(Object result) {
     Class<?> resultClass = result.getClass();
-    return typeDecorators.contains(resultClass)
+    return decoratorsWithDifferentNameConvention.contains(resultClass)
         || resultClass.getSimpleName().endsWith("DecoratorImpl")
         || DecoratorBase.class.isAssignableFrom(resultClass);
   }
