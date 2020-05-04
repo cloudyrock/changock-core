@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+//TODO validate deocrator is calling the same method in the implementation(same name, same parameters)
 public class DecoratorValidator {
 
   private final Collection<Class> decoratorsWithDifferentNameConvention;

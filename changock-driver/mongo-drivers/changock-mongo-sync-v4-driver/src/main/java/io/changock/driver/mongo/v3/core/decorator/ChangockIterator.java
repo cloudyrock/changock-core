@@ -1,0 +1,39 @@
+package io.changock.driver.mongo.v3.core.decorator;
+
+import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
+
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+public interface ChangockIterator<T> extends Iterator<T> {
+
+  Iterator<T> getImpl();
+
+  LockGuardInvoker getInvoker();
+
+  @Override
+  default boolean hasNext() {
+    return getInvoker().invoke(() -> getImpl().hasNext());
+  }
+
+  @Override
+  default T next() {
+    return getInvoker().invoke(()-> getImpl().next());
+  }
+
+  @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
+  default void remove() {
+    getImpl().remove();
+  }
+
+
+  @Override
+  @NonLockGuarded(NonLockGuardedType.NONE)
+  default void forEachRemaining(Consumer<? super T> action) {
+    getImpl().forEachRemaining(action);
+  }
+}

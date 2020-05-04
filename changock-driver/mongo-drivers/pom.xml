@@ -14,6 +14,7 @@
   <modules>
     <module>changock-mongo-v3-driver</module>
     <module>changock-mongo-springdata-v2-driver</module>
+    <module>changock-mongo-sync-v4-driver</module>
   </modules>
 
   <properties>
