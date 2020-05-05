@@ -50,49 +50,49 @@ public class MongoDriverITest extends IntegrationTestBase {
   @Test
   public void shouldRunAllChangeLogsSuccessfully() {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
-    runChanges(new ChangockMongoDriver(this.getDataBase()), ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME, Collections.emptyList());
+    runChanges(new ChangockMongoSyncV4Driver(this.getDataBase()), ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME, Collections.emptyList());
   }
 
   @Test
   public void shouldRegisterChangeSetAsIgnored_WhenAlreadyExecuted_IfNotRunAlways() throws NoSuchMethodException {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     collection.insertOne(getChangeEntryDocument(ChangeLogSuccess.class.getMethod("method_0"), ChangeState.EXECUTED));
-    runChanges( new ChangockMongoDriver(this.getDataBase()),ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME, Collections.singletonList("method_0"));
+    runChanges( new ChangockMongoSyncV4Driver(this.getDataBase()),ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME, Collections.singletonList("method_0"));
   }
 
   @Test
   public void shouldRegisterChangeSetAsExecuted_WhenAlreadyExecuted_IfRunAlways() throws NoSuchMethodException {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     collection.insertOne(getChangeEntryDocument(WithRunAlways.class.getMethod("method_0"), ChangeState.EXECUTED));
-    runChanges(new ChangockMongoDriver(this.getDataBase()), WithRunAlways.class, CHANGELOG_COLLECTION_NAME);
+    runChanges(new ChangockMongoSyncV4Driver(this.getDataBase()), WithRunAlways.class, CHANGELOG_COLLECTION_NAME);
   }
 
   @Test
   public void shouldRegisterChangeSetAsExecuted_WhenAlreadyIgnored_IfNotRunAlways() throws NoSuchMethodException {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     collection.insertOne(getChangeEntryDocument(ChangeLogSuccess.class.getMethod("method_0"), ChangeState.IGNORED));
-    runChanges(new ChangockMongoDriver(this.getDataBase()), ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME);
+    runChanges(new ChangockMongoSyncV4Driver(this.getDataBase()), ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME);
   }
 
   @Test
   public void shouldRegisterChangeSetAsExecuted_WhenAlreadyIgnored_IfRunAlways() throws NoSuchMethodException {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     collection.insertOne(getChangeEntryDocument(WithRunAlways.class.getMethod("method_0"), ChangeState.IGNORED));
-    runChanges(new ChangockMongoDriver(this.getDataBase()), WithRunAlways.class, CHANGELOG_COLLECTION_NAME);
+    runChanges(new ChangockMongoSyncV4Driver(this.getDataBase()), WithRunAlways.class, CHANGELOG_COLLECTION_NAME);
   }
 
   @Test
   public void shouldRegisterChangeSetAsExecuted_WhenAlreadyFailed_IfNotRunAlways() throws NoSuchMethodException {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     collection.insertOne(getChangeEntryDocument(ChangeLogSuccess.class.getMethod("method_0"), ChangeState.FAILED));
-    runChanges(new ChangockMongoDriver(this.getDataBase()), ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME);
+    runChanges(new ChangockMongoSyncV4Driver(this.getDataBase()), ChangeLogSuccess.class, CHANGELOG_COLLECTION_NAME);
   }
 
   @Test
   public void shouldRegisterChangeSetAsExecuted_WhenAlreadyFailed_IfRunAlways() throws NoSuchMethodException {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     collection.insertOne(getChangeEntryDocument(WithRunAlways.class.getMethod("method_0"), ChangeState.FAILED));
-    runChanges(new ChangockMongoDriver(this.getDataBase()), WithRunAlways.class, CHANGELOG_COLLECTION_NAME);
+    runChanges(new ChangockMongoSyncV4Driver(this.getDataBase()), WithRunAlways.class, CHANGELOG_COLLECTION_NAME);
   }
 
 
@@ -100,7 +100,7 @@ public class MongoDriverITest extends IntegrationTestBase {
   public void shouldUseDifferentChangeLogCollectionName_whenSettingChangeLogCollectionName() {
     String newChangeLogCollectionName = "newChangeLogCollectionName";
     collection = this.getDataBase().getCollection(newChangeLogCollectionName);
-    ChangockMongoDriver driver = new ChangockMongoDriver(this.getDataBase());
+    ChangockMongoSyncV4Driver driver = new ChangockMongoSyncV4Driver(this.getDataBase());
     driver.setChangeLogCollectionName(newChangeLogCollectionName);
     runChanges(driver, ChangeLogSuccess.class, newChangeLogCollectionName, Collections.emptyList());
   }
@@ -119,10 +119,10 @@ public class MongoDriverITest extends IntegrationTestBase {
         .append(KEY_METADATA, getStringObjectMap());
   }
 
-  private void runChanges(ChangockMongoDriver driver, Class changeLogClass, String changeLogCollectionName) {
+  private void runChanges(ChangockMongoSyncV4Driver driver, Class changeLogClass, String changeLogCollectionName) {
     runChanges(driver, changeLogClass, changeLogCollectionName, Collections.emptyList());
   }
-  private void runChanges(ChangockMongoDriver driver, Class changeLogClass, String chageLogCollectionName, Collection<String> ignoredChangeIds) {
+  private void runChanges(ChangockMongoSyncV4Driver driver, Class changeLogClass, String chageLogCollectionName, Collection<String> ignoredChangeIds) {
     Map<String, Object> metadata = getStringObjectMap();
 
     String executionId = UUID.randomUUID().toString();
@@ -187,7 +187,7 @@ public class MongoDriverITest extends IntegrationTestBase {
   public void shouldFail_WhenRunningChangeLog_IfChangeSetIdDuplicated() {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner runner = TestChangockRunner.builder()
-        .setDriver(new ChangockMongoDriver(this.getDataBase()))
+        .setDriver(new ChangockMongoSyncV4Driver(this.getDataBase()))
         .addChangeLogsScanPackage(ChangeLogFailure.class.getPackage().getName())
         .build();
     exceptionRule.expect(ChangockException.class);
@@ -200,7 +200,7 @@ public class MongoDriverITest extends IntegrationTestBase {
     CallVerifier callVerifier = new CallVerifier();
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner.builder()
-        .setDriver(new ChangockMongoDriver(this.getDataBase()))
+        .setDriver(new ChangockMongoSyncV4Driver(this.getDataBase()))
         .addChangeLogsScanPackage(ChangeLogEnsureDecorator.class.getPackage().getName())
         .addDependency(CallVerifier.class, callVerifier)
         .build()
@@ -213,7 +213,7 @@ public class MongoDriverITest extends IntegrationTestBase {
     CallVerifier callVerifier = new CallVerifier();
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner.builder()
-        .setDriver(new ChangockMongoDriver(this.getDataBase()))
+        .setDriver(new ChangockMongoSyncV4Driver(this.getDataBase()))
         .addChangeLogsScanPackage(ChangeLogEnsureDecorator.class.getPackage().getName())
         .addDependency(CallVerifier.class, callVerifier)
         .addDependency(MongoDatabase.class, mock(MongoDatabase.class))// shouldn't use this, the one from the connector instead
