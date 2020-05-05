@@ -15,6 +15,7 @@ public interface TerminatingFindAndModifyDecorator<T> extends Invokable, Executa
   }
 
 
+
   @Override
   default T findAndModifyValue() {
     return getInvoker().invoke(()-> getImpl().findAndModifyValue());

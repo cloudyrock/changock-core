@@ -1,15 +1,18 @@
 package io.changock.driver.mongo.springdata.v3.driver.decorator;
 
-import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.ClientSessionDecoratorImpl;
-import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.MongoDbFactoryDecoratorImpl;
-import io.changock.driver.api.lock.guard.decorator.Invokable;
 import com.mongodb.ClientSessionOptions;
-import com.mongodb.DB;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
-import io.changock.driver.mongo.v3.core.decorator.impl.MongoDataBaseDecoratorImpl;
+import io.changock.driver.api.lock.guard.decorator.Invokable;
+import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.ClientSessionDecoratorImpl;
+import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.MongoDatabaseFactoryDecoratorImpl;
+import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.MongoDbFactoryDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.MongoDataBaseDecoratorImpl;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoDbFactory;
 
 @Deprecated
@@ -28,13 +31,18 @@ public interface MongoDbFactoryDecorator extends Invokable, MongoDbFactory {
   }
 
   @Override
-  default PersistenceExceptionTranslator getExceptionTranslator() {
-    return getImpl().getExceptionTranslator();
+  default MongoDatabase getMongoDatabase() throws DataAccessException {
+    return new MongoDataBaseDecoratorImpl(getImpl().getMongoDatabase(), getInvoker());
   }
 
   @Override
-  default DB getLegacyDb() {
-    throw new UnsupportedOperationException("Removed DB support from Mongock due to deprecated API. Please use MongoDatabase instead");
+  default MongoDatabase getMongoDatabase(String dbName) throws DataAccessException {
+    return new MongoDataBaseDecoratorImpl(getImpl().getMongoDatabase(dbName), getInvoker());
+  }
+
+  @Override
+  default PersistenceExceptionTranslator getExceptionTranslator() {
+    return getImpl().getExceptionTranslator();
   }
 
 
@@ -44,7 +52,7 @@ public interface MongoDbFactoryDecorator extends Invokable, MongoDbFactory {
   }
 
   @Override
-  default MongoDbFactory withSession(ClientSession clientSession) {
-    return new MongoDbFactoryDecoratorImpl(getInvoker().invoke(() -> getImpl().withSession(clientSession)), getInvoker());
+  default MongoDatabaseFactory withSession(ClientSession clientSession) {
+    return new MongoDatabaseFactoryDecoratorImpl(getInvoker().invoke(() -> getImpl().withSession(clientSession)), getInvoker());
   }
 }

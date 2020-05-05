@@ -5,6 +5,7 @@ import io.changock.driver.mongo.springdata.v3.driver.decorator.operation.executa
 import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.query.UpdateDefinition;
 
 public interface UpdateWithUpdateDecorator<T> extends Invokable, ExecutableUpdateOperation.UpdateWithUpdate<T> {
 
@@ -12,8 +13,8 @@ public interface UpdateWithUpdateDecorator<T> extends Invokable, ExecutableUpdat
 
 
   @Override
-  default ExecutableUpdateOperation.TerminatingUpdate<T> apply(Update update) {
-    return new TerminatingUpdateDecoratorImpl<>(getInvoker().invoke(() -> getImpl().apply(update)), getInvoker());
+  default ExecutableUpdateOperation.TerminatingUpdate<T> apply(UpdateDefinition update) {
+    return new TerminatingUpdateDecoratorImpl<>(getInvoker().invoke(()-> getImpl().apply(update)), getInvoker());
   }
 
   @Override

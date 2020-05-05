@@ -3,7 +3,7 @@ package io.changock.driver.mongo.springdata.v2.integration.test3;
 import com.mongodb.client.MongoDatabase;
 import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.MongockTemplate;
 import io.changock.driver.mongo.springdata.v2.util.CallVerifier;
-import io.changock.driver.mongo.v3.core.decorator.MongoDatabaseDecorator;
+import io.changock.driver.mongo.syncv4.core.decorator.MongoDatabaseDecorator;
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
 import org.junit.Assert;

@@ -16,8 +16,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import io.changock.driver.mongo.v3.core.decorator.impl.MongoCollectionDecoratorImpl;
-import io.changock.driver.mongo.v3.core.decorator.impl.MongoDataBaseDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.MongoCollectionDecoratorImpl;
+import io.changock.driver.mongo.syncv4.core.decorator.impl.MongoDataBaseDecoratorImpl;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.bson.Document;
@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.geo.GeoResults;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.CollectionCallback;
@@ -54,6 +55,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.query.UpdateDefinition;
 import org.springframework.data.util.CloseableIterator;
 
 import java.util.Collection;
@@ -261,27 +263,6 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
   }
 
   @Override
-  public <T> T findAndModify(Query query, Update update, Class<T> entityClass) {
-    return getInvoker().invoke(() -> getImpl().findAndModify(query, update, entityClass));
-  }
-
-  @Override
-  public <T> T findAndModify(Query query, Update update, Class<T> entityClass, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().findAndModify(query, update, entityClass, collectionName));
-  }
-
-  @Override
-  public <T> T findAndModify(Query query, Update update, FindAndModifyOptions options, Class<T> entityClass) {
-    return getInvoker().invoke(() -> getImpl().findAndModify(query, update, options, entityClass));
-  }
-
-
-  @Override
-  public <T> T findAndModify(Query query, Update update, FindAndModifyOptions options, Class<T> entityClass, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().findAndModify(query, update, options, entityClass, collectionName));
-  }
-
-  @Override
   public <T> T findAndRemove(Query query, Class<T> entityClass) {
     return getInvoker().invoke(() -> getImpl().findAndRemove(query, entityClass));
   }
@@ -341,51 +322,6 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
   @Override
   public <T> T save(T objectToSave, String collectionName) {
     return getInvoker().invoke(() -> getImpl().save(objectToSave, collectionName));
-  }
-
-  @Override
-  public UpdateResult upsert(Query query, Update update, Class<?> entityClass) {
-    return getInvoker().invoke(() -> getImpl().upsert(query, update, entityClass));
-  }
-
-  @Override
-  public UpdateResult upsert(Query query, Update update, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().upsert(query, update, collectionName));
-  }
-
-  @Override
-  public UpdateResult upsert(Query query, Update update, Class<?> entityClass, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().upsert(query, update, entityClass, collectionName));
-  }
-
-  @Override
-  public UpdateResult updateFirst(Query query, Update update, Class<?> entityClass) {
-    return getInvoker().invoke(() -> getImpl().updateFirst(query, update, entityClass));
-  }
-
-  @Override
-  public UpdateResult updateFirst(final Query query, final Update update, final String collectionName) {
-    return getInvoker().invoke(() -> getImpl().updateFirst(query, update, collectionName));
-  }
-
-  @Override
-  public UpdateResult updateFirst(Query query, Update update, Class<?> entityClass, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().updateFirst(query, update, entityClass, collectionName));
-  }
-
-  @Override
-  public UpdateResult updateMulti(Query query, Update update, Class<?> entityClass) {
-    return getInvoker().invoke(() -> getImpl().updateMulti(query, update, entityClass));
-  }
-
-  @Override
-  public UpdateResult updateMulti(final Query query, final Update update, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().updateMulti(query, update, collectionName));
-  }
-
-  @Override
-  public UpdateResult updateMulti(final Query query, final Update update, Class<?> entityClass, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().updateMulti(query, update, entityClass, collectionName));
   }
 
   @Override
@@ -550,8 +486,8 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
   }
 
   @NonLockGuarded(NonLockGuardedType.NONE)
-  public MongoDbFactory getMongoDbFactory() {
-    return getImpl().getMongoDbFactory();
+  public MongoDatabaseFactory getMongoDbFactory() {
+    return new MongoDatabaseFactoryDecoratorImpl(getInvoker().invoke(() -> getImpl().getMongoDbFactory()), getInvoker());
   }
 
   @Override
@@ -632,35 +568,105 @@ public class MongockTemplate extends DecoratorBase<MongoTemplate> implements Mon
     return new SessionScopedDecoratorImpl(getInvoker().invoke(() -> getImpl().withSession(sessionProvider)), getInvoker());
   }
 
+
+
+
+
+  // since sprind-data-mongodb:3.0
+
+  @Override
+  public <T> T findAndModify(Query query, UpdateDefinition update, Class<T> entityClass) {
+    return getInvoker().invoke(()-> getImpl().findAndModify(query, update, entityClass));
+  }
+
+  @Override
+  public <T> T findAndModify(Query query, UpdateDefinition update, Class<T> entityClass, String collectionName) {
+    return getInvoker().invoke(()-> getImpl().findAndModify(query, update, entityClass, collectionName));
+  }
+
+  @Override
+  public <T> T findAndModify(Query query, UpdateDefinition update, FindAndModifyOptions options, Class<T> entityClass) {
+    return getInvoker().invoke(()-> getImpl().findAndModify(query, update, options, entityClass));
+  }
+
+  @Override
+  public <T> T findAndModify(Query query, UpdateDefinition update, FindAndModifyOptions options, Class<T> entityClass, String collectionName) {
+    return getInvoker().invoke(()-> getImpl().findAndModify(query, update, options, entityClass, collectionName));
+  }
+
   @Override
   public <T> T findAndReplace(Query query, T replacement) {
-    return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement));
+    return getInvoker().invoke(()-> getImpl().findAndReplace(query, replacement));
   }
 
   @Override
   public <T> T findAndReplace(Query query, T replacement, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement, collectionName));
+    return getInvoker().invoke(()-> getImpl().findAndReplace(query, replacement, collectionName));
   }
 
   @Override
   public <T> T findAndReplace(Query query, T replacement, FindAndReplaceOptions options) {
-    return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement, options));
+    return getInvoker().invoke(()-> getImpl().findAndReplace(query, replacement, options));
   }
 
   @Override
   public <T> T findAndReplace(Query query, T replacement, FindAndReplaceOptions options, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement, options, collectionName));
+    return getInvoker().invoke(()-> getImpl().findAndReplace(query, replacement, options, collectionName));
   }
 
   @Override
   public <T> T findAndReplace(Query query, T replacement, FindAndReplaceOptions options, Class<T> entityType, String collectionName) {
-    return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement, options, entityType, collectionName));
+    return getInvoker().invoke(()-> getImpl().findAndReplace(query, replacement, options, entityType, collectionName));
   }
 
   @Override
-  public <S, T> T findAndReplace(Query query, S replacement, FindAndReplaceOptions options, Class<S> entityType, Class<T> resultType) {
-    return getInvoker().invoke(() -> getImpl().findAndReplace(query, replacement, options, entityType, resultType));
+  public  <S, T> T findAndReplace(Query query, S replacement, FindAndReplaceOptions options, Class<S> entityType, Class<T> resultType) {
+    return getInvoker().invoke(()-> getImpl().findAndReplace(query, replacement, options, entityType, resultType));
   }
 
 
+  @Override
+  public UpdateResult upsert(Query query, UpdateDefinition update, Class<?> entityClass) {
+    return getImpl().upsert(query, update, entityClass);
+  }
+
+  @Override
+  public UpdateResult upsert(Query query, UpdateDefinition update, String collectionName) {
+    return getImpl().upsert(query, update, collectionName);
+  }
+
+  @Override
+  public UpdateResult upsert(Query query, UpdateDefinition update, Class<?> entityClass, String collectionName) {
+    return getImpl().upsert(query, update, entityClass, collectionName);
+  }
+
+  @Override
+  public UpdateResult updateFirst(Query query, UpdateDefinition update, Class<?> entityClass) {
+    return getImpl().updateFirst(query, update, entityClass);
+  }
+
+  @Override
+  public UpdateResult updateFirst(Query query, UpdateDefinition update, String collectionName) {
+    return getImpl().updateFirst(query, update, collectionName);
+  }
+
+  @Override
+  public UpdateResult updateFirst(Query query, UpdateDefinition update, Class<?> entityClass, String collectionName) {
+    return getImpl().updateFirst(query, update, entityClass, collectionName);
+  }
+
+  @Override
+  public UpdateResult updateMulti(Query query, UpdateDefinition update, Class<?> entityClass) {
+    return getImpl().updateMulti(query, update, entityClass);
+  }
+
+  @Override
+  public UpdateResult updateMulti(Query query, UpdateDefinition update, String collectionName) {
+    return getImpl().updateMulti(query, update, collectionName);
+  }
+
+  @Override
+  public UpdateResult updateMulti(Query query, UpdateDefinition update, Class<?> entityClass, String collectionName) {
+    return getImpl().updateMulti(query, update, entityClass, collectionName);
+  }
 }
