@@ -7,11 +7,11 @@ import io.changock.driver.mongo.v3.core.repository.MongoChangeEntryRepository;
 import io.changock.utils.annotation.NotThreadSafe;
 
 @NotThreadSafe
-public class ChangockMongoDriver extends ChangockMongoDriverBase<ChangeEntry> {
+public class ChangockMongoCoreV3Driver extends ChangockMongoCoreV3DriverBase<ChangeEntry> {
 
   protected MongoChangeEntryRepository<ChangeEntry> changeEntryRepository;
 
-  public ChangockMongoDriver(MongoDatabase mongoDatabase) {
+  public ChangockMongoCoreV3Driver(MongoDatabase mongoDatabase) {
     super(mongoDatabase);
   }
 
