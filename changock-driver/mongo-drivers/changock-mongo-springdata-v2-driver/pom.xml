@@ -54,8 +54,7 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-mongodb</artifactId>
-      <version>${springboot.data.mongodb.version}
-      </version><!-- Make sure that decorators are adapted to new systemVersion(see file dependency_upgrade_considerations -->
+      <version>${springboot.data.mongodb.version}</version>
     </dependency>
 
 
@@ -98,6 +97,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 
 
 </project>
