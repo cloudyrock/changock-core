@@ -575,47 +575,47 @@ public interface MongoOperationsDecorator extends MongoOperations {
 
   @Override
   default UpdateResult upsert(Query query, UpdateDefinition update, Class<?> entityClass) {
-    return getImpl().upsert(query, update, entityClass);
+    return getInvoker().invoke(()->getImpl().upsert(query, update, entityClass));
   }
 
   @Override
   default UpdateResult upsert(Query query, UpdateDefinition update, String collectionName) {
-    return getImpl().upsert(query, update, collectionName);
+    return getInvoker().invoke(()->getImpl().upsert(query, update, collectionName));
   }
 
   @Override
   default UpdateResult upsert(Query query, UpdateDefinition update, Class<?> entityClass, String collectionName) {
-    return getImpl().upsert(query, update, entityClass, collectionName);
+    return getInvoker().invoke(()->getImpl().upsert(query, update, entityClass, collectionName));
   }
 
   @Override
   default UpdateResult updateFirst(Query query, UpdateDefinition update, Class<?> entityClass) {
-    return getImpl().updateFirst(query, update, entityClass);
+    return getInvoker().invoke(()->getImpl().updateFirst(query, update, entityClass));
   }
 
   @Override
   default UpdateResult updateFirst(Query query, UpdateDefinition update, String collectionName) {
-    return getImpl().updateFirst(query, update, collectionName);
+    return getInvoker().invoke(()->getImpl().updateFirst(query, update, collectionName));
   }
 
   @Override
   default UpdateResult updateFirst(Query query, UpdateDefinition update, Class<?> entityClass, String collectionName) {
-    return getImpl().updateFirst(query, update, entityClass, collectionName);
+    return getInvoker().invoke(()->getImpl().updateFirst(query, update, entityClass, collectionName));
   }
 
   @Override
   default UpdateResult updateMulti(Query query, UpdateDefinition update, Class<?> entityClass) {
-    return getImpl().updateMulti(query, update, entityClass);
+    return getInvoker().invoke(()->getImpl().updateMulti(query, update, entityClass));
   }
 
   @Override
   default UpdateResult updateMulti(Query query, UpdateDefinition update, String collectionName) {
-    return getImpl().updateMulti(query, update, collectionName);
+    return getInvoker().invoke(()->getImpl().updateMulti(query, update, collectionName));
   }
 
   @Override
   default UpdateResult updateMulti(Query query, UpdateDefinition update, Class<?> entityClass, String collectionName) {
-    return getImpl().updateMulti(query, update, entityClass, collectionName);
+    return getInvoker().invoke(()->getImpl().updateMulti(query, update, entityClass, collectionName));
   }
 
 }

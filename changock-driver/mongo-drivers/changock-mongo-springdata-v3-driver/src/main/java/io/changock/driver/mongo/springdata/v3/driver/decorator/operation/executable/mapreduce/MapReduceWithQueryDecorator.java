@@ -2,6 +2,7 @@ package io.changock.driver.mongo.springdata.v3.driver.decorator.operation.execut
 
 import io.changock.driver.mongo.springdata.v3.driver.decorator.operation.executable.mapreduce.impl.TerminatingMapReduceDecoratorImpl;
 import org.springframework.data.mongodb.core.ExecutableMapReduceOperation;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 
 public interface MapReduceWithQueryDecorator<T> extends ExecutableMapReduceOperation.MapReduceWithQuery<T>, TerminatingMapReduceDecorator<T> {
@@ -14,5 +15,10 @@ public interface MapReduceWithQueryDecorator<T> extends ExecutableMapReduceOpera
     default ExecutableMapReduceOperation.TerminatingMapReduce<T> matching(Query query) {
         return getInvoker().invoke(()-> new TerminatingMapReduceDecoratorImpl<>(getImpl().matching(query), getInvoker()));
     }
+
+  @Override
+  default ExecutableMapReduceOperation.TerminatingMapReduce<T> matching(CriteriaDefinition criteria) {
+    return getInvoker().invoke(()-> new TerminatingMapReduceDecoratorImpl<>(getImpl().matching(criteria), getInvoker()));
+  }
 
 }

@@ -4,6 +4,7 @@ import io.changock.driver.mongo.springdata.v3.driver.decorator.operation.executa
 import io.changock.driver.mongo.springdata.v3.driver.decorator.operation.executable.find.impl.TerminatingFindNearDecoratorImpl;
 import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableFindOperation;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -14,13 +15,16 @@ public interface FindWithQueryDecorator<T> extends Invokable, ExecutableFindOper
 
   @Override
   default ExecutableFindOperation.TerminatingFind<T> matching(Query query) {
-    ExecutableFindOperation.TerminatingFind<T> result = getInvoker().invoke(()-> getImpl().matching(query));
-    return new TerminatingFindDecoratorImpl<>(result, getInvoker());
+    return new TerminatingFindDecoratorImpl<>(getInvoker().invoke(()-> getImpl().matching(query)), getInvoker());
+  }
+
+  @Override
+  default ExecutableFindOperation.TerminatingFind<T> matching(CriteriaDefinition criteria) {
+    return new TerminatingFindDecoratorImpl<>(getInvoker().invoke(()-> getImpl().matching(criteria)), getInvoker());
   }
 
   @Override
   default ExecutableFindOperation.TerminatingFindNear<T> near(NearQuery nearQuery) {
-    ExecutableFindOperation.TerminatingFindNear<T> result = getInvoker().invoke(()-> getImpl().near(nearQuery));
-    return new TerminatingFindNearDecoratorImpl<>(result, getInvoker());
+    return new TerminatingFindNearDecoratorImpl<>(getInvoker().invoke(()-> getImpl().near(nearQuery)), getInvoker());
   }
 }

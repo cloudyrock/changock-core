@@ -8,6 +8,8 @@ import com.mongodb.ServerCursor;
 import com.mongodb.WriteConcern;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertManyResult;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
@@ -75,31 +77,32 @@ public class DecoratorUTest {
   private Collection<Class> getIgnoredTypes() {
     return new ArrayList<>(Arrays.asList(
         Document.class
-        , MongoConverter.class
-        , GroupByResults.class
+        , UpdateResult.class
+        , InsertOneResult.class
+        , InsertManyResult.class
         , DeleteResult.class
+        , MongoConverter.class
+        , BulkWriteResult.class
+        , GroupByResults.class
         , AggregationResults.class
         , GeoResults.class
         , GeoResult.class
-        , UpdateResult.class
         , MapReduceResults.class
-        ,CloseableIterator.class
+        , CloseableIterator.class
         , MongoNamespace.class
         , CodecRegistry.class
         , ReadPreference.class
         , ReadConcern.class
         , WriteConcern.class
-        , BulkWriteResult.class
         , NamedMongoScript.class
         , BsonDocument.class
         , ServerCursor.class
         , ServerAddress.class
         , Optional.class
 
-        ,SessionScoped.class// TODO remove this
+        , SessionScoped.class// TODO remove this
     ));
   }
-
 
 
 }

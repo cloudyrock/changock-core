@@ -14,13 +14,11 @@ public interface FindWithQueryDecorator<T> extends Invokable, ExecutableFindOper
 
   @Override
   default ExecutableFindOperation.TerminatingFind<T> matching(Query query) {
-    ExecutableFindOperation.TerminatingFind<T> result = getInvoker().invoke(()-> getImpl().matching(query));
-    return new TerminatingFindDecoratorImpl<>(result, getInvoker());
+    return new TerminatingFindDecoratorImpl<>(getInvoker().invoke(()-> getImpl().matching(query)), getInvoker());
   }
 
   @Override
   default ExecutableFindOperation.TerminatingFindNear<T> near(NearQuery nearQuery) {
-    ExecutableFindOperation.TerminatingFindNear<T> result = getInvoker().invoke(()-> getImpl().near(nearQuery));
-    return new TerminatingFindNearDecoratorImpl<>(result, getInvoker());
+    return new TerminatingFindNearDecoratorImpl<>(getInvoker().invoke(()-> getImpl().near(nearQuery)), getInvoker());
   }
 }

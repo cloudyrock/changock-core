@@ -3,6 +3,7 @@ package io.changock.driver.mongo.springdata.v3.driver.decorator.operation.execut
 import io.changock.driver.mongo.springdata.v3.driver.decorator.operation.executable.remove.impl.TerminatingRemoveDecoratorImpl;
 import io.changock.driver.api.lock.guard.decorator.Invokable;
 import org.springframework.data.mongodb.core.ExecutableRemoveOperation;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 
 public interface RemoveWithQueryDecorator<T> extends Invokable, ExecutableRemoveOperation.RemoveWithQuery<T>, TerminatingRemoveDecorator<T> {
@@ -12,6 +13,11 @@ public interface RemoveWithQueryDecorator<T> extends Invokable, ExecutableRemove
   @Override
   default ExecutableRemoveOperation.TerminatingRemove<T> matching(Query query) {
     return new TerminatingRemoveDecoratorImpl<>(getInvoker().invoke(() -> getImpl().matching(query)), getInvoker());
+  }
+
+  @Override
+  default ExecutableRemoveOperation.TerminatingRemove<T> matching(CriteriaDefinition criteria) {
+    return new TerminatingRemoveDecoratorImpl<>(getInvoker().invoke(() -> getImpl().matching(criteria)), getInvoker());
   }
 
 }
