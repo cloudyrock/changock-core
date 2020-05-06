@@ -2,19 +2,23 @@ package io.changock.runner.core;
 
 class DependencyInjectionException extends RuntimeException {
 
-  private final String method;
-  private final String parameterType;
-
-  DependencyInjectionException(String method, String parameterType) {
-    this.method = method;
-    this.parameterType = parameterType;
+  public static DependencyInjectionException parameterNotInjected(String method, String parameterType) {
+    return new DependencyInjectionException(method, parameterType);
   }
 
-  String getMethod() {
-    return method;
+  public static DependencyInjectionException parameterNotAllowed(String method, String parameterType, String replacementType) {
+    return new DependencyInjectionException(method, parameterType, replacementType);
   }
 
-  String getParameterType() {
-    return parameterType;
+
+  private DependencyInjectionException(String method, String parameterType) {
+    super(String.format("Method[%s] using parameter[%s] not injected", method, parameterType));
   }
+
+  private DependencyInjectionException(String method, String parameterType, String replacementType) {
+    super(String.format("Method[%s] using NOT ALLOWED parameter[%s]. Please replace with %s", method, parameterType, replacementType));
+  }
+
+
+
 }

@@ -1,45 +1,15 @@
 package io.changock.driver.api.driver;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Optional;
 
-public class ParameterReplacement {
+/**
+ * Map structure in which the key is the non-allowed parameter in changeSets and the value is the class which should be replaced by
+ */
+public class NotAllowedParameterMap extends HashMap<Class, Class> {
 
-  private final Class parameterNotAllowed;
-  private final Class parameterReplacement;
-
-  public ParameterReplacement(Class parameterNotAllowed, Class parameterReplacement) {
-    this.parameterNotAllowed = parameterNotAllowed;
-    this.parameterReplacement = parameterReplacement;
+  public Optional<Class> getReplacementIfNotAllowed(Class key) {
+    return Optional.ofNullable(get(key));
   }
 
-
-  public Class getParameterNotAllowed() {
-    return parameterNotAllowed;
-  }
-
-  public Class getParameterReplacement() {
-    return parameterReplacement;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    ParameterReplacement that = (ParameterReplacement) o;
-    return Objects.equals(parameterNotAllowed, that.parameterNotAllowed) &&
-        Objects.equals(parameterReplacement, that.parameterReplacement);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(parameterNotAllowed, parameterReplacement);
-  }
-
-  @Override
-  public String toString() {
-    return "ParameterReplacement{" +
-        "parameterNotAllowed=" + parameterNotAllowed +
-        ", parameterReplacement=" + parameterReplacement +
-        '}';
-  }
 }

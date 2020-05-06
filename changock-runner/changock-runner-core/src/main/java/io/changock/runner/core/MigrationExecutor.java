@@ -135,7 +135,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       if (parameterOptional.isPresent()) {
         changelogInvocationParameters.add(parameterOptional.get());
       } else {
-        throw new DependencyInjectionException(changeSetMethod.getName(), parameterType.getName());
+        throw DependencyInjectionException.parameterNotInjected(changeSetMethod.getName(), parameterType.getName());
       }
     }
     LogUtils.logMethodWithArguments(logger, changeSetMethod.getName(), changelogInvocationParameters);
@@ -150,7 +150,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
     } else if (exception instanceof DependencyInjectionException) {
       DependencyInjectionException ex = (DependencyInjectionException) exception;
-      message = String.format("Method[%s] using argument[%s] not injected", ex.getMethod(), ex.getParameterType());
+      message = ex.getMessage();
 
     } else {
       message = exception.getMessage();

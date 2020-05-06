@@ -3,6 +3,7 @@ package io.changock.driver.mongo.v3.core.driver;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.changock.driver.api.driver.ChangeSetDependency;
+import io.changock.driver.api.driver.NotAllowedParameterMap;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.driver.ConnectionDriverBase;
@@ -21,8 +22,7 @@ import java.util.Set;
 public abstract class ChangockMongoCoreV3DriverBase<CHANGE_ENTRY extends ChangeEntry> extends ConnectionDriverBase<CHANGE_ENTRY> {
 
   private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "changockChangeLog";
-  private final static String DEFAULT_LOCK_COLLECTION_NAME = "changockLock";
-
+  private static final String DEFAULT_LOCK_COLLECTION_NAME = "changockLock";
   protected final MongoDatabase mongoDatabase;
   protected String changeLogCollectionName = DEFAULT_CHANGELOG_COLLECTION_NAME;
   protected String lockCollectionName = DEFAULT_LOCK_COLLECTION_NAME;
