@@ -13,4 +13,5 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   LockManager getLockManager();
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
   Set<ChangeSetDependency> getDependencies();
+  ForbiddenParametersMap getForbiddenParameters();
 }
