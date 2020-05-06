@@ -26,6 +26,7 @@ public class ChangockSpringDataMongov3Driver extends ChangockMongoSyncV4Driver {
         super.setChangeLogCollectionName(changeLogCollectionName);
     }
 
+    @Override
     public void setLockCollectionName(String lockCollectionName) {
         super.setLockCollectionName(lockCollectionName);
     }
@@ -33,7 +34,6 @@ public class ChangockSpringDataMongov3Driver extends ChangockMongoSyncV4Driver {
     @Override
     public void runValidation() throws ChangockException {
         super.runValidation();
-
         if (this.mongoTemplate == null) {
             throw new ChangockException("MongoTemplate must not be null");
         }
