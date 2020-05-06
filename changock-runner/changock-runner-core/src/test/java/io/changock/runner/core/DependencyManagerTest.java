@@ -13,7 +13,7 @@ public class DependencyManagerTest {
   public void shouldRetrieveConnectorDependency_WhenAddSimpleDependency() {
     Assert.assertEquals("dependency",
         new DependencyManager()
-            .addConnectorDependency(new ChangeSetDependency("dependency"))
+            .addDriverDependency(new ChangeSetDependency("dependency"))
             .getDependency(String.class)
             .orElseThrow(RuntimeException::new));
   }
@@ -22,8 +22,8 @@ public class DependencyManagerTest {
   public void shouldRetrieveLastConnectorDependency_WhenOverride() {
     Assert.assertEquals("dependency",
         new DependencyManager()
-            .addConnectorDependency(new ChangeSetDependency("dependencyNotReturned"))
-            .addConnectorDependency(new ChangeSetDependency("dependency"))
+            .addDriverDependency(new ChangeSetDependency("dependencyNotReturned"))
+            .addDriverDependency(new ChangeSetDependency("dependency"))
             .getDependency(String.class)
             .orElseThrow(RuntimeException::new));
   }
@@ -35,7 +35,7 @@ public class DependencyManagerTest {
     dependencies.add(new ChangeSetDependency("dependency"));
     Assert.assertEquals("dependency",
         new DependencyManager()
-            .addConnectorDependency(dependencies)
+            .addDriverDependencies(dependencies)
             .getDependency(String.class)
             .orElseThrow(RuntimeException::new));
   }
@@ -47,8 +47,8 @@ public class DependencyManagerTest {
     dependencies.add(new ChangeSetDependency("dependencyNotReturned"));
     Assert.assertEquals("dependency",
         new DependencyManager()
-            .addConnectorDependency(dependencies)
-            .addConnectorDependency(new ChangeSetDependency("dependency"))
+            .addDriverDependencies(dependencies)
+            .addDriverDependency(new ChangeSetDependency("dependency"))
             .getDependency(String.class)
             .orElseThrow(RuntimeException::new));
   }
@@ -61,7 +61,7 @@ public class DependencyManagerTest {
 
     Assert.assertEquals(dependency,
         new DependencyManager()
-            .addConnectorDependency(new ChangeSetDependency(Child1.class, dependency))
+            .addDriverDependency(new ChangeSetDependency(Child1.class, dependency))
             .getDependency(Parent.class)
             .orElseThrow(RuntimeException::new));
   }
@@ -71,8 +71,8 @@ public class DependencyManagerTest {
     Child1 dependency = new Child1();
     Assert.assertEquals(dependency,
         new DependencyManager()
-            .addConnectorDependency(new ChangeSetDependency(Child1.class, dependency))
-            .addConnectorDependency(new ChangeSetDependency(Child2.class, new Child2()))
+            .addDriverDependency(new ChangeSetDependency(Child1.class, dependency))
+            .addDriverDependency(new ChangeSetDependency(Child2.class, new Child2()))
             .getDependency(Parent.class)
             .orElseThrow(RuntimeException::new));
   }
@@ -152,7 +152,7 @@ public class DependencyManagerTest {
     Assert.assertEquals("connectorDependency",
         new DependencyManager()
             .addStandardDependency(new ChangeSetDependency("standardDependency"))
-            .addConnectorDependency(new ChangeSetDependency("connectorDependency"))
+            .addDriverDependency(new ChangeSetDependency("connectorDependency"))
             .addStandardDependency(new ChangeSetDependency("standardDependency"))
             .getDependency(String.class)
             .orElseThrow(RuntimeException::new));

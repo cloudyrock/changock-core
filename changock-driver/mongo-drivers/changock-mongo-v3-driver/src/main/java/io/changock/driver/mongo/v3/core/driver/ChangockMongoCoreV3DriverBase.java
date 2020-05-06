@@ -3,7 +3,6 @@ package io.changock.driver.mongo.v3.core.driver;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.NotAllowedParameterMap;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.driver.ConnectionDriverBase;

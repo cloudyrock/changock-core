@@ -1,9 +1,11 @@
 package io.changock.driver.mongo.springdata.v2.driver;
 
 
+import io.changock.driver.api.common.DependencyInjectionException;
 import io.changock.driver.mongo.springdata.v2.integration.test1.ChangeLogSuccess;
 import io.changock.driver.mongo.springdata.v2.integration.test2.ChangeLogFailure;
 import io.changock.driver.mongo.springdata.v2.integration.test3.ChangeLogEnsureDecorator;
+import io.changock.driver.mongo.springdata.v2.integration.test4.ChangeLogWithMongoTemplate;
 import io.changock.driver.mongo.springdata.v2.util.CallVerifier;
 import io.changock.driver.mongo.springdata.v2.util.IntegrationTestBase;
 import io.changock.driver.mongo.springdata.v3.driver.ChangockSpringDataMongoV3Driver;
@@ -145,6 +147,21 @@ public class MongoDriverITest extends IntegrationTestBase {
     runner.execute();
     assertEquals(2, callVerifier.counter);
   }
+
+  @Test
+  public void shouldFail_whenRunningChangeSet_ifMongoTemplateParameter() {
+    collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
+    TestChangockRunner runner = TestChangockRunner.builder()
+        .setDriver(new ChangockSpringDataMongoV3Driver(this.getMongoTemplate()))
+        .addChangeLogsScanPackage(ChangeLogWithMongoTemplate.class.getPackage().getName())
+        .addDependency(MongoTemplate.class, mock(MongoTemplate.class))// shouldn't use this, the one from the connector instead
+        .build();
+
+    exceptionRule.expect(ChangockException.class);
+    exceptionRule.expectMessage("Error in method[ChangeLogWithMongoTemplate.shouldFailBecauseMongoTemplate] : Forbidden parameter[MongoTemplate]. Must be replaced with [MongockTemplate]");
+    runner.execute();
+  }
+
 
   private void checkMetadata(Map metadataResult) {
     assertEquals("string_value", metadataResult.get("string_key"));

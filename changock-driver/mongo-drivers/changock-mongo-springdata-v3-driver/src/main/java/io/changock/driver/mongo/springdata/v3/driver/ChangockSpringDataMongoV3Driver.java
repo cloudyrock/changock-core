@@ -1,7 +1,7 @@
 package io.changock.driver.mongo.springdata.v3.driver;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.NotAllowedParameterMap;
+import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import io.changock.driver.mongo.springdata.v3.driver.decorator.impl.MongockTemplate;
 import io.changock.driver.mongo.syncv4.core.driver.ChangockMongoSyncV4Driver;
@@ -14,13 +14,13 @@ import java.util.Set;
 @NotThreadSafe
 public class ChangockSpringDataMongoV3Driver extends ChangockMongoSyncV4Driver {
 
-  private static final NotAllowedParameterMap notAllowedParameterMap;
+  private static final ForbiddenParametersMap FORBIDDEN_PARAMETERS_MAP;
 
   private final MongoTemplate mongoTemplate;
 
   static {
-    notAllowedParameterMap = new NotAllowedParameterMap();
-    notAllowedParameterMap.put(MongoTemplate.class, MongockTemplate.class);
+    FORBIDDEN_PARAMETERS_MAP = new ForbiddenParametersMap();
+    FORBIDDEN_PARAMETERS_MAP.put(MongoTemplate.class, MongockTemplate.class);
   }
 
   public ChangockSpringDataMongoV3Driver(MongoTemplate mongoTemplate) {
@@ -54,8 +54,8 @@ public class ChangockSpringDataMongoV3Driver extends ChangockMongoSyncV4Driver {
   }
 
   @Override
-  public NotAllowedParameterMap notAllowedParameters() {
-    return notAllowedParameterMap;
+  public ForbiddenParametersMap getForbiddenParameters() {
+    return FORBIDDEN_PARAMETERS_MAP;
   }
 
 }

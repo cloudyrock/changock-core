@@ -1,15 +1,12 @@
 package io.changock.runner.core;
 
-import static io.changock.driver.api.entry.ChangeState.EXECUTED;
-import static io.changock.driver.api.entry.ChangeState.IGNORED;
-import static io.changock.driver.api.entry.ChangeState.FAILED;
-
-import io.changock.driver.api.entry.ChangeState;
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
+import io.changock.driver.api.common.DependencyInjectionException;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
+import io.changock.driver.api.entry.ChangeState;
 import io.changock.driver.api.lock.LockManager;
+import io.changock.migration.api.ChangeLogItem;
+import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.LogUtils;
 import org.slf4j.Logger;
@@ -24,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import static io.changock.driver.api.entry.ChangeState.EXECUTED;
+import static io.changock.driver.api.entry.ChangeState.FAILED;
+import static io.changock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
 public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
@@ -67,7 +68,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
           try {
             executeChangeSet(executionId, changeLog.getInstance(), changeSet);
           } catch (Exception e) {
-            processExceptionOnChangeSetExecution(e, changeSet.isFailFast());
+            processExceptionOnChangeSetExecution(e, changeSet.getMethod(), changeSet.isFailFast());
           }
         }
 
@@ -135,7 +136,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       if (parameterOptional.isPresent()) {
         changelogInvocationParameters.add(parameterOptional.get());
       } else {
-        throw DependencyInjectionException.parameterNotInjected(changeSetMethod.getName(), parameterType.getName());
+        throw new DependencyInjectionException(parameterType);
       }
     }
     LogUtils.logMethodWithArguments(logger, changeSetMethod.getName(), changelogInvocationParameters);
@@ -143,23 +144,16 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     return System.currentTimeMillis() - startingTime;
   }
 
-  protected void processExceptionOnChangeSetExecution(Exception exception, boolean throwException) {
-    String message;
-    if (exception instanceof InvocationTargetException) {
-      message = ((InvocationTargetException) exception).getTargetException().getMessage();
-
-    } else if (exception instanceof DependencyInjectionException) {
-      DependencyInjectionException ex = (DependencyInjectionException) exception;
-      message = ex.getMessage();
-
-    } else {
-      message = exception.getMessage();
-    }
+  protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {
+    String exceptionMsg = exception instanceof InvocationTargetException
+        ? ((InvocationTargetException) exception).getTargetException().getMessage()
+        : exception.getMessage();
+    String finalMessage = String.format("Error in method[%s.%s] : %s", method.getDeclaringClass().getSimpleName(), method.getName(), exceptionMsg);
     if (throwException) {
-      throw new ChangockException(message, exception);
+      throw new ChangockException(finalMessage, exception);
 
     } else {
-      logger.warn(message, exception);
+      logger.warn(finalMessage, exception);
     }
   }
 
@@ -169,6 +163,9 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
     driver.initialize();
     driver.runValidation();
-    this.dependencyManager.addConnectorDependency(driver.getDependencies());
+    this.dependencyManager
+        .addDriverDependencies(driver.getDependencies())
+        .addForbiddenParameters(driver.getForbiddenParameters());
   }
+
 }
