@@ -5,7 +5,7 @@
   <parent>
     <artifactId>changock-driver</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <version>1.0.0-BETA-SNAPSHOT</version>
+    <version>1.0.0.alpha1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,8 @@
     <module>changock-mongo-v3-driver</module>
     <module>changock-mongo-springdata-v2-driver</module>
     <module>changock-mongo-sync-v4-driver</module>
-  </modules>
+    <module>changock-mongo-springdata-v3-driver</module>
+ </modules>
 
   <properties>
     <changock.core.version>${project.version}</changock.core.version>

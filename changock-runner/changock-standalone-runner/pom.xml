@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.github.cloudyrock.changock</groupId>
     <artifactId>changock-runner</artifactId>
-    <version>1.0.0-BETA-SNAPSHOT</version>
+    <version>1.0.0.alpha1-SNAPSHOT</version>
   </parent>
 
   <artifactId>changock-standalone-runner</artifactId>
@@ -24,7 +24,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-    <changock.core.version>1.0.0-BETA-SNAPSHOT</changock.core.version>
+    <changock.core.version>1.0.0.alpha1-SNAPSHOT</changock.core.version>
   </properties>
 
   <dependencies>

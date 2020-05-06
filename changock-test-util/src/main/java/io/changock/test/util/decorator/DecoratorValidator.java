@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -158,6 +159,9 @@ public class DecoratorValidator {
       return true;
     }
     Object implMock = instance.getClass().getMethod("getImpl").invoke(instance);
+
+//    List<Method> methodInvocations = Mockito.mockingDetails(implMock).getInvocations().stream().map(Invocation::getMethod).collect(Collectors.toList());
+
     return areEquivalent(
         Mockito.mockingDetails(implMock).getInvocations().iterator().next().getMethod(),
         decoratorMethod);
@@ -205,9 +209,13 @@ public class DecoratorValidator {
     Class[] parametersType = method.getParameterTypes();
     Object[] parameters = new Object[parametersType.length];
     for (int i = 0; i < parametersType.length; i++) {
-      parameters[i] = parametersType[i].isPrimitive() ? getDefaultPrimitiveValue(parametersType[i]) : parametersType[i].cast(null);
+      parameters[i] = parametersType[i].isPrimitive() ? getDefaultPrimitiveValue(parametersType[i]) : getDefaultNonPrimitiveValue(parametersType[i]);
     }
     return parameters;
+  }
+
+  private static Object getDefaultNonPrimitiveValue(Class aClass) {
+    return aClass.isInterface() ? Mockito.mock(aClass) : aClass.cast(null);
   }
 
   private static Object getDefaultPrimitiveValue(Class clazz) {
