@@ -1,6 +1,7 @@
 package io.cloudyrock.changock.runner.spring.v5.util;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 
 /**
  * Mock for Spring environment
@@ -28,6 +29,11 @@ public class EnvironmentMock implements Environment {
 
   @Override
   public boolean acceptsProfiles(String... strings) {
+    return false;
+  }
+
+  @Override
+  public boolean acceptsProfiles(Profiles profiles) {
     return false;
   }
 

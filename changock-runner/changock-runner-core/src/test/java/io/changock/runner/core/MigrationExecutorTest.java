@@ -164,6 +164,7 @@ public class MigrationExecutorTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldThrowException_ifWrongArgument() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
@@ -171,7 +172,7 @@ public class MigrationExecutorTest {
 
     //then
     exceptionExpected.expect(ChangockException.class);
-    exceptionExpected.expectMessage("argument value mismatch");
+    exceptionExpected.expectMessage("argument type mismatch");
 
     // when
     new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
