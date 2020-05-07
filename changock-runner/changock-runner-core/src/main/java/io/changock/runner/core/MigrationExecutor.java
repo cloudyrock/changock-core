@@ -66,7 +66,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       for (ChangeLogItem changeLog : changeLogs) {
         for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
           try {
-            executeChangeSet(executionId, changeLog.getInstance(), changeSet);
+            executeAndLogChangeSet(executionId, changeLog.getInstance(), changeSet);
           } catch (Exception e) {
             processExceptionOnChangeSetExecution(e, changeSet.getMethod(), changeSet.isFailFast());
           }
@@ -83,7 +83,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
   }
 
-  protected void executeChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     try {
       if (changeSetItem.isRunAlways() || driver.getChangeEntryService().isNewChange(changeSetItem.getId(), changeSetItem.getAuthor())) {
