@@ -1,14 +1,13 @@
 package io.changock.driver.mongo.springdata.v2.driver;
 
 
-import io.changock.driver.api.common.DependencyInjectionException;
 import io.changock.driver.mongo.springdata.v2.integration.test1.ChangeLogSuccess;
 import io.changock.driver.mongo.springdata.v2.integration.test2.ChangeLogFailure;
 import io.changock.driver.mongo.springdata.v2.integration.test3.ChangeLogEnsureDecorator;
 import io.changock.driver.mongo.springdata.v2.integration.test4.ChangeLogWithMongoTemplate;
 import io.changock.driver.mongo.springdata.v2.util.CallVerifier;
 import io.changock.driver.mongo.springdata.v2.util.IntegrationTestBase;
-import io.changock.driver.mongo.springdata.v3.driver.ChangockSpringDataMongoV3Driver;
+import io.changock.driver.mongo.springdata.v3.driver.ChangockSpringDataMongo3Driver;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.standalone.TestChangockRunner;
 import org.bson.Document;
@@ -46,7 +45,7 @@ public class MongoDriverITest extends IntegrationTestBase {
   @Test
   public void shouldRunAllChangeLogsSuccessfully() {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
-    runChanges(new ChangockSpringDataMongoV3Driver(getMongoTemplate()), CHANGELOG_COLLECTION_NAME);
+    runChanges(new ChangockSpringDataMongo3Driver(getMongoTemplate()), CHANGELOG_COLLECTION_NAME);
   }
 
   @NotNull
@@ -58,13 +57,13 @@ public class MongoDriverITest extends IntegrationTestBase {
   public void shouldUseDifferentChangeLogCollectionName_whenSettingChangeLogCollectionName() {
     String newChangeLogCollectionName = "newChangeLogCollectionName";
     collection = this.getDataBase().getCollection(newChangeLogCollectionName);
-    ChangockSpringDataMongoV3Driver driver = new ChangockSpringDataMongoV3Driver(this.getMongoTemplate());
+    ChangockSpringDataMongo3Driver driver = new ChangockSpringDataMongo3Driver(this.getMongoTemplate());
     driver.setChangeLogCollectionName(newChangeLogCollectionName);
     runChanges(driver, newChangeLogCollectionName);
   }
 
 
-  private void runChanges(ChangockSpringDataMongoV3Driver driver, String chageLogCollectionName) {
+  private void runChanges(ChangockSpringDataMongo3Driver driver, String chageLogCollectionName) {
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("string_key", "string_value");
     metadata.put("integer_key", 10);
@@ -111,7 +110,7 @@ public class MongoDriverITest extends IntegrationTestBase {
   public void shouldFail_WhenRunningChangeLog_IfChangeSetIdDuplicated() {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner runner = TestChangockRunner.builder()
-        .setDriver(new ChangockSpringDataMongoV3Driver(this.getMongoTemplate()))
+        .setDriver(new ChangockSpringDataMongo3Driver(this.getMongoTemplate()))
         .addChangeLogsScanPackage(ChangeLogFailure.class.getPackage().getName())
         .build();
     exceptionRule.expect(ChangockException.class);
@@ -124,7 +123,7 @@ public class MongoDriverITest extends IntegrationTestBase {
     CallVerifier callVerifier = new CallVerifier();
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner runner = TestChangockRunner.builder()
-        .setDriver(new ChangockSpringDataMongoV3Driver(this.getMongoTemplate()))
+        .setDriver(new ChangockSpringDataMongo3Driver(this.getMongoTemplate()))
         .addChangeLogsScanPackage(ChangeLogEnsureDecorator.class.getPackage().getName())
         .addDependency(CallVerifier.class, callVerifier)
         .build();
@@ -138,7 +137,7 @@ public class MongoDriverITest extends IntegrationTestBase {
     CallVerifier callVerifier = new CallVerifier();
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner runner = TestChangockRunner.builder()
-        .setDriver(new ChangockSpringDataMongoV3Driver(this.getMongoTemplate()))
+        .setDriver(new ChangockSpringDataMongo3Driver(this.getMongoTemplate()))
         .addChangeLogsScanPackage(ChangeLogEnsureDecorator.class.getPackage().getName())
         .addDependency(CallVerifier.class, callVerifier)
         .addDependency(MongoTemplate.class, mock(MongoTemplate.class))// shouldn't use this, the one from the connector instead
@@ -152,7 +151,7 @@ public class MongoDriverITest extends IntegrationTestBase {
   public void shouldFail_whenRunningChangeSet_ifMongoTemplateParameter() {
     collection = this.getDataBase().getCollection(CHANGELOG_COLLECTION_NAME);
     TestChangockRunner runner = TestChangockRunner.builder()
-        .setDriver(new ChangockSpringDataMongoV3Driver(this.getMongoTemplate()))
+        .setDriver(new ChangockSpringDataMongo3Driver(this.getMongoTemplate()))
         .addChangeLogsScanPackage(ChangeLogWithMongoTemplate.class.getPackage().getName())
         .addDependency(MongoTemplate.class, mock(MongoTemplate.class))// shouldn't use this, the one from the connector instead
         .build();
