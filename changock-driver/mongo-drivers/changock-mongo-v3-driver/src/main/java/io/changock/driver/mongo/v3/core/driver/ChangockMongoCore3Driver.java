@@ -1,20 +1,21 @@
-package io.changock.driver.mongo.syncv4.core.driver;
+package io.changock.driver.mongo.v3.core.driver;
 
 import com.mongodb.client.MongoDatabase;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeEntryService;
-import io.changock.driver.mongo.syncv4.core.repository.MongoChangeEntryRepository;
+import io.changock.driver.mongo.v3.core.repository.MongoChangeEntryRepository;
 import io.changock.utils.annotation.NotThreadSafe;
 
 @NotThreadSafe
-public class ChangockMongoSyncV4Driver extends ChangockMongoSyncV4DriverBase<ChangeEntry> {
+public class ChangockMongoCore3Driver extends ChangockMongoCoreV3DriverBase<ChangeEntry> {
 
   private static final ForbiddenParametersMap FORBIDDEN_PARAMETERS_MAP = new ForbiddenParametersMap();
 
   protected MongoChangeEntryRepository<ChangeEntry> changeEntryRepository;
 
-  public ChangockMongoSyncV4Driver(MongoDatabase mongoDatabase) {
+
+  public ChangockMongoCore3Driver(MongoDatabase mongoDatabase) {
     super(mongoDatabase);
   }
 
@@ -30,4 +31,5 @@ public class ChangockMongoSyncV4Driver extends ChangockMongoSyncV4DriverBase<Cha
   public ForbiddenParametersMap getForbiddenParameters() {
     return FORBIDDEN_PARAMETERS_MAP;
   }
+
 }

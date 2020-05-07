@@ -4,7 +4,7 @@ import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.MongockTemplate;
-import io.changock.driver.mongo.v3.core.driver.ChangockMongoCoreV3Driver;
+import io.changock.driver.mongo.v3.core.driver.ChangockMongoCore3Driver;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.annotation.NotThreadSafe;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.Set;
 
 @NotThreadSafe
-public class ChangockSpringDataMongoV2Driver extends ChangockMongoCoreV3Driver {
+public class ChangockSpringDataMongo2Driver extends ChangockMongoCore3Driver {
 
   private static final ForbiddenParametersMap FORBIDDEN_PARAMETERS_MAP;
 
@@ -23,7 +23,7 @@ public class ChangockSpringDataMongoV2Driver extends ChangockMongoCoreV3Driver {
     FORBIDDEN_PARAMETERS_MAP.put(MongoTemplate.class, MongockTemplate.class);
   }
 
-  public ChangockSpringDataMongoV2Driver(MongoTemplate mongoTemplate) {
+  public ChangockSpringDataMongo2Driver(MongoTemplate mongoTemplate) {
     super(mongoTemplate.getDb());
     this.mongoTemplate = mongoTemplate;
   }

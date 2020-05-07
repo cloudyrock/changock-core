@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NotThreadSafe
-public abstract class ChangockMongoSyncV4DriverBase<CHANGE_ENTRY extends ChangeEntry> extends ConnectionDriverBase<CHANGE_ENTRY> {
+public abstract class ChangockMongoSync4DriverBase<CHANGE_ENTRY extends ChangeEntry> extends ConnectionDriverBase<CHANGE_ENTRY> {
 
   private static final String DEFAULT_CHANGELOG_COLLECTION_NAME = "changockChangeLog";
   private final static String DEFAULT_LOCK_COLLECTION_NAME = "changockLock";
@@ -28,7 +28,7 @@ public abstract class ChangockMongoSyncV4DriverBase<CHANGE_ENTRY extends ChangeE
   protected String lockCollectionName = DEFAULT_LOCK_COLLECTION_NAME;
   protected MongoLockRepository lockRepository;
 
-  public ChangockMongoSyncV4DriverBase(MongoDatabase mongoDatabase) {
+  public ChangockMongoSync4DriverBase(MongoDatabase mongoDatabase) {
     this.mongoDatabase = mongoDatabase;
   }
 
