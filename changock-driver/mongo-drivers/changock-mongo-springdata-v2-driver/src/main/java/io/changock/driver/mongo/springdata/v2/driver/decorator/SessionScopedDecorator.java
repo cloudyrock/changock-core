@@ -4,6 +4,9 @@ import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.ClientSessio
 import io.changock.driver.mongo.springdata.v2.driver.decorator.impl.SessionCallbackDecoratorImpl;
 import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import com.mongodb.client.ClientSession;
+import io.changock.migration.api.annotations.DecoratorDiverted;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 import org.springframework.data.mongodb.core.SessionCallback;
 import org.springframework.data.mongodb.core.SessionScoped;
 
@@ -11,17 +14,23 @@ import java.util.function.Consumer;
 
 public interface SessionScopedDecorator extends SessionScoped {
 
-    SessionScoped getImpl();
+  SessionScoped getImpl();
 
-    LockGuardInvoker getInvoker();
+  LockGuardInvoker getInvoker();
 
-    @Override
-    default  <T> T execute(SessionCallback<T> action, Consumer<ClientSession> doFinally) {
-        SessionCallback<T> sessionCallback = new SessionCallbackDecoratorImpl<>(action, getInvoker());
-        Consumer<ClientSession> consumer = clientSession -> {
-            ClientSession clientSessionDecorator = new ClientSessionDecoratorImpl(clientSession, getInvoker());
-            doFinally.accept(clientSessionDecorator);
-        };
-        return getInvoker().invoke(()-> getImpl().execute(sessionCallback, consumer));
-    }
+  @Override
+  @DecoratorDiverted
+  @NonLockGuarded(NonLockGuardedType.NONE)
+  default <T> T execute(SessionCallback<T> sessionCallback, Consumer<ClientSession> clientSessionConsumer) {
+    return getImpl().execute(
+        new SessionCallbackDecoratorImpl<>(sessionCallback, getInvoker()),
+        clientSession -> clientSessionConsumer.accept(new ClientSessionDecoratorImpl(clientSession, getInvoker())));
+  }
+
+  @Override
+  @DecoratorDiverted
+  @NonLockGuarded(NonLockGuardedType.NONE)
+  default <T> T execute(SessionCallback<T> sessionCallback) {
+    return getImpl().execute(new SessionCallbackDecoratorImpl<>(sessionCallback, getInvoker()), session -> { });
+  }
 }

@@ -100,7 +100,7 @@ public class DecoratorUTest {
         , ServerAddress.class
         , Optional.class
 
-        , SessionScoped.class// TODO remove this
+        , SessionScoped.class
     ));
   }
 
