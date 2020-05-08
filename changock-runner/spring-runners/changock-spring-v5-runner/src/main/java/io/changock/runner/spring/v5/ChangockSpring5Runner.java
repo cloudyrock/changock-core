@@ -17,7 +17,7 @@ public final class ChangockSpring5Runner {
 
 
   public static DriverBuilderConfigurable<ChangockSpring5RunnerBuilder, ConnectionDriver> builder() {
-    return ChangockSpring5Runner.builder();
+    return new ChangockSpring5RunnerBuilder();
   }
 
   public static class ChangockSpring5RunnerBuilder extends RunnerBuilderBase<ChangockSpring5RunnerBuilder, ConnectionDriver> {

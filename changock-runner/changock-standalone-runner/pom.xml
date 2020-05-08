@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>com.github.cloudyrock.changock</groupId>
     <artifactId>changock-runner</artifactId>
-    <version>1.0-alpha.1-SNAPSHOT</version>
+    <version>1.0.2.alpha-SNAPSHOT</version>
   </parent>
 
   <artifactId>changock-standalone-runner</artifactId>
@@ -24,19 +22,19 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-    <changock.core.version>1.0-alpha.1-SNAPSHOT</changock.core.version>
+    <changock.core.version>1.0.0.alpha-SNAPSHOT</changock.core.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
       <artifactId>changock-runner-core</artifactId>
-      <version>${changock.core.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
       <artifactId>changock-api</artifactId>
-      <version>${changock.core.version}</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

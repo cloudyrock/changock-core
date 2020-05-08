@@ -3,12 +3,15 @@ package io.cloudyrock.changock.runner.spring.v5;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.spring.v5.ChangockSpring5Runner;
 import io.cloudyrock.changock.runner.spring.v5.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import io.cloudyrock.changock.runner.spring.v5.profiles.integration.IntegrationProfiledChangerLog;
+import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
+import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ForbiddenParameter;
 import io.cloudyrock.changock.runner.spring.v5.util.CallVerifier;
 import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTest;
 import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTestChild;
@@ -51,6 +54,9 @@ public class SpringChangockInitializingBeanRunnerTest {
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
+    ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
+    forbiddenParameters.put(ForbiddenParameter.class, String.class);
+    when(driver.getForbiddenParameters()).thenReturn(forbiddenParameters);
 
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
@@ -146,6 +152,24 @@ public class SpringChangockInitializingBeanRunnerTest {
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .buildInitializingBeanRunner()
         .afterPropertiesSet();
+  }
+
+  @Test
+  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
+
+    when(changeEntryService.isNewChange("withForbiddenParameter", "executor")).thenReturn(false);
+
+    // then
+    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
+
+    // when
+    ChangockSpring5Runner.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildApplicationRunner()
+        .run(null);
   }
 
 }

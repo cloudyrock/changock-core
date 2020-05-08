@@ -1,6 +1,7 @@
 package io.changock.runner.core;
 
 
+import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.driver.api.driver.ChangeSetDependency;
@@ -12,6 +13,8 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import io.changock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import io.changock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
+import io.changock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithForbiddenParameter;
+import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
 import io.changock.runner.core.util.DummyDependencyClass;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,6 +54,10 @@ public class MigrationExecutorTest {
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
+    ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
+    forbiddenParameters.put(ForbiddenParameter.class, String.class);
+    when(driver.getForbiddenParameters()).thenReturn(forbiddenParameters);
+
   }
 
   @Test
@@ -156,7 +163,7 @@ public class MigrationExecutorTest {
 
     // then
     exceptionExpected.expect(ChangockException.class);
-    exceptionExpected.expectMessage(String.format("Method[%s] using argument[%s] not injected", "newChangeSet", DummyDependencyClass.class.getName()));
+    exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Wrong parameter[DummyDependencyClass]");
 
     // when
     new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
@@ -250,6 +257,23 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet2", entry.getChangeSetMethodName());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+  }
+
+
+
+
+  @Test
+  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
+
+    when(changeEntryService.isNewChange("withForbiddenParameter", "executor")).thenReturn(false);
+
+    // then
+    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithForbiddenParameter.class));
   }
 
   private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
