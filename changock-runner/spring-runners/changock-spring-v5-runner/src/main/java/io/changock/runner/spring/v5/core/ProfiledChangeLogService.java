@@ -1,4 +1,4 @@
-package io.changock.runner.spring.v5;
+package io.changock.runner.spring.v5.core;
 
 import io.changock.migration.api.AnnotationProcessor;
 import io.changock.runner.core.ChangeLogService;

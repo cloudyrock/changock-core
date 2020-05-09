@@ -1,10 +1,10 @@
-package io.cloudyrock.changock.runner.spring.v5;
+package io.cloudyrock.changock.runner.spring.v5.core;
 
 
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.ChangockAnnotationProcessor;
-import io.changock.runner.spring.v5.ProfiledChangeLogService;
+import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.cloudyrock.changock.runner.spring.v5.profiles.defaultProfiled.DefaultProfiledChangerLog;
 import io.cloudyrock.changock.runner.spring.v5.profiles.dev.DevProfiledChangerLog;
 import io.cloudyrock.changock.runner.spring.v5.profiles.pro.ProProfiledChangeLog;

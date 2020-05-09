@@ -5,6 +5,8 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.spring.util.SpringDependencyManager;
+import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
+import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
 import io.changock.utils.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;

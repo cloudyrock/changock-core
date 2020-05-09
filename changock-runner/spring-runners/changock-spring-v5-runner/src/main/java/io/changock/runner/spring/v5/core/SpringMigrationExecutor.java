@@ -1,4 +1,4 @@
-package io.changock.runner.spring.v5;
+package io.changock.runner.spring.v5.core;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.exception.ChangockException;

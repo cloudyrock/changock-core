@@ -7,7 +7,7 @@ import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.migration.api.exception.ChangockException;
-import io.changock.runner.spring.v5.ChangockSpring5Runner;
+import io.changock.runner.spring.v5.ChangockSpring5;
 import io.cloudyrock.changock.runner.spring.v5.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import io.cloudyrock.changock.runner.spring.v5.profiles.integration.IntegrationProfiledChangerLog;
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
@@ -77,7 +77,7 @@ public class SpringChangockInitializingBeanRunnerTest {
 
     // when
 //        Spring5Runner.builder()
-    ChangockSpring5Runner.builder()
+    ChangockSpring5.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .setSpringContext(springContext)
@@ -102,7 +102,7 @@ public class SpringChangockInitializingBeanRunnerTest {
         .thenReturn(true);
 
     // when
-    ChangockSpring5Runner.builder()
+    ChangockSpring5.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .setSpringContext(springContext)
@@ -130,7 +130,7 @@ public class SpringChangockInitializingBeanRunnerTest {
     when(springContext.getBean(MongoTemplateForTest.class)).thenReturn(new MongoTemplateForTest());
 
     // when
-    ChangockSpring5Runner.builder()
+    ChangockSpring5.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(EnsureDecoratorChangerLog.class.getPackage().getName())
         .setSpringContext(springContext)
@@ -147,7 +147,7 @@ public class SpringChangockInitializingBeanRunnerTest {
     exceptionExpected.expect(ChangockException.class);
     exceptionExpected.expectMessage("ApplicationContext from Spring must be injected to Builder");
 
-    ChangockSpring5Runner.builder()
+    ChangockSpring5.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .buildInitializingBeanRunner()
@@ -164,7 +164,7 @@ public class SpringChangockInitializingBeanRunnerTest {
     exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
 
     // when
-    ChangockSpring5Runner.builder()
+    ChangockSpring5.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
         .setSpringContext(springContext)
