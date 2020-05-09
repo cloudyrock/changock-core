@@ -16,7 +16,7 @@
 
   <groupId>com.github.cloudyrock.changock</groupId>
   <artifactId>changock</artifactId>
-  <version>1.0.2.alpha-SNAPSHOT</version>
+  <version>1.0.2.alpha</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -57,7 +57,7 @@
     <connection>scm:git:git@github.com:cloudyrock/changock-core.git</connection>
     <developerConnection>scm:git:git@github.com:cloudyrock/changock-core.git</developerConnection>
     <url>https://github.com/cloudyrock/changock-core</url>
-    <tag>changock-1.0.0.alpha-SNAPSHOT</tag>
+    <tag>changock-1.0.2.alpha</tag>
   </scm>
 
   <developers>
