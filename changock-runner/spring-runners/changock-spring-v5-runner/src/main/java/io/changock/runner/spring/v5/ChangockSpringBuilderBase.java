@@ -2,9 +2,13 @@ package io.changock.runner.spring.v5;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.spring.util.SpringDependencyManager;
 import io.changock.utils.CollectionUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -18,8 +22,6 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
   protected static final String DEFAULT_PROFILE = "default";
   protected ApplicationContext springContext;
 
-
-
   /**
    * Set ApplicationContext from Spring
    *
@@ -32,7 +34,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return returnInstance();
   }
 
-  protected SpringMigrationExecutor buildExecutorWIthEnvironmentDependency() {
+  protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
     return new SpringMigrationExecutor(
         driver,
         new SpringDependencyManager(this.springContext),
@@ -65,6 +67,36 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     super.runValidation();
     if (springContext == null) {
       throw new ChangockException("ApplicationContext from Spring must be injected to Builder");
+    }
+  }
+
+  public static class ChangockSpringApplicationRunner extends ChangockBase implements ApplicationRunner {
+
+    protected ChangockSpringApplicationRunner(SpringMigrationExecutor executor,
+                                              ProfiledChangeLogService changeLogService,
+                                              boolean throwExceptionIfCannotObtainLock,
+                                              boolean enabled) {
+      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+    }
+
+    @Override
+    public void run(ApplicationArguments args) {
+      this.execute();
+    }
+  }
+
+  public static class ChangockSpringInitializingBeanRunner extends ChangockBase implements InitializingBean {
+
+    protected ChangockSpringInitializingBeanRunner(SpringMigrationExecutor executor,
+                                                   ProfiledChangeLogService changeLogService,
+                                                   boolean throwExceptionIfCannotObtainLock,
+                                                   boolean enabled) {
+      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+      execute();
     }
   }
 }
