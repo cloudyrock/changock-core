@@ -85,7 +85,7 @@ public class SpringChangockApplicationRunnerTest {
 
     // then
     ArgumentCaptor<String> changeSetIdCaptor = ArgumentCaptor.forClass(String.class);
-    verify(changeEntryService, new Times(3)).isNewChange(changeSetIdCaptor.capture(), anyString());
+    verify(changeEntryService, new Times(3)).hasNotBennExecuted(changeSetIdCaptor.capture(), anyString());
 
     List<String> changeSetIdList = changeSetIdCaptor.getAllValues();
     assertEquals(3, changeSetIdList.size());
@@ -97,7 +97,7 @@ public class SpringChangockApplicationRunnerTest {
   @Test
   public void shouldInjectEnvironmentToChangeSet() {
     // given
-    when(changeEntryService.isNewChange("testWithProfileIncluded1OrProfileINotIncluded", "testuser"))
+    when(changeEntryService.hasNotBennExecuted("testWithProfileIncluded1OrProfileINotIncluded", "testuser"))
         .thenReturn(true);
 
     // when
@@ -115,7 +115,7 @@ public class SpringChangockApplicationRunnerTest {
   @Test
   public void shouldPrioritizeConnectorDependenciesOverContext() {
     // given
-    when(changeEntryService.isNewChange("ensureDecoratorChangeSet", "testuser")).thenReturn(true);
+    when(changeEntryService.hasNotBennExecuted("ensureDecoratorChangeSet", "testuser")).thenReturn(true);
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
@@ -156,7 +156,7 @@ public class SpringChangockApplicationRunnerTest {
   @Test
   public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
 
-    when(changeEntryService.isNewChange("withForbiddenParameter", "executor")).thenReturn(false);
+    when(changeEntryService.hasNotBennExecuted("withForbiddenParameter", "executor")).thenReturn(false);
 
     // then
     exceptionExpected.expect(ChangockException.class);
