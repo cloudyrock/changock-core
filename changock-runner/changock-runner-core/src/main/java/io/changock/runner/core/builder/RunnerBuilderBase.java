@@ -23,7 +23,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected long lockAcquiredForMinutes = 3L;
   protected long maxWaitingForLockMinutes = 4L;
   protected int maxTries = 3;
-  protected boolean throwExceptionIfCannotObtainLock = false;
+  protected boolean throwExceptionIfCannotObtainLock = true;
   protected boolean enabled = true;
   protected String startSystemVersion = "0";
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
@@ -59,8 +59,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   /**
-   * Feature which enables/disables throwing ChangockException if the lock cannot be obtained
-   * <b>Optional</b> Default value false.
+   * <p></p>Feature which enables/disables throwing ChangockException if the lock cannot be obtained, so the
+   * the application carries on with no issue.
+   * Only make this false if the changes are not mandatory and the app can work without them. Leave it true otherwise.
+   * <b>Optional</b> Default value true.
+   * </p>
    *
    * @param throwExceptionIfCannotObtainLock Changock will throw ChangockException if lock can not be obtained
    * @return builder for fluent interface
