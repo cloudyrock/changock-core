@@ -86,7 +86,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   protected void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     try {
-      if (changeSetItem.isRunAlways() || driver.getChangeEntryService().hasNotBennExecuted(changeSetItem.getId(), changeSetItem.getAuthor())) {
+      if (changeSetItem.isRunAlways() || !driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor())) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
 

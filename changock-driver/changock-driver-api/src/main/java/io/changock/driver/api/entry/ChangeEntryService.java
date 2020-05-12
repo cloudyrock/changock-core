@@ -15,7 +15,7 @@ public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Pr
    * @return tru if it has not been executed yet, false otherwise
    * @throws ChangockException if anything goes wrong
    */
-  boolean hasNotBennExecuted(String changeSetId, String author) throws ChangockException;
+  boolean isAlreadyExecuted(String changeSetId, String author) throws ChangockException;
 
   void save(CHANGE_ENTRY changeEntry) throws ChangockException;
 

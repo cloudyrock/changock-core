@@ -64,10 +64,10 @@ public class MigrationExecutorTest {
   public void shouldRunChangeLogsSuccessfully() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
-    when(changeEntryService.hasNotBennExecuted("newChangeSet", "executor")).thenReturn(true);
-    when(changeEntryService.hasNotBennExecuted("runAlwaysAndNewChangeSet", "executor")).thenReturn(true);
-    when(changeEntryService.hasNotBennExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(false);
-    when(changeEntryService.hasNotBennExecuted("alreadyExecuted", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("runAlwaysAndNewChangeSet", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
     new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
@@ -114,10 +114,10 @@ public class MigrationExecutorTest {
   public void shouldAbortMigrationButSaveFailedChangeSet_IfChangeSetThrowsException() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
-    when(changeEntryService.hasNotBennExecuted("newChangeSet", "executor")).thenReturn(true);
-    when(changeEntryService.hasNotBennExecuted("runAlwaysAndNewChangeSet", "executor")).thenReturn(true);
-    when(changeEntryService.hasNotBennExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(false);
-    when(changeEntryService.hasNotBennExecuted("throwsException", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("runAlwaysAndNewChangeSet", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("throwsException", "executor")).thenReturn(false);
 
     // when
     try{
@@ -159,7 +159,7 @@ public class MigrationExecutorTest {
   @Test
   public void shouldThrowException_ifNoArgumentFound() {
     // given
-    when(changeEntryService.hasNotBennExecuted("newChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
 
     // then
     exceptionExpected.expect(ChangockException.class);
@@ -175,7 +175,7 @@ public class MigrationExecutorTest {
   public void shouldThrowException_ifWrongArgument() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
-    when(changeEntryService.hasNotBennExecuted("newChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
 
     //then
     exceptionExpected.expect(ChangockException.class);
@@ -190,7 +190,7 @@ public class MigrationExecutorTest {
   public void shouldCloseLockManager_WhenException() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
-    when(changeEntryService.hasNotBennExecuted("newChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
 
     // when
     try {
@@ -208,7 +208,7 @@ public class MigrationExecutorTest {
   public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfDriverNotValidated() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
-    when(changeEntryService.hasNotBennExecuted("newChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
     doThrow(ChangockException.class).when(driver).runValidation();
 
     // when
@@ -220,9 +220,9 @@ public class MigrationExecutorTest {
   public void shouldContinueMigration_whenAChangeSetFails_ifItIsNonFailFast() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
-    when(changeEntryService.hasNotBennExecuted("newChangeSet1", "executor")).thenReturn(true);
-    when(changeEntryService.hasNotBennExecuted("changeSetNonFailFast", "executor")).thenReturn(true);
-    when(changeEntryService.hasNotBennExecuted("newChangeSet2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet1", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("changeSetNonFailFast", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet2", "executor")).thenReturn(false);
 
     // when
     new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
@@ -265,7 +265,7 @@ public class MigrationExecutorTest {
   @Test
   public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
 
-    when(changeEntryService.hasNotBennExecuted("withForbiddenParameter", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
 
     // then
     exceptionExpected.expect(ChangockException.class);
