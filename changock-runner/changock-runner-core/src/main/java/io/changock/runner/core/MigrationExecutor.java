@@ -5,6 +5,7 @@ import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.driver.api.lock.LockManager;
+import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.exception.ChangockException;
@@ -164,6 +165,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     driver.initialize();
     driver.runValidation();
     this.dependencyManager
+        .setLockGuardProxyFactory(new LockGuardProxyFactory(driver.getLockManager()))
         .addDriverDependencies(driver.getDependencies())
         .addForbiddenParameters(driver.getForbiddenParameters());
   }

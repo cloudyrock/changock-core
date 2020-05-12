@@ -3,19 +3,21 @@ package io.changock.runner.core;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.common.ForbiddenParameterException;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
+import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.annotation.NotThreadSafe;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
-//TODO move to runner core module
 @NotThreadSafe
 public class DependencyManager {
 
   private final LinkedHashSet<ChangeSetDependency> connectorDependencies;
   private final LinkedHashSet<ChangeSetDependency> standardDependencies;
   private final ForbiddenParametersMap forbiddenParametersMap;
+  private LockGuardProxyFactory lockGuardProxyFactory;
 
   public DependencyManager() {
     standardDependencies = new LinkedHashSet<>();
@@ -34,7 +36,11 @@ public class DependencyManager {
   }
 
   private Optional<Object> getStandardDependency(Class type) {
-    return getDependency(standardDependencies, type);
+    if(!type.isInterface()) {
+      throw new ChangockException(String.format("Parameter of type [%s] in changeSet must be an interface", type.getSimpleName()));
+    }
+    return getDependency(standardDependencies, type)
+        .map(instance-> lockGuardProxyFactory.getRawProxy(instance, type));
   }
 
   private Optional<Object> getDependency(Collection<ChangeSetDependency> dependencyStore, Class type) {
@@ -43,6 +49,11 @@ public class DependencyManager {
         .filter(dependency -> type.isAssignableFrom(dependency.getType()))
         .map(ChangeSetDependency::getInstance)
         .findFirst();
+  }
+
+  public DependencyManager setLockGuardProxyFactory(LockGuardProxyFactory lockGuardProxyFactory) {
+    this.lockGuardProxyFactory = lockGuardProxyFactory;
+    return this;
   }
 
   public DependencyManager addDriverDependencies(Collection<? extends ChangeSetDependency> dependencies) {

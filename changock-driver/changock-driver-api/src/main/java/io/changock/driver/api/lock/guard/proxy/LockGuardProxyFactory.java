@@ -14,7 +14,7 @@ public class LockGuardProxyFactory {
   }
 
   @SuppressWarnings("unchecked")
-  Object getRawProxy(Object r, Class interfaceType) {
+  public Object getRawProxy(Object r, Class interfaceType) {
     return Proxy.newProxyInstance(
         interfaceType.getClassLoader(),
         new Class<?>[]{interfaceType}, new LockGuardProxy(r, lockManager, this)

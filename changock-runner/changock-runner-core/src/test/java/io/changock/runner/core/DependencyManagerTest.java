@@ -2,12 +2,25 @@ package io.changock.runner.core;
 
 
 import io.changock.driver.api.driver.ChangeSetDependency;
+import io.changock.driver.api.lock.LockManager;
+import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.core.util.InterfaceDependency;
+import io.changock.runner.core.util.InterfaceDependencyImpl;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
+import org.mockito.internal.verification.Times;
 
 import java.util.ArrayList;
 
 public class DependencyManagerTest {
+
+
+  @Rule
+  public ExpectedException exceptionExpected = ExpectedException.none();
 
   @Test
   public void shouldRetrieveConnectorDependency_WhenAddSimpleDependency() {
@@ -57,12 +70,12 @@ public class DependencyManagerTest {
   @Test
   public void shouldRetrieveChildConnectorDependency_WhenAddChild_IfRetrievedParent() {
 
-    Child1 dependency = new Child1();
+    InterfaceDependencyImpl dependency = new InterfaceDependencyImpl();
 
     Assert.assertEquals(dependency,
         new DependencyManager()
-            .addDriverDependency(new ChangeSetDependency(Child1.class, dependency))
-            .getDependency(Parent.class)
+            .addDriverDependency(new ChangeSetDependency(InterfaceDependencyImpl.class, dependency))
+            .getDependency(InterfaceDependency.class)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -80,70 +93,66 @@ public class DependencyManagerTest {
 
   @Test
   public void shouldRetrieveStandardDependency_WhenAddSimpleDependency() {
-    Assert.assertEquals("dependency",
-        new DependencyManager()
-            .addStandardDependency(new ChangeSetDependency("dependency"))
-            .getDependency(String.class)
-            .orElseThrow(RuntimeException::new));
+    InterfaceDependency o = (InterfaceDependency) new DependencyManager()
+        .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()))
+        .getDependency(InterfaceDependency.class)
+        .orElseThrow(RuntimeException::new);
   }
 
   @Test
   public void shouldRetrieveLastStandardDependency_WhenOverride() {
-    Assert.assertEquals("dependency",
-        new DependencyManager()
-            .addStandardDependency(new ChangeSetDependency("dependencyNotReturned"))
-            .addStandardDependency(new ChangeSetDependency("dependency"))
-            .getDependency(String.class)
-            .orElseThrow(RuntimeException::new));
+    Assert.assertEquals("value2",
+        ((InterfaceDependency) new DependencyManager()
+            .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
+            .addStandardDependency(new ChangeSetDependency(new Child2("value1")))
+            .addStandardDependency(new ChangeSetDependency(new Child2("value2")))
+            .getDependency(InterfaceDependency.class)
+            .orElseThrow(RuntimeException::new)
+        ).getValue());
   }
 
   @Test
-  public void shouldRetrieveLastStandardDependency_WhenAddSet() {
+  public void shouldRetrieveLastStandardDependency_WhenAddList() {
     ArrayList<ChangeSetDependency> dependencies = new ArrayList();
-    dependencies.add(new ChangeSetDependency(100L));
-    dependencies.add(new ChangeSetDependency("dependency"));
-    Assert.assertEquals("dependency",
-        new DependencyManager()
+    dependencies.add(new ChangeSetDependency(new Child2("value1")));
+    dependencies.add(new ChangeSetDependency(new Child2("value2")));
+    Assert.assertEquals("value2",
+        ((InterfaceDependency) new DependencyManager()
+            .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(dependencies)
-            .getDependency(String.class)
-            .orElseThrow(RuntimeException::new));
+            .getDependency(InterfaceDependency.class)
+            .orElseThrow(RuntimeException::new)
+        ).getValue());
   }
 
   @Test
   public void shouldRetrieveLastStandardDependency_WhenAddSetAndSimple_IfOverride() {
     ArrayList<ChangeSetDependency> dependencies = new ArrayList<>();
-    dependencies.add(new ChangeSetDependency(100L));
-    dependencies.add(new ChangeSetDependency("dependencyNotReturned"));
-    Assert.assertEquals("dependency",
-        new DependencyManager()
+    dependencies.add(new ChangeSetDependency(new Child2("value1")));
+    dependencies.add(new ChangeSetDependency(new Child2("value2")));
+    Assert.assertEquals("value3",
+        ((InterfaceDependency) new DependencyManager()
+            .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(dependencies)
-            .addStandardDependency(new ChangeSetDependency("dependency"))
-            .getDependency(String.class)
-            .orElseThrow(RuntimeException::new));
+            .addStandardDependency(new ChangeSetDependency(new Child2("value3")))
+            .getDependency(InterfaceDependency.class)
+            .orElseThrow(RuntimeException::new)
+        ).getValue());
   }
 
 
   @Test
-  public void shouldRetrieveChildStandardDependency_WhenAddChild_IfRetrievedParent() {
+  public void shouldRetrieveFirstChildStandardDependency_WhenAddTwoDifferentChildrenOfTheSameTime_IfRetrievedParent() {
 
-    Child1 dependency = new Child1();
-
-    Assert.assertEquals(dependency,
-        new DependencyManager()
-            .addStandardDependency(new ChangeSetDependency(Child1.class, dependency))
-            .getDependency(Parent.class)
-            .orElseThrow(RuntimeException::new));
-  }
-
-  @Test
-  public void shouldRetrieveFirstChildCStandardDependency_WhenAddTwoChild_IfRetrievedParent() {
-    Child1 dependency = new Child1();
-    Assert.assertEquals(dependency,
-        new DependencyManager()
-            .addStandardDependency(new ChangeSetDependency(Child1.class, dependency))
-            .addStandardDependency(new ChangeSetDependency(Child2.class, new Child2()))
-            .getDependency(Parent.class)
-            .orElseThrow(RuntimeException::new));
+    Assert.assertEquals("dependency1",
+        ((InterfaceDependency) new DependencyManager()
+            .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
+            .addStandardDependency(new ChangeSetDependency(Child1.class, new Child1("dependency1")))
+            .addStandardDependency(new ChangeSetDependency(Child2.class, new Child2("dependency12")))
+            .getDependency(InterfaceDependency.class)
+            .orElseThrow(RuntimeException::new)
+        ).getValue());
   }
 
 
@@ -159,13 +168,86 @@ public class DependencyManagerTest {
   }
 
 
+  @Test
+  public void shouldReturnProxy_IfStandardDependency() {
+    LockManager lockManager = Mockito.mock(LockManager.class);
+
+    ((InterfaceDependency) new DependencyManager()
+        .setLockGuardProxyFactory(new LockGuardProxyFactory(lockManager))
+        .addStandardDependency(new ChangeSetDependency(InterfaceDependency.class, new InterfaceDependencyImpl()))
+        .getDependency(InterfaceDependency.class)
+        .orElseThrow(RuntimeException::new)
+    ).getValue();
+
+    Mockito.verify(lockManager, new Times(1)).ensureLockDefault();
+  }
+
+  @Test
+  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
+    LockManager lockManager = Mockito.mock(LockManager.class);
+
+    ((InterfaceDependency) new DependencyManager()
+        .setLockGuardProxyFactory(new LockGuardProxyFactory(lockManager))
+        .addStandardDependency(new ChangeSetDependency(InterfaceDependency.class, new InterfaceDependencyImpl()))
+        .getDependency(InterfaceDependency.class)
+        .orElseThrow(RuntimeException::new)
+    ).getInstance().getValue();
+
+    Mockito.verify(lockManager, new Times(2)).ensureLockDefault();
+  }
+
+  @Test
+  public void shouldThrowException_WhenGettingStandardDependency_IfNotInterface() {
+    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expectMessage("Parameter of type [Parent] in changeSet must be an interface");
+
+    new DependencyManager()
+        .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
+        .addStandardDependency(new ChangeSetDependency(new Parent()))
+        .getDependency(Parent.class)
+        .orElseThrow(RuntimeException::new);
+  }
+
+
 }
 
-class Parent {
+class Parent implements InterfaceDependency {
 }
 
 class Child1 extends Parent {
+
+  private final String value;
+
+  public Child1() {
+    this("child1");
+  }
+
+  public Child1(String value) {
+    this.value = value;
+  }
+
+  @Override
+  public String getValue() {
+    return value;
+  }
+
 }
 
 class Child2 extends Parent {
+
+  private final String value;
+
+  public Child2() {
+    this("defaultValue");
+  }
+
+  public Child2(String value) {
+    this.value = value;
+  }
+
+  @Override
+  public String getValue() {
+    return value;
+  }
 }
+
