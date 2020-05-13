@@ -166,49 +166,6 @@ public class DependencyManagerTest {
             .getDependency(String.class)
             .orElseThrow(RuntimeException::new));
   }
-
-
-  @Test
-  public void shouldReturnProxy_IfStandardDependency() {
-    LockManager lockManager = Mockito.mock(LockManager.class);
-
-    ((InterfaceDependency) new DependencyManager()
-        .setLockGuardProxyFactory(new LockGuardProxyFactory(lockManager))
-        .addStandardDependency(new ChangeSetDependency(InterfaceDependency.class, new InterfaceDependencyImpl()))
-        .getDependency(InterfaceDependency.class)
-        .orElseThrow(RuntimeException::new)
-    ).getValue();
-
-    Mockito.verify(lockManager, new Times(1)).ensureLockDefault();
-  }
-
-  @Test
-  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
-    LockManager lockManager = Mockito.mock(LockManager.class);
-
-    ((InterfaceDependency) new DependencyManager()
-        .setLockGuardProxyFactory(new LockGuardProxyFactory(lockManager))
-        .addStandardDependency(new ChangeSetDependency(InterfaceDependency.class, new InterfaceDependencyImpl()))
-        .getDependency(InterfaceDependency.class)
-        .orElseThrow(RuntimeException::new)
-    ).getInstance().getValue();
-
-    Mockito.verify(lockManager, new Times(2)).ensureLockDefault();
-  }
-
-  @Test
-  public void shouldThrowException_WhenGettingStandardDependency_IfNotInterface() {
-    exceptionExpected.expect(ChangockException.class);
-    exceptionExpected.expectMessage("Parameter of type [Parent] must be an interface");
-
-    new DependencyManager()
-        .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
-        .addStandardDependency(new ChangeSetDependency(new Parent()))
-        .getDependency(Parent.class)
-        .orElseThrow(RuntimeException::new);
-  }
-
-
 }
 
 class Parent implements InterfaceDependency {

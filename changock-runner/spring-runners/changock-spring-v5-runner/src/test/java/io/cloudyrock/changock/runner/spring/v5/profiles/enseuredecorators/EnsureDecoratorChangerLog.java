@@ -4,8 +4,8 @@ package io.cloudyrock.changock.runner.spring.v5.profiles.enseuredecorators;
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
 import io.cloudyrock.changock.runner.spring.v5.util.CallVerifier;
-import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTest;
-import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTestChild;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImpl;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImplChild;
 
 
 @ChangeLog(order = "01")
@@ -14,14 +14,14 @@ public class EnsureDecoratorChangerLog {
     @ChangeSet(author = "testuser", id = "ensureDecoratorChangeSet", order = "01")
     public void ensureDecoratorChangeSet(
             CallVerifier callVerifier,
-            MongoTemplateForTest mongoTemplateForTest) {
+            MongockTemplateForTestImpl mongockTemplateForTest) {
         callVerifier.counter++;
         System.out.println("invoked ensureDecoratorChangeSet");
 
-        if (mongoTemplateForTest == null) {
+        if (mongockTemplateForTest == null) {
             throw new RuntimeException("Must pass dependency");
         }
-        if (!MongoTemplateForTestChild.class.isAssignableFrom(mongoTemplateForTest.getClass())) {
+        if (!MongockTemplateForTestImplChild.class.isAssignableFrom(mongockTemplateForTest.getClass())) {
             throw new RuntimeException("Must prioritise pass connector dependency");
         }
 

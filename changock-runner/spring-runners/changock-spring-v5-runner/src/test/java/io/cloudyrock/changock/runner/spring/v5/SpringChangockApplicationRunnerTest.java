@@ -12,9 +12,14 @@ import io.cloudyrock.changock.runner.spring.v5.profiles.enseuredecorators.Ensure
 import io.cloudyrock.changock.runner.spring.v5.profiles.integration.IntegrationProfiledChangerLog;
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ForbiddenParameter;
+import io.cloudyrock.changock.runner.spring.v5.profiles.withInterfaceParameter.ChangeLogWithInterfaceParameter;
 import io.cloudyrock.changock.runner.spring.v5.util.CallVerifier;
-import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTest;
-import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTestChild;
+import io.cloudyrock.changock.runner.spring.v5.util.ClassNotInterfaced;
+import io.cloudyrock.changock.runner.spring.v5.util.InterfaceDependency;
+import io.cloudyrock.changock.runner.spring.v5.util.InterfaceDependencyImpl;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTest;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImpl;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImplChild;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +35,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,6 +59,7 @@ public class SpringChangockApplicationRunnerTest {
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getLockManager()).thenReturn(lockManager);
+    when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
     ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
     forbiddenParameters.put(ForbiddenParameter.class, String.class);
@@ -69,7 +76,9 @@ public class SpringChangockApplicationRunnerTest {
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongoTemplateForTest.class)).thenReturn(new MongoTemplateForTest());
+    when(springContext.getBean(MongockTemplateForTest.class)).thenReturn(new MongockTemplateForTestImpl());
+    when(springContext.getBean(InterfaceDependency.class)).thenReturn(new InterfaceDependencyImpl());
+    when(springContext.getBean(ClassNotInterfaced.class)).thenReturn(new ClassNotInterfaced());
   }
 
   @Test
@@ -96,9 +105,6 @@ public class SpringChangockApplicationRunnerTest {
 
   @Test
   public void shouldInjectEnvironmentToChangeSet() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("testWithProfileIncluded1OrProfileINotIncluded", "testuser"))
-        .thenReturn(false);
 
     // when
     ChangockSpring5.builder()
@@ -119,14 +125,14 @@ public class SpringChangockApplicationRunnerTest {
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
-    dependencySet.add(new ChangeSetDependency(MongoTemplateForTest.class, new MongoTemplateForTestChild()));
+    dependencySet.add(new ChangeSetDependency(MongockTemplateForTestImpl.class, new MongockTemplateForTestImplChild()));
     when(driver.getDependencies()).thenReturn(dependencySet);
 
     Environment environment = mock(Environment.class);
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongoTemplateForTest.class)).thenReturn(new MongoTemplateForTest());
+    when(springContext.getBean(MongockTemplateForTestImpl.class)).thenReturn(new MongockTemplateForTestImpl());
 
     // when
     ChangockSpring5.builder()
@@ -169,6 +175,69 @@ public class SpringChangockApplicationRunnerTest {
         .setSpringContext(springContext)
         .buildApplicationRunner()
         .run(null);
+  }
+
+
+
+
+
+  @Test
+  public void shouldThrowException_IfChangeSetParameterfNotInterface() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(false);
+
+    // then
+    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expectMessage("Error in method[ChangeLogWithInterfaceParameter.withClassNotInterfacedParameter] : Parameter of type [ClassNotInterfaced] must be an interface");
+
+    // when
+    ChangockSpring5.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(ChangeLogWithInterfaceParameter.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildApplicationRunner()
+        .run(null);
+  }
+
+  @Test
+  public void shouldReturnProxy_IfStandardDependency() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
+
+
+    // when
+    ChangockSpring5.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(ChangeLogWithInterfaceParameter.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildApplicationRunner()
+        .run(null);
+
+    // then
+    verify(lockManager, new Times(1)).ensureLockDefault();
+  }
+
+  @Test
+  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
+
+    // when
+    ChangockSpring5.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(ChangeLogWithInterfaceParameter.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildApplicationRunner()
+        .run(null);
+
+    // then
+    verify(lockManager, new Times(2)).ensureLockDefault();
   }
 
 }

@@ -305,9 +305,10 @@ public class MigrationExecutorTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void shouldInjectProxy_WhenChangeSetCalled() {
+  public void shouldReturnProxy_IfStandardDependency() {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
 
     // when
     when(driver.getLockManager()).thenReturn(lockManager);
@@ -317,7 +318,27 @@ public class MigrationExecutorTest {
     new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
+    // then
     verify(lockManager, new Times(1)).ensureLockDefault();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(2)).ensureLockDefault();
   }
 
   private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {

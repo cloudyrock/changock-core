@@ -1,11 +1,9 @@
-package io.changock.runner.core.changelogs.executor.withInterfaceParameter;
+package io.cloudyrock.changock.runner.spring.v5.profiles.withInterfaceParameter;
 
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
-import io.changock.runner.core.util.DummyDependencyClass;
-import io.changock.runner.core.util.InterfaceDependency;
-
-import java.util.concurrent.CountDownLatch;
+import io.cloudyrock.changock.runner.spring.v5.util.ClassNotInterfaced;
+import io.cloudyrock.changock.runner.spring.v5.util.InterfaceDependency;
 
 @ChangeLog(order = "0")
 public class ChangeLogWithInterfaceParameter {
@@ -20,6 +18,14 @@ public class ChangeLogWithInterfaceParameter {
   public void withInterfaceParameter2(InterfaceDependency dependency) {
     dependency.getInstance().getValue();
   }
+
+
+  @ChangeSet(author = "executor", id = "withClassNotInterfacedParameter", order = "1")
+  public void withClassNotInterfacedParameter(ClassNotInterfaced dependency) {
+  }
+
+
+
 
 
 }

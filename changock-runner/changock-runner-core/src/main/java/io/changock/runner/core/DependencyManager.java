@@ -17,7 +17,7 @@ public class DependencyManager {
   private final LinkedHashSet<ChangeSetDependency> connectorDependencies;
   private final LinkedHashSet<ChangeSetDependency> standardDependencies;
   private final ForbiddenParametersMap forbiddenParametersMap;
-  private LockGuardProxyFactory lockGuardProxyFactory;
+  protected LockGuardProxyFactory lockGuardProxyFactory;
 
   public DependencyManager() {
     standardDependencies = new LinkedHashSet<>();
