@@ -36,9 +36,6 @@ public class DependencyManager {
   }
 
   private Optional<Object> getStandardDependency(Class type) {
-    if(!type.isInterface()) {
-      throw new ChangockException(String.format("Parameter of type [%s] in changeSet must be an interface", type.getSimpleName()));
-    }
     return getDependency(standardDependencies, type)
         .map(instance-> lockGuardProxyFactory.getRawProxy(instance, type));
   }

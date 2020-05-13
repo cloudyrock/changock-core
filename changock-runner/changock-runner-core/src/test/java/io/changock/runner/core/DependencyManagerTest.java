@@ -199,7 +199,7 @@ public class DependencyManagerTest {
   @Test
   public void shouldThrowException_WhenGettingStandardDependency_IfNotInterface() {
     exceptionExpected.expect(ChangockException.class);
-    exceptionExpected.expectMessage("Parameter of type [Parent] in changeSet must be an interface");
+    exceptionExpected.expectMessage("Parameter of type [Parent] must be an interface");
 
     new DependencyManager()
         .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
