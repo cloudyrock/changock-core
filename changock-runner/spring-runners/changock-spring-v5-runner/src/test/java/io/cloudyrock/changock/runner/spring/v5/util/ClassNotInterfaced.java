@@ -1,4 +1,4 @@
 package io.cloudyrock.changock.runner.spring.v5.util;
 
-public class MongoTemplateForTest {
+public class ClassNotInterfaced {
 }

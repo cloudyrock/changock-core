@@ -1,26 +1,32 @@
 package io.changock.runner.core;
 
 
-import io.changock.driver.api.driver.ForbiddenParametersMap;
-import io.changock.driver.api.entry.ChangeState;
-import io.changock.migration.api.ChangeLogItem;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeEntryService;
+import io.changock.driver.api.entry.ChangeState;
 import io.changock.driver.api.lock.LockManager;
+import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import io.changock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import io.changock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
+import io.changock.runner.core.changelogs.executor.withInterfaceParameter.ChangeLogWithInterfaceParameter;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
 import io.changock.runner.core.util.DummyDependencyClass;
+import io.changock.runner.core.util.InterfaceDependencyImpl;
+import io.changock.runner.core.util.InterfaceDependencyImplNoLockGarded;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
@@ -61,6 +67,7 @@ public class MigrationExecutorTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldRunChangeLogsSuccessfully() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
@@ -111,6 +118,7 @@ public class MigrationExecutorTest {
 
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldAbortMigrationButSaveFailedChangeSet_IfChangeSetThrowsException() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
@@ -120,7 +128,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("throwsException", "executor")).thenReturn(false);
 
     // when
-    try{
+    try {
       new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
           .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
     } catch (Exception ex) {
@@ -157,6 +165,7 @@ public class MigrationExecutorTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldThrowException_ifNoArgumentFound() {
     // given
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
@@ -187,6 +196,7 @@ public class MigrationExecutorTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldCloseLockManager_WhenException() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
@@ -205,6 +215,7 @@ public class MigrationExecutorTest {
 
 
   @Test(expected = ChangockException.class)
+  @SuppressWarnings("unchecked")
   public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfDriverNotValidated() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
@@ -217,6 +228,7 @@ public class MigrationExecutorTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldContinueMigration_whenAChangeSetFails_ifItIsNonFailFast() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
@@ -260,9 +272,8 @@ public class MigrationExecutorTest {
   }
 
 
-
-
   @Test
+  @SuppressWarnings("unchecked")
   public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
 
     when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
@@ -276,6 +287,104 @@ public class MigrationExecutorTest {
         .executeMigration(createInitialChangeLogs(ChangeLogWithForbiddenParameter.class));
   }
 
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldThrowException_IfChangeSetParameterfNotInterface() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
+
+    // then
+    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Parameter of type [DummyDependencyClass] must be an interface");
+
+    // when
+    DependencyManager dependencyManager = new DependencyManager()
+        .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
+        .addStandardDependency(new ChangeSetDependency(new DummyDependencyClass()));
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldReturnProxy_IfStandardDependency() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(1)).ensureLockDefault();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(2)).ensureLockDefault();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldNotReturnProxy_IfClassAnnotatedWithNonLockGuarded() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImplNoLockGarded()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(0)).ensureLockDefault();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldNotReturnProxy_IfParameterAnnotatedWithNonLockGuarded() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(false);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(0)).ensureLockDefault();
+  }
   private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();

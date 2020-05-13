@@ -7,8 +7,9 @@ import io.changock.driver.core.lock.DefaultLockManager;
 import io.changock.driver.core.lock.LockRepository;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.TimeService;
+import io.changock.utils.annotation.NotThreadSafe;
 
-
+@NotThreadSafe
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
   private LockManager lockManager = null;

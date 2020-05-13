@@ -13,8 +13,8 @@ import io.cloudyrock.changock.runner.spring.v5.profiles.integration.IntegrationP
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ForbiddenParameter;
 import io.cloudyrock.changock.runner.spring.v5.util.CallVerifier;
-import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTest;
-import io.cloudyrock.changock.runner.spring.v5.util.MongoTemplateForTestChild;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImpl;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImplChild;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,8 +68,8 @@ public class SpringChangockInitializingBeanRunnerTest {
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongoTemplateForTest.class))
-        .thenReturn(new MongoTemplateForTest());
+    when(springContext.getBean(MongockTemplateForTestImpl.class))
+        .thenReturn(new MongockTemplateForTestImpl());
   }
 
   @Test
@@ -120,14 +120,14 @@ public class SpringChangockInitializingBeanRunnerTest {
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
-    dependencySet.add(new ChangeSetDependency(MongoTemplateForTest.class, new MongoTemplateForTestChild()));
+    dependencySet.add(new ChangeSetDependency(MongockTemplateForTestImpl.class, new MongockTemplateForTestImplChild()));
     when(driver.getDependencies()).thenReturn(dependencySet);
 
     Environment environment = mock(Environment.class);
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongoTemplateForTest.class)).thenReturn(new MongoTemplateForTest());
+    when(springContext.getBean(MongockTemplateForTestImpl.class)).thenReturn(new MongockTemplateForTestImpl());
 
     // when
     ChangockSpring5.builder()
