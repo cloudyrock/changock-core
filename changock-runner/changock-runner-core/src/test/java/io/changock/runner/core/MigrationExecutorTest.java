@@ -19,6 +19,8 @@ import io.changock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithFo
 import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
 import io.changock.runner.core.util.DummyDependencyClass;
 import io.changock.runner.core.util.InterfaceDependencyImpl;
+import io.changock.runner.core.util.InterfaceDependencyImplNoLockGarded;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -290,6 +292,7 @@ public class MigrationExecutorTest {
   public void shouldThrowException_IfChangeSetParameterfNotInterface() {
     // given
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
 
     // then
     exceptionExpected.expect(ChangockException.class);
@@ -309,6 +312,7 @@ public class MigrationExecutorTest {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
 
     // when
     when(driver.getLockManager()).thenReturn(lockManager);
@@ -328,6 +332,7 @@ public class MigrationExecutorTest {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
 
     // when
     when(driver.getLockManager()).thenReturn(lockManager);
@@ -341,6 +346,45 @@ public class MigrationExecutorTest {
     verify(lockManager, new Times(2)).ensureLockDefault();
   }
 
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldNotReturnProxy_IfClassAnnotatedWithNonLockGuarded() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImplNoLockGarded()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(0)).ensureLockDefault();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldNotReturnProxy_IfParameterAnnotatedWithNonLockGuarded() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(false);
+
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
+
+    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+
+    // then
+    verify(lockManager, new Times(0)).ensureLockDefault();
+  }
   private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();

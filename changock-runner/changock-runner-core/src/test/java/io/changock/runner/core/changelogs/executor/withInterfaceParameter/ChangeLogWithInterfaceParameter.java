@@ -2,6 +2,7 @@ package io.changock.runner.core.changelogs.executor.withInterfaceParameter;
 
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
+import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.runner.core.util.DummyDependencyClass;
 import io.changock.runner.core.util.InterfaceDependency;
 
@@ -16,10 +17,17 @@ public class ChangeLogWithInterfaceParameter {
     dependency.getValue();
   }
 
-  @ChangeSet(author = "executor", id = "withInterfaceParameter2", order = "1")
+  @ChangeSet(author = "executor", id = "withInterfaceParameter2", order = "2")
   public void withInterfaceParameter2(InterfaceDependency dependency) {
     dependency.getInstance().getValue();
   }
+
+
+  @ChangeSet(author = "executor", id = "withNonLockGuardedParameter", order = "3")
+  public void withNonLockGuardedParameter(@NonLockGuarded InterfaceDependency dependency) {
+    dependency.getInstance().getValue();
+  }
+
 
 
 }

@@ -14,13 +14,15 @@ import java.lang.annotation.Target;
  * @see ChangeLog
  * @since 27/07/2014
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NonLockGuarded {
 
 
   /**
-   * Indicates the grade of non-lock-guard.
+   * <p>Indicates the grade of non-lock-guard applied to a method.
+   * Does not have any effect at class level.
+   * </p>
    * @return value
    */
   NonLockGuardedType[] value() default {NonLockGuardedType.METHOD};

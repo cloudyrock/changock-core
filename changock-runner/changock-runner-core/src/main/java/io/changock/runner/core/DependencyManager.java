@@ -1,10 +1,9 @@
 package io.changock.runner.core;
 
-import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.common.ForbiddenParameterException;
+import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.annotation.NotThreadSafe;
 
 import java.util.Collection;
@@ -26,18 +25,26 @@ public class DependencyManager {
   }
 
   public Optional<Object> getDependency(Class type) throws ForbiddenParameterException {
+    return getDependency(type, true);
+  }
+
+
+  public Optional<Object> getDependency(Class type, boolean lockGuarded) throws ForbiddenParameterException {
     Optional<Object> dependencyOpt = forbiddenParametersMap.throwExceptionIfPresent(type)
         .or(() -> getDriverDependency(type));
-    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type);
+    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, lockGuarded);
   }
 
   private Optional<Object> getDriverDependency(Class type) {
     return getDependency(connectorDependencies, type);
   }
 
-  private Optional<Object> getStandardDependency(Class type) {
-    return getDependency(standardDependencies, type)
-        .map(instance-> lockGuardProxyFactory.getRawProxy(instance, type));
+  private Optional<Object> getStandardDependency(Class type, boolean lockProxy) {
+    Optional<Object> dependencyOpt = getDependency(standardDependencies, type);
+    return lockProxy
+        ? dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type))
+        : dependencyOpt;
+
   }
 
   private Optional<Object> getDependency(Collection<ChangeSetDependency> dependencyStore, Class type) {

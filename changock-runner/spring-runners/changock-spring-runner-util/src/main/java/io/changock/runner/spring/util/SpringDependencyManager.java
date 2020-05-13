@@ -23,16 +23,19 @@ public class SpringDependencyManager extends DependencyManager implements Valida
     this.springContext = springContext;
   }
 
+
   @Override
   @SuppressWarnings("unchecked")
-  public Optional<Object> getDependency(Class type) {
-    Optional<Object> dependencyOpt = super.getDependency(type);
-    if (dependencyOpt.isPresent()) {
-      return dependencyOpt;
+  public Optional<Object> getDependency(Class type, boolean lockGuarded) {
+    Optional<Object> dependencyFromParent = super.getDependency(type, lockGuarded);
+    if (dependencyFromParent.isPresent()) {
+      return dependencyFromParent;
     } else if (springContext != null) {
       try {
-        return Optional.of(springContext.getBean(type))
-            .map(instance-> lockGuardProxyFactory.getRawProxy(instance, type));
+        Optional<Object> dependencyFromContext = Optional.of(springContext.getBean(type));
+        return lockGuarded
+            ? dependencyFromContext.map(instance-> lockGuardProxyFactory.getRawProxy(instance, type))
+            : dependencyFromContext;
       } catch (BeansException ex) {
         logger.warn("Dependency not found: {}", ex.getMessage());
         return Optional.empty();

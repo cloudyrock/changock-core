@@ -8,16 +8,20 @@ import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
+import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.LogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -132,8 +136,12 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();
     List<Object> changelogInvocationParameters = new ArrayList<>(changeSetMethod.getParameterTypes().length);
-    for (Class<?> parameterType : changeSetMethod.getParameterTypes()) {
-      Optional<Object> parameterOptional = dependencyManager.getDependency(parameterType);
+    Parameter[] parameters = changeSetMethod.getParameters();
+    for(int paramIndex = 0 ; paramIndex < changeSetMethod.getParameterTypes().length ; paramIndex++) {
+      Class<?> parameterType = changeSetMethod.getParameterTypes()[paramIndex];
+      boolean parameterNonLockGuarded = parameters[paramIndex].isAnnotationPresent(NonLockGuarded.class);
+
+      Optional<Object> parameterOptional = dependencyManager.getDependency(parameterType, !parameterNonLockGuarded);
       if (parameterOptional.isPresent()) {
         changelogInvocationParameters.add(parameterOptional.get());
       } else {

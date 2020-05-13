@@ -2,6 +2,7 @@ package io.cloudyrock.changock.runner.spring.v5.profiles.withInterfaceParameter;
 
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
+import io.changock.migration.api.annotations.NonLockGuarded;
 import io.cloudyrock.changock.runner.spring.v5.util.ClassNotInterfaced;
 import io.cloudyrock.changock.runner.spring.v5.util.InterfaceDependency;
 
@@ -25,6 +26,10 @@ public class ChangeLogWithInterfaceParameter {
   }
 
 
+  @ChangeSet(author = "executor", id = "withNonLockGuardedParameter", order = "3")
+  public void withNonLockGuardedParameter(@NonLockGuarded InterfaceDependency dependency) {
+    dependency.getInstance().getValue();
+  }
 
 
 
