@@ -1,4 +1,4 @@
-package io.changock.driver.api.lock.guard.proxy;
+package io.changock.util.test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -10,7 +10,7 @@ public final class ReflectionUtils {
 
   public static Object getImplementationFromLockGuardProxy(Object proxiedObject) {
     try {
-      LockGuardProxy object = (LockGuardProxy)java.lang.reflect.Proxy.getInvocationHandler(proxiedObject);
+      Object object = java.lang.reflect.Proxy.getInvocationHandler(proxiedObject);
       return ReflectionUtils.getFinalFieldFromObject(object, "implementation");
 
     } catch (Exception ex) {

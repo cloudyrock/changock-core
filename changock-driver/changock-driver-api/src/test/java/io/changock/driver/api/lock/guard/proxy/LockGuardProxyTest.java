@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import static io.changock.driver.api.lock.guard.proxy.ReflectionUtils.isProxy;
+import static io.changock.util.test.ReflectionUtils.isProxy;
 import static org.junit.Assert.assertTrue;
 
 
