@@ -13,6 +13,7 @@
     <module>changock-utils</module>
     <module>changock-decorator-util</module>
     <module>changock-test-util</module>
+    <module>changock-bom</module>
   </modules>
 
   <groupId>com.github.cloudyrock.changock</groupId>
