@@ -25,6 +25,10 @@
     <!-- util -->
     <changock.test-util.version>1.0.6.alpha</changock.test-util.version>
     <changock.decorator-util.version>1.0.6.alpha</changock.decorator-util.version>
+
+    <!-- spring -->
+    <spring.v5.version>5.2.6.RELEASE</spring.v5.version>
+    <springboot.v2.version>2.2.6.RELEASE</springboot.v2.version>
   </properties>
 
   <dependencyManagement>
@@ -63,6 +67,20 @@
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-spring-v5-runner</artifactId>
         <version>${changock.api.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
