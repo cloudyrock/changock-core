@@ -6,7 +6,6 @@ import io.changock.utils.Utils;
 
 import java.lang.reflect.Proxy;
 
-// Tests covered in IT for migrationExecutor and Builder
 public class LockGuardProxyFactory {
 
   private final LockManager lockManager;
@@ -31,6 +30,7 @@ public class LockGuardProxyFactory {
         && type.isInterface()
         && !type.isAnnotationPresent(NonLockGuarded.class)
         && !r.getClass().isAnnotationPresent(NonLockGuarded.class)
+        && !Utils.isBasicTypeJDK(r.getClass())
         && !Utils.isBasicTypeJDK(type);
   }
 
