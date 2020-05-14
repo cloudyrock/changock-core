@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>changock</artifactId>
+    <groupId>com.github.cloudyrock.changock</groupId>
+    <version>1.0.5.alpha-SNAPSHOT</version>
+  </parent>
+  <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>changock-bom</artifactId>
+  <name>Changock BOM</name>
+  <description>Changock dependency management</description>
+  <properties>
+    <changock.api.version>1.0.5.alpha-SNAPSHOT</changock.api.version>
+    <!-- driver -->
+    <changock.driver-api.version>1.0.5.alpha-SNAPSHOT</changock.driver-api.version>
+    <changock.driver-core.version>1.0.5.alpha-SNAPSHOT</changock.driver-core.version>
+    <!-- runner -->
+    <changock.runner-core.version>1.0.5.alpha-SNAPSHOT</changock.runner-core.version>
+    <changock.runner-standalone.version>1.0.5.alpha-SNAPSHOT</changock.runner-standalone.version>
+    <changock.runner-spring.version>1.0.5.alpha-SNAPSHOT</changock.runner-spring.version>
+    <changock.runner-spring-util.version>1.0.5.alpha-SNAPSHOT</changock.runner-spring-util.version>
+    <changock.runner-test.version>1.0.5.alpha-SNAPSHOT</changock.runner-test.version>
+    <!-- util -->
+    <changock.test-util.version>1.0.5.alpha-SNAPSHOT</changock.test-util.version>
+    <changock.decorator-util.version>1.0.5.alpha-SNAPSHOT</changock.decorator-util.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-api</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-driver-api</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-driver-core</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-runner-core</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-standalone-runner</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-spring-runner-util</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-spring-v5-runner</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-test-runner</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-test-util</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.changock</groupId>
+        <artifactId>changock-decorator-util</artifactId>
+        <version>${changock.api.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
