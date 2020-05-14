@@ -33,9 +33,14 @@ public class SpringDependencyManager extends DependencyManager implements Valida
     } else if (springContext != null) {
       try {
         Optional<Object> dependencyFromContext = Optional.of(springContext.getBean(type));
-        return lockGuarded
-            ? dependencyFromContext.map(instance-> lockGuardProxyFactory.getRawProxy(instance, type))
-            : dependencyFromContext;
+        if (lockGuarded) {
+          if (!type.isInterface()) {
+            throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
+          }
+          return dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
+        } else {
+          return dependencyFromContext;
+        }
       } catch (BeansException ex) {
         logger.warn("Dependency not found: {}", ex.getMessage());
         return Optional.empty();

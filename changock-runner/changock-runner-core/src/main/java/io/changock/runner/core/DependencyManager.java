@@ -4,6 +4,7 @@ import io.changock.driver.api.common.ForbiddenParameterException;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.annotation.NotThreadSafe;
 
 import java.util.Collection;
@@ -41,10 +42,14 @@ public class DependencyManager {
 
   private Optional<Object> getStandardDependency(Class type, boolean lockProxy) {
     Optional<Object> dependencyOpt = getDependency(standardDependencies, type);
-    return lockProxy
-        ? dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type))
-        : dependencyOpt;
-
+    if (dependencyOpt.isPresent() && lockProxy) {
+      if (!type.isInterface()) {
+        throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
+      }
+      return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
+    } else {
+      return dependencyOpt;
+    }
   }
 
   private Optional<Object> getDependency(Collection<ChangeSetDependency> dependencyStore, Class type) {

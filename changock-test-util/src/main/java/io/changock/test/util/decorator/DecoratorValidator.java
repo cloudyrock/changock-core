@@ -276,7 +276,7 @@ public class DecoratorValidator {
   }
 
   //TODO keep adding more on demand
-  private Collection<Class> javaStructuresTypes = Arrays.asList(
+  private final static Collection<Class> javaStructuresTypes = Arrays.asList(
       List.class,
       Collection.class,
       Map.class,
