@@ -2,11 +2,10 @@ package io.changock.driver.api.lock.guard.proxy;
 
 import io.changock.driver.api.lock.LockManager;
 import io.changock.migration.api.annotations.NonLockGuarded;
-import io.changock.migration.api.exception.ChangockException;
+import io.changock.utils.Utils;
 
 import java.lang.reflect.Proxy;
 
-// Tests covered in IT for migrationExecutor and Builder
 public class LockGuardProxyFactory {
 
   private final LockManager lockManager;
@@ -23,16 +22,16 @@ public class LockGuardProxyFactory {
 
   @SuppressWarnings("unchecked")
   public Object getRawProxy(Object r, Class type) {
-    if (!type.isInterface()) {
-      throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
-    }
     return shouldBeLockGuardProxied(r, type) ? createProxy(r, type) : r;
   }
 
-  private boolean shouldBeLockGuardProxied(Object r, Class type) {
+  private static boolean shouldBeLockGuardProxied(Object r, Class type) {
     return r != null
+        && type.isInterface()
         && !type.isAnnotationPresent(NonLockGuarded.class)
-        && !r.getClass().isAnnotationPresent(NonLockGuarded.class);
+        && !r.getClass().isAnnotationPresent(NonLockGuarded.class)
+        && !Utils.isBasicTypeJDK(r.getClass())
+        && !Utils.isBasicTypeJDK(type);
   }
 
   private Object createProxy(Object r, Class type) {

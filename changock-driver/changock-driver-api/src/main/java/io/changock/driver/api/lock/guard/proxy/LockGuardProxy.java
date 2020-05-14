@@ -30,27 +30,17 @@ public class LockGuardProxy<T> implements InvocationHandler {
     if (shouldMethodBeLockGuarded(noGuardedLockTypes)) {
       lockManager.ensureLockDefault();
     }
-    Class<?> returningType = method.getReturnType();
-    Object result = method.invoke(implementation, args);
-    return shouldReturnObjectBeGuarded(result, returningType, noGuardedLockTypes) ? proxyFactory.getRawProxy(result, returningType) : result;
+    return shouldTryProxyReturn(noGuardedLockTypes)
+        ? proxyFactory.getRawProxy(method.invoke(implementation, args), method.getReturnType())
+        : method.invoke(implementation, args);
   }
 
-  private static boolean shouldReturnObjectBeGuarded(Object result, Class<?> returningType, List<NonLockGuardedType> methodNoGuardedLockTypes) {
-    return result != null
-        && returningType.isInterface()
-        && !isJdk8StandardInterface(returningType)
-        && !methodNoGuardedLockTypes.contains(NonLockGuardedType.RETURN)
-        && !methodNoGuardedLockTypes.contains(NonLockGuardedType.NONE)
-        && !returningType.isAnnotationPresent(NonLockGuarded.class);
+  private static boolean shouldTryProxyReturn(List<NonLockGuardedType> methodNoGuardedLockTypes) {
+    return !methodNoGuardedLockTypes.contains(NonLockGuardedType.RETURN) && !methodNoGuardedLockTypes.contains(NonLockGuardedType.NONE);
   }
 
   private static boolean shouldMethodBeLockGuarded(List<NonLockGuardedType> noGuardedLockTypes) {
     return !noGuardedLockTypes.contains(NonLockGuardedType.METHOD) && !noGuardedLockTypes.contains(NonLockGuardedType.NONE);
-  }
-
-  // TODO returns true if it's any of the interfaces in these packages: java.util, java.lang and any JDK standard interface
-  private static boolean isJdk8StandardInterface(Class<?> returningType) {
-    return false;
   }
 
 
