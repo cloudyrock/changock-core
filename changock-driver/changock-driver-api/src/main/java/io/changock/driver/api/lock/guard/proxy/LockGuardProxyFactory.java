@@ -5,33 +5,51 @@ import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.utils.Utils;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class LockGuardProxyFactory {
 
+  private final static List<String> javaPackagePrefixes = Arrays.asList("java.", "com.sun.", "javax.", "jdk.internal.", "sun.");
   private final LockManager lockManager;
+  private final Collection<String> notProxiedPackagePrefixes;
 
   public LockGuardProxyFactory(LockManager lockManager) {
+    this(lockManager, Collections.emptyList());
+  }
+
+  public LockGuardProxyFactory(LockManager lockManager, Collection<String> notProxiedPackagePrefixes) {
     this.lockManager = lockManager;
+    this.notProxiedPackagePrefixes = new ArrayList<>(notProxiedPackagePrefixes);
+    this.notProxiedPackagePrefixes.addAll(javaPackagePrefixes);
   }
 
 
   @SuppressWarnings("unchecked")
-  public <T> T getProxy(T r, Class<? super T> interfaceType) {
-    return (T) getRawProxy(r, interfaceType);
+  public <T> T getProxy(T targetObject, Class<? super T> interfaceType) {
+    return (T) getRawProxy(targetObject, interfaceType);
   }
 
   @SuppressWarnings("unchecked")
-  public Object getRawProxy(Object r, Class type) {
-    return shouldBeLockGuardProxied(r, type) ? createProxy(r, type) : r;
+  public Object getRawProxy(Object targetObject, Class interfaceType) {
+    return shouldBeLockGuardProxied(targetObject, interfaceType) ? createProxy(targetObject, interfaceType) : targetObject;
   }
 
-  private static boolean shouldBeLockGuardProxied(Object r, Class type) {
-    return r != null
-        && type.isInterface()
-        && !type.isAnnotationPresent(NonLockGuarded.class)
-        && !r.getClass().isAnnotationPresent(NonLockGuarded.class)
-        && !Utils.isBasicTypeJDK(r.getClass())
-        && !Utils.isBasicTypeJDK(type);
+  private boolean shouldBeLockGuardProxied(Object targetObject, Class interfaceType) {
+    return targetObject != null
+        && interfaceType.isInterface()
+        && isPackageProxiable(interfaceType.getPackage().getName())
+        && !interfaceType.isAnnotationPresent(NonLockGuarded.class)
+        && !targetObject.getClass().isAnnotationPresent(NonLockGuarded.class)
+        && !Utils.isBasicTypeJDK(targetObject.getClass())
+        && !Utils.isBasicTypeJDK(interfaceType);
+  }
+
+  private  boolean isPackageProxiable(String packageName) {
+    return notProxiedPackagePrefixes.stream().noneMatch(packageName::startsWith);
   }
 
   private Object createProxy(Object r, Class type) {
