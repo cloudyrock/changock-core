@@ -2,6 +2,7 @@ package io.changock.driver.api.lock.guard.proxy;
 
 
 import io.changock.driver.api.lock.LockManager;
+import io.changock.driver.api.lock.guard.proxy.util.ContentHandlerFactoryImpl;
 import io.changock.driver.api.lock.guard.proxy.util.InterfaceType;
 import io.changock.driver.api.lock.guard.proxy.util.InterfaceTypeImpl;
 import io.changock.driver.api.lock.guard.proxy.util.InterfaceTypeImplNonLockGuarded;
@@ -10,6 +11,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.Serializable;
+import java.net.ContentHandlerFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.changock.util.test.ReflectionUtils.getImplementationFromLockGuardProxy;
 import static io.changock.util.test.ReflectionUtils.isProxy;
@@ -31,6 +35,24 @@ public class LockGuardProxyFactoryTest {
 
   private Object getRawProxy(Object o, Class interfaceType) {
     return lockGuardProxyFactory.getRawProxy(o, interfaceType);
+  }
+
+  @Test
+  public void shouldNotReturnProxy_IfInterfaceTypePackageIsJava() {
+    assertFalse(isProxy(getRawProxy(new ArrayList<>(), List.class)));
+    assertFalse(isProxy(getRawProxy(new ContentHandlerFactoryImpl(), ContentHandlerFactory.class)));
+  }
+
+  @Test
+  public void shouldNotReturnProxy_IfInterfaceTypeisJavaNet() {
+    lockGuardProxyFactory = new LockGuardProxyFactory(lockManager, InterfaceType.class.getPackage().getName().substring(0, 12));
+    assertFalse(isProxy(getRawProxy(new InterfaceTypeImpl(), InterfaceType.class)));
+  }
+
+
+  @Test
+  public void shouldReturnProxy2() {
+    assertFalse(isProxy(getRawProxy(new ArrayList<>(), List.class)));
   }
 
   @Test
