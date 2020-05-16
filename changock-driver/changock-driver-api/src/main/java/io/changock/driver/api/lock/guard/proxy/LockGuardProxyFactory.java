@@ -21,6 +21,10 @@ public class LockGuardProxyFactory {
     this(lockManager, Collections.emptyList());
   }
 
+  public LockGuardProxyFactory(LockManager lockManager, String... notProxiedPackagePrefixes) {
+    this(lockManager, Arrays.asList(notProxiedPackagePrefixes));
+  }
+
   public LockGuardProxyFactory(LockManager lockManager, Collection<String> notProxiedPackagePrefixes) {
     this.lockManager = lockManager;
     this.notProxiedPackagePrefixes = new ArrayList<>(notProxiedPackagePrefixes);
