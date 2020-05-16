@@ -1,2 +1,2 @@
-![Build](https://github.com/cloudyrock/changock/workflows/Java%20CI%20with%20Maven/badge.svg)
+![Build](https://github.com/cloudyrock/changock/workflows/Build/badge.svg)
 # Changock
