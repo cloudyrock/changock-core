@@ -13,6 +13,7 @@ import io.cloudyrock.changock.runner.spring.v5.profiles.integration.IntegrationP
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.cloudyrock.changock.runner.spring.v5.profiles.withForbiddenParameter.ForbiddenParameter;
 import io.cloudyrock.changock.runner.spring.v5.util.CallVerifier;
+import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTest;
 import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImpl;
 import io.cloudyrock.changock.runner.spring.v5.util.MongockTemplateForTestImplChild;
 import org.junit.Before;
@@ -68,7 +69,7 @@ public class SpringChangockInitializingBeanRunnerTest {
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongockTemplateForTestImpl.class))
+    when(springContext.getBean(MongockTemplateForTest.class))
         .thenReturn(new MongockTemplateForTestImpl());
   }
 
