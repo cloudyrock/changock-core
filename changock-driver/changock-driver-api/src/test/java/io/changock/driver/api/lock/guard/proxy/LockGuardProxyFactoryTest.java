@@ -65,11 +65,11 @@ public class LockGuardProxyFactoryTest {
     assertFalse(isProxy(getRawProxy(new InterfaceTypeImplNonLockGuarded(), InterfaceType.class)));
   }
 
-//  @Test
-//  public void shouldReturnProxyWithRightImplementation() {
-//    Object implementation = getImplementationFromLockGuardProxy(getRawProxy(new InterfaceTypeImpl(), InterfaceType.class));
-//    assertEquals(InterfaceTypeImpl.class, implementation.getClass());
-//  }
+  @Test
+  public void shouldReturnProxyWithRightImplementation() {
+    Object implementation = getImplementationFromLockGuardProxy(getRawProxy(new InterfaceTypeImpl(), InterfaceType.class));
+    assertEquals(InterfaceTypeImpl.class, implementation.getClass());
+  }
 
   @Test
   public void ShouldReturnNull_ifTargetIsNull() {
