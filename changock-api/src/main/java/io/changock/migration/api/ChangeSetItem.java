@@ -84,4 +84,15 @@ public class ChangeSetItem {
         ", failFast=" + failFast +
         '}';
   }
+
+  public String toPrettyString() {
+    return "ChangeEntry{" +
+        ", \"id\"=\"" + id + "\"" +
+        ", \"author\"=\"" + author + "\"" +
+        ", \"class\"=\"" + method.getDeclaringClass().getSimpleName() + "\"" +
+        ", \"method\"=\"" + method.getName() + "\"" +
+        '}';
+  }
+
+
 }

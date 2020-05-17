@@ -114,17 +114,17 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     switch (changeEntry.getState()) {
       case EXECUTED:
         if (changeSetItem.isRunAlways()) {
-          logger.info("RE-APPLIED - {}", changeEntry);
+          logger.info("RE-APPLIED - {}", changeEntry.toPrettyString());
 
         } else {
-          logger.info("APPLIED - {}", changeEntry);
+          logger.info("APPLIED - {}", changeEntry.toPrettyString());
         }
         break;
       case IGNORED:
-        logger.info("PASSED OVER - {}", changeSetItem);
+        logger.info("PASSED OVER - {}", changeSetItem.toPrettyString());
         break;
       case FAILED:
-        logger.info("FAILED OVER - {}", changeSetItem);
+        logger.info("FAILED OVER - {}", changeSetItem.toPrettyString());
         break;
     }
   }

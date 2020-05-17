@@ -18,4 +18,9 @@ public final class StringUtils {
     }
     return false;
   }
+
+  public static String getSimpleClassName(String changeLogClass) {
+    String[] splitIn =  changeLogClass.split("\\.");
+    return splitIn[splitIn.length -1];
+  }
 }
