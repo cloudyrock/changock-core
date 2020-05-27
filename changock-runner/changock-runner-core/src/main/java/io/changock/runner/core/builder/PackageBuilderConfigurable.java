@@ -1,6 +1,6 @@
 package io.changock.runner.core.builder;
 
-public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable> {
+public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration> {
   /**
    * Add a changeLog package to be scanned.
    * <b>Mandatory</b>
@@ -9,5 +9,5 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
    */
   BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage);
 
-  BUILDER_TYPE setConfig(ChangockConfiguration config);
+  BUILDER_TYPE setConfig(CONFIG config);
 }

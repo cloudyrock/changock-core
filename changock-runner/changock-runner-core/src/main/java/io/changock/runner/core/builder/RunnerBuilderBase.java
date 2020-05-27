@@ -14,8 +14,8 @@ import java.util.Collections;
 import java.util.Map;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver>
-    implements DriverBuilderConfigurable<BUILDER_TYPE, DRIVER>, RunnerBuilderConfigurable<BUILDER_TYPE>, Validable {
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration>
+    implements DriverBuilderConfigurable<BUILDER_TYPE, DRIVER, CONFIG>, RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   //Mandatory
@@ -169,7 +169,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setConfig(ChangockConfiguration config) {
+  public BUILDER_TYPE setConfig(CONFIG config) {
     this
         .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
         .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional

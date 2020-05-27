@@ -10,12 +10,12 @@ import io.changock.runner.core.builder.RunnerBuilderBase;
 
 public class ChangockStandalone {
 
-  public static DriverBuilderConfigurable<Builder, ConnectionDriver> builder() {
+  public static DriverBuilderConfigurable<Builder, ConnectionDriver, ChangockConfiguration> builder() {
     return new Builder();
   }
 
 
-  public static class Builder extends RunnerBuilderBase<Builder, ConnectionDriver> {
+  public static class Builder extends RunnerBuilderBase<Builder, ConnectionDriver, ChangockConfiguration> {
 
     private Builder() {
     }

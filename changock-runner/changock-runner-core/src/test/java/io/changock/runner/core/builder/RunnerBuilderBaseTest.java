@@ -33,7 +33,7 @@ public class RunnerBuilderBaseTest {
 }
 
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, ChangockConfiguration> {
 
 
   void validate() {
