@@ -53,6 +53,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param changeLogsScanPackage  package to be scanned
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
     this.changeLogsScanPackage = changeLogsScanPackage;
     return returnInstance();
@@ -68,6 +69,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param throwExceptionIfCannotObtainLock Changock will throw ChangockException if lock can not be obtained
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
     return returnInstance();
@@ -81,6 +83,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param enabled Migration process will run only if this option is set to true
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setEnabled(boolean enabled) {
     this.enabled = enabled;
     return returnInstance();
@@ -95,6 +98,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param maxTries                 number of tries
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setLockConfig(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
     this.lockAcquiredForMinutes = lockAcquiredForMinutes;
     this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
@@ -110,6 +114,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    *
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setDefaultLock() {
     this.throwExceptionIfCannotObtainLock = true;
     return returnInstance();
@@ -126,6 +131,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param startSystemVersion Version to start with
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setStartSystemVersion(String startSystemVersion) {
     this.startSystemVersion = startSystemVersion;
     return returnInstance();
@@ -142,6 +148,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param endSystemVersion Version to end with
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setEndSystemVersion(String endSystemVersion) {
     this.endSystemVersion = endSystemVersion;
     return returnInstance();
@@ -155,11 +162,24 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param metadata Custom metadata object  to be added
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
     return returnInstance();
   }
 
+  @Override
+  public BUILDER_TYPE setConfig(ChangockConfiguration config) {
+    this
+        .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
+        .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
+        .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
+        .setEnabled(config.isEnabled())
+        .setStartSystemVersion(config.getStartSystemVersion())
+        .setEndSystemVersion(config.getEndSystemVersion())
+        .withMetadata(config.getMetadata());
+    return returnInstance();
+  }
 
   public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;

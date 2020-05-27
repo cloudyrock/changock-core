@@ -1,8 +1,8 @@
-package io.changock.runner.spring.v5.config;
+package io.changock.runner.core.builder;
 
 import java.util.Map;
 
-public abstract class ChangockSpring5Configuration {
+public abstract class ChangockConfiguration {
 
   /**
    * How long the lock will be hold once acquired in minutes. Default 3
@@ -49,10 +49,6 @@ public abstract class ChangockSpring5Configuration {
      */
     private Map<String, Object> metadata;
 
-    /**
-     * Type of Spring bean Mongock should be: ApplicationRunner(default) or InitializingBean
-     */
-    private SpringRunnerType runnerType = SpringRunnerType.ApplicationRunner;
 
   public int getLockAcquiredForMinutes() {
     return lockAcquiredForMinutes;
@@ -126,11 +122,4 @@ public abstract class ChangockSpring5Configuration {
     this.metadata = metadata;
   }
 
-  public SpringRunnerType getRunnerType() {
-    return runnerType;
-  }
-
-  public void setRunnerType(SpringRunnerType runnerType) {
-    this.runnerType = runnerType;
-  }
 }

@@ -2,7 +2,6 @@ package io.changock.runner.spring.v5;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
-import io.changock.runner.spring.v5.config.ChangockSpring5Configuration;
 
 public final class ChangockSpring5 {
 

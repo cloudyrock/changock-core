@@ -5,7 +5,7 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.spring.util.SpringDependencyManager;
-import io.changock.runner.spring.v5.config.ChangockSpring5Configuration;
+import io.changock.runner.core.builder.ChangockConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
 import io.changock.utils.CollectionUtils;
@@ -37,17 +37,6 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return returnInstance();
   }
 
-  public BUILDER_TYPE setConfig(ChangockSpring5Configuration config) {
-     this
-        .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
-        .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
-        .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
-        .setEnabled(config.isEnabled())
-        .setStartSystemVersion(config.getStartSystemVersion())
-        .setEndSystemVersion(config.getEndSystemVersion())
-        .withMetadata(config.getMetadata());
-     return returnInstance();
-  }
 
   protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
     return new SpringMigrationExecutor(

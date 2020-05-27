@@ -8,4 +8,6 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
    * @return builder for fluent interface
    */
   BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage);
+
+  BUILDER_TYPE setConfig(ChangockConfiguration config);
 }
