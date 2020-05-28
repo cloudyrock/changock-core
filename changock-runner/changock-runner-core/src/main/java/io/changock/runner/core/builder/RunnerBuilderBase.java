@@ -15,7 +15,9 @@ import java.util.Map;
 
 
 public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration>
-    implements DriverBuilderConfigurable<BUILDER_TYPE, DRIVER, CONFIG>, RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
+    implements
+    DriverBuilderConfigurable<BUILDER_TYPE, DRIVER, CONFIG>,
+    RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   //Mandatory
@@ -31,7 +33,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
 
-  protected RunnerBuilderBase(){}
+  protected RunnerBuilderBase() {
+  }
 
   /**
    * Set the specific connection driver
@@ -50,7 +53,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * Add a changeLog package to be scanned.
    * <b>Mandatory</b>
    *
-   * @param changeLogsScanPackage  package to be scanned
+   * @param changeLogsScanPackage package to be scanned
    * @return builder for fluent interface
    */
   @Override
@@ -187,6 +190,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
+  @SuppressWarnings("unchecked")
   protected MigrationExecutor buildExecutorDefault() {
     return new MigrationExecutor(
         driver,
@@ -197,6 +201,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         metadata
     );
   }
+
   protected ChangeLogService buildChangeLogServiceDefault() {
     return new ChangeLogService(
         Collections.singletonList(changeLogsScanPackage),
@@ -208,19 +213,19 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public void runValidation() throws ChangockException {
-    if(driver == null) {
+    if (driver == null) {
       throw new ChangockException("Driver must be injected to Changock builder");
     }
-    if(changeLogsScanPackage == null || "".equals(changeLogsScanPackage)) {
+    if (changeLogsScanPackage == null || "".equals(changeLogsScanPackage)) {
       throw new ChangockException("changeLogsScanPackage must be injected to Changock builder");
     }
-    if(!throwExceptionIfCannotObtainLock) {
+    if (!throwExceptionIfCannotObtainLock) {
       logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Changock will continue even if it's not able to acquire the lock");
     }
-    if(!"0".equals(startSystemVersion) || !String.valueOf(Integer.MAX_VALUE).equals(endSystemVersion)) {
+    if (!"0".equals(startSystemVersion) || !String.valueOf(Integer.MAX_VALUE).equals(endSystemVersion)) {
       logger.info("Running Changock with startSystemVersion[{}] and endSystemVersion[{}]", startSystemVersion, endSystemVersion);
     }
-    if(metadata == null){
+    if (metadata == null) {
       logger.info("Running Changock with NO metadata");
     } else {
       logger.info("Running Changock with metadata");

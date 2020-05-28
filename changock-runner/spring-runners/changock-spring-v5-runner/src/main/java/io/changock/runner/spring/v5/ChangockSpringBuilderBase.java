@@ -23,8 +23,8 @@ import java.util.List;
 public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends ChangockSpringConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
 
-  protected static final String DEFAULT_PROFILE = "default";
-  protected ApplicationContext springContext;
+  private static final String DEFAULT_PROFILE = "default";
+  private ApplicationContext springContext;
 
   /**
    * Set ApplicationContext from Spring

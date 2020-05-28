@@ -2,7 +2,8 @@ package io.changock.runner.core.builder;
 
 import java.util.Map;
 
-public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration> extends PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> {
+public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration>
+    extends PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> {
 
 
   /**
