@@ -14,8 +14,10 @@ import java.util.Collections;
 import java.util.Map;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver>
-    implements DriverBuilderConfigurable<BUILDER_TYPE, DRIVER>, RunnerBuilderConfigurable<BUILDER_TYPE>, Validable {
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration>
+    implements
+    DriverBuilderConfigurable<BUILDER_TYPE, DRIVER, CONFIG>,
+    RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   //Mandatory
@@ -31,7 +33,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
 
-  protected RunnerBuilderBase(){}
+  protected RunnerBuilderBase() {
+  }
 
   /**
    * Set the specific connection driver
@@ -50,9 +53,10 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * Add a changeLog package to be scanned.
    * <b>Mandatory</b>
    *
-   * @param changeLogsScanPackage  package to be scanned
+   * @param changeLogsScanPackage package to be scanned
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
     this.changeLogsScanPackage = changeLogsScanPackage;
     return returnInstance();
@@ -68,6 +72,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param throwExceptionIfCannotObtainLock Changock will throw ChangockException if lock can not be obtained
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
     return returnInstance();
@@ -81,6 +86,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param enabled Migration process will run only if this option is set to true
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setEnabled(boolean enabled) {
     this.enabled = enabled;
     return returnInstance();
@@ -95,6 +101,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param maxTries                 number of tries
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setLockConfig(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
     this.lockAcquiredForMinutes = lockAcquiredForMinutes;
     this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
@@ -110,6 +117,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    *
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setDefaultLock() {
     this.throwExceptionIfCannotObtainLock = true;
     return returnInstance();
@@ -126,6 +134,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param startSystemVersion Version to start with
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setStartSystemVersion(String startSystemVersion) {
     this.startSystemVersion = startSystemVersion;
     return returnInstance();
@@ -142,6 +151,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param endSystemVersion Version to end with
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE setEndSystemVersion(String endSystemVersion) {
     this.endSystemVersion = endSystemVersion;
     return returnInstance();
@@ -155,11 +165,24 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    * @param metadata Custom metadata object  to be added
    * @return builder for fluent interface
    */
+  @Override
   public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
     return returnInstance();
   }
 
+  @Override
+  public BUILDER_TYPE setConfig(CONFIG config) {
+    this
+        .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
+        .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
+        .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
+        .setEnabled(config.isEnabled())
+        .setStartSystemVersion(config.getStartSystemVersion())
+        .setEndSystemVersion(config.getEndSystemVersion())
+        .withMetadata(config.getMetadata());
+    return returnInstance();
+  }
 
   public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
@@ -167,6 +190,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
+  @SuppressWarnings("unchecked")
   protected MigrationExecutor buildExecutorDefault() {
     return new MigrationExecutor(
         driver,
@@ -177,6 +201,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         metadata
     );
   }
+
   protected ChangeLogService buildChangeLogServiceDefault() {
     return new ChangeLogService(
         Collections.singletonList(changeLogsScanPackage),
@@ -188,19 +213,19 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public void runValidation() throws ChangockException {
-    if(driver == null) {
+    if (driver == null) {
       throw new ChangockException("Driver must be injected to Changock builder");
     }
-    if(changeLogsScanPackage == null || "".equals(changeLogsScanPackage)) {
+    if (changeLogsScanPackage == null || "".equals(changeLogsScanPackage)) {
       throw new ChangockException("changeLogsScanPackage must be injected to Changock builder");
     }
-    if(!throwExceptionIfCannotObtainLock) {
+    if (!throwExceptionIfCannotObtainLock) {
       logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Changock will continue even if it's not able to acquire the lock");
     }
-    if(!"0".equals(startSystemVersion) || !String.valueOf(Integer.MAX_VALUE).equals(endSystemVersion)) {
+    if (!"0".equals(startSystemVersion) || !String.valueOf(Integer.MAX_VALUE).equals(endSystemVersion)) {
       logger.info("Running Changock with startSystemVersion[{}] and endSystemVersion[{}]", startSystemVersion, endSystemVersion);
     }
-    if(metadata == null){
+    if (metadata == null) {
       logger.info("Running Changock with NO metadata");
     } else {
       logger.info("Running Changock with metadata");

@@ -5,6 +5,8 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.spring.util.SpringDependencyManager;
+import io.changock.runner.core.builder.ChangockConfiguration;
+import io.changock.runner.spring.util.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
 import io.changock.utils.CollectionUtils;
@@ -18,11 +20,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver>
-    extends RunnerBuilderBase<BUILDER_TYPE, DRIVER> {
+public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends ChangockSpringConfiguration>
+    extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
 
-  protected static final String DEFAULT_PROFILE = "default";
-  protected ApplicationContext springContext;
+  private static final String DEFAULT_PROFILE = "default";
+  private ApplicationContext springContext;
 
   /**
    * Set ApplicationContext from Spring
@@ -33,6 +35,13 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
    */
   public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
     this.springContext = springContext;
+    return returnInstance();
+  }
+
+
+  @Override
+  public BUILDER_TYPE setConfig(SPRING_CONFIG config) {
+    super.setConfig(config);
     return returnInstance();
   }
 
