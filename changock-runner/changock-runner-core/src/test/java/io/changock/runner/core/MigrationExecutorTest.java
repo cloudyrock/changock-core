@@ -20,7 +20,6 @@ import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParame
 import io.changock.runner.core.util.DummyDependencyClass;
 import io.changock.runner.core.util.InterfaceDependencyImpl;
 import io.changock.runner.core.util.InterfaceDependencyImplNoLockGarded;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,8 +66,20 @@ public class MigrationExecutorTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void shouldRunChangeLogsSuccessfully() throws InterruptedException {
+    runChangeLogsTest(false);
+  }
+
+
+  @Test
+  public void shouldTrackIgnored_IfFlagTrackIgnored() throws InterruptedException {
+    runChangeLogsTest(true);
+  }
+
+
+  @SuppressWarnings("unchecked")
+  private void runChangeLogsTest(boolean trackingIgnored) throws InterruptedException {
+
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
@@ -77,16 +88,16 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
     // then
     ArgumentCaptor<ChangeEntry> captor = ArgumentCaptor.forClass(ChangeEntry.class);
-    verify(changeEntryService, new Times(4)).save(captor.capture());
+    verify(changeEntryService, new Times(trackingIgnored ? 4 : 3)).save(captor.capture());
 
     List<ChangeEntry> entries = captor.getAllValues();
-    assertEquals(4, entries.size());
+    assertEquals(trackingIgnored ? 4 : 3, entries.size());
     ChangeEntry entry = entries.get(0);
     assertEquals("newChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
@@ -101,21 +112,24 @@ public class MigrationExecutorTest {
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethodName());
     assertEquals(ChangeState.EXECUTED, entry.getState());
 
-    entry = entries.get(2);
-    assertEquals("alreadyExecuted", entry.getChangeId());
-    assertEquals("executor", entry.getAuthor());
-    assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("alreadyExecuted", entry.getChangeSetMethodName());
-    assertEquals(ChangeState.IGNORED, entry.getState());
+    int nextIndex = 2;
+    if(trackingIgnored) {
+      entry = entries.get(nextIndex);
+      assertEquals("alreadyExecuted", entry.getChangeId());
+      assertEquals("executor", entry.getAuthor());
+      assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
+      assertEquals("alreadyExecuted", entry.getChangeSetMethodName());
+      assertEquals(ChangeState.IGNORED, entry.getState());
+      nextIndex++;
+    }
 
-    entry = entries.get(3);
+    entry = entries.get(nextIndex);
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeSetMethodName());
     assertEquals(ChangeState.EXECUTED, entry.getState());
   }
-
 
   @Test
   @SuppressWarnings("unchecked")
@@ -129,7 +143,7 @@ public class MigrationExecutorTest {
 
     // when
     try {
-      new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
           .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
     } catch (Exception ex) {
       //ignored
@@ -175,7 +189,7 @@ public class MigrationExecutorTest {
     exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Wrong parameter[DummyDependencyClass]");
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -191,7 +205,7 @@ public class MigrationExecutorTest {
     exceptionExpected.expectMessage("argument type mismatch");
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -204,7 +218,7 @@ public class MigrationExecutorTest {
 
     // when
     try {
-      new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
           .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
     } catch (Exception ex) {
     }
@@ -223,7 +237,7 @@ public class MigrationExecutorTest {
     doThrow(ChangockException.class).when(driver).runValidation();
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -237,7 +251,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("newChangeSet2", "executor")).thenReturn(false);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorWithNonFailFastChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -283,7 +297,7 @@ public class MigrationExecutorTest {
     exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ChangeLogWithForbiddenParameter.class));
   }
 
@@ -302,7 +316,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
         .addStandardDependency(new ChangeSetDependency(new DummyDependencyClass()));
-    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -319,7 +333,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -339,7 +353,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -359,7 +373,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImplNoLockGarded()));
 
-    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -379,12 +393,13 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutor(driver, dependencyManager, 3, 3, 4, new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
     verify(lockManager, new Times(0)).ensureLockDefault();
   }
+
   private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();
@@ -395,4 +410,14 @@ public class MigrationExecutorTest {
     dependencies.add(new ChangeSetDependency(type, instance));
     when(driver.getDependencies()).thenReturn(dependencies);
   }
+
+
+  private MigrationExecutorConfiguration getMigrationConfig() {
+    return getMigrationConfig(false);
+  }
+
+  private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored) {
+    return new MigrationExecutorConfiguration(3, 3, 4, trackIgnored);
+  }
+
 }

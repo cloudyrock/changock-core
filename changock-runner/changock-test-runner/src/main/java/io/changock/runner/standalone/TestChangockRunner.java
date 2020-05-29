@@ -5,6 +5,7 @@ import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.DependencyManager;
 import io.changock.runner.core.MigrationExecutor;
+import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.ChangockConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
 import io.changock.runner.core.ChangockBase;
@@ -51,9 +52,7 @@ public class TestChangockRunner extends ChangockBase {
           executionId,
           driver,
           dependencyManager,
-          lockAcquiredForMinutes,
-          maxTries,
-          maxWaitingForLockMinutes,
+          new MigrationExecutorConfiguration( lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
           metadata
       );
     }

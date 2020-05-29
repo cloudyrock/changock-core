@@ -3,6 +3,7 @@ package io.changock.runner.spring.v5;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangockBase;
+import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.spring.util.SpringDependencyManager;
 import io.changock.runner.core.builder.ChangockConfiguration;
@@ -49,9 +50,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return new SpringMigrationExecutor(
         driver,
         new SpringDependencyManager(this.springContext),
-        lockAcquiredForMinutes,
-        maxTries,
-        maxWaitingForLockMinutes,
+        new MigrationExecutorConfiguration(lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
         metadata
     );
   }

@@ -39,23 +39,17 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   protected final ConnectionDriver driver;
   protected final Map<String, Object> metadata;
   protected final DependencyManager dependencyManager;
-  private final long maxWaitingForLockMinutes;
-  private final int maxTries;
-  private final long lockAcquiredForMinutes;
+  private final MigrationExecutorConfiguration config;
   protected boolean executionInProgress = false;
 
   public MigrationExecutor(ConnectionDriver<CHANGE_ENTRY> driver,
                            DependencyManager dependencyManager,
-                           long lockAcquiredForMinutes,
-                           int maxTries,
-                           long maxWaitingForLockMinutes,
+                           MigrationExecutorConfiguration config,
                            Map<String, Object> metadata) {
     this.driver = driver;
     this.metadata = metadata;
     this.dependencyManager = dependencyManager;
-    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
-    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
-    this.maxTries = maxTries;
+    this.config = config;
   }
 
   public boolean isExecutionInProgress() {
@@ -105,7 +99,9 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     } finally {
       if (changeEntry != null) {
         logChangeEntry(changeEntry, changeSetItem);
-        driver.getChangeEntryService().save(changeEntry);
+        if(changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
+          driver.getChangeEntryService().save(changeEntry);
+        }
       }
     }
   }
@@ -169,7 +165,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   @SuppressWarnings("unchecked")
   protected void initializationAndValidation() throws ChangockException {
     this.executionInProgress = true;
-    driver.setLockSettings(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
+    driver.setLockSettings(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries());
     driver.initialize();
     driver.runValidation();
     this.dependencyManager
