@@ -187,6 +187,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
         .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
         .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
+        .setTrackIgnored(config.isTrackIgnored())
         .setEnabled(config.isEnabled())
         .setStartSystemVersion(config.getStartSystemVersion())
         .setEndSystemVersion(config.getEndSystemVersion())
