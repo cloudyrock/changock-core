@@ -24,6 +24,14 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setEnabled(boolean enabled);
 
   /**
+   * Indicates if the ignored changeSets should be tracked or not
+   *
+   * @param trackIgnored if the ignored changeSets should be tracked
+   * @return builder for fluent interface
+   */
+  BUILDER_TYPE setTrackIgnored(boolean trackIgnored);
+
+  /**
    * Set up the lock with minimal configuration. This implies Changock will throw an exception if cannot obtains the lock.
    *
    * @param lockAcquiredForMinutes   Acquired time in minutes

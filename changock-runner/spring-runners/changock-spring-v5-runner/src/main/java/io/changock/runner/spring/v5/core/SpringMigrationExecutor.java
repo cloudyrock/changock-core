@@ -6,6 +6,7 @@ import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.MigrationExecutor;
+import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.spring.util.SpringDependencyManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +19,8 @@ import java.util.Map;
  * Child class from MigrationExecutor to force SpringDependencyManager
  */
 public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends MigrationExecutor<CHANGE_ENTRY> {
-  public SpringMigrationExecutor(ConnectionDriver driver, SpringDependencyManager dependencyManager, long lockAcquiredForMinutes, int maxTries, long maxWaitingForLockMinutes, Map<String, Object> metadata) {
-    super(driver, dependencyManager, lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, metadata);
+  public SpringMigrationExecutor(ConnectionDriver driver, SpringDependencyManager dependencyManager, MigrationExecutorConfiguration config, Map<String, Object> metadata) {
+    super(driver, dependencyManager, config, metadata);
   }
 
   @Override

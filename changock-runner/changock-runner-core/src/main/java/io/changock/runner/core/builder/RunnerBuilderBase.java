@@ -7,6 +7,7 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.DependencyManager;
 import io.changock.runner.core.MigrationExecutor;
+import io.changock.runner.core.MigrationExecutorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected long lockAcquiredForMinutes = 3L;
   protected long maxWaitingForLockMinutes = 4L;
   protected int maxTries = 3;
+  protected boolean trackIgnored = false;
   protected boolean throwExceptionIfCannotObtainLock = true;
   protected boolean enabled = true;
   protected String startSystemVersion = "0";
@@ -91,6 +93,14 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     this.enabled = enabled;
     return returnInstance();
   }
+
+
+  @Override
+  public BUILDER_TYPE setTrackIgnored(boolean trackIgnored) {
+    this.trackIgnored = trackIgnored;
+    return returnInstance();
+  }
+
 
   /**
    * Set up the lock with minimal configuration. This implies Changock will throw an exception if cannot obtains the lock.
@@ -177,6 +187,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
         .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
         .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
+        .setTrackIgnored(config.isTrackIgnored())
         .setEnabled(config.isEnabled())
         .setStartSystemVersion(config.getStartSystemVersion())
         .setEndSystemVersion(config.getEndSystemVersion())
@@ -195,9 +206,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return new MigrationExecutor(
         driver,
         new DependencyManager(),
-        lockAcquiredForMinutes,
-        maxTries,
-        maxWaitingForLockMinutes,
+        new MigrationExecutorConfiguration(lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
         metadata
     );
   }
