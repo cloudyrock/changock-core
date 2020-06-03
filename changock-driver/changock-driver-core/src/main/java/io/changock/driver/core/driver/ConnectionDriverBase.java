@@ -28,10 +28,13 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   public void initialize() {
     if (lockManager == null) {
       TimeService timeService = new TimeService();
-      lockManager = new DefaultLockManager(this.getLockRepository(), timeService)
+      LockRepository lockRepository = this.getLockRepository();
+      lockRepository.initialize();
+      lockManager = new DefaultLockManager(lockRepository, timeService)
           .setLockAcquiredForMillis(timeService.minutesToMillis(lockAcquiredForMinutes))
           .setLockMaxTries(maxTries)
           .setLockMaxWaitMillis(timeService.minutesToMillis(maxWaitingForLockMinutes));
+      getChangeEntryService().initialize();
     }
   }
 
