@@ -6,11 +6,14 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -44,7 +47,7 @@ public class RunnerBuilderBaseTest {
   public void shouldCallAllTheMethods_whenSetConfig() {
 
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
-    builder.setConfig(getConfig(false));
+    builder.setConfig(getConfig(false, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
     verify(builder, new Times(1)).setThrowExceptionIfCannotObtainLock(false);
   }
@@ -53,9 +56,33 @@ public class RunnerBuilderBaseTest {
   public void shouldThrowExceptionTrueByDefault() {
 
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
-    builder.setConfig(getConfig(null));
+    builder.setConfig(getConfig(null, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
     verify(builder, new Times(1)).setThrowExceptionIfCannotObtainLock(true);
+  }
+
+  @Test
+  public void shouldAddMultiplePackages_whenAddingList() {
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    builder.addChangeLogsScanPackages(Arrays.asList("package1", "package2", "package3"));
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package1");
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package2");
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package3");
+  }
+
+  @Test
+  public void shouldAddMultiplePackages_whenAddingClass() {
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    builder.addChangeLogClass(this.getClass());
+    verify(builder, new Times(1)).addChangeLogsScanPackage(this.getClass().getName());
+  }
+
+  @Test
+  public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    builder.setConfig(getConfig(null, "package1", "package2"));
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package1");
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package2");
   }
 
   private void checkStandardBuilderCalls(DummyRunnerBuilder builder) {
@@ -67,10 +94,10 @@ public class RunnerBuilderBaseTest {
     verify(builder, new Times(1)).withMetadata(METADATA);
   }
 
-  private ChangockConfiguration getConfig(Boolean throwEx) {
+  private ChangockConfiguration getConfig(Boolean throwEx, String... packages) {
     ChangockConfiguration config = new ChangockConfiguration() {
     };
-    config.setChangeLogsScanPackage(PACKAGE_PATH);
+    config.setChangeLogsScanPackage(Arrays.asList(packages));
     config.setEnabled(false);
     config.setStartSystemVersion(START_SYSTEM_VERSION);
     config.setEndSystemVersion(END_SYSTEM_VERSION);
@@ -98,7 +125,8 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
     assertEquals("start", this.startSystemVersion);
     assertEquals("end", this.endSystemVersion);
     assertFalse(this.throwExceptionIfCannotObtainLock);
-    assertEquals("package", this.changeLogsScanPackage);
+    assertEquals(1, this.changeLogsScanPackage.size());
+    assertTrue(changeLogsScanPackage.contains("package"));
     assertEquals(metadata, this.metadata);
   }
 

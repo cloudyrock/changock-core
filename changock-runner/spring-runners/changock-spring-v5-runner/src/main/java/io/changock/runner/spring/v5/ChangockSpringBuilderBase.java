@@ -64,7 +64,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
         ? Arrays.asList(springEnvironment.getActiveProfiles())
         : Collections.singletonList(DEFAULT_PROFILE);
     return new ProfiledChangeLogService(
-        Collections.singletonList(changeLogsScanPackage),
+        changeLogsScanPackage,
         startSystemVersion,
         endSystemVersion,
         activeProfiles,

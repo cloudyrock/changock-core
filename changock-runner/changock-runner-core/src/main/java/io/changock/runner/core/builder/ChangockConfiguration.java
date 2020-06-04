@@ -1,5 +1,6 @@
 package io.changock.runner.core.builder;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class ChangockConfiguration {
@@ -35,9 +36,9 @@ public abstract class ChangockConfiguration {
   private boolean enabled = true;
 
   /**
-   * Package path where the changeLogs are located. mandatory
+   * Package paths where the changeLogs are located. mandatory
    */
-  private String changeLogsScanPackage;
+  private List<String> changeLogsScanPackage;
 
   /**
    * System version to start with. Default '0'
@@ -103,11 +104,11 @@ public abstract class ChangockConfiguration {
     this.enabled = enabled;
   }
 
-  public String getChangeLogsScanPackage() {
+  public List<String> getChangeLogsScanPackage() {
     return changeLogsScanPackage;
   }
 
-  public void setChangeLogsScanPackage(String changeLogsScanPackage) {
+  public void setChangeLogsScanPackage(List<String> changeLogsScanPackage) {
     this.changeLogsScanPackage = changeLogsScanPackage;
   }
 

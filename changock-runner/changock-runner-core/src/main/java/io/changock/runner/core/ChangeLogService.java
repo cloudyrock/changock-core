@@ -74,7 +74,6 @@ public class ChangeLogService implements Validable {
     this.annotationManager = annotationProcessor != null ? annotationProcessor : new ChangockAnnotationProcessor();
   }
 
-
   @Override
   public void runValidation() throws ChangockException {
     if (CollectionUtils.isNullEmpty(changeLogsBasePackageList) || !changeLogsBasePackageList.stream().allMatch(StringUtils::hasText)) {
