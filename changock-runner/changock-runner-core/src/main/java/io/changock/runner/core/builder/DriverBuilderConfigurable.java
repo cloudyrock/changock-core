@@ -2,6 +2,8 @@ package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 
+import java.util.List;
+
 public interface DriverBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration> {
   /**
    * Set the specific connection driver
@@ -10,4 +12,5 @@ public interface DriverBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    * @return builder for fluent interface
    */
   PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> setDriver(DRIVER driver);
+
 }

@@ -11,7 +11,9 @@ import io.changock.runner.core.MigrationExecutorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -22,7 +24,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   //Mandatory
-  protected String changeLogsScanPackage;
+  protected List<String> changeLogsScanPackage  = new ArrayList<>();
   protected long lockAcquiredForMinutes = 3L;
   protected long maxWaitingForLockMinutes = 4L;
   protected int maxTries = 3;
@@ -52,15 +54,43 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   /**
-   * Add a changeLog package to be scanned.
-   * <b>Mandatory</b>
+   * Adds a package(or class by its full classname) to be scanned  to the list. Mongo allows multiple packages/classes
+   * <b>Requires at least one package/class</b>
    *
    * @param changeLogsScanPackage package to be scanned
    * @return builder for fluent interface
    */
   @Override
   public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
-    this.changeLogsScanPackage = changeLogsScanPackage;
+    this.changeLogsScanPackage.add(changeLogsScanPackage);
+    return returnInstance();
+  }
+
+  /**
+   * Adds a class to be scanned  to the list. Mongo allows multiple packages/classes
+   * <b>Requires at least one package/class</b>
+   *
+   * @param clazz package to be scanned
+   * @return builder for fluent interface
+   */
+  @Override
+  public BUILDER_TYPE addChangeLogClass(Class clazz) {
+    addChangeLogsScanPackage(clazz.getName());
+    return returnInstance();
+  }
+
+
+  /**
+   * Adds a list of packages(or classes by its full classname) to be scanned  to the list.
+   * Mongo allows multiple packages/classes
+   * <b>Requires at least one package/class</b>
+   *
+   * @param changeLogsScanPackageList package to be scanned
+   * @return builder for fluent interface
+   */
+  @Override
+  public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
+    changeLogsScanPackageList.forEach(this::addChangeLogsScanPackage);
     return returnInstance();
   }
 
@@ -184,7 +214,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
     this
-        .addChangeLogsScanPackage(config.getChangeLogsScanPackage())
+        .addChangeLogsScanPackages(config.getChangeLogsScanPackage())
         .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
         .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
         .setTrackIgnored(config.isTrackIgnored())
@@ -213,7 +243,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   protected ChangeLogService buildChangeLogServiceDefault() {
     return new ChangeLogService(
-        Collections.singletonList(changeLogsScanPackage),
+        changeLogsScanPackage,
         startSystemVersion,
         endSystemVersion,
         annotationProcessor// if null, it will take default ChangockAnnotationManager
@@ -225,7 +255,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (driver == null) {
       throw new ChangockException("Driver must be injected to Changock builder");
     }
-    if (changeLogsScanPackage == null || "".equals(changeLogsScanPackage)) {
+    if (changeLogsScanPackage == null || changeLogsScanPackage.isEmpty()) {
       throw new ChangockException("changeLogsScanPackage must be injected to Changock builder");
     }
     if (!throwExceptionIfCannotObtainLock) {
