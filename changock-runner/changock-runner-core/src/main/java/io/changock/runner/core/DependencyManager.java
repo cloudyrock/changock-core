@@ -32,16 +32,16 @@ public class DependencyManager {
 
   public Optional<Object> getDependency(Class type, boolean lockGuarded) throws ForbiddenParameterException {
     Optional<Object> dependencyOpt = forbiddenParametersMap.throwExceptionIfPresent(type)
-        .or(() -> getDriverDependency(type));
-    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, lockGuarded);
+        .or(() -> getDriverDependencyByClass(type));
+    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependencyByClass(type, lockGuarded);
   }
 
-  private Optional<Object> getDriverDependency(Class type) {
-    return getDependency(connectorDependencies, type);
+  private Optional<Object> getDriverDependencyByClass(Class type) {
+    return getDependencyFromStoreByClass(connectorDependencies, type);
   }
 
-  private Optional<Object> getStandardDependency(Class type, boolean lockProxy) {
-    Optional<Object> dependencyOpt = getDependency(standardDependencies, type);
+  private Optional<Object> getStandardDependencyByClass(Class type, boolean lockProxy) {
+    Optional<Object> dependencyOpt = getDependencyFromStoreByClass(standardDependencies, type);
     if (dependencyOpt.isPresent() && lockProxy) {
       if (!type.isInterface()) {
         throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
@@ -52,13 +52,60 @@ public class DependencyManager {
     }
   }
 
-  private Optional<Object> getDependency(Collection<ChangeSetDependency> dependencyStore, Class type) {
+  @SuppressWarnings("unchecked")
+  private Optional<Object> getDependencyFromStoreByClass(Collection<ChangeSetDependency> dependencyStore, Class type) {
     return dependencyStore
         .stream()
         .filter(dependency -> type.isAssignableFrom(dependency.getType()))
+        // following step is to ensure that it will return a default dependency if there is any. Otherwise will return first appearance
+        .reduce((dependency1, dependency2) -> !dependency1.isDefaultNamed() && dependency2.isDefaultNamed() ? dependency2 : dependency1)
+        .map(ChangeSetDependency::getInstance);
+  }
+
+
+  public Optional<Object> getDependencyByName(String name) throws ForbiddenParameterException {
+    return getDependencyByName(name, true);
+  }
+
+
+  public Optional<Object> getDependencyByName(String name, boolean lockGuarded) throws ForbiddenParameterException {
+    Optional<Object> dependencyOpt = getDriverDependencyByName(name);
+    if (dependencyOpt.isPresent()) {
+      Object dependencyObject = dependencyOpt.get();
+      forbiddenParametersMap.throwExceptionIfPresent(dependencyObject.getClass());
+      return dependencyOpt;
+    } else {
+      return getStandardDependencyByName(name, lockGuarded);
+    }
+  }
+
+  private Optional<Object> getDriverDependencyByName(String name) {
+    return getDependencyByName(connectorDependencies, name);
+  }
+
+  private Optional<Object> getStandardDependencyByName(String name, boolean lockProxy) {
+    Optional<Object> dependencyOpt = getDependencyByName(standardDependencies, name);
+    if (dependencyOpt.isPresent() && lockProxy) {
+      Class dependencyType = dependencyOpt.get().getClass();
+      if (!dependencyType.isInterface()) {
+        throw new ChangockException(String.format("Parameter of type [%s] must be an interface", dependencyType.getSimpleName()));
+      }
+      return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, dependencyType));
+    } else {
+      return dependencyOpt;
+    }
+  }
+
+  private Optional<Object> getDependencyByName(Collection<ChangeSetDependency> dependencyStore, String name) {
+    return dependencyStore
+        .stream()
+        .filter(dependency -> name.equals(dependency.getName()))
         .map(ChangeSetDependency::getInstance)
         .findFirst();
   }
+
+
+  // setters
 
   public DependencyManager setLockGuardProxyFactory(LockGuardProxyFactory lockGuardProxyFactory) {
     this.lockGuardProxyFactory = lockGuardProxyFactory;
@@ -89,6 +136,7 @@ public class DependencyManager {
   }
 
   private <T extends ChangeSetDependency> DependencyManager addDependency(Collection<T> dependencyStore, T dependency) {
+    //add returns false if it's already there. In that case, it needs to be removed and then inserted
     if (!dependencyStore.add(dependency)) {
       dependencyStore.remove(dependency);
       dependencyStore.add(dependency);

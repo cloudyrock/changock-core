@@ -1,7 +1,11 @@
 package io.changock.runner.core.builder.configuration;
 
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
+
 import java.util.Objects;
 
+@NonLockGuarded(NonLockGuardedType.NONE)
 public abstract class LegacyMigration {
 
   private LegacyMigrationMappingFields mappingFields;
