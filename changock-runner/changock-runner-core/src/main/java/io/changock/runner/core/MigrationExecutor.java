@@ -1,6 +1,7 @@
 package io.changock.runner.core;
 
 import io.changock.driver.api.common.DependencyInjectionException;
+import io.changock.driver.api.common.NamedDependencyInjectionException;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeState;
@@ -15,16 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.lang.annotation.Annotation;
+import javax.inject.Named;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static io.changock.driver.api.entry.ChangeState.EXECUTED;
@@ -99,7 +98,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     } finally {
       if (changeEntry != null) {
         logChangeEntry(changeEntry, changeSetItem);
-        if(changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
+        if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
           driver.getChangeEntryService().save(changeEntry);
         }
       }
@@ -134,7 +133,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     Class<?>[] parameterTypes = changeSetMethod.getParameterTypes();
     Parameter[] parameters = changeSetMethod.getParameters();
     List<Object> changelogInvocationParameters = new ArrayList<>(parameterTypes.length);
-    for(int paramIndex = 0; paramIndex < parameterTypes.length ; paramIndex++) {
+    for (int paramIndex = 0; paramIndex < parameterTypes.length; paramIndex++) {
       changelogInvocationParameters.add(getParameter(parameterTypes[paramIndex], parameters[paramIndex]));
     }
     LogUtils.logMethodWithArguments(logger, changeSetMethod.getName(), changelogInvocationParameters);
@@ -143,9 +142,21 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   }
 
   protected Object getParameter(Class<?> parameterType, Parameter parameter) {
-    return dependencyManager
-        .getDependency(parameterType, !parameter.isAnnotationPresent(NonLockGuarded.class))
-        .orElseThrow(() -> new DependencyInjectionException(parameterType));
+    boolean lockGuarded = !parameter.isAnnotationPresent(NonLockGuarded.class)
+//        || parameterType.isAnnotationPresent(NonLockGuarded.class)
+        ;
+    if (parameter.isAnnotationPresent(Named.class)) {
+      String name = parameter.getAnnotation(Named.class).value();
+      return dependencyManager
+          .getDependencyByName(name, lockGuarded)
+          .orElseThrow(() -> new NamedDependencyInjectionException(name));
+    } else {
+      return dependencyManager
+          .getDependencyByClass(parameterType, lockGuarded)
+          .orElseThrow(() -> new DependencyInjectionException(parameterType));
+    }
+
+
   }
 
   protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {

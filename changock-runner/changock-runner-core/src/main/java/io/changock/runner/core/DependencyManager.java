@@ -25,12 +25,12 @@ public class DependencyManager {
     forbiddenParametersMap = new ForbiddenParametersMap();
   }
 
-  public Optional<Object> getDependency(Class type) throws ForbiddenParameterException {
-    return getDependency(type, true);
+  public Optional<Object> getDependencyByClass(Class type) throws ForbiddenParameterException {
+    return getDependencyByClass(type, true);
   }
 
 
-  public Optional<Object> getDependency(Class type, boolean lockGuarded) throws ForbiddenParameterException {
+  public Optional<Object> getDependencyByClass(Class type, boolean lockGuarded) throws ForbiddenParameterException {
     Optional<Object> dependencyOpt = forbiddenParametersMap.throwExceptionIfPresent(type)
         .or(() -> getDriverDependencyByClass(type));
     return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependencyByClass(type, lockGuarded);

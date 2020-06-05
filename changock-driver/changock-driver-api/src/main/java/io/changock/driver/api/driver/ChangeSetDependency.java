@@ -12,6 +12,11 @@ public class ChangeSetDependency {
   private Class<?> type;
   private Object instance;
 
+
+  public ChangeSetDependency(Object instance) {
+    this(instance.getClass(), instance);
+  }
+
   public ChangeSetDependency(Class<?> type, Object instance) {
     this(DEFAULT_NAME, type, instance);
   }
@@ -33,11 +38,6 @@ public class ChangeSetDependency {
     if(instance ==null) {
       throw new ChangockException("dependency instance cannot be null");
     }
-  }
-
-  public ChangeSetDependency(Object instance) {
-    this.type = instance.getClass();
-    this.instance = instance;
   }
 
   public String getName() {

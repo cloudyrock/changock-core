@@ -26,8 +26,8 @@ public class SpringDependencyManager extends DependencyManager implements Valida
 
   @Override
   @SuppressWarnings("unchecked")
-  public Optional<Object> getDependency(Class type, boolean lockGuarded) {
-    Optional<Object> dependencyFromParent = super.getDependency(type, lockGuarded);
+  public Optional<Object> getDependencyByClass(Class type, boolean lockGuarded) {
+    Optional<Object> dependencyFromParent = super.getDependencyByClass(type, lockGuarded);
     if (dependencyFromParent.isPresent()) {
       return dependencyFromParent;
     } else if (springContext != null) {
