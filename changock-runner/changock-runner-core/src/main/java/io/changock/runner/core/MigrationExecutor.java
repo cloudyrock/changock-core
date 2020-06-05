@@ -142,9 +142,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   }
 
   protected Object getParameter(Class<?> parameterType, Parameter parameter) {
-    boolean lockGuarded = !parameter.isAnnotationPresent(NonLockGuarded.class)
-//        || parameterType.isAnnotationPresent(NonLockGuarded.class)
-        ;
+    boolean lockGuarded = !parameter.isAnnotationPresent(NonLockGuarded.class) || parameterType.isAnnotationPresent(NonLockGuarded.class);
     if (parameter.isAnnotationPresent(Named.class)) {
       String name = parameter.getAnnotation(Named.class).value();
       return dependencyManager
@@ -155,8 +153,6 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
           .getDependencyByClass(parameterType, lockGuarded)
           .orElseThrow(() -> new DependencyInjectionException(parameterType));
     }
-
-
   }
 
   protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {

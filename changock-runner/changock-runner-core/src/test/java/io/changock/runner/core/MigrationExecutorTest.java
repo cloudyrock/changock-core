@@ -11,10 +11,13 @@ import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.runner.core.builder.configuration.LegacyMigrationMappingFields;
 import io.changock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import io.changock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import io.changock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
 import io.changock.runner.core.changelogs.executor.withInterfaceParameter.ChangeLogWithInterfaceParameter;
+import io.changock.runner.core.changelogs.legacymigration.LegacyMigrationChangeLog;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
 import io.changock.runner.core.util.DummyDependencyClass;
@@ -28,6 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -400,6 +404,31 @@ public class MigrationExecutorTest {
     verify(lockManager, new Times(0)).ensureLockDefault();
   }
 
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldInjectLegacyMigrationList_whenNamed() throws InterruptedException {
+    // given
+    when(changeEntryService.isAlreadyExecuted("legacy_migration", "executor")).thenReturn(false);
+    // when
+    when(driver.getLockManager()).thenReturn(lockManager);
+    LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
+    mappingFields.setAuthor("AUTHOR");
+    LegacyMigration dependency = new LegacyMigration() {};
+    dependency.setMappingFields(mappingFields);
+    DependencyManager dependencyManager = new DependencyManager()
+        .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {})))
+        .addStandardDependency(new ChangeSetDependency("legacyMigration2", List.class, Collections.singletonList(new LegacyMigration() {})))
+        .addStandardDependency(new ChangeSetDependency("legacyMigration", List.class, Collections.singletonList(dependency)))
+        .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {})))
+        .addStandardDependency(new ChangeSetDependency("legacyMigration3", List.class, Collections.singletonList(new LegacyMigration() {})));
+
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(LegacyMigrationChangeLog.class));
+
+    // then
+    LegacyMigrationChangeLog.latch.await(5, TimeUnit.SECONDS);
+  }
+
   private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();
@@ -418,6 +447,11 @@ public class MigrationExecutorTest {
 
   private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored) {
     return new MigrationExecutorConfiguration(3, 3, 4, trackIgnored);
+  }
+
+
+  public class LegacyMigrationDummyImpl extends LegacyMigration {
+
   }
 
 }
