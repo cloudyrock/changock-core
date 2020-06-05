@@ -1,6 +1,6 @@
 package io.changock.runner.spring.util.config;
 
-import io.changock.runner.core.builder.ChangockConfiguration;
+import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 
 public abstract class ChangockSpringConfiguration extends ChangockConfiguration {
   /**

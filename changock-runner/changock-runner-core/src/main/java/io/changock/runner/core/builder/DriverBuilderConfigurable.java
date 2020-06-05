@@ -1,8 +1,7 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
-
-import java.util.List;
+import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 
 public interface DriverBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration> {
   /**

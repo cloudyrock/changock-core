@@ -1,5 +1,10 @@
 package io.changock.runner.core.builder;
 
+import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+import io.changock.runner.core.builder.configuration.LegacyMigration;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration>
@@ -14,6 +19,23 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    */
   BUILDER_TYPE setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock);
 
+
+  /**
+   * Adds a legacy migration to be executed before the actual migration
+   * @param legacyMigration represents the legacy migration
+   * @return builder for fluent interface
+   */
+  default BUILDER_TYPE addLegacyMigration(LegacyMigration legacyMigration) {
+    return addLegacyMigrations(Collections.singletonList(legacyMigration));
+  }
+
+
+  /**
+   * Adds a legacy migration list to be executed before the actual migration
+   * @param legacyMigrations represents the legacy migration list
+   * @return builder for fluent interface
+   */
+  BUILDER_TYPE addLegacyMigrations(List<LegacyMigration> legacyMigrations);
 
   /**
    * Feature which enables/disables execution

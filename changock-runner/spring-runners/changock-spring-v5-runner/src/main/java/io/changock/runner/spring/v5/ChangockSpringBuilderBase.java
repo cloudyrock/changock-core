@@ -6,7 +6,6 @@ import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.spring.util.SpringDependencyManager;
-import io.changock.runner.core.builder.ChangockConfiguration;
 import io.changock.runner.spring.util.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;

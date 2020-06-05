@@ -8,11 +8,12 @@ import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.DependencyManager;
 import io.changock.runner.core.MigrationExecutor;
 import io.changock.runner.core.MigrationExecutorConfiguration;
+import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+import io.changock.runner.core.builder.configuration.LegacyMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +24,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
-  //Mandatory
-  protected List<String> changeLogsScanPackage  = new ArrayList<>();
+
+  protected List<String> changeLogsScanPackage = new ArrayList<>();
   protected long lockAcquiredForMinutes = 3L;
   protected long maxWaitingForLockMinutes = 4L;
   protected int maxTries = 3;
@@ -36,6 +37,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Map<String, Object> metadata;
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
+  private List<LegacyMigration> legacyMigrations = new ArrayList<>();
+
 
   protected RunnerBuilderBase() {
   }
@@ -54,33 +57,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   /**
-   * Adds a package(or class by its full classname) to be scanned  to the list. Mongo allows multiple packages/classes
-   * <b>Requires at least one package/class</b>
-   *
-   * @param changeLogsScanPackage package to be scanned
-   * @return builder for fluent interface
-   */
-  @Override
-  public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
-    this.changeLogsScanPackage.add(changeLogsScanPackage);
-    return returnInstance();
-  }
-
-  /**
-   * Adds a class to be scanned  to the list. Mongo allows multiple packages/classes
-   * <b>Requires at least one package/class</b>
-   *
-   * @param clazz package to be scanned
-   * @return builder for fluent interface
-   */
-  @Override
-  public BUILDER_TYPE addChangeLogClass(Class clazz) {
-    addChangeLogsScanPackage(clazz.getName());
-    return returnInstance();
-  }
-
-
-  /**
    * Adds a list of packages(or classes by its full classname) to be scanned  to the list.
    * Mongo allows multiple packages/classes
    * <b>Requires at least one package/class</b>
@@ -90,7 +66,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
    */
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
-    changeLogsScanPackageList.forEach(this::addChangeLogsScanPackage);
+    if(changeLogsScanPackageList != null) {
+      changeLogsScanPackage.addAll(changeLogsScanPackageList);
+    }
     return returnInstance();
   }
 
@@ -110,6 +88,13 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return returnInstance();
   }
 
+  @Override
+  public BUILDER_TYPE addLegacyMigrations(List<LegacyMigration> legacyMigrations) {
+    if(legacyMigrations != null) {
+      this.legacyMigrations.addAll(legacyMigrations);
+    }
+    return returnInstance();
+  }
 
   /**
    * Feature which enables/disables execution
@@ -221,7 +206,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .setEnabled(config.isEnabled())
         .setStartSystemVersion(config.getStartSystemVersion())
         .setEndSystemVersion(config.getEndSystemVersion())
-        .withMetadata(config.getMetadata());
+        .withMetadata(config.getMetadata())
+        .addLegacyMigrations(config.getLegacyMigrations());
     return returnInstance();
   }
 

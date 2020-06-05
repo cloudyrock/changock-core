@@ -1,4 +1,4 @@
-package io.changock.runner.core.builder;
+package io.changock.runner.core.builder.configuration;
 
 import java.util.List;
 import java.util.Map;
@@ -54,6 +54,8 @@ public abstract class ChangockConfiguration {
    * Map for custom data you want to attach to your migration
    */
   private Map<String, Object> metadata;
+
+  private List<LegacyMigration> legacyMigrations;
 
 
   public int getLockAcquiredForMinutes() {
@@ -136,4 +138,11 @@ public abstract class ChangockConfiguration {
     this.metadata = metadata;
   }
 
+  public List<LegacyMigration> getLegacyMigrations() {
+    return legacyMigrations;
+  }
+
+  public void setLegacyMigrations(List<LegacyMigration> legacyMigrations) {
+    this.legacyMigrations = legacyMigrations;
+  }
 }
