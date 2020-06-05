@@ -3,14 +3,17 @@ package io.changock.runner.core.builder;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+import io.changock.runner.core.builder.configuration.LegacyMigration;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -99,6 +102,10 @@ public class RunnerBuilderBaseTest {
 
   private ChangockConfiguration getConfig(Boolean throwEx, String... packages) {
     ChangockConfiguration config = new ChangockConfiguration() {
+      @Override
+      public List<LegacyMigration> getLegacyMigrations() {
+        return new ArrayList<>();
+      }
     };
     config.setChangeLogsScanPackage(Arrays.asList(packages));
     config.setEnabled(false);

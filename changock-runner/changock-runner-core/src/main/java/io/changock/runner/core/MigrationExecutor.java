@@ -131,22 +131,21 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();
-    List<Object> changelogInvocationParameters = new ArrayList<>(changeSetMethod.getParameterTypes().length);
+    Class<?>[] parameterTypes = changeSetMethod.getParameterTypes();
     Parameter[] parameters = changeSetMethod.getParameters();
-    for(int paramIndex = 0 ; paramIndex < changeSetMethod.getParameterTypes().length ; paramIndex++) {
-      Class<?> parameterType = changeSetMethod.getParameterTypes()[paramIndex];
-      boolean parameterNonLockGuarded = parameters[paramIndex].isAnnotationPresent(NonLockGuarded.class);
-
-      Optional<Object> parameterOptional = dependencyManager.getDependency(parameterType, !parameterNonLockGuarded);
-      if (parameterOptional.isPresent()) {
-        changelogInvocationParameters.add(parameterOptional.get());
-      } else {
-        throw new DependencyInjectionException(parameterType);
-      }
+    List<Object> changelogInvocationParameters = new ArrayList<>(parameterTypes.length);
+    for(int paramIndex = 0; paramIndex < parameterTypes.length ; paramIndex++) {
+      changelogInvocationParameters.add(getParameter(parameterTypes[paramIndex], parameters[paramIndex]));
     }
     LogUtils.logMethodWithArguments(logger, changeSetMethod.getName(), changelogInvocationParameters);
     changeSetMethod.invoke(changeLogInstance, changelogInvocationParameters.toArray());
     return System.currentTimeMillis() - startingTime;
+  }
+
+  protected Object getParameter(Class<?> parameterType, Parameter parameter) {
+    return dependencyManager
+        .getDependency(parameterType, !parameter.isAnnotationPresent(NonLockGuarded.class))
+        .orElseThrow(() -> new DependencyInjectionException(parameterType));
   }
 
   protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {
