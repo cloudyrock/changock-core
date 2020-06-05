@@ -55,7 +55,6 @@ public abstract class ChangockConfiguration {
    */
   private Map<String, Object> metadata;
 
-  private List<LegacyMigration> legacyMigrations;
 
 
   public int getLockAcquiredForMinutes() {
@@ -138,11 +137,6 @@ public abstract class ChangockConfiguration {
     this.metadata = metadata;
   }
 
-  public List<LegacyMigration> getLegacyMigrations() {
-    return legacyMigrations;
-  }
+  public abstract List<LegacyMigration> getLegacyMigrations();
 
-  public void setLegacyMigrations(List<LegacyMigration> legacyMigrations) {
-    this.legacyMigrations = legacyMigrations;
-  }
 }
