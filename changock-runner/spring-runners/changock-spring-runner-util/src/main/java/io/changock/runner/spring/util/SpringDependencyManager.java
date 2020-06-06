@@ -1,6 +1,7 @@
 package io.changock.runner.spring.util;
 
 import io.changock.driver.api.common.Validable;
+import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.DependencyManager;
 import org.slf4j.Logger;
@@ -25,14 +26,21 @@ public class SpringDependencyManager extends DependencyManager implements Valida
 
 
   @Override
-  @SuppressWarnings("unchecked")
   public Optional<Object> getDependency(Class type, boolean lockGuarded) {
-    Optional<Object> dependencyFromParent = super.getDependency(type, lockGuarded);
+    return getDependency(type, null, lockGuarded);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public Optional<Object> getDependency(Class type, String name, boolean lockGuarded) {
+    Optional<Object> dependencyFromParent = super.getDependency(type, name, lockGuarded);
     if (dependencyFromParent.isPresent()) {
       return dependencyFromParent;
     } else if (springContext != null) {
       try {
-        Optional<Object> dependencyFromContext = Optional.of(springContext.getBean(type));
+        boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
+        Optional<Object> dependencyFromContext = Optional.of(
+            byName ? springContext.getBean(name) : springContext.getBean(type))  ;
         if (lockGuarded) {
           if (!type.isInterface()) {
             throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
@@ -49,34 +57,6 @@ public class SpringDependencyManager extends DependencyManager implements Valida
       return Optional.empty();
     }
   }
-//
-//  @Override
-//  @SuppressWarnings("unchecked")
-//  public Optional<Object> getDependency(String name, boolean lockGuarded) {
-//    Optional<Object> dependencyOptFromParent = super.getDependency(name, lockGuarded);
-//    if (dependencyOptFromParent.isPresent()) {
-//      // super.getDependency already performs proxy if required
-//      return dependencyOptFromParent;
-//    } else if (springContext != null) {
-//      try {
-//        Optional<Object> dependencyOptFromContext = Optional.of(springContext.getBean(name));
-//        Object dependency = dependencyOptFromContext.get();
-//        if (lockGuarded) {
-//          if (!dependency.getClass().isInterface()) {
-//            throw new ChangockException(String.format("Parameter of type [%s] must be an interface", dependency.getClass().getSimpleName()));
-//          }
-//          return dependencyOptFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, dependency.getClass()));
-//        } else {
-//          return dependencyOptFromContext;
-//        }
-//      } catch (BeansException ex) {
-//        logger.warn("Dependency not found: {}", ex.getMessage());
-//        return Optional.empty();
-//      }
-//    } else {
-//      return Optional.empty();
-//    }
-//  }
 
   @Override
   public void runValidation() throws ChangockException {
