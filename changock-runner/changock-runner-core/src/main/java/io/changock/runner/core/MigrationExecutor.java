@@ -104,7 +104,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  protected void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem) {
+  private void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem) {
     switch (changeEntry.getState()) {
       case EXECUTED:
         if (changeSetItem.isRunAlways()) {
@@ -141,17 +141,14 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   }
 
   protected Object getParameter(Class<?> parameterType, Parameter parameter) {
-    boolean lockGuarded = !parameter.isAnnotationPresent(NonLockGuarded.class) || parameterType.isAnnotationPresent(NonLockGuarded.class);
-    if (parameter.isAnnotationPresent(Named.class)) {
-      String name = parameter.getAnnotation(Named.class).value();
-      return dependencyManager
-          .getDependency(parameterType, name, lockGuarded)
-          .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
-    } else {
-      return dependencyManager
-          .getDependency(parameterType, lockGuarded)
-          .orElseThrow(() -> new DependencyInjectionException(parameterType));
-    }
+    String name = getParameterName(parameter);
+    return dependencyManager
+        .getDependency(parameterType, name, !parameter.isAnnotationPresent(NonLockGuarded.class) || parameterType.isAnnotationPresent(NonLockGuarded.class))
+        .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
+  }
+
+  protected String getParameterName(Parameter parameter) {
+    return parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
   }
 
   protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {
