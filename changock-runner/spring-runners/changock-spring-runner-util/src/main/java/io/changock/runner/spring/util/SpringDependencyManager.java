@@ -49,6 +49,34 @@ public class SpringDependencyManager extends DependencyManager implements Valida
       return Optional.empty();
     }
   }
+//
+//  @Override
+//  @SuppressWarnings("unchecked")
+//  public Optional<Object> getDependencyByName(String name, boolean lockGuarded) {
+//    Optional<Object> dependencyOptFromParent = super.getDependencyByName(name, lockGuarded);
+//    if (dependencyOptFromParent.isPresent()) {
+//      // super.getDependencyByName already performs proxy if required
+//      return dependencyOptFromParent;
+//    } else if (springContext != null) {
+//      try {
+//        Optional<Object> dependencyOptFromContext = Optional.of(springContext.getBean(name));
+//        Object dependency = dependencyOptFromContext.get();
+//        if (lockGuarded) {
+//          if (!dependency.getClass().isInterface()) {
+//            throw new ChangockException(String.format("Parameter of type [%s] must be an interface", dependency.getClass().getSimpleName()));
+//          }
+//          return dependencyOptFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, dependency.getClass()));
+//        } else {
+//          return dependencyOptFromContext;
+//        }
+//      } catch (BeansException ex) {
+//        logger.warn("Dependency not found: {}", ex.getMessage());
+//        return Optional.empty();
+//      }
+//    } else {
+//      return Optional.empty();
+//    }
+//  }
 
   @Override
   public void runValidation() throws ChangockException {

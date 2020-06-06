@@ -1,7 +1,6 @@
 package io.changock.runner.core;
 
 import io.changock.driver.api.common.DependencyInjectionException;
-import io.changock.driver.api.common.NamedDependencyInjectionException;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeState;
@@ -146,8 +145,8 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     if (parameter.isAnnotationPresent(Named.class)) {
       String name = parameter.getAnnotation(Named.class).value();
       return dependencyManager
-          .getDependencyByName(name, lockGuarded)
-          .orElseThrow(() -> new NamedDependencyInjectionException(name));
+          .getDependencyByName(parameterType, name, lockGuarded)
+          .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
     } else {
       return dependencyManager
           .getDependencyByClass(parameterType, lockGuarded)

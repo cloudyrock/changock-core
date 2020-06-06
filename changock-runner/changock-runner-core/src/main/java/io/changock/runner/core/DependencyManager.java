@@ -32,13 +32,10 @@ public class DependencyManager {
 
   public Optional<Object> getDependencyByClass(Class type, boolean lockGuarded) throws ForbiddenParameterException {
     Optional<Object> dependencyOpt = forbiddenParametersMap.throwExceptionIfPresent(type)
-        .or(() -> getDriverDependencyByClass(type));
+        .or(() -> getDependencyFromStoreByClass(connectorDependencies, type));
     return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependencyByClass(type, lockGuarded);
   }
 
-  private Optional<Object> getDriverDependencyByClass(Class type) {
-    return getDependencyFromStoreByClass(connectorDependencies, type);
-  }
 
   private Optional<Object> getStandardDependencyByClass(Class type, boolean lockProxy) {
     Optional<Object> dependencyOpt = getDependencyFromStoreByClass(standardDependencies, type);
@@ -62,48 +59,39 @@ public class DependencyManager {
         .map(ChangeSetDependency::getInstance);
   }
 
+  ///////////
+  /////////// By name
 
-  public Optional<Object> getDependencyByName(String name) throws ForbiddenParameterException {
-    return getDependencyByName(name, true);
+  public Optional<Object> getDependencyByName(Class type, String name) throws ForbiddenParameterException {
+    return getDependencyByName(type, name, true);
   }
 
-
-  public Optional<Object> getDependencyByName(String name, boolean lockGuarded) throws ForbiddenParameterException {
-    Optional<Object> dependencyOpt = getDriverDependencyByName(name);
-    if (dependencyOpt.isPresent()) {
-      Object dependencyObject = dependencyOpt.get();
-      forbiddenParametersMap.throwExceptionIfPresent(dependencyObject.getClass());
-      return dependencyOpt;
-    } else {
-      return getStandardDependencyByName(name, lockGuarded);
-    }
+  public Optional<Object> getDependencyByName(Class type, String name, boolean lockGuarded) throws ForbiddenParameterException {
+    Optional<Object> dependencyOpt = forbiddenParametersMap
+        .throwExceptionIfPresent(type)
+        .or(() -> getDependencyFromStoreByName(connectorDependencies, name));
+    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependencyByName(type, name, lockGuarded);
   }
 
-  private Optional<Object> getDriverDependencyByName(String name) {
-    return getDependencyByName(connectorDependencies, name);
-  }
-
-  private Optional<Object> getStandardDependencyByName(String name, boolean lockProxy) {
-    Optional<Object> dependencyOpt = getDependencyByName(standardDependencies, name);
+  private Optional<Object> getStandardDependencyByName(Class type, String name, boolean lockProxy) {
+    Optional<Object> dependencyOpt = getDependencyFromStoreByName(standardDependencies, name);
     if (dependencyOpt.isPresent() && lockProxy) {
-      Class dependencyType = dependencyOpt.get().getClass();
-      if (!dependencyType.isInterface()) {
-        throw new ChangockException(String.format("Parameter of type [%s] must be an interface", dependencyType.getSimpleName()));
+      if (!type.isInterface()) {
+        throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
       }
-      return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, dependencyType));
+      return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
     } else {
       return dependencyOpt;
     }
   }
 
-  private Optional<Object> getDependencyByName(Collection<ChangeSetDependency> dependencyStore, String name) {
+  private Optional<Object> getDependencyFromStoreByName(Collection<ChangeSetDependency> dependencyStore, String name) {
     return dependencyStore
         .stream()
         .filter(dependency -> name.equals(dependency.getName()))
         .map(ChangeSetDependency::getInstance)
         .findFirst();
   }
-
 
   // setters
 
