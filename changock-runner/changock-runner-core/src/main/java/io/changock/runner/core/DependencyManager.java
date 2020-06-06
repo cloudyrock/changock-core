@@ -10,6 +10,8 @@ import io.changock.utils.annotation.NotThreadSafe;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @NotThreadSafe
 public class DependencyManager {
@@ -25,20 +27,19 @@ public class DependencyManager {
     forbiddenParametersMap = new ForbiddenParametersMap();
   }
 
-  public Optional<Object> getDependencyByClass(Class type) throws ForbiddenParameterException {
-    return getDependencyByClass(type, true);
+  public Optional<Object> getDependency(Class type, boolean lockGuarded) throws ForbiddenParameterException {
+    return getDependency(type, null, lockGuarded);
   }
 
-
-  public Optional<Object> getDependencyByClass(Class type, boolean lockGuarded) throws ForbiddenParameterException {
-    Optional<Object> dependencyOpt = forbiddenParametersMap.throwExceptionIfPresent(type)
-        .or(() -> getDependencyFromStoreByClass(connectorDependencies, type));
-    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependencyByClass(type, lockGuarded);
+  public Optional<Object> getDependency(Class type, String name, boolean lockGuarded) throws ForbiddenParameterException {
+    Optional<Object> dependencyOpt = forbiddenParametersMap
+        .throwExceptionIfPresent(type)
+        .or(() -> getDependencyFromStore(connectorDependencies, type, name));
+    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, name, lockGuarded);
   }
 
-
-  private Optional<Object> getStandardDependencyByClass(Class type, boolean lockProxy) {
-    Optional<Object> dependencyOpt = getDependencyFromStoreByClass(standardDependencies, type);
+  private Optional<Object> getStandardDependency(Class type, String name, boolean lockProxy) {
+    Optional<Object> dependencyOpt = getDependencyFromStore(standardDependencies, type, name);
     if (dependencyOpt.isPresent() && lockProxy) {
       if (!type.isInterface()) {
         throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
@@ -50,47 +51,19 @@ public class DependencyManager {
   }
 
   @SuppressWarnings("unchecked")
-  private Optional<Object> getDependencyFromStoreByClass(Collection<ChangeSetDependency> dependencyStore, Class type) {
-    return dependencyStore
-        .stream()
-        .filter(dependency -> type.isAssignableFrom(dependency.getType()))
-        // following step is to ensure that it will return a default dependency if there is any. Otherwise will return first appearance
-        .reduce((dependency1, dependency2) -> !dependency1.isDefaultNamed() && dependency2.isDefaultNamed() ? dependency2 : dependency1)
-        .map(ChangeSetDependency::getInstance);
-  }
+  private Optional<Object> getDependencyFromStore(Collection<ChangeSetDependency> dependencyStore, Class type, String name) {
+    boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
+    Predicate<ChangeSetDependency> filter = byName
+        ? dependency -> name.equals(dependency.getName())
+        : dependency -> type.isAssignableFrom(dependency.getType());
 
-  ///////////
-  /////////// By name
-
-  public Optional<Object> getDependencyByName(Class type, String name) throws ForbiddenParameterException {
-    return getDependencyByName(type, name, true);
-  }
-
-  public Optional<Object> getDependencyByName(Class type, String name, boolean lockGuarded) throws ForbiddenParameterException {
-    Optional<Object> dependencyOpt = forbiddenParametersMap
-        .throwExceptionIfPresent(type)
-        .or(() -> getDependencyFromStoreByName(connectorDependencies, name));
-    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependencyByName(type, name, lockGuarded);
-  }
-
-  private Optional<Object> getStandardDependencyByName(Class type, String name, boolean lockProxy) {
-    Optional<Object> dependencyOpt = getDependencyFromStoreByName(standardDependencies, name);
-    if (dependencyOpt.isPresent() && lockProxy) {
-      if (!type.isInterface()) {
-        throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
-      }
-      return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
+    Stream<ChangeSetDependency> stream = dependencyStore.stream().filter(filter);
+    if(byName) {
+      return stream.map(ChangeSetDependency::getInstance).findFirst();
     } else {
-      return dependencyOpt;
+      return stream.reduce((dependency1, dependency2) -> !dependency1.isDefaultNamed() && dependency2.isDefaultNamed() ? dependency2 : dependency1)
+          .map(ChangeSetDependency::getInstance);
     }
-  }
-
-  private Optional<Object> getDependencyFromStoreByName(Collection<ChangeSetDependency> dependencyStore, String name) {
-    return dependencyStore
-        .stream()
-        .filter(dependency -> name.equals(dependency.getName()))
-        .map(ChangeSetDependency::getInstance)
-        .findFirst();
   }
 
   // setters

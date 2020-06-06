@@ -26,8 +26,8 @@ public class SpringDependencyManager extends DependencyManager implements Valida
 
   @Override
   @SuppressWarnings("unchecked")
-  public Optional<Object> getDependencyByClass(Class type, boolean lockGuarded) {
-    Optional<Object> dependencyFromParent = super.getDependencyByClass(type, lockGuarded);
+  public Optional<Object> getDependency(Class type, boolean lockGuarded) {
+    Optional<Object> dependencyFromParent = super.getDependency(type, lockGuarded);
     if (dependencyFromParent.isPresent()) {
       return dependencyFromParent;
     } else if (springContext != null) {
@@ -52,10 +52,10 @@ public class SpringDependencyManager extends DependencyManager implements Valida
 //
 //  @Override
 //  @SuppressWarnings("unchecked")
-//  public Optional<Object> getDependencyByName(String name, boolean lockGuarded) {
-//    Optional<Object> dependencyOptFromParent = super.getDependencyByName(name, lockGuarded);
+//  public Optional<Object> getDependency(String name, boolean lockGuarded) {
+//    Optional<Object> dependencyOptFromParent = super.getDependency(name, lockGuarded);
 //    if (dependencyOptFromParent.isPresent()) {
-//      // super.getDependencyByName already performs proxy if required
+//      // super.getDependency already performs proxy if required
 //      return dependencyOptFromParent;
 //    } else if (springContext != null) {
 //      try {

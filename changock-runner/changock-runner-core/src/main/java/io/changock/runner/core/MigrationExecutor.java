@@ -145,11 +145,11 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     if (parameter.isAnnotationPresent(Named.class)) {
       String name = parameter.getAnnotation(Named.class).value();
       return dependencyManager
-          .getDependencyByName(parameterType, name, lockGuarded)
+          .getDependency(parameterType, name, lockGuarded)
           .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
     } else {
       return dependencyManager
-          .getDependencyByClass(parameterType, lockGuarded)
+          .getDependency(parameterType, lockGuarded)
           .orElseThrow(() -> new DependencyInjectionException(parameterType));
     }
   }

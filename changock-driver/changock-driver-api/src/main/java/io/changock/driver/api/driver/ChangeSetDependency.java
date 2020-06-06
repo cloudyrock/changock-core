@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class ChangeSetDependency {
 
-  private static final String DEFAULT_NAME = "default_name_not_used";
+  public static final String DEFAULT_NAME = "default_name_not_used";
 
   private String name;
   private Class<?> type;
