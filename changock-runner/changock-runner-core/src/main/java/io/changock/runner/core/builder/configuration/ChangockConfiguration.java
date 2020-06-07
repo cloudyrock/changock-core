@@ -3,7 +3,7 @@ package io.changock.runner.core.builder.configuration;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ChangockConfiguration {
+public abstract class ChangockConfiguration<LEGACY_MIGRATION extends LegacyMigration> {
 
   /**
    * How long the lock will be hold once acquired in minutes. Default 3
@@ -137,6 +137,6 @@ public abstract class ChangockConfiguration {
     this.metadata = metadata;
   }
 
-  public abstract List<LegacyMigration> getLegacyMigrations();
+  public abstract LEGACY_MIGRATION getLegacyMigration();
 
 }

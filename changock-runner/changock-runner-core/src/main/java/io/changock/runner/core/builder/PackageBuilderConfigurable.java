@@ -15,10 +15,10 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
    * Mongo allows multiple packages/classes
    * <b>Requires at least one package/class</b>
    *
-   * @param changeLogsScanPackage package to be scanned
+   * @param changeLogsScanPackageList package to be scanned
    * @return builder for fluent interface
    */
-  BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackage);
+  BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList);
 
   /**
    * Adds a package(or class by its full classname) to be scanned  to the list. Mongo allows multiple packages/classes

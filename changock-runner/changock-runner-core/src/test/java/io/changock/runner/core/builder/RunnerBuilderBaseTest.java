@@ -2,8 +2,10 @@ package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangockBase;
+import io.changock.runner.core.MigrationExecutorTest;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.runner.core.util.LegacyMigrationDummyImpl;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
@@ -103,8 +105,8 @@ public class RunnerBuilderBaseTest {
   private ChangockConfiguration getConfig(Boolean throwEx, String... packages) {
     ChangockConfiguration config = new ChangockConfiguration() {
       @Override
-      public List<LegacyMigration> getLegacyMigrations() {
-        return new ArrayList<>();
+      public LegacyMigration getLegacyMigration() {
+        return new LegacyMigrationDummyImpl();
       }
     };
     config.setChangeLogsScanPackage(Arrays.asList(packages));

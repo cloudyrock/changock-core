@@ -449,9 +449,4 @@ public class MigrationExecutorTest {
     return new MigrationExecutorConfiguration(3, 3, 4, trackIgnored);
   }
 
-
-  public class LegacyMigrationDummyImpl extends LegacyMigration {
-
-  }
-
 }
