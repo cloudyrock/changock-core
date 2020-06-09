@@ -4,12 +4,24 @@ import java.util.Objects;
 
 public class LegacyMigrationMappingFields {
 
-  private String changeId;
-  private String author;
-  private String timestamp;
-  private String changeLogClass;
-  private String changeSetMethod;
-  private String metadata;
+  private String changeId = "changeId";
+  private String author = "author";
+  private String timestamp = "timestamp";
+  private String changeLogClass = "changeLogClass";
+  private String changeSetMethod = "changeSetMethod";
+  private String metadata = null;
+
+  public LegacyMigrationMappingFields() {
+  }
+
+  public LegacyMigrationMappingFields(String changeId, String author, String timestamp, String changeLogClass, String changeSetMethod, String metadata) {
+    this.changeId = changeId;
+    this.author = author;
+    this.timestamp = timestamp;
+    this.changeLogClass = changeLogClass;
+    this.changeSetMethod = changeSetMethod;
+    this.metadata = metadata;
+  }
 
   public String getChangeId() {
     return changeId;

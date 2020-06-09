@@ -1,6 +1,7 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.common.Validable;
+import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.AnnotationProcessor;
 import io.changock.migration.api.exception.ChangockException;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static io.changock.runner.core.builder.configuration.ChangockConstants.LEGACY_MIGRATION_NAME;
 
 
 public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration>
@@ -37,7 +40,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Map<String, Object> metadata;
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
-  private LegacyMigration legacyMigration = null;
+  protected LegacyMigration legacyMigration = null;
 
 
   protected RunnerBuilderBase() {
@@ -51,7 +54,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
-    if(changeLogsScanPackageList != null) {
+    if (changeLogsScanPackageList != null) {
       changeLogsScanPackage.addAll(changeLogsScanPackageList);
     }
     return returnInstance();
@@ -139,10 +142,20 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected MigrationExecutor buildExecutorDefault() {
     return new MigrationExecutor(
         driver,
-        new DependencyManager(),
+        buildDependencyManager(),
         new MigrationExecutorConfiguration(lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
         metadata
     );
+  }
+
+  private DependencyManager buildDependencyManager() {
+    DependencyManager dependencyManager = new DependencyManager();
+    if (legacyMigration != null) {
+      dependencyManager.addStandardDependency(
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
+      );
+    }
+    return dependencyManager;
   }
 
   protected ChangeLogService buildChangeLogServiceDefault() {

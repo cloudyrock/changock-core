@@ -1,10 +1,12 @@
 package io.changock.runner.spring.v5;
 
+import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.RunnerBuilderBase;
+import io.changock.runner.core.builder.configuration.LegacyMigration;
 import io.changock.runner.spring.util.SpringDependencyManager;
 import io.changock.runner.spring.util.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
@@ -19,6 +21,8 @@ import org.springframework.core.env.Environment;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static io.changock.runner.core.builder.configuration.ChangockConstants.LEGACY_MIGRATION_NAME;
 
 public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends ChangockSpringConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
@@ -48,10 +52,20 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
   protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
     return new SpringMigrationExecutor(
         driver,
-        new SpringDependencyManager(this.springContext),
+        buildDependencyManager(),
         new MigrationExecutorConfiguration(lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
         metadata
     );
+  }
+
+  private SpringDependencyManager buildDependencyManager() {
+    SpringDependencyManager dependencyManager = new SpringDependencyManager(this.springContext);
+    if (legacyMigration != null) {
+      dependencyManager.addStandardDependency(
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
+      );
+    }
+    return dependencyManager;
   }
 
   protected ProfiledChangeLogService buildProfiledChangeLogService() {
