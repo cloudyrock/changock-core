@@ -8,7 +8,7 @@ import java.util.Objects;
 @NonLockGuarded(NonLockGuardedType.NONE)
 public abstract class LegacyMigration {
 
-  private LegacyMigrationMappingFields mappingFields;
+  private LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
 
   public LegacyMigrationMappingFields getMappingFields() {
     return mappingFields;
