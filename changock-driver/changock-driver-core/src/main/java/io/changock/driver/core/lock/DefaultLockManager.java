@@ -155,7 +155,7 @@ public class DefaultLockManager implements LockManager {
   }
 
   private void releaseLock(String lockKey) {
-    logger.info("Changock is trying to release the lock.");
+    logger.info("Changock releasing the lock");
     repository.removeByKeyAndOwner(lockKey, this.getOwner());
     this.lockExpiresAt = null;
     logger.info("Changock released the lock");

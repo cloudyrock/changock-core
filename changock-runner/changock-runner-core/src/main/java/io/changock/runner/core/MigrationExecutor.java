@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Random;
 
 import static io.changock.driver.api.entry.ChangeState.EXECUTED;
 import static io.changock.driver.api.entry.ChangeState.FAILED;
@@ -72,18 +72,20 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       }
     } finally {
       this.executionInProgress = false;
-      logger.info("Changock has finished his job.");
+      logger.info("Changock has finished");
     }
   }
 
   protected String generateExecutionId() {
-    return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
+    return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
   }
 
   protected void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
+    boolean alreadyExecuted = false;
     try {
-      if (changeSetItem.isRunAlways() || !driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor())) {
+      if (!(alreadyExecuted = driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor()))
+          || changeSetItem.isRunAlways()) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
 
@@ -96,7 +98,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       throw ex;
     } finally {
       if (changeEntry != null) {
-        logChangeEntry(changeEntry, changeSetItem);
+        logChangeEntry(changeEntry, changeSetItem, alreadyExecuted);
         if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
           driver.getChangeEntryService().save(changeEntry);
         }
@@ -104,15 +106,10 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  private void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem) {
+  private void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem, boolean alreadyExecuted) {
     switch (changeEntry.getState()) {
       case EXECUTED:
-        if (changeSetItem.isRunAlways()) {
-          logger.info("RE-APPLIED - {}", changeEntry.toPrettyString());
-
-        } else {
-          logger.info("APPLIED - {}", changeEntry.toPrettyString());
-        }
+        logger.info("{}APPLIED - {}", alreadyExecuted ? "RE-" : "", changeEntry.toPrettyString());
         break;
       case IGNORED:
         logger.info("PASSED OVER - {}", changeSetItem.toPrettyString());
