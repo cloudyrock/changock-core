@@ -45,16 +45,16 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
 
       } catch (LockCheckException lockEx) {
         if (throwExceptionIfCannotObtainLock) {
-          logger.error("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION. Exception PROPAGATED", lockEx);
+          logger.error("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
           throw new ChangockException(lockEx);
 
         } else {
-          logger.warn("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION. Exception NOT propagated", lockEx);
+          logger.warn("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
         }
 
       } catch (Exception ex) {
         ChangockException exWrapper = ChangockException.class.isAssignableFrom(ex.getClass()) ? (ChangockException) ex : new ChangockException(ex);
-        logger.error("Error in changock process. ABORTED MIGRATION. Exception PROPAGATED", exWrapper);
+        logger.error("Error in changock process. ABORTED MIGRATION", exWrapper);
         throw exWrapper;
 
       }

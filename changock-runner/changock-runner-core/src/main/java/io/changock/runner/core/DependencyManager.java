@@ -10,6 +10,8 @@ import io.changock.utils.annotation.NotThreadSafe;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @NotThreadSafe
 public class DependencyManager {
@@ -25,23 +27,19 @@ public class DependencyManager {
     forbiddenParametersMap = new ForbiddenParametersMap();
   }
 
-  public Optional<Object> getDependency(Class type) throws ForbiddenParameterException {
-    return getDependency(type, true);
-  }
-
-
   public Optional<Object> getDependency(Class type, boolean lockGuarded) throws ForbiddenParameterException {
-    Optional<Object> dependencyOpt = forbiddenParametersMap.throwExceptionIfPresent(type)
-        .or(() -> getDriverDependency(type));
-    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, lockGuarded);
+    return getDependency(type, null, lockGuarded);
   }
 
-  private Optional<Object> getDriverDependency(Class type) {
-    return getDependency(connectorDependencies, type);
+  public Optional<Object> getDependency(Class type, String name, boolean lockGuarded) throws ForbiddenParameterException {
+    Optional<Object> dependencyOpt = forbiddenParametersMap
+        .throwExceptionIfPresent(type)
+        .or(() -> getDependencyFromStore(connectorDependencies, type, name));
+    return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, name, lockGuarded);
   }
 
-  private Optional<Object> getStandardDependency(Class type, boolean lockProxy) {
-    Optional<Object> dependencyOpt = getDependency(standardDependencies, type);
+  private Optional<Object> getStandardDependency(Class type, String name, boolean lockProxy) {
+    Optional<Object> dependencyOpt = getDependencyFromStore(standardDependencies, type, name);
     if (dependencyOpt.isPresent() && lockProxy) {
       if (!type.isInterface()) {
         throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
@@ -52,13 +50,23 @@ public class DependencyManager {
     }
   }
 
-  private Optional<Object> getDependency(Collection<ChangeSetDependency> dependencyStore, Class type) {
-    return dependencyStore
-        .stream()
-        .filter(dependency -> type.isAssignableFrom(dependency.getType()))
-        .map(ChangeSetDependency::getInstance)
-        .findFirst();
+  @SuppressWarnings("unchecked")
+  private Optional<Object> getDependencyFromStore(Collection<ChangeSetDependency> dependencyStore, Class type, String name) {
+    boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
+    Predicate<ChangeSetDependency> filter = byName
+        ? dependency -> name.equals(dependency.getName())
+        : dependency -> type.isAssignableFrom(dependency.getType());
+
+    Stream<ChangeSetDependency> stream = dependencyStore.stream().filter(filter);
+    if(byName) {
+      return stream.map(ChangeSetDependency::getInstance).findFirst();
+    } else {
+      return stream.reduce((dependency1, dependency2) -> !dependency1.isDefaultNamed() && dependency2.isDefaultNamed() ? dependency2 : dependency1)
+          .map(ChangeSetDependency::getInstance);
+    }
   }
+
+  // setters
 
   public DependencyManager setLockGuardProxyFactory(LockGuardProxyFactory lockGuardProxyFactory) {
     this.lockGuardProxyFactory = lockGuardProxyFactory;
@@ -89,6 +97,7 @@ public class DependencyManager {
   }
 
   private <T extends ChangeSetDependency> DependencyManager addDependency(Collection<T> dependencyStore, T dependency) {
+    //add returns false if it's already there. In that case, it needs to be removed and then inserted
     if (!dependencyStore.add(dependency)) {
       dependencyStore.remove(dependency);
       dependencyStore.add(dependency);

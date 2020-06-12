@@ -4,7 +4,7 @@ import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.MigrationExecutor;
-import io.changock.runner.core.builder.ChangockConfiguration;
+import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 

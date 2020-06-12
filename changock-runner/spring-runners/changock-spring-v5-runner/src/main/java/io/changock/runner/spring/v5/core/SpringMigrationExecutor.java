@@ -8,10 +8,13 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.MigrationExecutor;
 import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.spring.util.SpringDependencyManager;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Named;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +41,21 @@ public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends M
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     super.executeAndLogChangeSet(executionId, changelogInstance, changeSetItem);
+  }
+
+
+  /**
+   * Return Parameter qualifier by checking javax.inject.Named and spring Qualifier annotations, in this order
+   * @param parameter parameter to be checked.
+   * @return name of the parameter, if qualified. Null otherwise
+   */
+  @Override
+  protected String getParameterName(Parameter parameter) {
+    String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+    if(name == null) {
+      name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
+    }
+    return name;
   }
 
 }

@@ -4,7 +4,6 @@ package io.changock.runner.core;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.util.InterfaceDependency;
 import io.changock.runner.core.util.InterfaceDependencyImpl;
 import org.junit.Assert;
@@ -12,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-import org.mockito.internal.verification.Times;
 
 import java.util.ArrayList;
 
@@ -27,7 +25,7 @@ public class DependencyManagerTest {
     Assert.assertEquals("dependency",
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency("dependency"))
-            .getDependency(String.class)
+            .getDependency(String.class, true)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -37,7 +35,7 @@ public class DependencyManagerTest {
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency("dependencyNotReturned"))
             .addDriverDependency(new ChangeSetDependency("dependency"))
-            .getDependency(String.class)
+            .getDependency(String.class, true)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -49,7 +47,7 @@ public class DependencyManagerTest {
     Assert.assertEquals("dependency",
         new DependencyManager()
             .addDriverDependencies(dependencies)
-            .getDependency(String.class)
+            .getDependency(String.class, true)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -62,7 +60,7 @@ public class DependencyManagerTest {
         new DependencyManager()
             .addDriverDependencies(dependencies)
             .addDriverDependency(new ChangeSetDependency("dependency"))
-            .getDependency(String.class)
+            .getDependency(String.class, true)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -75,7 +73,7 @@ public class DependencyManagerTest {
     Assert.assertEquals(dependency,
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency(InterfaceDependencyImpl.class, dependency))
-            .getDependency(InterfaceDependency.class)
+            .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -86,7 +84,7 @@ public class DependencyManagerTest {
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency(Child1.class, dependency))
             .addDriverDependency(new ChangeSetDependency(Child2.class, new Child2()))
-            .getDependency(Parent.class)
+            .getDependency(Parent.class, true)
             .orElseThrow(RuntimeException::new));
   }
 
@@ -96,7 +94,7 @@ public class DependencyManagerTest {
     InterfaceDependency o = (InterfaceDependency) new DependencyManager()
         .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()))
-        .getDependency(InterfaceDependency.class)
+        .getDependency(InterfaceDependency.class, true)
         .orElseThrow(RuntimeException::new);
   }
 
@@ -107,7 +105,7 @@ public class DependencyManagerTest {
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(new ChangeSetDependency(new Child2("value1")))
             .addStandardDependency(new ChangeSetDependency(new Child2("value2")))
-            .getDependency(InterfaceDependency.class)
+            .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new)
         ).getValue());
   }
@@ -121,7 +119,7 @@ public class DependencyManagerTest {
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(dependencies)
-            .getDependency(InterfaceDependency.class)
+            .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new)
         ).getValue());
   }
@@ -136,7 +134,7 @@ public class DependencyManagerTest {
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(dependencies)
             .addStandardDependency(new ChangeSetDependency(new Child2("value3")))
-            .getDependency(InterfaceDependency.class)
+            .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new)
         ).getValue());
   }
@@ -150,7 +148,7 @@ public class DependencyManagerTest {
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(new ChangeSetDependency(Child1.class, new Child1("dependency1")))
             .addStandardDependency(new ChangeSetDependency(Child2.class, new Child2("dependency12")))
-            .getDependency(InterfaceDependency.class)
+            .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new)
         ).getValue());
   }
@@ -163,7 +161,7 @@ public class DependencyManagerTest {
             .addStandardDependency(new ChangeSetDependency("standardDependency"))
             .addDriverDependency(new ChangeSetDependency("connectorDependency"))
             .addStandardDependency(new ChangeSetDependency("standardDependency"))
-            .getDependency(String.class)
+            .getDependency(String.class, true)
             .orElseThrow(RuntimeException::new));
   }
 }

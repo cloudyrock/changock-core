@@ -15,17 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.lang.annotation.Annotation;
+import javax.inject.Named;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Random;
 
 import static io.changock.driver.api.entry.ChangeState.EXECUTED;
 import static io.changock.driver.api.entry.ChangeState.FAILED;
@@ -74,18 +72,20 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       }
     } finally {
       this.executionInProgress = false;
-      logger.info("Changock has finished his job.");
+      logger.info("Changock has finished");
     }
   }
 
   protected String generateExecutionId() {
-    return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
+    return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
   }
 
   protected void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
+    boolean alreadyExecuted = false;
     try {
-      if (changeSetItem.isRunAlways() || !driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor())) {
+      if (!(alreadyExecuted = driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor()))
+          || changeSetItem.isRunAlways()) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
 
@@ -98,23 +98,18 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       throw ex;
     } finally {
       if (changeEntry != null) {
-        logChangeEntry(changeEntry, changeSetItem);
-        if(changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
+        logChangeEntry(changeEntry, changeSetItem, alreadyExecuted);
+        if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
           driver.getChangeEntryService().save(changeEntry);
         }
       }
     }
   }
 
-  protected void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem) {
+  private void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem, boolean alreadyExecuted) {
     switch (changeEntry.getState()) {
       case EXECUTED:
-        if (changeSetItem.isRunAlways()) {
-          logger.info("RE-APPLIED - {}", changeEntry.toPrettyString());
-
-        } else {
-          logger.info("APPLIED - {}", changeEntry.toPrettyString());
-        }
+        logger.info("{}APPLIED - {}", alreadyExecuted ? "RE-" : "", changeEntry.toPrettyString());
         break;
       case IGNORED:
         logger.info("PASSED OVER - {}", changeSetItem.toPrettyString());
@@ -131,22 +126,26 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();
-    List<Object> changelogInvocationParameters = new ArrayList<>(changeSetMethod.getParameterTypes().length);
+    Class<?>[] parameterTypes = changeSetMethod.getParameterTypes();
     Parameter[] parameters = changeSetMethod.getParameters();
-    for(int paramIndex = 0 ; paramIndex < changeSetMethod.getParameterTypes().length ; paramIndex++) {
-      Class<?> parameterType = changeSetMethod.getParameterTypes()[paramIndex];
-      boolean parameterNonLockGuarded = parameters[paramIndex].isAnnotationPresent(NonLockGuarded.class);
-
-      Optional<Object> parameterOptional = dependencyManager.getDependency(parameterType, !parameterNonLockGuarded);
-      if (parameterOptional.isPresent()) {
-        changelogInvocationParameters.add(parameterOptional.get());
-      } else {
-        throw new DependencyInjectionException(parameterType);
-      }
+    List<Object> changelogInvocationParameters = new ArrayList<>(parameterTypes.length);
+    for (int paramIndex = 0; paramIndex < parameterTypes.length; paramIndex++) {
+      changelogInvocationParameters.add(getParameter(parameterTypes[paramIndex], parameters[paramIndex]));
     }
     LogUtils.logMethodWithArguments(logger, changeSetMethod.getName(), changelogInvocationParameters);
     changeSetMethod.invoke(changeLogInstance, changelogInvocationParameters.toArray());
     return System.currentTimeMillis() - startingTime;
+  }
+
+  protected Object getParameter(Class<?> parameterType, Parameter parameter) {
+    String name = getParameterName(parameter);
+    return dependencyManager
+        .getDependency(parameterType, name, !parameter.isAnnotationPresent(NonLockGuarded.class) || parameterType.isAnnotationPresent(NonLockGuarded.class))
+        .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
+  }
+
+  protected String getParameterName(Parameter parameter) {
+    return parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
   }
 
   protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {
