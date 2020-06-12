@@ -8,6 +8,8 @@ import java.util.Objects;
 @NonLockGuarded(NonLockGuardedType.NONE)
 public abstract class LegacyMigration {
 
+  private Integer changesCountExpectation = null;
+
   private LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
 
   public LegacyMigrationMappingFields getMappingFields() {
@@ -16,6 +18,14 @@ public abstract class LegacyMigration {
 
   public void setMappingFields(LegacyMigrationMappingFields mappingFields) {
     this.mappingFields = mappingFields;
+  }
+
+  public Integer getChangesCountExpectation() {
+    return changesCountExpectation;
+  }
+
+  public void setChangesCountExpectation(Integer changesCountExpectation) {
+    this.changesCountExpectation = changesCountExpectation;
   }
 
   @Override
