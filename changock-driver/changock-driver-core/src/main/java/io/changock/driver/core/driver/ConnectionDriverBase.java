@@ -12,6 +12,7 @@ import io.changock.utils.annotation.NotThreadSafe;
 @NotThreadSafe
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
+  private boolean initialized = false;
   private LockManager lockManager = null;
   private final long lockAcquiredForMinutes;
   private final long maxWaitingForLockMinutes;
@@ -24,8 +25,9 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public void initialize() {
-    if (lockManager == null) {
+  public final void initialize() {
+    if (!initialized) {
+      initialized = true;
       TimeService timeService = new TimeService();
       LockRepository lockRepository = this.getLockRepository();
       lockRepository.initialize();
@@ -34,6 +36,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
           .setLockMaxTries(maxTries)
           .setLockMaxWaitMillis(timeService.minutesToMillis(maxWaitingForLockMinutes));
       getChangeEntryService().initialize();
+      specificInitialization();
     }
   }
 
@@ -46,4 +49,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   protected abstract LockRepository getLockRepository();
+
+  protected abstract void specificInitialization();
 }

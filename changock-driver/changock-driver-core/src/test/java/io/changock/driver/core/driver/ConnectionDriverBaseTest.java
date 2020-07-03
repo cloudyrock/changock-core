@@ -65,6 +65,11 @@ public class ConnectionDriverBaseTest {
     }
 
     @Override
+    protected void specificInitialization() {
+
+    }
+
+    @Override
     public ChangeEntryService getChangeEntryService() {
       return changeEntryService;
     }
