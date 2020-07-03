@@ -446,7 +446,7 @@ public class MigrationExecutorTest {
   }
 
   private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored) {
-    return new MigrationExecutorConfiguration(3, 3, 4, trackIgnored);
+    return new MigrationExecutorConfiguration(trackIgnored);
   }
 
 }

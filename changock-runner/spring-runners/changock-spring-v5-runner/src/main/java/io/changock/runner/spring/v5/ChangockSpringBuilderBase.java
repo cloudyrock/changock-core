@@ -53,7 +53,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return new SpringMigrationExecutor(
         driver,
         buildDependencyManager(),
-        new MigrationExecutorConfiguration(lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
+        new MigrationExecutorConfiguration(trackIgnored),
         metadata
     );
   }

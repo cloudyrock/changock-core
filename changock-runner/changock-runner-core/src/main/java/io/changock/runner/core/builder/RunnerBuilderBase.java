@@ -29,9 +29,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
-  protected long lockAcquiredForMinutes = 3L;
-  protected long maxWaitingForLockMinutes = 4L;
-  protected int maxTries = 3;
   protected boolean trackIgnored = false;
   protected boolean throwExceptionIfCannotObtainLock = true;
   protected boolean enabled = true;
@@ -60,11 +57,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return returnInstance();
   }
 
-  @Override
-  public BUILDER_TYPE setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
-    this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
-    return returnInstance();
-  }
 
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
@@ -85,17 +77,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setLockConfig(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
-    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
-    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
-    this.maxTries = maxTries;
-    this.throwExceptionIfCannotObtainLock = true;
-    return returnInstance();
-  }
-
-  @Override
-  public BUILDER_TYPE setDefaultLock() {
-    this.throwExceptionIfCannotObtainLock = true;
+  public BUILDER_TYPE dontFailIfCannotAcquireLock() {
+    this.throwExceptionIfCannotObtainLock = false;
     return returnInstance();
   }
 
@@ -119,10 +102,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
+    this.addChangeLogsScanPackages(config.getChangeLogsScanPackage());
+    if(!config.isThrowExceptionIfCannotObtainLock()) {
+      this.dontFailIfCannotAcquireLock();
+    }
     this
-        .addChangeLogsScanPackages(config.getChangeLogsScanPackage())
-        .setLockConfig(config.getLockAcquiredForMinutes(), config.getMaxWaitingForLockMinutes(), config.getMaxTries())//optional
-        .setThrowExceptionIfCannotObtainLock(config.isThrowExceptionIfCannotObtainLock())
         .setTrackIgnored(config.isTrackIgnored())
         .setEnabled(config.isEnabled())
         .setStartSystemVersion(config.getStartSystemVersion())
@@ -143,7 +127,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return new MigrationExecutor(
         driver,
         buildDependencyManager(),
-        new MigrationExecutorConfiguration(lockAcquiredForMinutes, maxTries, maxWaitingForLockMinutes, trackIgnored),
+        new MigrationExecutorConfiguration(trackIgnored),
         metadata
     );
   }

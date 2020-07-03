@@ -11,19 +11,6 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
     extends PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> {
 
   /**
-   * <p></p>Feature which enables/disables throwing ChangockException if the lock cannot be obtained, so the
-   * the application carries on with no issue.
-   * Only make this false if the changes are not mandatory and the app can work without them. Leave it true otherwise.
-   * <b>Optional</b> Default value true.
-   * </p>
-   *
-   * @param throwExceptionIfCannotObtainLock Changock will throw ChangockException if lock can not be obtained
-   * @return builder for fluent interface
-   */
-  BUILDER_TYPE setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock);
-
-
-  /**
    * Adds a legacy migration to be executed before the actual migration
    * @param legacyMigration represents the legacy migration
    * @return builder for fluent interface
@@ -48,24 +35,16 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setTrackIgnored(boolean trackIgnored);
 
   /**
-   * Set up the lock with minimal configuration. This implies Changock will throw an exception if cannot obtains the lock.
-   * <b>Optional</b> Enabled by default.
+   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Mongock won't throw
+   * any exception and the application will carry on.
    *
-   * @param lockAcquiredForMinutes   Acquired time in minutes
-   * @param maxWaitingForLockMinutes max time in minutes to wait for the lock in each try.
-   * @param maxTries                 number of tries
+   * Only set this to false if the changes are not mandatory and the application can work without them. Leave it true otherwise.
+   * <b>Optional</b> Default value true.
+   *
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setLockConfig(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries);
+  BUILDER_TYPE dontFailIfCannotAcquireLock();
 
-  /**
-   * Set up the lock with default configuration to wait for it and through an exception when cannot obtain it.
-   * Default configuration is: lock acquired for 3 minutes, during 4 minutes and 3 max re-tries.
-   * <b>Optional</b> Enabled by default.
-   *
-   * @return builder for fluent interface
-   */
-  BUILDER_TYPE setDefaultLock();
 
   /**
    * Set up the start Version for versioned schema changes.
