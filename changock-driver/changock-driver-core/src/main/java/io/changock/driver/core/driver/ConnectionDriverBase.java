@@ -17,10 +17,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private final long maxWaitingForLockMinutes;
   private final int maxTries;
 
-  public ConnectionDriverBase() {
-    this(3L, 4L, 3);
-  }
-
   public ConnectionDriverBase(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
     this.lockAcquiredForMinutes = lockAcquiredForMinutes;
     this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
