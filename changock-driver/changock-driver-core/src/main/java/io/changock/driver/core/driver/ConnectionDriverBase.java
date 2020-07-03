@@ -13,12 +13,15 @@ import io.changock.utils.annotation.NotThreadSafe;
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
   private LockManager lockManager = null;
-  private long lockAcquiredForMinutes = 3L;
-  private long maxWaitingForLockMinutes = 4L;
-  private int maxTries = 3;
+  private final long lockAcquiredForMinutes;
+  private final long maxWaitingForLockMinutes;
+  private final int maxTries;
 
-  @Override
-  public void setLockSettings(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
+  public ConnectionDriverBase() {
+    this(3L, 4L, 3);
+  }
+
+  public ConnectionDriverBase(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
     this.lockAcquiredForMinutes = lockAcquiredForMinutes;
     this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
     this.maxTries = maxTries;

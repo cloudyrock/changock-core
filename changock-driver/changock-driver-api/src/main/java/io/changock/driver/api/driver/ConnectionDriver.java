@@ -8,7 +8,6 @@ import io.changock.driver.api.lock.LockManager;
 import java.util.Set;
 
 public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable {
-  void setLockSettings(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries);
   void initialize();
   LockManager getLockManager();
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();

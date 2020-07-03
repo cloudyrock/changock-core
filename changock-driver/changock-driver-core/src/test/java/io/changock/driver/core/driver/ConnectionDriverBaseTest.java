@@ -23,10 +23,12 @@ public class ConnectionDriverBaseTest {
     ChangeEntryService changeEntryService = Mockito.mock(ChangeEntryService.class);
 
     ConnectionDriverBase driver = new ConnectionDriverBaseTestImpl(
+        4,
+        3,
+        3,
         lockRepository,
         changeEntryService,
         Mockito.mock(LockManager.class));
-    driver.setLockSettings(4, 3, 3);
 
     // when
     driver.initialize();
@@ -41,14 +43,17 @@ public class ConnectionDriverBaseTest {
 
   static class ConnectionDriverBaseTestImpl extends ConnectionDriverBase {
 
-
     private final LockRepository lockRepository;
     private final ChangeEntryService changeEntryService;
     private final LockManager lockManager;
 
-    ConnectionDriverBaseTestImpl(LockRepository lockRepository,
+    ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
+                                 long maxWaitingForLockMinutes,
+                                 int maxTries,
+                                 LockRepository lockRepository,
                                  ChangeEntryService changeEntryService,
                                  LockManager lockManager) {
+      super(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
       this.lockRepository = lockRepository;
       this.changeEntryService = changeEntryService;
       this.lockManager = lockManager;
