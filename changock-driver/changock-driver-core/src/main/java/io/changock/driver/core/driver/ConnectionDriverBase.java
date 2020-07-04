@@ -25,6 +25,11 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
+  public boolean isInitialized() {
+    return initialized;
+  }
+
+  @Override
   public final void initialize() {
     if (!initialized) {
       initialized = true;
