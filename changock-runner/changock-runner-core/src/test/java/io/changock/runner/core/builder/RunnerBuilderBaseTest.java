@@ -2,7 +2,6 @@ package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangockBase;
-import io.changock.runner.core.MigrationExecutorTest;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
 import io.changock.runner.core.util.LegacyMigrationDummyImpl;
@@ -10,12 +9,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -40,11 +36,10 @@ public class RunnerBuilderBaseTest {
   public void shouldAssignAllTheParameters() {
     new DummyRunnerBuilder()
         .setDriver(driver)
-        .setLockConfig(1, 2, 3)
         .setEnabled(false)
         .setStartSystemVersion("start")
         .setEndSystemVersion("end")
-        .setThrowExceptionIfCannotObtainLock(false)
+        .dontFailIfCannotAcquireLock()
         .addChangeLogsScanPackage("package")
         .withMetadata(metadata)
         .validate();
@@ -56,7 +51,7 @@ public class RunnerBuilderBaseTest {
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
     builder.setConfig(getConfig(false, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
-    verify(builder, new Times(1)).setThrowExceptionIfCannotObtainLock(false);
+    verify(builder, new Times(1)).dontFailIfCannotAcquireLock();
   }
 
   @Test
@@ -65,7 +60,7 @@ public class RunnerBuilderBaseTest {
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
     builder.setConfig(getConfig(null, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
-    verify(builder, new Times(1)).setThrowExceptionIfCannotObtainLock(true);
+    verify(builder, new Times(0)).dontFailIfCannotAcquireLock();
   }
 
   @Test
@@ -95,7 +90,6 @@ public class RunnerBuilderBaseTest {
 
   private void checkStandardBuilderCalls(DummyRunnerBuilder builder) {
     verify(builder, new Times(1)).addChangeLogsScanPackages(Collections.singletonList(PACKAGE_PATH));
-    verify(builder, new Times(1)).setLockConfig(LOCK_ACQ_MIN, MAX_WAIT_LOCK, MAX_TRIES);
     verify(builder, new Times(1)).setEnabled(false);
     verify(builder, new Times(1)).setStartSystemVersion(START_SYSTEM_VERSION);
     verify(builder, new Times(1)).setEndSystemVersion(END_SYSTEM_VERSION);
@@ -130,9 +124,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
 
   void validate() {
     assertEquals(driver, this.driver);
-    assertEquals(lockAcquiredForMinutes, 1);
-    assertEquals(maxWaitingForLockMinutes, 2);
-    assertEquals(maxTries, 3);
+//    assertEquals(lockAcquiredForMinutes, 1);
+//    assertEquals(maxWaitingForLockMinutes, 2);
+//    assertEquals(maxTries, 3);
     assertFalse(this.enabled);
     assertEquals("start", this.startSystemVersion);
     assertEquals("end", this.endSystemVersion);

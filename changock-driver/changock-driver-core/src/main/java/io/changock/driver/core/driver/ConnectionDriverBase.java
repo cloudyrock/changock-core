@@ -12,21 +12,27 @@ import io.changock.utils.annotation.NotThreadSafe;
 @NotThreadSafe
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
+  private boolean initialized = false;
   private LockManager lockManager = null;
-  private long lockAcquiredForMinutes;
-  private long maxWaitingForLockMinutes;
-  private int maxTries;
+  private final long lockAcquiredForMinutes;
+  private final long maxWaitingForLockMinutes;
+  private final int maxTries;
 
-  @Override
-  public void setLockSettings(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
+  public ConnectionDriverBase(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
     this.lockAcquiredForMinutes = lockAcquiredForMinutes;
     this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
     this.maxTries = maxTries;
   }
 
   @Override
-  public void initialize() {
-    if (lockManager == null) {
+  public boolean isInitialized() {
+    return initialized;
+  }
+
+  @Override
+  public final void initialize() {
+    if (!initialized) {
+      initialized = true;
       TimeService timeService = new TimeService();
       LockRepository lockRepository = this.getLockRepository();
       lockRepository.initialize();
@@ -35,6 +41,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
           .setLockMaxTries(maxTries)
           .setLockMaxWaitMillis(timeService.minutesToMillis(maxWaitingForLockMinutes));
       getChangeEntryService().initialize();
+      specificInitialization();
     }
   }
 
@@ -47,4 +54,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   protected abstract LockRepository getLockRepository();
+
+  protected abstract void specificInitialization();
 }
