@@ -18,7 +18,7 @@
 
   <groupId>com.github.cloudyrock.changock</groupId>
   <artifactId>changock</artifactId>
-  <version>1.0.13.alpha-SNAPSHOT</version>
+  <version>1.0.14.alpha-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
