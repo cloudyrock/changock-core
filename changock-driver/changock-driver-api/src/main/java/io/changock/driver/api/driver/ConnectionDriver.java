@@ -14,6 +14,10 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
   Set<ChangeSetDependency> getDependencies();
   ForbiddenParametersMap getForbiddenParameters();
+  //return transactionResult: OK, Failed(exception, etc)??
+  default void executeInTransaction(Runnable operation) {
+    throw new UnsupportedOperationException("This driver doesn't support transactions");
+  }
   default TransactionStrategy getTransactionStrategy() {
     return TransactionStrategy.NONE;
   }
