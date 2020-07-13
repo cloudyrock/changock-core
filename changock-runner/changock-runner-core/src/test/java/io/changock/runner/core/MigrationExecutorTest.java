@@ -31,7 +31,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,14 +105,14 @@ public class MigrationExecutorTest {
     assertEquals("newChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("newChangeSet", entry.getChangeSetMethodName());
+    assertEquals("newChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethodName());
+    assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
 
     int nextIndex = 2;
@@ -122,7 +121,7 @@ public class MigrationExecutorTest {
       assertEquals("alreadyExecuted", entry.getChangeId());
       assertEquals("executor", entry.getAuthor());
       assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
-      assertEquals("alreadyExecuted", entry.getChangeSetMethodName());
+      assertEquals("alreadyExecuted", entry.getChangeSetMethod());
       assertEquals(ChangeState.IGNORED, entry.getState());
       nextIndex++;
     }
@@ -131,7 +130,7 @@ public class MigrationExecutorTest {
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeSetMethodName());
+    assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
   }
 
@@ -164,21 +163,21 @@ public class MigrationExecutorTest {
     assertEquals("newChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("newChangeSet", entry.getChangeSetMethodName());
+    assertEquals("newChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethodName());
+    assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
 
     entry = entries.get(2);
     assertEquals("throwsException", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("throwsException", entry.getChangeSetMethodName());
+    assertEquals("throwsException", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
   }
 
@@ -270,7 +269,7 @@ public class MigrationExecutorTest {
     assertEquals("newChangeSet1", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("newChangeSet1", entry.getChangeSetMethodName());
+    assertEquals("newChangeSet1", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
 
 
@@ -278,14 +277,14 @@ public class MigrationExecutorTest {
     assertEquals("changeSetNonFailFast", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("changeSetNonFailFast", entry.getChangeSetMethodName());
+    assertEquals("changeSetNonFailFast", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
 
     entry = entries.get(2);
     assertEquals("newChangeSet2", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
-    assertEquals("newChangeSet2", entry.getChangeSetMethodName());
+    assertEquals("newChangeSet2", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
   }
 

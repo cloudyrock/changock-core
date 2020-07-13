@@ -33,7 +33,7 @@ public class ChangeEntry {
   private final String changeLogClass;
 
   @Field("changeSetMethod")
-  private final String changeSetMethodName;
+  private final String changeSetMethod;
 
   @Field("metadata")
   private final Object metadata;
@@ -62,7 +62,7 @@ public class ChangeEntry {
                      Date timestamp,
                      ChangeState state,
                      String changeLogClass,
-                     String changeSetMethodName,
+                     String changeSetMethod,
                      long executionMillis,
                      Object metadata) {
     this.executionId = executionId;
@@ -71,7 +71,7 @@ public class ChangeEntry {
     this.timestamp = new Date(timestamp.getTime());
     this.state = state;
     this.changeLogClass = changeLogClass;
-    this.changeSetMethodName = changeSetMethodName;
+    this.changeSetMethod = changeSetMethod;
     this.executionMillis = executionMillis;
     this.metadata = metadata;
   }
@@ -101,8 +101,8 @@ public class ChangeEntry {
     return this.changeLogClass;
   }
 
-  public String getChangeSetMethodName() {
-    return this.changeSetMethodName;
+  public String getChangeSetMethod() {
+    return this.changeSetMethod;
   }
 
   public long getExecutionMillis() {
@@ -122,7 +122,7 @@ public class ChangeEntry {
         ", timestamp=" + timestamp +
         ", state=" + state +
         ", changeLogClass='" + changeLogClass + '\'' +
-        ", changeSetMethodName='" + changeSetMethodName + '\'' +
+        ", changeSetMethod='" + changeSetMethod + '\'' +
         ", metadata=" + metadata +
         ", executionMillis=" + executionMillis +
         '}';
@@ -133,7 +133,7 @@ public class ChangeEntry {
         ", \"id\"=\"" + changeId + "\"" +
         ", \"author\"=\"" + author + "\"" +
         ", \"class\"=\"" + StringUtils.getSimpleClassName(changeLogClass) + "\"" +
-        ", \"method\"=\"" + changeSetMethodName + "\"" +
+        ", \"method\"=\"" + changeSetMethod + "\"" +
         '}';
   }
 }
