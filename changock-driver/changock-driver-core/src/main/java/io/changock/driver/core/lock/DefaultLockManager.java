@@ -149,6 +149,9 @@ public class DefaultLockManager implements LockManager {
     releaseLock(getDefaultKey());
   }
 
+  /**
+   * release the default lock. Useful in try/catch blocks
+   */
   @Override
   public void close() {
     releaseLockDefault();
