@@ -58,7 +58,8 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   public void executeMigration(List<ChangeLogItem> changeLogs) {
     initializationAndValidation();
-    try (LockManager lockManager = driver.getAndAcquireLockManager()) {
+    try (LockManager lockManager = driver.getLockManager()) {
+      lockManager.acquireLockDefault();
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.ENTIRE_MIGRATION, () -> processAllChangeLogs(changeLogs));
     } finally {
       this.executionInProgress = false;

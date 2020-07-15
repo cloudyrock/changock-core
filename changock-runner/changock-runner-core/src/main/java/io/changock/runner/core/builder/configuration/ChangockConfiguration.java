@@ -55,6 +55,11 @@ public abstract class ChangockConfiguration {
    */
   private Map<String, Object> metadata;
 
+  /**
+   * When transaction mechanism s possible, ff false, disable transactions. Default true.
+   */
+  private boolean transactionEnabled = true;
+
 
 
   public int getLockAcquiredForMinutes() {
@@ -135,6 +140,10 @@ public abstract class ChangockConfiguration {
 
   public void setMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
+  }
+
+  public boolean isTransactionEnabled() {
+    return transactionEnabled;
   }
 
   public abstract <T extends LegacyMigration> T getLegacyMigration();
