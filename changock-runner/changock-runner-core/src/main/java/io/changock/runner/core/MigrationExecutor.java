@@ -60,7 +60,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       lockManager.acquireLockDefault();
-      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.ENTIRE_MIGRATION, () -> processAllChangeLogs(changeLogs));
+      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processAllChangeLogs(changeLogs));
     } finally {
       this.executionInProgress = false;
       logger.info("Changock has finished");
