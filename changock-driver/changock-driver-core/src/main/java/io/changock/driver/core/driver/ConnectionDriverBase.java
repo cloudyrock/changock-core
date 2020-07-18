@@ -53,6 +53,15 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     return lockManager;
   }
 
+  @Override
+  public LockManager getAndAcquireLockManager() {
+    LockManager lockManager = getLockManager();
+    lockManager.acquireLockDefault();
+    return lockManager;
+  }
+
+
+
   protected abstract LockRepository getLockRepository();
 
   protected abstract void specificInitialization();

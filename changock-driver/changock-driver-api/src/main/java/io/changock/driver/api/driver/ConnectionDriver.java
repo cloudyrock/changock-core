@@ -11,6 +11,7 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   boolean isInitialized();
   void initialize();
   LockManager getLockManager();
+  LockManager getAndAcquireLockManager();
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
   Set<ChangeSetDependency> getDependencies();
   ForbiddenParametersMap getForbiddenParameters();

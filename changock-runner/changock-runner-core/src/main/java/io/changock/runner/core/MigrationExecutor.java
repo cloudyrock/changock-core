@@ -2,6 +2,8 @@ package io.changock.runner.core;
 
 import io.changock.driver.api.common.DependencyInjectionException;
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.driver.api.driver.TransactionStrategy;
+import io.changock.driver.api.driver.Transactionable;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.driver.api.lock.LockManager;
@@ -58,21 +60,40 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       lockManager.acquireLockDefault();
-      String executionId = generateExecutionId();
-      logger.info("Changock starting the data migration sequence id[{}]...", executionId);
-      for (ChangeLogItem changeLog : changeLogs) {
-        for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
-          try {
-            executeAndLogChangeSet(executionId, changeLog.getInstance(), changeSet);
-          } catch (Exception e) {
-            processExceptionOnChangeSetExecution(e, changeSet.getMethod(), changeSet.isFailFast());
-          }
-        }
-
-      }
+      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processAllChangeLogs(changeLogs));
     } finally {
       this.executionInProgress = false;
       logger.info("Changock has finished");
+    }
+  }
+
+  private void executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy strategy, Runnable operation) {
+    if (driver instanceof Transactionable && ((Transactionable)driver).getTransactionStrategy() == strategy) {
+      ((Transactionable)driver).executeInTransaction(operation);
+    } else {
+      operation.run();
+    }
+  }
+
+  private void processAllChangeLogs(List<ChangeLogItem> changeLogs) {
+    String executionId = generateExecutionId();
+    logger.info("Changock starting the data migration sequence id[{}]...", executionId);
+    for (ChangeLogItem changeLog : changeLogs) {
+      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, changeLog));
+    }
+  }
+
+  private void processSingleChangeLog(String executionId, ChangeLogItem changeLog) {
+    for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
+      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, changeLog, changeSet));
+    }
+  }
+
+  private void processSingleChangeSet(String executionId, ChangeLogItem changeLog, ChangeSetItem changeSet) {
+    try {
+      executeAndLogChangeSet(executionId, changeLog.getInstance(), changeSet);
+    } catch (Exception e) {
+      processExceptionOnChangeSetExecution(e, changeSet.getMethod(), changeSet.isFailFast());
     }
   }
 
