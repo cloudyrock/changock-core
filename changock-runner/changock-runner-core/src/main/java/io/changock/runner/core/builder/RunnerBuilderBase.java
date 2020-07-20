@@ -102,12 +102,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setTransactionEnabled(boolean transactionEnabled) {
-    this.transactionEnabled = transactionEnabled;
-    return returnInstance();
-  }
-
-  @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
     this.addChangeLogsScanPackages(config.getChangeLogsScanPackage());
     if(!config.isThrowExceptionIfCannotObtainLock()) {
@@ -119,7 +113,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .setStartSystemVersion(config.getStartSystemVersion())
         .setEndSystemVersion(config.getEndSystemVersion())
         .withMetadata(config.getMetadata())
-        .setTransactionEnabled(transactionEnabled)
         .setLegacyMigration(config.getLegacyMigration());
     return returnInstance();
   }

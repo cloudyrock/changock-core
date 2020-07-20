@@ -81,12 +81,4 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    * @return builder for fluent interface
    */
   BUILDER_TYPE withMetadata(Map<String, Object> metadata);
-
-  /**
-   * Indicates if the the Migration should be run within a transaction.
-   * <b>Optional. Default true</b>
-   * @param transactionEnabled If false, transactions are disabled.
-   * @return builder for fluent interface
-   */
-  BUILDER_TYPE setTransactionEnabled(boolean transactionEnabled);
 }
