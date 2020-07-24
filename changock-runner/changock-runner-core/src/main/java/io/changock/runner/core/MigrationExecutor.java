@@ -67,7 +67,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  private void executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy strategy, Runnable operation) {
+  protected void executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy strategy, Runnable operation) {
     if (driver instanceof Transactionable && ((Transactionable)driver).getTransactionStrategy() == strategy) {
       ((Transactionable)driver).executeInTransaction(operation);
     } else {
@@ -75,7 +75,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  private void processAllChangeLogs(List<ChangeLogItem> changeLogs) {
+  protected void processAllChangeLogs(List<ChangeLogItem> changeLogs) {
     String executionId = generateExecutionId();
     logger.info("Changock starting the data migration sequence id[{}]...", executionId);
     for (ChangeLogItem changeLog : changeLogs) {
@@ -83,13 +83,13 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  private void processSingleChangeLog(String executionId, ChangeLogItem changeLog) {
+  protected void processSingleChangeLog(String executionId, ChangeLogItem changeLog) {
     for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, changeLog, changeSet));
     }
   }
 
-  private void processSingleChangeSet(String executionId, ChangeLogItem changeLog, ChangeSetItem changeSet) {
+  protected void processSingleChangeSet(String executionId, ChangeLogItem changeLog, ChangeSetItem changeSet) {
     try {
       executeAndLogChangeSet(executionId, changeLog.getInstance(), changeSet);
     } catch (Exception e) {

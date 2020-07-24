@@ -38,6 +38,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
   protected LegacyMigration legacyMigration = null;
+  private boolean transactionEnabled = true;
 
 
   protected RunnerBuilderBase() {

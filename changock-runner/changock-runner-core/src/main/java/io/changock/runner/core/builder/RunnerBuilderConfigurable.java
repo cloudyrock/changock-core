@@ -81,5 +81,4 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    * @return builder for fluent interface
    */
   BUILDER_TYPE withMetadata(Map<String, Object> metadata);
-
 }
