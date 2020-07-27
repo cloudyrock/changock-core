@@ -140,7 +140,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     );
   }
 
-  private DependencyManager buildDependencyManager() {
+  protected DependencyManager buildDependencyManager() {
     DependencyManager dependencyManager = new DependencyManager();
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(

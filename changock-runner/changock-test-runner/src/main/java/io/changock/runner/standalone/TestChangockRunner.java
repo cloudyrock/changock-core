@@ -1,6 +1,5 @@
 package io.changock.runner.standalone;
 
-import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.ChangockBase;
@@ -10,9 +9,6 @@ import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
-import io.changock.runner.core.builder.configuration.LegacyMigration;
-
-import static io.changock.runner.core.builder.configuration.ChangockConstants.LEGACY_MIGRATION_NAME;
 
 public class TestChangockRunner extends ChangockBase {
 
@@ -46,15 +42,10 @@ public class TestChangockRunner extends ChangockBase {
     }
 
     protected MigrationExecutor buildExecutorForTest() {
-      if (legacyMigration != null) {
-        dependencyManager.addStandardDependency(
-            new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
-        );
-      }
       return new TestMigrationExecutor(
           executionId,
           driver,
-          dependencyManager,
+          buildDependencyManager(),
           new MigrationExecutorConfiguration(trackIgnored),
           metadata
       );
