@@ -1,29 +1,25 @@
-package io.changock.runner.spring.util;
+package io.changock.runner.core;
 
 import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.migration.api.exception.ChangockException;
-import io.changock.runner.core.DependencyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 
 import java.util.Optional;
 
 /**
  * DependencyManager with support for ApplicationContext from Spring
  */
-public class SpringDependencyManager extends DependencyManager implements Validable {
+public class DependencyManagerWithContext extends DependencyManager implements Validable {
 
-  private static final Logger logger = LoggerFactory.getLogger(SpringDependencyManager.class);
+  private static final Logger logger = LoggerFactory.getLogger(DependencyManagerWithContext.class);
 
-  private final ApplicationContext springContext;
+  private final DependencyContext context;
 
-  public SpringDependencyManager(ApplicationContext springContext) {
-    this.springContext = springContext;
+  public DependencyManagerWithContext(DependencyContext context) {
+    this.context = context;
   }
-
 
   @Override
   public Optional<Object> getDependency(Class type, boolean lockGuarded) {
@@ -36,11 +32,11 @@ public class SpringDependencyManager extends DependencyManager implements Valida
     Optional<Object> dependencyFromParent = super.getDependency(type, name, lockGuarded);
     if (dependencyFromParent.isPresent()) {
       return dependencyFromParent;
-    } else if (springContext != null) {
+    } else if (context != null) {
       try {
         boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
         Optional<Object> dependencyFromContext = Optional.of(
-            byName ? springContext.getBean(name) : springContext.getBean(type))  ;
+            byName ? context.getBean(name) : context.getBean(type));
         if (lockGuarded) {
           if (!type.isInterface()) {
             throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
@@ -49,7 +45,7 @@ public class SpringDependencyManager extends DependencyManager implements Valida
         } else {
           return dependencyFromContext;
         }
-      } catch (BeansException ex) {
+      } catch (DependencyNotFound ex) {
         logger.warn("Dependency not found: {}", ex.getMessage());
         return Optional.empty();
       }
@@ -60,7 +56,7 @@ public class SpringDependencyManager extends DependencyManager implements Valida
 
   @Override
   public void runValidation() throws ChangockException {
-    if (springContext == null) {
+    if (context == null) {
       throw new ChangockException("SpringContext not injected to SpringDependencyManager");
     }
   }

@@ -7,7 +7,7 @@ import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.MigrationExecutor;
 import io.changock.runner.core.MigrationExecutorConfiguration;
-import io.changock.runner.spring.util.SpringDependencyManager;
+import io.changock.runner.core.DependencyManagerWithContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +22,14 @@ import java.util.Map;
  * Child class from MigrationExecutor to force SpringDependencyManager
  */
 public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends MigrationExecutor<CHANGE_ENTRY> {
-  public SpringMigrationExecutor(ConnectionDriver driver, SpringDependencyManager dependencyManager, MigrationExecutorConfiguration config, Map<String, Object> metadata) {
+  public SpringMigrationExecutor(ConnectionDriver driver, DependencyManagerWithContext dependencyManager, MigrationExecutorConfiguration config, Map<String, Object> metadata) {
     super(driver, dependencyManager, config, metadata);
   }
 
   @Override
   public void initializationAndValidation() throws ChangockException {
     super.initializationAndValidation();
-    ((SpringDependencyManager) this.dependencyManager).runValidation();
+    ((DependencyManagerWithContext) this.dependencyManager).runValidation();
   }
 
   @Override
