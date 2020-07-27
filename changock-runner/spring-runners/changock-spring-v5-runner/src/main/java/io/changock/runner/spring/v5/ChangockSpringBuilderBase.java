@@ -53,19 +53,20 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
   protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
     return new SpringMigrationExecutor(
         driver,
-        buildDependencyManager(),
+        buildDependencyManagerWithContext(),
         new MigrationExecutorConfiguration(trackIgnored),
         metadata
     );
   }
 
-  private DependencyManagerWithContext buildDependencyManager() {
+  private DependencyManagerWithContext buildDependencyManagerWithContext() {
     DependencyManagerWithContext dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
       );
     }
+    dependencyManager.addDriverDependencies(dependencies);
     return dependencyManager;
   }
 

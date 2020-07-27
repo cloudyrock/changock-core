@@ -36,11 +36,6 @@ public class TestChangockRunner extends ChangockBase {
     private Builder() {
     }
 
-    public Builder addDependency(Class<?> type, Object instance) {
-      this.dependencyManager.addStandardDependency(new ChangeSetDependency(type, instance));
-      return returnInstance();
-    }
-
     public Builder setExecutionId(String executionId) {
       this.executionId = executionId;
       return this;

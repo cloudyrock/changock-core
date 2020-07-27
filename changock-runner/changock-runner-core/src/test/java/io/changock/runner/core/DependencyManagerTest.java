@@ -118,7 +118,7 @@ public class DependencyManagerTest {
     Assert.assertEquals("value2",
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
-            .addStandardDependency(dependencies)
+            .addStandardDependencies(dependencies)
             .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new)
         ).getValue());
@@ -132,7 +132,7 @@ public class DependencyManagerTest {
     Assert.assertEquals("value3",
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
-            .addStandardDependency(dependencies)
+            .addStandardDependencies(dependencies)
             .addStandardDependency(new ChangeSetDependency(new Child2("value3")))
             .getDependency(InterfaceDependency.class, true)
             .orElseThrow(RuntimeException::new)
