@@ -40,7 +40,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected AnnotationProcessor annotationProcessor;
   protected LegacyMigration legacyMigration = null;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
-  private boolean transactionEnabled = true;
 
 
   protected RunnerBuilderBase() {
