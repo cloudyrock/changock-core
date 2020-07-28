@@ -82,7 +82,7 @@ public class DependencyManager {
     return addDependency(connectorDependencies, dependency);
   }
 
-  public DependencyManager addStandardDependency(Collection<? extends ChangeSetDependency> dependencies) {
+  public DependencyManager addStandardDependencies(Collection<? extends ChangeSetDependency> dependencies) {
     dependencies.forEach(this::addStandardDependency);
     return this;
   }

@@ -7,7 +7,8 @@ import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
-import io.changock.runner.spring.util.SpringDependencyManager;
+import io.changock.runner.spring.util.SpringDependencyContext;
+import io.changock.runner.core.DependencyManagerWithContext;
 import io.changock.runner.spring.util.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
@@ -52,19 +53,20 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
   protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
     return new SpringMigrationExecutor(
         driver,
-        buildDependencyManager(),
+        buildDependencyManagerWithContext(),
         new MigrationExecutorConfiguration(trackIgnored),
         metadata
     );
   }
 
-  private SpringDependencyManager buildDependencyManager() {
-    SpringDependencyManager dependencyManager = new SpringDependencyManager(this.springContext);
+  private DependencyManagerWithContext buildDependencyManagerWithContext() {
+    DependencyManagerWithContext dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
       );
     }
+    dependencyManager.addDriverDependencies(dependencies);
     return dependencyManager;
   }
 

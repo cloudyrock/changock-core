@@ -1,5 +1,6 @@
 package io.changock.runner.core.builder;
 
+import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
 
@@ -81,4 +82,42 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    * @return builder for fluent interface
    */
   BUILDER_TYPE withMetadata(Map<String, Object> metadata);
+
+  /**
+   * Manually adds a dependency to be used in changeLogs, which can be retrieved by its own type
+   * @param instance dependency
+   * @return builder for fluent interface
+   */
+  default BUILDER_TYPE addDependency(Object instance) {
+    return addDependency(instance.getClass(), instance);
+  }
+
+  /**
+   * Manually adds a dependency to be used in changeLogs, which can be retrieved by a name
+   * @param name name for which it should be searched by
+   * @param instance dependency
+   * @return builder for fluent interface
+   */
+  default BUILDER_TYPE addDependency(String name, Object instance) {
+    return addDependency(name, instance.getClass(), instance);
+  }
+
+  /**
+   * Manually adds a dependency to be used in changeLogs, which can be retrieved by a type
+   * @param type type for which it should be searched by
+   * @param instance dependency
+   * @return builder for fluent interface
+   */
+  default BUILDER_TYPE addDependency(Class type, Object instance) {
+    return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
+  }
+
+  /**
+   * Manually adds a dependency to be used in changeLogs, which can be retrieved by a type or name
+   * @param name name for which it should be searched by
+   * @param type type for which it should be searched by
+   * @param instance dependency
+   * @return builder for fluent interface
+   */
+  BUILDER_TYPE addDependency(String name, Class type, Object instance);
 }

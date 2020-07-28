@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
   protected LegacyMigration legacyMigration = null;
-  private boolean transactionEnabled = true;
+  protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
 
 
   protected RunnerBuilderBase() {
@@ -102,6 +103,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
+  public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
+    dependencies.add(new ChangeSetDependency(name, type, instance));
+    return returnInstance();
+  }
+
+  @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
     this.addChangeLogsScanPackages(config.getChangeLogsScanPackage());
     if(!config.isThrowExceptionIfCannotObtainLock()) {
@@ -133,13 +140,14 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     );
   }
 
-  private DependencyManager buildDependencyManager() {
+  protected DependencyManager buildDependencyManager() {
     DependencyManager dependencyManager = new DependencyManager();
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
       );
     }
+    dependencyManager.addStandardDependencies(dependencies);
     return dependencyManager;
   }
 
