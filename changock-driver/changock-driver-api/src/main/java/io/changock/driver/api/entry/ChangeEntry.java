@@ -52,8 +52,7 @@ public class ChangeEntry {
         changeSet.getMethod().getDeclaringClass().getName(),
         changeSet.getMethod().getName(),
         executionMillis,
-        metadata) {
-    };
+        metadata);
   }
 
   public ChangeEntry(String executionId,
