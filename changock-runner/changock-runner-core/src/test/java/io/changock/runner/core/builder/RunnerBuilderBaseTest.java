@@ -97,12 +97,7 @@ public class RunnerBuilderBaseTest {
   }
 
   private ChangockConfiguration getConfig(Boolean throwEx, String... packages) {
-    ChangockConfiguration config = new ChangockConfiguration() {
-      @Override
-      public LegacyMigration getLegacyMigration() {
-        return new LegacyMigrationDummyImpl();
-      }
-    };
+    ChangockConfiguration config = new DummyChangockConfiguration();
     config.setChangeLogsScanPackage(Arrays.asList(packages));
     config.setEnabled(false);
     config.setStartSystemVersion(START_SYSTEM_VERSION);
@@ -118,6 +113,13 @@ public class RunnerBuilderBaseTest {
   }
 }
 
+class DummyChangockConfiguration extends ChangockConfiguration{
+
+  @Override
+  public LegacyMigration getLegacyMigration() {
+    return null;
+  }
+}
 
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, ChangockConfiguration> {
 
