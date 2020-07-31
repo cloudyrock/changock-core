@@ -90,6 +90,11 @@ public class ConnectionDriverBaseTest {
     }
 
     @Override
+    public Class getLegacyMigrationChangeLogClass(boolean runAlways) {
+      return null;
+    }
+
+    @Override
     public void runValidation() throws ChangockException {
 
     }

@@ -63,6 +63,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     this.legacyMigration = legacyMigration;
+    changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     return returnInstance();
   }
 
