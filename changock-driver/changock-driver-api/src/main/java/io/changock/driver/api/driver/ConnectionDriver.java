@@ -15,4 +15,5 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
   Set<ChangeSetDependency> getDependencies();
   ForbiddenParametersMap getForbiddenParameters();
+  Class getLegacyMigrationChangeLogClass(boolean runAlways);
 }

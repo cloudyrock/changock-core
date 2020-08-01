@@ -6,6 +6,7 @@ import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.lock.LockRepository;
+import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.exception.ChangockException;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -90,9 +91,16 @@ public class ConnectionDriverBaseTest {
     }
 
     @Override
+    public Class getLegacyMigrationChangeLogClass(boolean runAlways) {
+      return null;
+    }
+
+    @Override
     public void runValidation() throws ChangockException {
 
     }
   }
+
+
 
 }

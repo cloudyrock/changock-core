@@ -1,10 +1,12 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
 import io.changock.runner.core.util.LegacyMigrationDummyImpl;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
@@ -19,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RunnerBuilderBaseTest {
 
@@ -31,6 +34,11 @@ public class RunnerBuilderBaseTest {
   private static final Map<String, Object> METADATA = new HashMap<>();
   ConnectionDriver driver = mock(ConnectionDriver.class);
   Map<String, Object> metadata = new HashMap<>();
+
+  @Before
+  public void before() {
+    when(driver.getLegacyMigrationChangeLogClass(Mockito.anyBoolean())).thenReturn(DummyRunnerBuilder.LegacyMigrationChangeLogDummy.class);
+  }
 
   @Test
   public void shouldAssignAllTheParameters() {
@@ -97,12 +105,7 @@ public class RunnerBuilderBaseTest {
   }
 
   private ChangockConfiguration getConfig(Boolean throwEx, String... packages) {
-    ChangockConfiguration config = new ChangockConfiguration() {
-      @Override
-      public LegacyMigration getLegacyMigration() {
-        return new LegacyMigrationDummyImpl();
-      }
-    };
+    ChangockConfiguration config = new DummyChangockConfiguration();
     config.setChangeLogsScanPackage(Arrays.asList(packages));
     config.setEnabled(false);
     config.setStartSystemVersion(START_SYSTEM_VERSION);
@@ -118,6 +121,13 @@ public class RunnerBuilderBaseTest {
   }
 }
 
+class DummyChangockConfiguration extends ChangockConfiguration{
+
+  @Override
+  public LegacyMigration getLegacyMigration() {
+    return new LegacyMigrationDummyImpl();
+  }
+}
 
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, ChangockConfiguration> {
 
@@ -144,5 +154,11 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
 
   public ChangockBase build() {
     return null;
+  }
+
+
+  @ChangeLog
+  public static class LegacyMigrationChangeLogDummy {
+
   }
 }

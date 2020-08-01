@@ -12,6 +12,8 @@ public abstract class LegacyMigration {
 
   private LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
 
+  private boolean runAlways = false;
+
   public LegacyMigrationMappingFields getMappingFields() {
     return mappingFields;
   }
@@ -26,6 +28,14 @@ public abstract class LegacyMigration {
 
   public void setChangesCountExpectation(Integer changesCountExpectation) {
     this.changesCountExpectation = changesCountExpectation;
+  }
+
+  public boolean isRunAlways() {
+    return runAlways;
+  }
+
+  public void setRunAlways(boolean runAlways) {
+    this.runAlways = runAlways;
   }
 
   @Override
