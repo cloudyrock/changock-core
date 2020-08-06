@@ -30,6 +30,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
+  protected List<Class<?>> changeLogsScanClasses = new ArrayList<>();
   protected boolean trackIgnored = false;
   protected boolean throwExceptionIfCannotObtainLock = true;
   protected boolean enabled = true;
@@ -56,6 +57,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (changeLogsScanPackageList != null) {
       changeLogsScanPackage.addAll(changeLogsScanPackageList);
     }
+    return returnInstance();
+  }
+
+  @Override
+  public BUILDER_TYPE addChangeLogClass(Class clazz) {
+    changeLogsScanClasses.add(clazz);
     return returnInstance();
   }
 
@@ -157,6 +164,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected ChangeLogService buildChangeLogServiceDefault() {
     return new ChangeLogService(
         changeLogsScanPackage,
+        changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
         annotationProcessor// if null, it will take default ChangockAnnotationManager

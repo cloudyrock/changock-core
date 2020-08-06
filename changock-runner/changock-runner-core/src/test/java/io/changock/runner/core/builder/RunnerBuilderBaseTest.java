@@ -1,20 +1,30 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.migration.api.ChangeLogItem;
+import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.annotations.ChangeLog;
+import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.ChangockBase;
+import io.changock.runner.core.MigrationExecutor;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.runner.core.changelogs.test1.ChangeLogSuccess11;
+import io.changock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import io.changock.runner.core.util.LegacyMigrationDummyImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -71,6 +81,10 @@ public class RunnerBuilderBaseTest {
     verify(builder, new Times(0)).dontFailIfCannotAcquireLock();
   }
 
+
+  /**
+   * SCAN PACKAGES
+   */
   @Test
   public void shouldAddMultiplePackages_whenAddingList() {
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
@@ -83,10 +97,78 @@ public class RunnerBuilderBaseTest {
   }
 
   @Test
-  public void shouldAddMultiplePackages_whenAddingClass() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
-    builder.addChangeLogClass(this.getClass());
-    verify(builder, new Times(1)).addChangeLogsScanPackages(Collections.singletonList(this.getClass().getName()));
+  public void shouldAddSingleClass() {
+    MigrationExecutor executor = mock(MigrationExecutor.class);
+    new DummyRunnerBuilder()
+        .setDriver(driver)
+        .setExecutor(executor)
+        .addChangeLogClass(ChangeLogSuccess11.class)
+        .build()
+        .execute();
+
+
+    ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
+    verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
+
+    ChangeLogItem  changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
+    assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
+    assertEquals("1", changeLogItem.getOrder());
+
+    ChangeSetItem changeSetItem = changeLogItem.getChangeSetElements().get(0);
+    assertEquals("ChangeSet_121", changeSetItem.getId());
+    assertEquals("testUser11", changeSetItem.getAuthor());
+    assertEquals("1", changeSetItem.getOrder());
+    assertTrue(changeSetItem.isRunAlways());
+    assertEquals("1", changeSetItem.getSystemVersion());
+    assertEquals("method_111", changeSetItem.getMethod().getName());
+    assertTrue(changeSetItem.isFailFast());
+
+  }
+
+
+  @Test
+  public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
+    MigrationExecutor executor = mock(MigrationExecutor.class);
+    new DummyRunnerBuilder()
+        .setDriver(driver)
+        .setExecutor(executor)
+        .addChangeLogClass(ChangeLogSuccess11.class)
+        .addChangeLogClass(ChangeLogSuccess11.class)
+        .build()
+        .execute();
+
+    ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
+    verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
+
+    assertEquals(1, new ArrayList<>(new ArrayList<>(packageCaptors.getValue())).size());
+
+  }
+
+
+  @Test
+  public void shouldAddClassAndPackage() {
+    MigrationExecutor executor = mock(MigrationExecutor.class);
+    new DummyRunnerBuilder()
+        .setDriver(driver)
+        .setExecutor(executor)
+        .addChangeLogClass(ChangeLogSuccess11.class)
+        .addChangeLogsScanPackage(ChangeLogSuccess11.class.getPackage().getName())
+        .build()
+        .execute();
+
+    ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
+    verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
+
+    ArrayList<ChangeLogItem> changeLogItemsList = new ArrayList<>(new ArrayList<>(packageCaptors.getValue()));
+    assertEquals(2, changeLogItemsList.size());
+
+    ChangeLogItem  changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
+    assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
+    assertEquals("1", changeLogItem.getOrder());
+
+    ChangeLogItem  changeLogItem2 = new ArrayList<>(packageCaptors.getValue()).get(1);
+    assertEquals(ChangeLogSuccess12.class, changeLogItem2.getType());
+    assertEquals("2", changeLogItem2.getOrder());
   }
 
   @Test
@@ -132,11 +214,10 @@ class DummyChangockConfiguration extends ChangockConfiguration{
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, ChangockConfiguration> {
 
 
+  private MigrationExecutor executor;
+
   void validate() {
     assertEquals(driver, this.driver);
-//    assertEquals(lockAcquiredForMinutes, 1);
-//    assertEquals(maxWaitingForLockMinutes, 2);
-//    assertEquals(maxTries, 3);
     assertFalse(this.enabled);
     assertEquals("start", this.startSystemVersion);
     assertEquals("end", this.endSystemVersion);
@@ -151,14 +232,29 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
     return this;
   }
 
-
-  public ChangockBase build() {
-    return null;
+  public DummyRunnerBuilder setExecutor(MigrationExecutor executor) {
+    this.executor = executor;
+    return this;
   }
 
+  public ChangockBase build() {
+    return new DummyRunner(
+        executor != null ? executor : buildExecutorDefault(),
+        buildChangeLogServiceDefault(),
+        throwExceptionIfCannotObtainLock,
+        enabled);
+
+  }
 
   @ChangeLog
   public static class LegacyMigrationChangeLogDummy {
 
   }
 }
+
+class DummyRunner extends ChangockBase<MigrationExecutor> {
+  DummyRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
+    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+  }
+}
+

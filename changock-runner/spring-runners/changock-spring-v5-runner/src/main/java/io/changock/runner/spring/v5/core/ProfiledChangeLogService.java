@@ -16,7 +16,7 @@ public class ProfiledChangeLogService extends ChangeLogService {
     private static final Function<List<String>, Function<Method, Boolean>> methodFilter =
             activeProfiles -> annotated -> ProfileUtil.matchesActiveSpringProfile(activeProfiles, annotated);
 
-    public ProfiledChangeLogService(List<String> changeLogsBasePackageList, String startSystemVersionInclusive, String endSystemVersionInclusive, List<String> activeProfiles, AnnotationProcessor annotationProcessor) {
-        super(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, classFilter.apply(activeProfiles), methodFilter.apply(activeProfiles), annotationProcessor);
+    public ProfiledChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassesList, String startSystemVersionInclusive, String endSystemVersionInclusive, List<String> activeProfiles, AnnotationProcessor annotationProcessor) {
+        super(changeLogsBasePackageList, changeLogsBaseClassesList, startSystemVersionInclusive, endSystemVersionInclusive, classFilter.apply(activeProfiles), methodFilter.apply(activeProfiles), annotationProcessor);
     }
 }

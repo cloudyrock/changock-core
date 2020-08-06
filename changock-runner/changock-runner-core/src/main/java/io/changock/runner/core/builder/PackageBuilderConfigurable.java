@@ -39,8 +39,6 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
    * @param clazz package to be scanned
    * @return builder for fluent interface
    */
-  default BUILDER_TYPE addChangeLogClass(Class clazz) {
-    return addChangeLogsScanPackages(Collections.singletonList(clazz.getName()));
-  }
+  BUILDER_TYPE addChangeLogClass(Class clazz);
 
 }

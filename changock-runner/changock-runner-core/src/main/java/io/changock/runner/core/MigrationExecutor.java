@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.SortedSet;
 
 import static io.changock.driver.api.entry.ChangeState.EXECUTED;
 import static io.changock.driver.api.entry.ChangeState.FAILED;
@@ -56,7 +57,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     return this.executionInProgress;
   }
 
-  public void executeMigration(List<ChangeLogItem> changeLogs) {
+  public void executeMigration(SortedSet<ChangeLogItem> changeLogs) {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       lockManager.acquireLockDefault();
@@ -75,7 +76,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  protected void processAllChangeLogs(List<ChangeLogItem> changeLogs) {
+  protected void processAllChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
     String executionId = generateExecutionId();
     logger.info("Changock starting the data migration sequence id[{}]...", executionId);
     for (ChangeLogItem changeLog : changeLogs) {
