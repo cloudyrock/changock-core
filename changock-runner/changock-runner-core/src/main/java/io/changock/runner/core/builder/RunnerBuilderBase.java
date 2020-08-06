@@ -70,7 +70,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     this.legacyMigration = legacyMigration;
-    if(legacyMigration != null) {
+    if (legacyMigration != null) {
       changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     }
     return returnInstance();
@@ -120,8 +120,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
-    this.addChangeLogsScanPackages(config.getChangeLogsScanPackage());
-    if(!config.isThrowExceptionIfCannotObtainLock()) {
+    this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
+    if (!config.isThrowExceptionIfCannotObtainLock()) {
       this.dontFailIfCannotAcquireLock();
     }
     this
@@ -132,6 +132,16 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .withMetadata(config.getMetadata())
         .setLegacyMigration(config.getLegacyMigration());
     return returnInstance();
+  }
+
+  private void addScanItemsFromConfig(List<String> changeLogsScanPackage) {
+    for (String itemPath : changeLogsScanPackage) {
+      try {
+        addChangeLogClass(ClassLoader.getSystemClassLoader().loadClass(itemPath));
+      } catch (ClassNotFoundException e) {
+        addChangeLogsScanPackage(itemPath);
+      }
+    }
   }
 
   public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {

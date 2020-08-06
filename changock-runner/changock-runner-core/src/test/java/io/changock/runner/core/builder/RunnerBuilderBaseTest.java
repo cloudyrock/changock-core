@@ -175,7 +175,8 @@ public class RunnerBuilderBaseTest {
   public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
     builder.setConfig(getConfig(null, "package1", "package2"));
-    verify(builder, new Times(1)).addChangeLogsScanPackages(Arrays.asList("package1", "package2"));
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package1");
+    verify(builder, new Times(1)).addChangeLogsScanPackage("package2");
   }
 
   private void checkStandardBuilderCalls(DummyRunnerBuilder builder) {
