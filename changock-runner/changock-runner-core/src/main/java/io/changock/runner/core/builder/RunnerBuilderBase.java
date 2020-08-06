@@ -61,8 +61,10 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE addChangeLogClass(Class clazz) {
-    changeLogsScanClasses.add(clazz);
+  public BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes) {
+    if (classes != null) {
+      changeLogsScanClasses.addAll(classes);
+    }
     return returnInstance();
   }
 
