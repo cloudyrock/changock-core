@@ -80,6 +80,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
         : Collections.singletonList(DEFAULT_PROFILE);
     return new ProfiledChangeLogService(
         changeLogsScanPackage,
+        changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
         activeProfiles,

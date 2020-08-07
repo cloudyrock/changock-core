@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 /**
  * Child class from MigrationExecutor to force SpringDependencyManager
@@ -33,7 +34,7 @@ public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends M
   }
 
   @Override
-  public void executeMigration(List<ChangeLogItem> changeLogs) {
+  public void executeMigration(SortedSet<ChangeLogItem> changeLogs) {
     super.executeMigration(changeLogs);
   }
 

@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,23 +26,24 @@ public class ChangeLogServiceTest {
 
   @Test
   public void shouldSucceed_WhenValidate_ifParametersAreOk() {
-    new ChangeLogService(Collections.singletonList("fake.changelog.package"), "0", "999")
+    new ChangeLogService(Collections.singletonList("fake.changelog.package"), Collections.emptyList(), "0", "999")
         .runValidation();
   }
 
   @Test(expected = ChangockException.class)
   public void shouldFail_WhenValidate_ifParametersEmpty() {
-    new ChangeLogService(Collections.emptyList(), "0", "999")
+    new ChangeLogService(Collections.emptyList(), Collections.emptyList(), "0", "999")
         .runValidation();
   }
 
   @Test
   public void shouldOnlyRunAnnotatedClassesAndMethods() {
-    List<ChangeLogItem> changeLogItemList = new ChangeLogService(
+    List<ChangeLogItem> changeLogItemList = new ArrayList<>(new ChangeLogService(
         Collections.singletonList(ChangeLogNormal.class.getPackage().getName()),
+        Collections.emptyList(),
         "0",
         "9999"
-    ).fetchChangeLogs();
+    ).fetchChangeLogs());
 
     assertEquals(3, changeLogItemList.size());
 
@@ -62,11 +64,12 @@ public class ChangeLogServiceTest {
 
   @Test
   public void shouldReturnRightChangeLogItems_whenFetchingLogs_ifPackageIsRight() {
-    List<ChangeLogItem> changeLogItemList = new ChangeLogService(
+    List<ChangeLogItem> changeLogItemList = new ArrayList<>(new ChangeLogService(
         Collections.singletonList(ChangeLogSuccess11.class.getPackage().getName()),
+        Collections.emptyList(),
         "0",
         "9999"
-    ).fetchChangeLogs();
+    ).fetchChangeLogs());
 
     assertEquals(2, changeLogItemList.size());
     ChangeLogItem changeLogItem11 = changeLogItemList.get(0);
@@ -108,11 +111,12 @@ public class ChangeLogServiceTest {
   }
 
   private List<ChangeSetItem> getChangeSetItems(String startingVersion, String endingVersion) {
-    return new ChangeLogService(
+    return new ArrayList<>(new ChangeLogService(
         Collections.singletonList(ChangeLogSystemVersion.class.getPackage().getName()),
+        Collections.emptyList(),
         startingVersion,
         endingVersion)
-        .fetchChangeLogs()
+        .fetchChangeLogs())
         .get(0)
         .getChangeSetElements();
   }
@@ -120,11 +124,12 @@ public class ChangeLogServiceTest {
 
   @Test
   public void shouldReturnChangeSetsFromMultiplePackagesAndKeepsOrder() {
-    List<ChangeLogItem> changeLogItemList = new ChangeLogService(
+    List<ChangeLogItem> changeLogItemList = new ArrayList<>(new ChangeLogService(
         Arrays.asList(ChangeLogMultiPackage1.class.getPackage().getName(), ChangeLogMultiPackage2.class.getPackage().getName()),
+        Collections.emptyList(),
         "0",
         "9999"
-    ).fetchChangeLogs();
+    ).fetchChangeLogs());
 
     assertEquals(2, changeLogItemList.size());
     ChangeLogItem changeLogPackage = changeLogItemList.get(0);
@@ -149,11 +154,12 @@ public class ChangeLogServiceTest {
         ChangeLogMultiPackage1.class.getPackage().getName(),
         ChangeLogMultiPackage2.class.getPackage().getName(),
         ChangeLogNoPackage.class.getName());
-    List<ChangeLogItem> changeLogItemList = new ChangeLogService(
+    List<ChangeLogItem> changeLogItemList = new ArrayList<>(new ChangeLogService(
         changeLogsBasePackageList,
+        Collections.emptyList(),
         "0",
         "9999"
-    ).fetchChangeLogs();
+    ).fetchChangeLogs());
 
     //package 1
     assertEquals(3, changeLogItemList.size());

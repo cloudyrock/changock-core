@@ -11,18 +11,18 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
   BUILDER_TYPE setConfig(CONFIG config);
 
   /**
-   * Adds a list of packages(or classes by its full classname) to be scanned  to the list.
-   * Mongo allows multiple packages/classes
-   * <b>Requires at least one package/class</b>
+   * Adds a list of packages to be scanned  to the list. Mongock allows multiple classes and packages
+   * Mongo allows multiple packages
+   * <b>Requires at least one package</b>
    *
-   * @param changeLogsScanPackageList package to be scanned
+   * @param changeLogsScanPackageList list of packages to be scanned
    * @return builder for fluent interface
    */
   BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList);
 
   /**
-   * Adds a package(or class by its full classname) to be scanned  to the list. Mongo allows multiple packages/classes
-   * <b>Requires at least one package/class</b>
+   * Adds a package to be scanned  to the list. Mongock allows multiple classes and packages
+   * <b>Requires at least one package</b>
    *
    * @param changeLogsScanPackage package to be scanned
    * @return builder for fluent interface
@@ -33,14 +33,24 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
   }
 
   /**
-   * Adds a class to be scanned  to the list. Mongo allows multiple packages/classes
-   * <b>Requires at least one package/class</b>
+   * Adds a list of classes to be scanned  to the list. Mongock allows multiple classes and packages
+   * Mongo allows multiple packages
+   * <b>Requires at least one package</b>
+   *
+   * @param classes list of classes to be scanned
+   * @return builder for fluent interface
+   */
+  BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes);
+
+  /**
+   * Adds a class to be scanned  to the list. Mongock allows multiple classes and packages
+   * <b>Requires at least one package</b>
    *
    * @param clazz package to be scanned
    * @return builder for fluent interface
    */
-  default BUILDER_TYPE addChangeLogClass(Class clazz) {
-    return addChangeLogsScanPackages(Collections.singletonList(clazz.getName()));
+  default BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
+    return addChangeLogClasses(Collections.singletonList(clazz));
   }
 
 }

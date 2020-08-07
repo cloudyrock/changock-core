@@ -10,6 +10,8 @@ import org.mockito.internal.verification.Times;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -26,13 +28,13 @@ public class ChangockBaseTest {
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    List<ChangeLogItem> changeLogItemList = new ArrayList<>();
+    SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
     when(changeLogService.fetchChangeLogs()).thenReturn(changeLogItemList);
 
     new ChangockBase(executor, changeLogService, true, true)
         .execute();
 
-    ArgumentCaptor<List> changeLogCaptor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<SortedSet> changeLogCaptor = ArgumentCaptor.forClass(SortedSet.class);
     verify(executor).executeMigration(changeLogCaptor.capture());
 
     Assert.assertEquals(changeLogItemList, changeLogCaptor.getValue());

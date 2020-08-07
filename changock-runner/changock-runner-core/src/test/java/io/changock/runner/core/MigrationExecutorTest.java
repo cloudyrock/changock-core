@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -428,8 +429,8 @@ public class MigrationExecutorTest {
     LegacyMigrationChangeLog.latch.await(5, TimeUnit.SECONDS);
   }
 
-  private List<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
-    return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), "0", String.valueOf(Integer.MAX_VALUE))
+  private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
+    return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), Collections.emptyList(),  "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();
   }
 

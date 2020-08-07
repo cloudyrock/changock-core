@@ -30,6 +30,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
+  protected List<Class<?>> changeLogsScanClasses = new ArrayList<>();
   protected boolean trackIgnored = false;
   protected boolean throwExceptionIfCannotObtainLock = true;
   protected boolean enabled = true;
@@ -59,11 +60,19 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return returnInstance();
   }
 
+  @Override
+  public BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes) {
+    if (classes != null) {
+      changeLogsScanClasses.addAll(classes);
+    }
+    return returnInstance();
+  }
+
 
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     this.legacyMigration = legacyMigration;
-    if(legacyMigration != null) {
+    if (legacyMigration != null) {
       changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     }
     return returnInstance();
@@ -113,8 +122,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
-    this.addChangeLogsScanPackages(config.getChangeLogsScanPackage());
-    if(!config.isThrowExceptionIfCannotObtainLock()) {
+    this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
+    if (!config.isThrowExceptionIfCannotObtainLock()) {
       this.dontFailIfCannotAcquireLock();
     }
     this
@@ -125,6 +134,16 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .withMetadata(config.getMetadata())
         .setLegacyMigration(config.getLegacyMigration());
     return returnInstance();
+  }
+
+  private void addScanItemsFromConfig(List<String> changeLogsScanPackage) {
+    for (String itemPath : changeLogsScanPackage) {
+      try {
+        addChangeLogClass(ClassLoader.getSystemClassLoader().loadClass(itemPath));
+      } catch (ClassNotFoundException e) {
+        addChangeLogsScanPackage(itemPath);
+      }
+    }
   }
 
   public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
@@ -157,6 +176,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected ChangeLogService buildChangeLogServiceDefault() {
     return new ChangeLogService(
         changeLogsScanPackage,
+        changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
         annotationProcessor// if null, it will take default ChangockAnnotationManager

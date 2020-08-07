@@ -20,8 +20,11 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
@@ -35,6 +38,7 @@ import static java.util.Arrays.asList;
 public class ChangeLogService implements Validable {
 
   private final List<String> changeLogsBasePackageList;
+  private final List<Class<?>> changeLogsBaseClassList;
   private final ArtifactVersion startSystemVersion;
   private final ArtifactVersion endSystemVersion;
   private final Function<Class, Boolean> changeLogFilter;
@@ -46,27 +50,29 @@ public class ChangeLogService implements Validable {
    * @param startSystemVersionInclusive inclusive starting systemVersion
    * @param endSystemVersionInclusive   inclusive ending systemVersion
    */
-  public ChangeLogService(List<String> changeLogsBasePackageList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
-    this(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new ChangockAnnotationProcessor());
+  public ChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
+    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new ChangockAnnotationProcessor());
   }
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
    * @param startSystemVersionInclusive inclusive starting systemVersion
    * @param endSystemVersionInclusive   inclusive ending systemVersion
-   * @param annotationProcessor in case the annotations are different from the ones define in changock-api, its required a class to manage them
+   * @param annotationProcessor         in case the annotations are different from the ones define in changock-api, its required a class to manage them
    */
-  public ChangeLogService(List<String> changeLogsBasePackageList, String startSystemVersionInclusive, String endSystemVersionInclusive, AnnotationProcessor annotationProcessor) {
-    this(changeLogsBasePackageList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor);
+  public ChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive, AnnotationProcessor annotationProcessor) {
+    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor);
   }
 
   protected ChangeLogService(List<String> changeLogsBasePackageList,
+                             List<Class<?>> changeLogsBaseClassList,
                              String startSystemVersionInclusive,
                              String endSystemVersionInclusive,
                              Function<Class, Boolean> changeLogFilter,
                              Function<Method, Boolean> changeSetFilter,
                              AnnotationProcessor annotationProcessor) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
+    this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
     this.changeLogFilter = changeLogFilter;
@@ -76,27 +82,27 @@ public class ChangeLogService implements Validable {
 
   @Override
   public void runValidation() throws ChangockException {
-    if (CollectionUtils.isNullEmpty(changeLogsBasePackageList) || !changeLogsBasePackageList.stream().allMatch(StringUtils::hasText)) {
+    if (
+        (CollectionUtils.isNullEmpty(changeLogsBasePackageList) || !changeLogsBasePackageList.stream().allMatch(StringUtils::hasText))
+            && CollectionUtils.isNullEmpty(changeLogsBaseClassList)) {
       throw new ChangockException("Scan package for changeLogs is not set: use appropriate setter");
     }
   }
 
-  public List<ChangeLogItem> fetchChangeLogs() {
-    return fetchChangeLogClassesSorted()
+  public SortedSet<ChangeLogItem> fetchChangeLogs() {
+    return mergeChangeLogClassesAndPackages()
         .stream()
         .filter(changeLogClass -> this.changeLogFilter != null ? this.changeLogFilter.apply(changeLogClass) : true)
         .map(this::buildChangeLogObject)
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator(annotationManager))));
   }
 
-  private List<Class<?>> fetchChangeLogClassesSorted() {
-    List<Class<?>> changeLogs = annotationManager.getChangeLogAnnotationClass()
+  private Set<Class<?>> mergeChangeLogClassesAndPackages() {
+    Stream<Class<?>> packageStream = annotationManager.getChangeLogAnnotationClass()
         .stream()
         .map(changeLogClass -> new ArrayList<>(new Reflections(changeLogsBasePackageList).getTypesAnnotatedWith(changeLogClass)))// TODO remove dependency, do own method
-        .flatMap(Collection::stream)
-        .collect(Collectors.toList());
-    changeLogs.sort(new ChangeLogComparator(annotationManager));
-    return changeLogs;
+        .flatMap(Collection::stream);
+    return Stream.concat(packageStream, changeLogsBaseClassList.stream()).collect(Collectors.toSet());
   }
 
   private ChangeLogItem buildChangeLogObject(Class<?> type) {
@@ -156,21 +162,21 @@ public class ChangeLogService implements Validable {
   }
 
 
-  private static class ChangeLogComparator implements Comparator<Class<?>>, Serializable {
+  private static class ChangeLogComparator implements Comparator<ChangeLogItem>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
     private final AnnotationProcessor annotationManager;
 
     ChangeLogComparator(AnnotationProcessor annotationManager) {
-      this.annotationManager =  annotationManager;
+      this.annotationManager = annotationManager;
     }
 
 
     @Override
-    public int compare(Class<?> o1, Class<?> o2) {
-      String o1Order = annotationManager.getChangeLogOrder(o1);
-      String o2Order = annotationManager.getChangeLogOrder(o2);
-      String val1 = !(StringUtils.hasText(o1Order)) ? o1.getCanonicalName() : o1Order;
-      String val2 = !(StringUtils.hasText(o2Order)) ? o2.getCanonicalName() : o2Order;
+    public int compare(ChangeLogItem o1, ChangeLogItem o2) {
+      String o1Order = annotationManager.getChangeLogOrder(o1.getType());
+      String o2Order = annotationManager.getChangeLogOrder(o2.getType());
+      String val1 = !(StringUtils.hasText(o1Order)) ? o1.getType().getCanonicalName() : o1Order;
+      String val2 = !(StringUtils.hasText(o2Order)) ? o2.getType().getCanonicalName() : o2Order;
 
       if (val1 == null && val2 == null) {
         return 0;
@@ -189,7 +195,7 @@ public class ChangeLogService implements Validable {
     private final AnnotationProcessor annotationManager;
 
     ChangeSetComparator(AnnotationProcessor annotationManager) {
-      this.annotationManager =  annotationManager;
+      this.annotationManager = annotationManager;
     }
 
     @Override
