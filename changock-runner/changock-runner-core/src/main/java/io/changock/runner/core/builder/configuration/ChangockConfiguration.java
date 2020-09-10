@@ -146,6 +146,10 @@ public abstract class ChangockConfiguration {
     return transactionEnabled;
   }
 
+  public void setTransactionEnabled(boolean transactionEnabled) {
+    this.transactionEnabled = transactionEnabled;
+  }
+
   public abstract <T extends LegacyMigration> T getLegacyMigration();
 
 }
