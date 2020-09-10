@@ -25,6 +25,7 @@ import org.mockito.internal.verification.Times;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,11 +88,12 @@ public class SpringChangockInitializingBeanRunnerTest {
 
     // then
     ArgumentCaptor<String> changeSetIdCaptor = ArgumentCaptor.forClass(String.class);
-    verify(changeEntryService, new Times(3)).isAlreadyExecuted(changeSetIdCaptor.capture(), anyString());
+    int wantedNumberOfInvocations = 3 + 1; // 3 -> Number of changes, 1 -> Pre migration check
+    verify(changeEntryService, new Times(wantedNumberOfInvocations)).isAlreadyExecuted(changeSetIdCaptor.capture(), anyString());
 
     List<String> changeSetIdList = changeSetIdCaptor.getAllValues();
-    assertEquals(3, changeSetIdList.size());
-    assertTrue(changeSetIdList.contains("testWithProfileIncluded1"));
+    assertEquals(wantedNumberOfInvocations, changeSetIdList.size());
+    assertEquals(2, Collections.frequency(changeSetIdList, "testWithProfileIncluded1"));
     assertTrue(changeSetIdList.contains("testWithProfileIncluded2"));
     assertTrue(changeSetIdList.contains("testWithProfileIncluded1OrProfileINotIncluded"));
   }
