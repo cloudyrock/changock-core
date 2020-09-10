@@ -12,6 +12,7 @@ import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.utils.CollectionUtils;
 import io.changock.utils.LogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,10 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   public void executeMigration(SortedSet<ChangeLogItem> changeLogs) {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
+      if(!this.isThereAnyChangeSetItemToBeExecuted(changeLogs)) {
+        logger.info("Changock skipping the data migration. All change set items are already executed or there is no change set item.");
+        return;
+      }
       lockManager.acquireLockDefault();
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processAllChangeLogs(changeLogs));
     } finally {
@@ -102,11 +107,22 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
   }
 
+  protected boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<ChangeLogItem> changeLogs) {
+    return changeLogs.stream()
+        .map(ChangeLogItem::getChangeSetElements)
+        .flatMap(List::stream)
+        .anyMatch(changeSetItem -> changeSetItem.isRunAlways() || !this.isAlreadyExecuted(changeSetItem));
+  }
+
+  protected boolean isAlreadyExecuted(ChangeSetItem changeSetItem) {
+    return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
+  }
+
   protected void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     boolean alreadyExecuted = false;
     try {
-      if (!(alreadyExecuted = driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor()))
+      if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem))
           || changeSetItem.isRunAlways()) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);

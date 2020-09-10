@@ -18,8 +18,11 @@ import io.changock.runner.core.changelogs.executor.test3_with_nonFailFast.Execut
 import io.changock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
 import io.changock.runner.core.changelogs.executor.withInterfaceParameter.ChangeLogWithInterfaceParameter;
 import io.changock.runner.core.changelogs.legacymigration.LegacyMigrationChangeLog;
+import io.changock.runner.core.changelogs.skipmigration.alreadyexecuted.ChangeLogAlreadyExecuted;
+import io.changock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlreadyExecutedRunAlways;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
+import io.changock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
 import io.changock.runner.core.util.DummyDependencyClass;
 import io.changock.runner.core.util.InterfaceDependencyImpl;
 import io.changock.runner.core.util.InterfaceDependencyImplNoLockGarded;
@@ -41,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -427,6 +431,59 @@ public class MigrationExecutorTest {
 
     // then
     LegacyMigrationChangeLog.latch.await(5, TimeUnit.SECONDS);
+  }
+
+  @Test
+  public void shouldSkipMigration_whenChangeLogWithNoChangeSet() {
+    when(driver.getLockManager()).thenReturn(lockManager);
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogWithNoChangeSet.class));
+
+    //then
+    ArgumentCaptor<String> changeSetIdCaptor = ArgumentCaptor.forClass(String.class);
+    // Lock should not be acquired because there is no change set.
+    verify(lockManager, new Times(0)).acquireLockDefault();
+  }
+
+  @Test
+  public void shouldSkipMigration_whenAllChangeSetItemsAlreadyExecuted() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted2", "executor")).thenReturn(true);
+
+    when(driver.getLockManager()).thenReturn(lockManager);
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecuted.class));
+
+    //then
+    // Lock should not be acquired because all items are already executed.
+    verify(lockManager, new Times(0)).acquireLockDefault();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldNotSkipMigration_whenAllChangeSetItemsAlreadyExecuted_ifAtLeastOneChangeSetFlaggedAsRunAlways() {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecutedRunAlways", "executor")).thenReturn(true);
+
+    when(driver.getLockManager()).thenReturn(lockManager);
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
+
+    //then
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should be stored
+    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
   }
 
   private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
