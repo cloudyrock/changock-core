@@ -4,6 +4,7 @@ import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.ChangockBase;
 import io.changock.runner.core.DependencyManager;
+import io.changock.runner.core.EventPublisher;
 import io.changock.runner.core.MigrationExecutor;
 import io.changock.runner.core.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
@@ -20,8 +21,8 @@ public class TestChangockRunner extends ChangockBase {
     return new Builder();
   }
 
-  private TestChangockRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
-    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+  private TestChangockRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
   public static class Builder extends RunnerBuilderBase<Builder, ConnectionDriver, ChangockConfiguration> {
@@ -38,7 +39,7 @@ public class TestChangockRunner extends ChangockBase {
     }
 
     public TestChangockRunner build() {
-      return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled);
+      return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, new TestEventPublisher());
     }
 
     protected MigrationExecutor buildExecutorForTest() {
@@ -52,8 +53,8 @@ public class TestChangockRunner extends ChangockBase {
     }
 
 
-    public TestChangockRunner build(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
-      return new TestChangockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+    public TestChangockRunner build(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+      return new TestChangockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
     @Override

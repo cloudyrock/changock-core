@@ -31,7 +31,7 @@ public class ChangockBaseTest {
     SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
     when(changeLogService.fetchChangeLogs()).thenReturn(changeLogItemList);
 
-    new ChangockBase(executor, changeLogService, true, true)
+    new ChangockBase(executor, changeLogService, true, true, mock(EventPublisher.class))
         .execute();
 
     ArgumentCaptor<SortedSet> changeLogCaptor = ArgumentCaptor.forClass(SortedSet.class);
@@ -49,7 +49,7 @@ public class ChangockBaseTest {
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
 
-    new ChangockBase(executor, changeLogService, true, false).execute();
+    new ChangockBase(executor, changeLogService, true, false, mock(EventPublisher.class)).execute();
 
     verify(executor, new Times(0)).executeMigration(any());
 
@@ -63,7 +63,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).runValidation();
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    new ChangockBase(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -75,7 +75,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).fetchChangeLogs();
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    new ChangockBase(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -87,7 +87,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    new ChangockBase(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -116,7 +116,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).runValidation();
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -128,7 +128,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).fetchChangeLogs();
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -140,7 +140,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -152,7 +152,7 @@ public class ChangockBaseTest {
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    new ChangockBase(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -164,7 +164,7 @@ public class ChangockBaseTest {
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -178,7 +178,7 @@ public class ChangockBaseTest {
 
     doThrow(RuntimeException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 

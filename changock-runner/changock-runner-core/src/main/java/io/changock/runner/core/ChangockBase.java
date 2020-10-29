@@ -1,7 +1,7 @@
 package io.changock.runner.core;
 
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.driver.api.lock.LockCheckException;
+import io.changock.migration.api.exception.ChangockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,13 +12,18 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
   private final EXECUTOR executor;
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
+  private final EventPublisher eventPublisher;
 
-  protected ChangockBase(EXECUTOR executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
+  protected ChangockBase(EXECUTOR executor,
+                         ChangeLogService changeLogService,
+                         boolean throwExceptionIfCannotObtainLock,
+                         boolean enabled,
+                         EventPublisher eventPublisher) {
     this.executor = executor;
     this.chanLogService = changeLogService;
     this.enabled = enabled;
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
-
+    this.eventPublisher = eventPublisher;
   }
 
   /**
@@ -42,11 +47,14 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
       try {
         this.validate();
         executor.executeMigration(chanLogService.fetchChangeLogs());
+        eventPublisher.publishMigrationSuccessEvent();
 
       } catch (LockCheckException lockEx) {
+        ChangockException changockException = new ChangockException(lockEx);
+        eventPublisher.publishMigrationFailedEvent(changockException);
         if (throwExceptionIfCannotObtainLock) {
           logger.error("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
-          throw new ChangockException(lockEx);
+          throw changockException;
 
         } else {
           logger.warn("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
@@ -55,6 +63,7 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
       } catch (Exception ex) {
         ChangockException exWrapper = ChangockException.class.isAssignableFrom(ex.getClass()) ? (ChangockException) ex : new ChangockException(ex);
         logger.error("Error in changock process. ABORTED MIGRATION", exWrapper);
+        eventPublisher.publishMigrationFailedEvent(exWrapper);
         throw exWrapper;
 
       }

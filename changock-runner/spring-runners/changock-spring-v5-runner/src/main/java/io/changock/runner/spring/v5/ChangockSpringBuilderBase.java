@@ -9,6 +9,7 @@ import io.changock.runner.core.builder.RunnerBuilderBase;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
 import io.changock.runner.spring.util.SpringDependencyContext;
 import io.changock.runner.core.DependencyManagerWithContext;
+import io.changock.runner.spring.util.SpringEventPublisher;
 import io.changock.runner.spring.util.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
@@ -30,6 +32,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
 
   private static final String DEFAULT_PROFILE = "default";
   private ApplicationContext springContext;
+  private ApplicationEventPublisher applicationEventPublisher;
 
   /**
    * Set ApplicationContext from Spring
@@ -43,6 +46,10 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return returnInstance();
   }
 
+  public BUILDER_TYPE setSpringEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    this.applicationEventPublisher = applicationEventPublisher;
+    return returnInstance();
+  }
 
   @Override
   public BUILDER_TYPE setConfig(SPRING_CONFIG config) {
@@ -88,6 +95,10 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     );
   }
 
+  protected SpringEventPublisher buildSpringEventPublisher() {
+    return new SpringEventPublisher(applicationEventPublisher);
+  }
+
   @Override
   public void runValidation() {
     super.runValidation();
@@ -101,8 +112,9 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     protected ChangockSpringApplicationRunner(SpringMigrationExecutor executor,
                                               ProfiledChangeLogService changeLogService,
                                               boolean throwExceptionIfCannotObtainLock,
-                                              boolean enabled) {
-      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+                                              boolean enabled,
+                                              SpringEventPublisher eventPublisher) {
+      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
     @Override
@@ -116,8 +128,9 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     protected ChangockSpringInitializingBeanRunner(SpringMigrationExecutor executor,
                                                    ProfiledChangeLogService changeLogService,
                                                    boolean throwExceptionIfCannotObtainLock,
-                                                   boolean enabled) {
-      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+                                                   boolean enabled,
+                                                   SpringEventPublisher eventPublisher) {
+      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
     @Override
