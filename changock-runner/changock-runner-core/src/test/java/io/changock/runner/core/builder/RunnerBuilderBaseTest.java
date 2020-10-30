@@ -6,6 +6,7 @@ import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.runner.core.ChangeLogService;
 import io.changock.runner.core.ChangockBase;
+import io.changock.runner.core.EventPublisher;
 import io.changock.runner.core.MigrationExecutor;
 import io.changock.runner.core.builder.configuration.ChangockConfiguration;
 import io.changock.runner.core.builder.configuration.LegacyMigration;
@@ -243,7 +244,8 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
         executor != null ? executor : buildExecutorDefault(),
         buildChangeLogServiceDefault(),
         throwExceptionIfCannotObtainLock,
-        enabled);
+        enabled,
+        mock(EventPublisher.class));
 
   }
 
@@ -254,8 +256,8 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
 }
 
 class DummyRunner extends ChangockBase<MigrationExecutor> {
-  DummyRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled) {
-    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled);
+  DummyRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 }
 

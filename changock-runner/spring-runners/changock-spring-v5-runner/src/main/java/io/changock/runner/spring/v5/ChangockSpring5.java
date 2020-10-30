@@ -22,7 +22,8 @@ public final class ChangockSpring5 {
           buildExecutorWithEnvironmentDependency(),
           buildProfiledChangeLogService(),
           throwExceptionIfCannotObtainLock,
-          enabled);
+          enabled,
+          buildSpringEventPublisher());
     }
 
     public ChangockSpringInitializingBeanRunner buildInitializingBeanRunner() {
@@ -30,7 +31,8 @@ public final class ChangockSpring5 {
           buildExecutorWithEnvironmentDependency(),
           buildProfiledChangeLogService(),
           throwExceptionIfCannotObtainLock,
-          enabled);
+          enabled,
+          buildSpringEventPublisher());
     }
 
     @Override

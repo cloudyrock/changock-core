@@ -6,6 +6,7 @@ import io.changock.migration.api.exception.ChangockException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ChangockBaseTest {
 
 
   @Test
-  public void shouldExecuteSuccessfully() {
+  public void shouldExecuteAllTheChangeLogsAndPublishRightEvent_whenNoExceptionThrow() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
@@ -31,7 +32,8 @@ public class ChangockBaseTest {
     SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
     when(changeLogService.fetchChangeLogs()).thenReturn(changeLogItemList);
 
-    new ChangockBase(executor, changeLogService, true, true)
+    EventPublisher eventPublisher = mock(EventPublisher.class);
+    new ChangockBase(executor, changeLogService, true, true, eventPublisher)
         .execute();
 
     ArgumentCaptor<SortedSet> changeLogCaptor = ArgumentCaptor.forClass(SortedSet.class);
@@ -39,20 +41,24 @@ public class ChangockBaseTest {
 
     Assert.assertEquals(changeLogItemList, changeLogCaptor.getValue());
 
+    verify(eventPublisher, new Times(1)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
+
   }
 
-
   @Test
-  public void shouldNotExecute_IfDisabled() {
+  public void shouldNotBeExecutedNorEventPublished_IfDisabled() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
 
-    new ChangockBase(executor, changeLogService, true, false).execute();
+    EventPublisher eventPublisher = mock(EventPublisher.class);
+    new ChangockBase(executor, changeLogService, true, false, eventPublisher).execute();
 
     verify(executor, new Times(0)).executeMigration(any());
-
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
   }
 
   @Test(expected = ChangockException.class)
@@ -63,7 +69,10 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).runValidation();
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    EventPublisher eventPublisher = mock(EventPublisher.class);
+    new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }
 
@@ -75,7 +84,10 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).fetchChangeLogs();
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    EventPublisher eventPublisher = mock(EventPublisher.class);
+    new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }
 
@@ -87,7 +99,10 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    EventPublisher eventPublisher = mock(EventPublisher.class);
+    new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }
 
@@ -116,7 +131,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).runValidation();
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -128,7 +143,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(changeLogService).fetchChangeLogs();
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -140,7 +155,7 @@ public class ChangockBaseTest {
 
     doThrow(ChangockException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -152,7 +167,7 @@ public class ChangockBaseTest {
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, true, true).execute();
+    new ChangockBase(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -164,7 +179,7 @@ public class ChangockBaseTest {
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -178,8 +193,31 @@ public class ChangockBaseTest {
 
     doThrow(RuntimeException.class).when(executor).executeMigration(any());
 
-    new ChangockBase(executor, changeLogService, false, true).execute();
+    new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
+
+
+
+
+  //Events
+  @Test
+  public void shouldPublishSuccessEvent_whenMigrationSucceed() {
+
+    MigrationExecutor executor = mock(MigrationExecutor.class);
+    ChangeLogService changeLogService = mock(ChangeLogService.class);
+
+    SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
+    when(changeLogService.fetchChangeLogs()).thenReturn(changeLogItemList);
+
+    EventPublisher eventPublisher = mock(EventPublisher.class);
+
+    new ChangockBase(executor, changeLogService, true, true, eventPublisher)
+        .execute();
+
+
+  }
+
+
 
 }
