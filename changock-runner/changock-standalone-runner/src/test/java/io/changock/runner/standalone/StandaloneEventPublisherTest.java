@@ -43,24 +43,24 @@ class Listener {
   private boolean failCalled = false;
   private Exception exception;
 
-  public void successListener() {
+  void successListener() {
     successCalled = true;
   }
 
-  public void failListener(Exception ex) {
+  void failListener(Exception ex) {
     failCalled = true;
     this.exception = ex;
   }
 
-  public boolean isSuccessCalled() {
+  boolean isSuccessCalled() {
     return successCalled;
   }
 
-  public boolean isFailCalled() {
+  boolean isFailCalled() {
     return failCalled;
   }
 
-  public Exception getException() {
+  Exception getException() {
     return exception;
   }
 }
