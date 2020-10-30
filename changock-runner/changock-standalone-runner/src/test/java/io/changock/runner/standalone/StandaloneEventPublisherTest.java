@@ -24,6 +24,16 @@ public class StandaloneEventPublisherTest {
     Assert.assertEquals(ex, listener.getException());
   }
 
+  @Test
+  public void shouldNotBreak_WhenSuccess_ifListenerIsNull() {
+    new StandaloneEventPublisher(null,null).publishMigrationSuccessEvent();
+  }
+
+  @Test
+  public void shouldNotBreak_WhenFail_ifListenerIsNull() {
+    new StandaloneEventPublisher(null,null).publishMigrationFailedEvent(new Exception());
+  }
+
 }
 
 
