@@ -171,22 +171,26 @@ public class ChangeLogService implements Validable {
     }
 
 
-    @Override
-    public int compare(ChangeLogItem o1, ChangeLogItem o2) {
-      String o1Order = annotationManager.getChangeLogOrder(o1.getType());
-      String o2Order = annotationManager.getChangeLogOrder(o2.getType());
-      String val1 = !(StringUtils.hasText(o1Order)) ? o1.getType().getCanonicalName() : o1Order;
-      String val2 = !(StringUtils.hasText(o2Order)) ? o2.getType().getCanonicalName() : o2Order;
+    /**
+     * if order1 and order2 are not null and different, it return their compare. If one of then is null, the other is first.
+     * If both are null or equals, they are compare bby their names
 
-      if (val1 == null && val2 == null) {
-        return 0;
-      } else if (val1 == null) {
+     */
+    @Override
+    public int compare(ChangeLogItem changeLog1, ChangeLogItem changeLog2) {
+      String val1 = annotationManager.getChangeLogOrder(changeLog1.getType());
+      String val2 = annotationManager.getChangeLogOrder(changeLog2.getType());
+
+      if (val1 != null && val2 != null && !val1.equals(val2)) {
+        return val1.compareTo(val2);
+      } else if (val1 == null && val2 != null) {
         return -1;
-      } else if (val2 == null) {
+      } else if (val2 == null && val1 == null) {
         return 1;
+      } else {
+        return changeLog1.getType().getCanonicalName().compareTo(changeLog2.getType().getCanonicalName());
       }
 
-      return val1.compareTo(val2);
     }
   }
 
