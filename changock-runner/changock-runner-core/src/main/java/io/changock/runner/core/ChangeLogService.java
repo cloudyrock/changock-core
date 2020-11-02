@@ -181,11 +181,11 @@ public class ChangeLogService implements Validable {
       String val1 = annotationManager.getChangeLogOrder(changeLog1.getType());
       String val2 = annotationManager.getChangeLogOrder(changeLog2.getType());
 
-      if (val1 != null && val2 != null && !val1.equals(val2)) {
+      if (StringUtils.hasText(val1) && StringUtils.hasText(val2) && !val1.equals(val2)) {
         return val1.compareTo(val2);
-      } else if (val1 == null && val2 != null) {
+      } else if (StringUtils.hasText(val1) && !StringUtils.hasText(val2)) {
         return -1;
-      } else if (val2 == null && val1 == null) {
+      } else if (StringUtils.hasText(val2) && !StringUtils.hasText(val1)) {
         return 1;
       } else {
         return changeLog1.getType().getCanonicalName().compareTo(changeLog2.getType().getCanonicalName());
