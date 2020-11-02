@@ -4,16 +4,14 @@ package io.changock.runner.core;
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.core.changelogs.comparator.Comparator1ChangeLog;
+import io.changock.runner.core.changelogs.comparator.Comparator2ChangeLog;
 import io.changock.runner.core.changelogs.multipackage.ChangeLogNoPackage;
 import io.changock.runner.core.changelogs.multipackage.package1.ChangeLogMultiPackage1;
 import io.changock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPackage2;
 import io.changock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import io.changock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import io.changock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -21,6 +19,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ChangeLogServiceTest {
 
@@ -199,5 +200,22 @@ public class ChangeLogServiceTest {
     assertTrue(changeSetItem.isRunAlways());
     assertEquals(String.valueOf(number), changeSetItem.getSystemVersion());
   }
+
+
+  @Test
+  public void shouldReturnC() {
+    List<ChangeLogItem> changeLogItemList = new ArrayList<>(new ChangeLogService(
+        Arrays.asList(Comparator1ChangeLog.class.getPackage().getName()),
+        Collections.emptyList(),
+        "0",
+        "9999"
+    ).fetchChangeLogs());
+
+    assertEquals(2, changeLogItemList.size());
+    changeLogItemList.forEach(changeLogItem -> assertTrue(changeLogItem.getType() == Comparator1ChangeLog.class
+            || changeLogItem.getType() == Comparator2ChangeLog.class));
+
+  }
+
 
 }
