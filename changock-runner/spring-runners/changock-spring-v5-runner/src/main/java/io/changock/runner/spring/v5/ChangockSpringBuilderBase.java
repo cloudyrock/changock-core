@@ -130,37 +130,6 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     }
   }
 
-  public static class SpringApplicationRunner extends ChangockBase implements ApplicationRunner {
-
-    protected SpringApplicationRunner(SpringMigrationExecutor executor,
-                                      ProfiledChangeLogService changeLogService,
-                                      boolean throwExceptionIfCannotObtainLock,
-                                      boolean enabled,
-                                      SpringEventPublisher eventPublisher) {
-      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-    }
-
-    @Override
-    public void run(ApplicationArguments args) {
-      this.execute();
-    }
-  }
-
-  public static class SpringInitializingBean extends ChangockBase implements InitializingBean {
-
-    protected SpringInitializingBean(SpringMigrationExecutor executor,
-                                     ProfiledChangeLogService changeLogService,
-                                     boolean throwExceptionIfCannotObtainLock,
-                                     boolean enabled,
-                                     SpringEventPublisher eventPublisher) {
-      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-      execute();
-    }
-  }
 }
 
 
