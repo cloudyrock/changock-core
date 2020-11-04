@@ -30,9 +30,9 @@ import static io.changock.runner.core.builder.configuration.ChangockConstants.LE
 public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends ChangockSpringConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
 
-  private static final String DEFAULT_PROFILE = "default";
-  private ApplicationContext springContext;
-  private ApplicationEventPublisher applicationEventPublisher;
+  protected static final String DEFAULT_PROFILE = "default";
+  protected ApplicationContext springContext;
+  protected ApplicationEventPublisher applicationEventPublisher;
 
   /**
    * Set ApplicationContext from Spring
@@ -57,6 +57,29 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return returnInstance();
   }
 
+
+  public SpringApplicationRunner buildApplicationRunner() {
+    return new SpringApplicationRunner(
+        buildExecutorWithEnvironmentDependency(),
+        buildProfiledChangeLogService(),
+        throwExceptionIfCannotObtainLock,
+        enabled,
+        buildSpringEventPublisher());
+  }
+
+  public SpringInitializingBean buildInitializingBeanRunner() {
+    return new SpringInitializingBean(
+        buildExecutorWithEnvironmentDependency(),
+        buildProfiledChangeLogService(),
+        throwExceptionIfCannotObtainLock,
+        enabled,
+        buildSpringEventPublisher());
+  }
+
+
+  //Following methods are used to build the runners. All of them are protected in case they need to be overwritten by
+  //children classes
+
   protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
     return new SpringMigrationExecutor(
         driver,
@@ -66,7 +89,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     );
   }
 
-  private DependencyManagerWithContext buildDependencyManagerWithContext() {
+  protected DependencyManagerWithContext buildDependencyManagerWithContext() {
     DependencyManagerWithContext dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
@@ -107,13 +130,13 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     }
   }
 
-  public static class ChangockSpringApplicationRunner extends ChangockBase implements ApplicationRunner {
+  public static class SpringApplicationRunner extends ChangockBase implements ApplicationRunner {
 
-    protected ChangockSpringApplicationRunner(SpringMigrationExecutor executor,
-                                              ProfiledChangeLogService changeLogService,
-                                              boolean throwExceptionIfCannotObtainLock,
-                                              boolean enabled,
-                                              SpringEventPublisher eventPublisher) {
+    protected SpringApplicationRunner(SpringMigrationExecutor executor,
+                                      ProfiledChangeLogService changeLogService,
+                                      boolean throwExceptionIfCannotObtainLock,
+                                      boolean enabled,
+                                      SpringEventPublisher eventPublisher) {
       super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
@@ -123,13 +146,13 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     }
   }
 
-  public static class ChangockSpringInitializingBeanRunner extends ChangockBase implements InitializingBean {
+  public static class SpringInitializingBean extends ChangockBase implements InitializingBean {
 
-    protected ChangockSpringInitializingBeanRunner(SpringMigrationExecutor executor,
-                                                   ProfiledChangeLogService changeLogService,
-                                                   boolean throwExceptionIfCannotObtainLock,
-                                                   boolean enabled,
-                                                   SpringEventPublisher eventPublisher) {
+    protected SpringInitializingBean(SpringMigrationExecutor executor,
+                                     ProfiledChangeLogService changeLogService,
+                                     boolean throwExceptionIfCannotObtainLock,
+                                     boolean enabled,
+                                     SpringEventPublisher eventPublisher) {
       super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
