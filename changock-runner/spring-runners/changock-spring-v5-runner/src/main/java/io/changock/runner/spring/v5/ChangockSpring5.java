@@ -17,23 +17,6 @@ public final class ChangockSpring5 {
     private ChangockSpring5RunnerBuilder() {
     }
 
-    public ChangockSpringApplicationRunner buildApplicationRunner() {
-      return new ChangockSpringApplicationRunner(
-          buildExecutorWithEnvironmentDependency(),
-          buildProfiledChangeLogService(),
-          throwExceptionIfCannotObtainLock,
-          enabled,
-          buildSpringEventPublisher());
-    }
-
-    public ChangockSpringInitializingBeanRunner buildInitializingBeanRunner() {
-      return new ChangockSpringInitializingBeanRunner(
-          buildExecutorWithEnvironmentDependency(),
-          buildProfiledChangeLogService(),
-          throwExceptionIfCannotObtainLock,
-          enabled,
-          buildSpringEventPublisher());
-    }
 
     @Override
     protected ChangockSpring5RunnerBuilder returnInstance() {
