@@ -46,7 +46,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
     return returnInstance();
   }
 
-  public BUILDER_TYPE setSpringEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+  public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
     this.applicationEventPublisher = applicationEventPublisher;
     return returnInstance();
   }
