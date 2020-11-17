@@ -1,4 +1,4 @@
-package io.changock.runner.core;
+package io.changock.runner.core.dependency;
 
 
 import io.changock.driver.api.driver.ChangeSetDependency;

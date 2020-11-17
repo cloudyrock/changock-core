@@ -1,4 +1,4 @@
-package io.changock.runner.core;
+package io.changock.runner.core.executor;
 
 
 import io.changock.migration.api.ChangeLogItem;
