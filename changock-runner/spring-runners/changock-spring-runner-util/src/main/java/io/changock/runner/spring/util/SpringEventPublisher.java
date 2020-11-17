@@ -2,8 +2,8 @@ package io.changock.runner.spring.util;
 
 import io.changock.runner.core.event.EventPublisher;
 import io.changock.runner.core.event.MigrationResult;
-import io.changock.runner.spring.util.events.DbMigrationFailEvent;
-import io.changock.runner.spring.util.events.DbMigrationSuccessEvent;
+import io.changock.runner.spring.util.events.SpringMigrationFailureEvent;
+import io.changock.runner.spring.util.events.SpringMigrationSuccessEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class SpringEventPublisher implements EventPublisher {
@@ -17,14 +17,14 @@ public class SpringEventPublisher implements EventPublisher {
   @Override
   public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
     if (applicationEventPublisher != null) {
-      applicationEventPublisher.publishEvent(new DbMigrationSuccessEvent(this));
+      applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, migrationResult));
     }
   }
 
   @Override
   public void publishMigrationFailedEvent(Exception ex) {
     if (applicationEventPublisher != null) {
-      applicationEventPublisher.publishEvent(new DbMigrationFailEvent(this, ex));
+      applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, ex));
     }
   }
 }

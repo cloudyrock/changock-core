@@ -1,4 +1,4 @@
-package io.changock.runner.standalone;
+package io.changock.runner.standalone.event;
 
 import io.changock.runner.core.event.EventPublisher;
 import io.changock.runner.core.event.MigrationResult;
@@ -7,10 +7,11 @@ import java.util.function.Consumer;
 
 public class StandaloneEventPublisher implements EventPublisher {
 
-  private final Runnable migrationSuccessListener;
-  private final Consumer<Exception> migrationFailedListener;
+  private final Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
+  private final Consumer<StandaloneMigrationFailureEvent> migrationFailedListener;
 
-  public StandaloneEventPublisher(Runnable migrationSuccessListener, Consumer<Exception> migrationFailedListener) {
+  public StandaloneEventPublisher(Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener,
+                                  Consumer<StandaloneMigrationFailureEvent> migrationFailedListener) {
     this.migrationSuccessListener = migrationSuccessListener;
     this.migrationFailedListener = migrationFailedListener;
   }
@@ -18,14 +19,14 @@ public class StandaloneEventPublisher implements EventPublisher {
   @Override
   public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
     if(migrationSuccessListener != null) {
-      migrationSuccessListener.run();
+      migrationSuccessListener.accept(new StandaloneMigrationSuccessEvent(migrationResult));
     }
   }
 
   @Override
   public void publishMigrationFailedEvent(Exception ex) {
     if(migrationFailedListener != null) {
-      migrationFailedListener.accept(ex);
+      migrationFailedListener.accept(new StandaloneMigrationFailureEvent(ex));
     }
   }
 }

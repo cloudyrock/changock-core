@@ -1,6 +1,9 @@
 package io.changock.runner.standalone;
 
 import io.changock.runner.core.event.MigrationResult;
+import io.changock.runner.standalone.event.StandaloneMigrationFailureEvent;
+import io.changock.runner.standalone.event.StandaloneMigrationSuccessEvent;
+import io.changock.runner.standalone.event.StandaloneEventPublisher;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,13 +47,13 @@ class Listener {
   private boolean failCalled = false;
   private Exception exception;
 
-  void successListener() {
+  void successListener(StandaloneMigrationSuccessEvent successEvent) {
     successCalled = true;
   }
 
-  void failListener(Exception ex) {
+  void failListener(StandaloneMigrationFailureEvent failureEvent) {
     failCalled = true;
-    this.exception = ex;
+    this.exception = failureEvent.getException();
   }
 
   boolean isSuccessCalled() {

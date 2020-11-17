@@ -2,8 +2,8 @@ package io.changock.runner.spring.util;
 
 
 import io.changock.runner.core.event.MigrationResult;
-import io.changock.runner.spring.util.events.DbMigrationFailEvent;
-import io.changock.runner.spring.util.events.DbMigrationSuccessEvent;
+import io.changock.runner.spring.util.events.SpringMigrationFailureEvent;
+import io.changock.runner.spring.util.events.SpringMigrationSuccessEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,9 +20,9 @@ public class SpringEventPublisherTest {
     ApplicationEventPublisher applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
     new SpringEventPublisher(applicationEventPublisher).publishMigrationSuccessEvent(new MigrationResult());
 
-    ArgumentCaptor<DbMigrationSuccessEvent> eventCaptor = ArgumentCaptor.forClass(DbMigrationSuccessEvent.class);
+    ArgumentCaptor<SpringMigrationSuccessEvent> eventCaptor = ArgumentCaptor.forClass(SpringMigrationSuccessEvent.class);
     verify(applicationEventPublisher, new Times(1)).publishEvent(eventCaptor.capture());
-    Assert.assertTrue(eventCaptor.getValue() instanceof DbMigrationSuccessEvent);
+    Assert.assertTrue(eventCaptor.getValue() instanceof SpringMigrationSuccessEvent);
   }
 
   @Test
@@ -31,7 +31,7 @@ public class SpringEventPublisherTest {
     ApplicationEventPublisher applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
     new SpringEventPublisher(applicationEventPublisher).publishMigrationFailedEvent(ex);
 
-    ArgumentCaptor<DbMigrationFailEvent> eventCaptor = ArgumentCaptor.forClass(DbMigrationFailEvent.class);
+    ArgumentCaptor<SpringMigrationFailureEvent> eventCaptor = ArgumentCaptor.forClass(SpringMigrationFailureEvent.class);
     verify(applicationEventPublisher, new Times(1)).publishEvent(eventCaptor.capture());
     Assert.assertEquals(ex, eventCaptor.getValue().getException());
   }
