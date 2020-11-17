@@ -1,5 +1,6 @@
 package io.changock.runner.standalone;
 
+import io.changock.runner.core.event.MigrationResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,7 +9,7 @@ public class StandaloneEventPublisherTest {
   @Test
   public void shouldCallSuccessListener() {
     Listener listener = new Listener();
-    new StandaloneEventPublisher(listener::successListener,listener::failListener).publishMigrationSuccessEvent();
+    new StandaloneEventPublisher(listener::successListener,listener::failListener).publishMigrationSuccessEvent(new MigrationResult());
     Assert.assertTrue(listener.isSuccessCalled());
     Assert.assertFalse(listener.isFailCalled());
   }
@@ -26,7 +27,7 @@ public class StandaloneEventPublisherTest {
 
   @Test
   public void shouldNotBreak_WhenSuccess_ifListenerIsNull() {
-    new StandaloneEventPublisher(null,null).publishMigrationSuccessEvent();
+    new StandaloneEventPublisher(null,null).publishMigrationSuccessEvent(new MigrationResult());
   }
 
   @Test

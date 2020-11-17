@@ -12,6 +12,7 @@ import io.changock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPa
 import io.changock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import io.changock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import io.changock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
+import io.changock.runner.core.executor.ChangeLogService;
 import org.junit.Test;
 
 import java.util.ArrayList;

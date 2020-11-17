@@ -1,6 +1,6 @@
 package io.changock.runner.spring.v5;
 
-import io.changock.runner.core.ChangockBase;
+import io.changock.runner.core.executor.ChangockBase;
 import io.changock.runner.spring.util.SpringEventPublisher;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;

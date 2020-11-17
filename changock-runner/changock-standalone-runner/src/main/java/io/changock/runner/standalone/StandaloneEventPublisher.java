@@ -1,6 +1,7 @@
 package io.changock.runner.standalone;
 
-import io.changock.runner.core.EventPublisher;
+import io.changock.runner.core.event.EventPublisher;
+import io.changock.runner.core.event.MigrationResult;
 
 import java.util.function.Consumer;
 
@@ -15,7 +16,7 @@ public class StandaloneEventPublisher implements EventPublisher {
   }
 
   @Override
-  public void publishMigrationSuccessEvent() {
+  public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
     if(migrationSuccessListener != null) {
       migrationSuccessListener.run();
     }

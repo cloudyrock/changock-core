@@ -1,4 +1,4 @@
-package io.changock.runner.core;
+package io.changock.runner.core.executor;
 
 
 import io.changock.driver.api.driver.ChangeSetDependency;
@@ -23,6 +23,10 @@ import io.changock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlrea
 import io.changock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.changock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
 import io.changock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
+import io.changock.runner.core.executor.ChangeLogService;
+import io.changock.runner.core.executor.DependencyManager;
+import io.changock.runner.core.executor.MigrationExecutor;
+import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 import io.changock.runner.core.util.DummyDependencyClass;
 import io.changock.runner.core.util.InterfaceDependencyImpl;
 import io.changock.runner.core.util.InterfaceDependencyImplNoLockGarded;
@@ -44,7 +48,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
