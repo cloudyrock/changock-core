@@ -48,8 +48,9 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
     } else {
       try {
         this.validate();
-        executor.executeMigration(chanLogService.fetchChangeLogs());
+        eventPublisher.publishMigrationStarted();
         //todo create the migration result
+        executor.executeMigration(chanLogService.fetchChangeLogs());
         eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
 
       } catch (LockCheckException lockEx) {

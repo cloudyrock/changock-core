@@ -17,6 +17,11 @@ public class StandaloneEventPublisher implements EventPublisher {
   }
 
   @Override
+  public void publishMigrationStarted() {
+
+  }
+
+  @Override
   public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
     if(migrationSuccessListener != null) {
       migrationSuccessListener.accept(new StandaloneMigrationSuccessEvent(migrationResult));
