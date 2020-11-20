@@ -12,10 +12,17 @@ import java.util.function.Consumer;
 public abstract class StandaloneBuilder<BUILDER extends StandaloneBuilder, DRIVER extends ConnectionDriver>
     extends RunnerBuilderBase<BUILDER, DRIVER, ChangockConfiguration> {
 
+  protected Runnable migrationStartedListener;
   protected Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
-  protected Consumer<StandaloneMigrationFailureEvent> migrationFailedListener;
+  protected Consumer<StandaloneMigrationFailureEvent> migrationFailureListener;
 
   protected StandaloneBuilder() {
+  }
+
+
+  public BUILDER setMigrationStartedListener(Runnable migrationStartedListener) {
+    this.migrationStartedListener = migrationStartedListener;
+    return returnInstance();
   }
 
   public BUILDER setMigrationSuccessListener(Consumer<StandaloneMigrationSuccessEvent> listener) {
@@ -23,13 +30,13 @@ public abstract class StandaloneBuilder<BUILDER extends StandaloneBuilder, DRIVE
     return returnInstance();
   }
 
-  public BUILDER setMigrationFailListener(Consumer<StandaloneMigrationFailureEvent> listener) {
-    this.migrationFailedListener = listener;
+  public BUILDER setMigrationFailureListener(Consumer<StandaloneMigrationFailureEvent> migrationFailureListener) {
+    this.migrationFailureListener = migrationFailureListener;
     return returnInstance();
   }
 
   protected StandaloneEventPublisher getEventPublisher() {
-    return new StandaloneEventPublisher(migrationSuccessListener, migrationFailedListener);
+    return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
   }
 
 

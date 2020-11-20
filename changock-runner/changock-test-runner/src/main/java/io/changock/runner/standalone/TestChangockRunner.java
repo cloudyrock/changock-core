@@ -39,7 +39,7 @@ public class TestChangockRunner extends ChangockBase {
     }
 
     public TestChangockRunner build() {
-      return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, new TestEventPublisher());
+      return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, new DummyEventPublisher());
     }
 
     protected MigrationExecutor buildExecutorForTest() {
