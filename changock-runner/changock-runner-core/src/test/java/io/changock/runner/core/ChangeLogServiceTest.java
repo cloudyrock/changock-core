@@ -12,6 +12,7 @@ import io.changock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPa
 import io.changock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import io.changock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import io.changock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
+import io.changock.runner.core.executor.ChangeLogService;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -166,26 +167,27 @@ public class ChangeLogServiceTest {
     assertEquals(3, changeLogItemList.size());
     ChangeLogItem changeLogPackage = changeLogItemList.get(0);
     assertEquals(1, changeLogPackage.getChangeSetElements().size());
-    ChangeSetItem changeSet = changeLogPackage.getChangeSetElements().get(0);
-    assertEquals("changeset_package1", changeSet.getId());
-    assertEquals("changeSetPackage1", changeSet.getMethod().getName());
+    ChangeSetItem changeSet1 = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals("changeset_package1", changeSet1.getId());
+    assertEquals("changeSetPackage1", changeSet1.getMethod().getName());
 
     //isolated class
     changeLogPackage = changeLogItemList.get(1);
     assertEquals(2, changeLogPackage.getChangeSetElements().size());
-    changeSet = changeLogPackage.getChangeSetElements().get(0);
-    assertEquals("no_package", changeSet.getId());
-    assertEquals("noPackage", changeSet.getMethod().getName());
-    changeSet = changeLogPackage.getChangeSetElements().get(1);
-    assertEquals("no_package_2", changeSet.getId());
-    assertEquals("noPackage2", changeSet.getMethod().getName());
+    ChangeSetItem changeSet2 = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals("no_package", changeSet2.getId());
+    assertEquals("noPackage", changeSet2.getMethod().getName());
+
+    ChangeSetItem changeSet3 = changeLogPackage.getChangeSetElements().get(1);
+    assertEquals("no_package_2", changeSet3.getId());
+    assertEquals("noPackage2", changeSet3.getMethod().getName());
 
     //package 2
     changeLogPackage = changeLogItemList.get(2);
     assertEquals(1, changeLogPackage.getChangeSetElements().size());
-    changeSet = changeLogPackage.getChangeSetElements().get(0);
-    assertEquals("changeset_package2", changeSet.getId());
-    assertEquals("changeSetPackage2", changeSet.getMethod().getName());
+    ChangeSetItem changeSet4 = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals("changeset_package2", changeSet4.getId());
+    assertEquals("changeSetPackage2", changeSet4.getMethod().getName());
 
   }
 

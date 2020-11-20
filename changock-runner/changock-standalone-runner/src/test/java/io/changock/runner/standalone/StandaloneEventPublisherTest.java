@@ -1,14 +1,28 @@
 package io.changock.runner.standalone;
 
+import io.changock.runner.core.event.MigrationResult;
+import io.changock.runner.standalone.event.StandaloneMigrationFailureEvent;
+import io.changock.runner.standalone.event.StandaloneMigrationSuccessEvent;
+import io.changock.runner.standalone.event.StandaloneEventPublisher;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class StandaloneEventPublisherTest {
 
   @Test
+  public void shouldCallStartedListener() {
+    Listener listener = new Listener();
+    new StandaloneEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationStarted();
+    Assert.assertTrue(listener.isStartedCalled());
+    Assert.assertFalse(listener.isSuccessCalled());
+    Assert.assertFalse(listener.isFailCalled());
+  }
+
+  @Test
   public void shouldCallSuccessListener() {
     Listener listener = new Listener();
-    new StandaloneEventPublisher(listener::successListener,listener::failListener).publishMigrationSuccessEvent();
+    new StandaloneEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationSuccessEvent(new MigrationResult());
+    Assert.assertFalse(listener.isStartedCalled());
     Assert.assertTrue(listener.isSuccessCalled());
     Assert.assertFalse(listener.isFailCalled());
   }
@@ -18,7 +32,8 @@ public class StandaloneEventPublisherTest {
   public void shouldCallFailListener() {
     Listener listener = new Listener();
     RuntimeException ex = new RuntimeException();
-    new StandaloneEventPublisher(listener::successListener,listener::failListener).publishMigrationFailedEvent(ex);
+    new StandaloneEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationFailedEvent(ex);
+    Assert.assertFalse(listener.isStartedCalled());
     Assert.assertFalse(listener.isSuccessCalled());
     Assert.assertTrue(listener.isFailCalled());
     Assert.assertEquals(ex, listener.getException());
@@ -26,12 +41,12 @@ public class StandaloneEventPublisherTest {
 
   @Test
   public void shouldNotBreak_WhenSuccess_ifListenerIsNull() {
-    new StandaloneEventPublisher(null,null).publishMigrationSuccessEvent();
+    new StandaloneEventPublisher(null, null,null).publishMigrationSuccessEvent(new MigrationResult());
   }
 
   @Test
   public void shouldNotBreak_WhenFail_ifListenerIsNull() {
-    new StandaloneEventPublisher(null,null).publishMigrationFailedEvent(new Exception());
+    new StandaloneEventPublisher(null, null,null).publishMigrationFailedEvent(new Exception());
   }
 
 }
@@ -39,17 +54,26 @@ public class StandaloneEventPublisherTest {
 
 class Listener {
 
+  private boolean startedCalled = false;
   private boolean successCalled = false;
   private boolean failCalled = false;
   private Exception exception;
 
-  void successListener() {
+  void startedListener(){
+    startedCalled = true;
+  }
+
+  void successListener(StandaloneMigrationSuccessEvent successEvent) {
     successCalled = true;
   }
 
-  void failListener(Exception ex) {
+  void failListener(StandaloneMigrationFailureEvent failureEvent) {
     failCalled = true;
-    this.exception = ex;
+    this.exception = failureEvent.getException();
+  }
+
+  public boolean isStartedCalled() {
+    return startedCalled;
   }
 
   boolean isSuccessCalled() {
@@ -63,4 +87,6 @@ class Listener {
   Exception getException() {
     return exception;
   }
+
+
 }

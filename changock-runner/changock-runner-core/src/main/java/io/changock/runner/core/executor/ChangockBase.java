@@ -1,7 +1,9 @@
-package io.changock.runner.core;
+package io.changock.runner.core.executor;
 
 import io.changock.driver.api.lock.LockCheckException;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.core.event.EventPublisher;
+import io.changock.runner.core.event.MigrationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +48,10 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
     } else {
       try {
         this.validate();
+        eventPublisher.publishMigrationStarted();
+        //todo create the migration result
         executor.executeMigration(chanLogService.fetchChangeLogs());
-        eventPublisher.publishMigrationSuccessEvent();
+        eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
 
       } catch (LockCheckException lockEx) {
         ChangockException changockException = new ChangockException(lockEx);

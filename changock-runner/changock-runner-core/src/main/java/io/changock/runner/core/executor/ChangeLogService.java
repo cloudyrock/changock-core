@@ -1,4 +1,4 @@
-package io.changock.runner.core;
+package io.changock.runner.core.executor;
 
 import io.changock.driver.api.common.Validable;
 import io.changock.migration.api.AnnotationProcessor;
