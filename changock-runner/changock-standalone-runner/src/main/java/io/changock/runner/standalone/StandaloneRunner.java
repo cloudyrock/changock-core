@@ -1,9 +1,9 @@
 package io.changock.runner.standalone;
 
-import io.changock.runner.core.ChangeLogService;
-import io.changock.runner.core.ChangockBase;
-import io.changock.runner.core.EventPublisher;
-import io.changock.runner.core.MigrationExecutor;
+import io.changock.runner.core.executor.ChangeLogService;
+import io.changock.runner.core.executor.ChangockBase;
+import io.changock.runner.core.event.EventPublisher;
+import io.changock.runner.core.executor.MigrationExecutor;
 
 public class StandaloneRunner extends ChangockBase {
 

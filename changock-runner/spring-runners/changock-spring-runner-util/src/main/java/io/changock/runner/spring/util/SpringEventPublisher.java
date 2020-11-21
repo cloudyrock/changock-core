@@ -1,8 +1,10 @@
 package io.changock.runner.spring.util;
 
-import io.changock.runner.core.EventPublisher;
-import io.changock.runner.spring.util.events.DbMigrationFailEvent;
-import io.changock.runner.spring.util.events.DbMigrationSuccessEvent;
+import io.changock.runner.core.event.EventPublisher;
+import io.changock.runner.core.event.MigrationResult;
+import io.changock.runner.spring.util.events.SpringMigrationFailureEvent;
+import io.changock.runner.spring.util.events.SpringMigrationStartedEvent;
+import io.changock.runner.spring.util.events.SpringMigrationSuccessEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class SpringEventPublisher implements EventPublisher {
@@ -14,16 +16,24 @@ public class SpringEventPublisher implements EventPublisher {
   }
 
   @Override
-  public void publishMigrationSuccessEvent() {
-    if (applicationEventPublisher != null) {
-      applicationEventPublisher.publishEvent(new DbMigrationSuccessEvent(this));
-    }
+  public void publishMigrationStarted() {
+    runIfPublisherNotNull(() -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)));
+
+  }
+
+  @Override
+  public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
+    runIfPublisherNotNull(() -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, migrationResult)));
   }
 
   @Override
   public void publishMigrationFailedEvent(Exception ex) {
+    runIfPublisherNotNull(() -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, ex)));
+  }
+
+  private void runIfPublisherNotNull(Runnable op) {
     if (applicationEventPublisher != null) {
-      applicationEventPublisher.publishEvent(new DbMigrationFailEvent(this, ex));
+      op.run();
     }
   }
 }

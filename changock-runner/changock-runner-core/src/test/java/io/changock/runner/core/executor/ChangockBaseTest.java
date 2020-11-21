@@ -1,16 +1,18 @@
-package io.changock.runner.core;
+package io.changock.runner.core.executor;
 
 import io.changock.migration.api.ChangeLogItem;
 import io.changock.driver.api.lock.LockCheckException;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.core.event.EventPublisher;
+import io.changock.runner.core.event.MigrationResult;
+import io.changock.runner.core.executor.ChangeLogService;
+import io.changock.runner.core.executor.ChangockBase;
+import io.changock.runner.core.executor.MigrationExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -41,7 +43,7 @@ public class ChangockBaseTest {
 
     Assert.assertEquals(changeLogItemList, changeLogCaptor.getValue());
 
-    verify(eventPublisher, new Times(1)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(1)).publishMigrationSuccessEvent(any(MigrationResult.class));
     verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
 
   }
@@ -57,7 +59,7 @@ public class ChangockBaseTest {
     new ChangockBase(executor, changeLogService, true, false, eventPublisher).execute();
 
     verify(executor, new Times(0)).executeMigration(any());
-    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(new MigrationResult());
     verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
   }
 
@@ -71,7 +73,7 @@ public class ChangockBaseTest {
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
-    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(new MigrationResult());
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }
@@ -86,7 +88,7 @@ public class ChangockBaseTest {
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
-    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(new MigrationResult());
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }
@@ -101,7 +103,7 @@ public class ChangockBaseTest {
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
-    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent();
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(new MigrationResult());
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }

@@ -1,7 +1,7 @@
 package io.changock.runner.spring.util;
 
-import io.changock.runner.core.DependencyContext;
-import io.changock.runner.core.DependencyNotFound;
+import io.changock.runner.core.executor.DependencyContext;
+import io.changock.runner.core.executor.DependencyNotFound;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 

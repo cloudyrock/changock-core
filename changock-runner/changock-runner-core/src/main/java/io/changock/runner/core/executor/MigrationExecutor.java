@@ -1,4 +1,4 @@
-package io.changock.runner.core;
+package io.changock.runner.core.executor;
 
 import io.changock.driver.api.common.DependencyInjectionException;
 import io.changock.driver.api.driver.ConnectionDriver;
@@ -12,7 +12,6 @@ import io.changock.migration.api.ChangeLogItem;
 import io.changock.migration.api.ChangeSetItem;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.exception.ChangockException;
-import io.changock.utils.CollectionUtils;
 import io.changock.utils.LogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

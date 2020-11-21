@@ -2,7 +2,7 @@ package io.changock.runner.spring.util.events;
 
 import org.springframework.context.ApplicationEvent;
 
-public class DbMigrationFailEvent extends ApplicationEvent {
+public class SpringMigrationFailureEvent extends ApplicationEvent {
   private final Exception exception;
 
   /**
@@ -11,7 +11,7 @@ public class DbMigrationFailEvent extends ApplicationEvent {
    * @param source the object on which the event initially occurred or with
    *               which the event is associated (never {@code null})
    */
-  public DbMigrationFailEvent(Object source, Exception ex) {
+  public SpringMigrationFailureEvent(Object source, Exception ex) {
     super(source);
     this.exception = ex;
   }
@@ -22,7 +22,7 @@ public class DbMigrationFailEvent extends ApplicationEvent {
 
   @Override
   public String toString() {
-    return "MongockMigrationFailEvent{" +
+    return "SpringMigrationFailureEvent{" +
         "exception=" + exception +
         "} " + super.toString();
   }

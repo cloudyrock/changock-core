@@ -1,9 +1,9 @@
 package io.changock.runner.standalone;
 
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.runner.core.DependencyManager;
-import io.changock.runner.core.MigrationExecutor;
-import io.changock.runner.core.MigrationExecutorConfiguration;
+import io.changock.runner.core.executor.DependencyManager;
+import io.changock.runner.core.executor.MigrationExecutor;
+import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Map;

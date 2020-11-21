@@ -1,7 +1,7 @@
 package io.changock.runner.spring.v5.core;
 
 import io.changock.migration.api.AnnotationProcessor;
-import io.changock.runner.core.ChangeLogService;
+import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.spring.util.ProfileUtil;
 
 import java.lang.reflect.Method;
