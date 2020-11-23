@@ -98,7 +98,10 @@ public class ChangeLogService implements Validable {
   }
 
   private Set<Class<?>> mergeChangeLogClassesAndPackages() {
-    Stream<Class<?>> packageStream = annotationManager.getChangeLogAnnotationClass()
+    //the following check is needed because reflection library will bring the entire classpath in case the changeLogsBasePackageList is empty
+    Stream<Class<?>> packageStream = changeLogsBasePackageList == null || changeLogsBasePackageList.isEmpty()
+        ? Stream.empty()
+        : annotationManager.getChangeLogAnnotationClass()
         .stream()
         .map(changeLogClass -> new ArrayList<>(new Reflections(changeLogsBasePackageList).getTypesAnnotatedWith(changeLogClass)))// TODO remove dependency, do own method
         .flatMap(Collection::stream);
@@ -174,7 +177,6 @@ public class ChangeLogService implements Validable {
     /**
      * if order1 and order2 are not null and different, it return their compare. If one of then is null, the other is first.
      * If both are null or equals, they are compare bby their names
-
      */
     @Override
     public int compare(ChangeLogItem changeLog1, ChangeLogItem changeLog2) {
