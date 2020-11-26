@@ -4,14 +4,15 @@ import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.spring.v5.config.importers.ContextImporter;
 import io.changock.runner.spring.v5.config.importers.MongoSpringDataImporter;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class ChangockContextSelector implements ImportSelector {
+
 
 
   private final static String DRIVER_NOT_FOUND_ERROR_TEMPLATE = "CHANGOCK DRIVER HAS NOT BEEN IMPORTED" +
@@ -33,12 +34,17 @@ public class ChangockContextSelector implements ImportSelector {
     DRIVER_NOT_FOUND_ERROR =  sb.toString();
   }
 
+  private final Environment environment;
 
+
+  public ChangockContextSelector(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public String[] selectImports(AnnotationMetadata importingClassMetadata) {
     return contextImporters.stream()
-        .map(ContextImporter::getPaths)
+        .map(contextImporter -> contextImporter.getPaths(environment))
         .filter(Objects::nonNull)
         .findFirst()
         .orElseThrow(() ->  new ChangockException(String.format("\n\n%s\n\n", DRIVER_NOT_FOUND_ERROR)));

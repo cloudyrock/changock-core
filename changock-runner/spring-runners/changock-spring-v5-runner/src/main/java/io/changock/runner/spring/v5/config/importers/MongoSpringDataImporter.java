@@ -1,11 +1,17 @@
 package io.changock.runner.spring.v5.config.importers;
 
+import org.springframework.core.env.Environment;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class MongoSpringDataImporter implements ContextImporter {
   @Override
-  public String[] getPaths() {
+  public String[] getPaths(Environment environment) {
+
+    boolean mongock = environment.containsProperty("mongock");
+    boolean changock = environment.containsProperty("changock");
+
     try {
       return loadSpringDataContextV3();
     } catch (ClassNotFoundException e) {
@@ -26,18 +32,21 @@ public class MongoSpringDataImporter implements ContextImporter {
   }
 
   private String[] loadSpringDataContextV2() throws ClassNotFoundException {
-    Class.forName("com.github.cloudyrock.config.driver.mongodb.springdata.v2.SpringDataMongo2Driver");
+    String packageName = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v2.";
+    Class.forName(packageName + "SpringDataMongo2Driver");
     return new String[]{
-        "com.github.cloudyrock.config.driver.mongodb.springdata.v2.MongockSpringDataV3Configuration",
-        "com.github.cloudyrock.config.driver.mongodb.springdata.v2.MongockSpringDataV2Context"
+        packageName + "MongockSpringDataV3Configuration",
+        packageName + "MongockSpringDataV2Context"
     };
   }
 
   private String[] loadSpringDataContextV3() throws ClassNotFoundException {
-    Class.forName("com.github.cloudyrock.config.driver.mongodb.springdata.v3.SpringDataMongo3Driver");
+    String packageName = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.";
+    Class.forName(packageName + "SpringDataMongo3Driver");
     return new String[]{
-        "com.github.cloudyrock.config.driver.mongodb.springdata.v3.MongockSpringDataV3Configuration",
-        "com.github.cloudyrock.config.driver.mongodb.springdata.v3.MongockSpringDataV3Context"
+//        packageName + "SpringDataMongoV3Configuration",
+        packageName + "MongockSpringDataV3Configuration",
+        packageName + "MongockSpringDataV3Context"
     };
   }
 }

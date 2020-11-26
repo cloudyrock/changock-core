@@ -1,10 +1,12 @@
 package io.changock.runner.spring.v5.config;
 
+import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.ChangockSpring5;
 import io.changock.runner.spring.v5.SpringApplicationRunner;
 import io.changock.runner.spring.v5.SpringInitializingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -13,11 +15,11 @@ import org.springframework.context.annotation.Import;
 
 //@Configuration
 @Import(ChangockContextSelector.class)
-@ConditionalOnProperty(prefix = "changock", name = "enabled", matchIfMissing = true, havingValue = "true")
+@ConditionalOnExpression("${mongock.enabled:true} && ${changock.enabled:true}")
 public class ChangockContext {
 
   @Bean
-  @ConditionalOnProperty(value = "config.runner-type", matchIfMissing = true, havingValue = "ApplicationRunner")
+  @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner') && '${changock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
   public SpringApplicationRunner applicationRunner(ConnectionDriver connectionDriver,
                                                    ChangockSpringConfiguration springConfiguration,
                                                    ApplicationContext springContext,
@@ -27,7 +29,7 @@ public class ChangockContext {
   }
 
   @Bean
-  @ConditionalOnProperty(value = "config.runner-type", havingValue = "InitializingBean")
+  @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean') || '${changock.runner-type:null}'.equals('InitializingBean')")
   public SpringInitializingBean initializingBeanRunner(ConnectionDriver connectionDriver,
                                                        ChangockSpringConfiguration springConfiguration,
                                                        ApplicationContext springContext,
@@ -45,6 +47,7 @@ public class ChangockContext {
         .setDriver(connectionDriver)
         .setConfig(springConfiguration)
         .setSpringContext(springContext)
+        .overrideAnnoatationProcessor(new MongockAnnotationProcessor())
         .setEventPublisher(applicationEventPublisher);
   }
 }
