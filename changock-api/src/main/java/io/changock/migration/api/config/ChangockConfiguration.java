@@ -18,7 +18,7 @@ public abstract class ChangockConfiguration {
   private int maxWaitingForLockMinutes = 4;
 
   /**
-   * Max number of times Mongock will try to acquire the lock. Default 3
+   * Max number of times Changock will try to acquire the lock. Default 3
    */
   private int maxTries = 3;
 
@@ -28,12 +28,12 @@ public abstract class ChangockConfiguration {
   private boolean trackIgnored = false;
 
   /**
-   * Mongock will throw MongockException if lock can not be obtained. Default true
+   * Changock will throw ChangockException if lock can not be obtained. Default true
    */
   private boolean throwExceptionIfCannotObtainLock = true;
 
   /**
-   * If false, will disable Mongock. Default true
+   * If false, will disable Changock. Default true
    */
   private boolean enabled = true;
 

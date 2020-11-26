@@ -11,8 +11,8 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
   BUILDER_TYPE setConfig(CONFIG config);
 
   /**
-   * Adds a list of packages to be scanned  to the list. Mongock allows multiple classes and packages
-   * Mongo allows multiple packages
+   * Adds a list of packages to be scanned  to the list. Changock allows multiple classes and packages
+   * Changock allows multiple packages
    * <b>Requires at least one package</b>
    *
    * @param changeLogsScanPackageList list of packages to be scanned
@@ -21,7 +21,7 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
   BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList);
 
   /**
-   * Adds a package to be scanned  to the list. Mongock allows multiple classes and packages
+   * Adds a package to be scanned  to the list. Changock allows multiple classes and packages
    * <b>Requires at least one package</b>
    *
    * @param changeLogsScanPackage package to be scanned
@@ -33,8 +33,8 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
   }
 
   /**
-   * Adds a list of classes to be scanned  to the list. Mongock allows multiple classes and packages
-   * Mongo allows multiple packages
+   * Adds a list of classes to be scanned  to the list. Changock allows multiple classes and packages
+   * Changock allows multiple packages
    * <b>Requires at least one package</b>
    *
    * @param classes list of classes to be scanned
@@ -43,7 +43,7 @@ public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCo
   BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes);
 
   /**
-   * Adds a class to be scanned  to the list. Mongock allows multiple classes and packages
+   * Adds a class to be scanned  to the list. Changock allows multiple classes and packages
    * <b>Requires at least one package</b>
    *
    * @param clazz package to be scanned

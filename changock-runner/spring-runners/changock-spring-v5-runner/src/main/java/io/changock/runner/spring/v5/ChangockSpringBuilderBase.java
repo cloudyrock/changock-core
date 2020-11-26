@@ -33,7 +33,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
   /**
    * Set ApplicationContext from Spring
    *
-   * @param springContext org.springframework.context.ApplicationContext object to inject
+   * @param springContext org.springframework.config.ApplicationContext object to inject
    * @return Changock builder for fluent interface
    * @see org.springframework.context.annotation.Profile
    */

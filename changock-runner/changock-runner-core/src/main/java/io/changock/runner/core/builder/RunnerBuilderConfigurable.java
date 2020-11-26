@@ -34,7 +34,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setTrackIgnored(boolean trackIgnored);
 
   /**
-   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Mongock won't throw
+   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Changock won't throw
    * any exception and the application will carry on.
    *
    * Only set this to false if the changes are not mandatory and the application can work without them. Leave it true otherwise.

@@ -6,11 +6,11 @@ import io.changock.migration.api.annotations.ChangeSet;
 @ChangeLog(order = "2")
 public class ChangeLogNoPackage {
 
-  @ChangeSet(author = "mongock", order = "2", id = "no_package")
+  @ChangeSet(author = "config", order = "2", id = "no_package")
   public void noPackage() {
   }
 
-  @ChangeSet(author = "mongock", order = "2", id = "no_package_2")
+  @ChangeSet(author = "config", order = "2", id = "no_package_2")
   public void noPackage2() {
   }
 }
