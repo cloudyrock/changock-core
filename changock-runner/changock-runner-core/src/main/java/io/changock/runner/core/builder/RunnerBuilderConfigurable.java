@@ -1,11 +1,9 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
-import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.migration.api.config.ChangockConfiguration;
+import io.changock.migration.api.config.LegacyMigration;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration>

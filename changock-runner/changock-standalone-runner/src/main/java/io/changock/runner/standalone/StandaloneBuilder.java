@@ -2,7 +2,7 @@ package io.changock.runner.standalone;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.builder.RunnerBuilderBase;
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+import io.changock.migration.api.config.ChangockConfiguration;
 import io.changock.runner.standalone.event.StandaloneMigrationFailureEvent;
 import io.changock.runner.standalone.event.StandaloneMigrationSuccessEvent;
 import io.changock.runner.standalone.event.StandaloneEventPublisher;

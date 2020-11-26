@@ -1,6 +1,6 @@
 package io.changock.runner.core.builder;
 
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+import io.changock.migration.api.config.ChangockConfiguration;
 
 import java.util.Collections;
 import java.util.List;

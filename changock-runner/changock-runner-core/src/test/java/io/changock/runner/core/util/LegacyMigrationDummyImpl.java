@@ -1,6 +1,6 @@
 package io.changock.runner.core.util;
 
-import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.migration.api.config.LegacyMigration;
 
 public class LegacyMigrationDummyImpl extends LegacyMigration {
 

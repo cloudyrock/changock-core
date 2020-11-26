@@ -1,4 +1,6 @@
-package io.changock.runner.core.builder.configuration;
+package io.changock.migration.api.config;
+
+import io.changock.migration.api.config.LegacyMigration;
 
 import java.util.List;
 import java.util.Map;
