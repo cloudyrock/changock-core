@@ -1,4 +1,4 @@
-package io.changock.runner.spring.v5.config;
+package io.changock.runner.spring.v5.config.test;
 
 import org.springframework.context.annotation.Import;
 
