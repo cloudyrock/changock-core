@@ -12,9 +12,9 @@ import io.changock.runner.spring.v5.profiles.integration.IntegrationProfiledChan
 import io.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import io.changock.runner.spring.v5.profiles.withForbiddenParameter.ForbiddenParameter;
 import io.changock.runner.spring.v5.util.CallVerifier;
-import io.changock.runner.spring.v5.util.MongockTemplateForTest;
-import io.changock.runner.spring.v5.util.MongockTemplateForTestImpl;
-import io.changock.runner.spring.v5.util.MongockTemplateForTestImplChild;
+import io.changock.runner.spring.v5.util.TemplateForTest;
+import io.changock.runner.spring.v5.util.TemplateForTestImpl;
+import io.changock.runner.spring.v5.util.TemplateForTestImplChild;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,8 +69,8 @@ public class SpringChangockInitializingBeanRunnerTest {
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongockTemplateForTest.class))
-        .thenReturn(new MongockTemplateForTestImpl());
+    when(springContext.getBean(TemplateForTest.class))
+        .thenReturn(new TemplateForTestImpl());
   }
 
   @Test
@@ -122,14 +122,14 @@ public class SpringChangockInitializingBeanRunnerTest {
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
-    dependencySet.add(new ChangeSetDependency(MongockTemplateForTestImpl.class, new MongockTemplateForTestImplChild()));
+    dependencySet.add(new ChangeSetDependency(TemplateForTestImpl.class, new TemplateForTestImplChild()));
     when(driver.getDependencies()).thenReturn(dependencySet);
 
     Environment environment = mock(Environment.class);
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongockTemplateForTestImpl.class)).thenReturn(new MongockTemplateForTestImpl());
+    when(springContext.getBean(TemplateForTestImpl.class)).thenReturn(new TemplateForTestImpl());
 
     // when
     ChangockSpring5.builder()

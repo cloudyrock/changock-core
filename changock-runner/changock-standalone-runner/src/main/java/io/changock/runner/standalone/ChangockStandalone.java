@@ -1,25 +1,23 @@
-package io.changock.runner.spring.v5;
+package io.changock.runner.standalone;
 
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.ChangockAnnotationProcessor;
+import io.changock.migration.api.config.ChangockConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
-import io.changock.migration.api.config.ChangockSpringConfiguration;
 
-public final class ChangockSpring5 {
+public final class ChangockStandalone {
 
 
-  public static DriverBuilderConfigurable<Builder, ConnectionDriver, ChangockSpringConfiguration> builder() {
+  public static DriverBuilderConfigurable<Builder, ConnectionDriver, ChangockConfiguration> builder() {
     return new Builder();
   }
 
-  public static class Builder extends ChangockSpringBuilderBase<Builder, ConnectionDriver, ChangockSpringConfiguration> {
+  public static class Builder extends StandaloneBuilderBase<Builder, ConnectionDriver> {
 
     private Builder() {
       //temporally until mongock runners are fully removed
       overrideAnnoatationProcessor(new MongockAnnotationProcessor());
     }
-
 
 
     @Override

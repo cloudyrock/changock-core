@@ -1,4 +1,4 @@
-package io.changock.runner.core.builder.configuration;
+package io.changock.migration.api.config;
 
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.annotations.NonLockGuardedType;

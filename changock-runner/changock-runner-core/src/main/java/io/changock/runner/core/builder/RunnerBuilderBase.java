@@ -9,8 +9,8 @@ import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.core.executor.DependencyManager;
 import io.changock.runner.core.executor.MigrationExecutor;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
-import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.migration.api.config.ChangockConfiguration;
+import io.changock.migration.api.config.LegacyMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static io.changock.runner.core.builder.configuration.ChangockConstants.LEGACY_MIGRATION_NAME;
+import static io.changock.migration.api.config.ChangockConstants.LEGACY_MIGRATION_NAME;
 
 
 public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration>

@@ -1,4 +1,4 @@
-package io.changock.runner.core.builder.configuration;
+package io.changock.migration.api.config;
 
 import java.util.Objects;
 

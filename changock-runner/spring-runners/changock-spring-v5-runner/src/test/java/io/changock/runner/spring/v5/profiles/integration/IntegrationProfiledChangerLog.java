@@ -4,7 +4,7 @@ package io.changock.runner.spring.v5.profiles.integration;
 import io.changock.migration.api.annotations.ChangeLog;
 import io.changock.migration.api.annotations.ChangeSet;
 import io.changock.runner.spring.v5.util.CallVerifier;
-import io.changock.runner.spring.v5.util.MongockTemplateForTest;
+import io.changock.runner.spring.v5.util.TemplateForTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
@@ -47,15 +47,15 @@ public class IntegrationProfiledChangerLog {
     public void testWithProfileIncluded1OrProfileINotIncluded(
             Environment environment,
             CallVerifier callVerifier,
-            MongockTemplateForTest mongockTemplateForTest) {
+            TemplateForTest templateForTest) {
         callVerifier.counter++;
         System.out.println("invoked testWithProfileIncluded1OrProfileINotIncluded");
         if (environment == null) {
             throw new RuntimeException("Environment shouldn't be null in changeSet testWithProfileIncluded1OrProfileINotIncluded");
         }
 
-        if (mongockTemplateForTest == null) {
-            throw new RuntimeException("Environment shouldn't be null in changeSet mongoTemplateForTest");
+        if (templateForTest == null) {
+            throw new RuntimeException("Environment shouldn't be null in changeSet templateForTest");
         }
 
     }

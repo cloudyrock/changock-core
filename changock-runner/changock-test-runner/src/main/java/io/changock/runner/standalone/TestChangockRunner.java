@@ -9,7 +9,7 @@ import io.changock.runner.core.executor.MigrationExecutor;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
 import io.changock.runner.core.builder.RunnerBuilderBase;
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+import io.changock.migration.api.config.ChangockConfiguration;
 
 public class TestChangockRunner extends ChangockBase {
 

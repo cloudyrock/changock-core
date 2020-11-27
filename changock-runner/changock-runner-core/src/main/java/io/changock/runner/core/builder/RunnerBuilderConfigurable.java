@@ -1,11 +1,9 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
-import io.changock.runner.core.builder.configuration.LegacyMigration;
+import io.changock.migration.api.config.ChangockConfiguration;
+import io.changock.migration.api.config.LegacyMigration;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration>
@@ -36,7 +34,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setTrackIgnored(boolean trackIgnored);
 
   /**
-   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Mongock won't throw
+   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Changock won't throw
    * any exception and the application will carry on.
    *
    * Only set this to false if the changes are not mandatory and the application can work without them. Leave it true otherwise.

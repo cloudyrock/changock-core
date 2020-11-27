@@ -56,5 +56,6 @@ public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTI
    */
   void removeByKeyAndOwner(String lockKey, String owner);
 
+  void deleteAll();
 
 }
