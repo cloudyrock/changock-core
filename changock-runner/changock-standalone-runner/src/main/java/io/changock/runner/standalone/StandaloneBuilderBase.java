@@ -9,14 +9,14 @@ import io.changock.runner.standalone.event.StandaloneEventPublisher;
 
 import java.util.function.Consumer;
 
-public abstract class StandaloneBuilder<BUILDER extends StandaloneBuilder, DRIVER extends ConnectionDriver>
+public abstract class StandaloneBuilderBase<BUILDER extends StandaloneBuilderBase, DRIVER extends ConnectionDriver>
     extends RunnerBuilderBase<BUILDER, DRIVER, ChangockConfiguration> {
 
   protected Runnable migrationStartedListener;
   protected Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
   protected Consumer<StandaloneMigrationFailureEvent> migrationFailureListener;
 
-  protected StandaloneBuilder() {
+  protected StandaloneBuilderBase() {
   }
 
 
@@ -39,5 +39,8 @@ public abstract class StandaloneBuilder<BUILDER extends StandaloneBuilder, DRIVE
     return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
   }
 
+  public StandaloneRunner buildRunner() {
+    return new StandaloneRunner(buildExecutorDefault(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
+  }
 
 }
