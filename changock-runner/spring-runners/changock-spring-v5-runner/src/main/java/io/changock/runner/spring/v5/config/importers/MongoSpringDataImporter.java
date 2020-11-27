@@ -9,15 +9,20 @@ import java.util.Collection;
 import java.util.List;
 
 public class MongoSpringDataImporter implements ContextImporter {
+
+  private final static String PACKAGE_TEMPLATE = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v%s.";
+  private final static String DRIVER_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sDriver";
+  private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sContext";
+  private static final String CONFIG_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sConfiguration";
+  private static final String DEPRECATED_CONFIG_TEMPLATE = PACKAGE_TEMPLATE + "MongockSpringDataV%sConfiguration";
+
   @Override
   public String[] getPaths(Environment environment) {
-
-
     try {
-      return loadSpringDataContextV3(environment);
+      return loadSpringDataContextByVersion((AbstractEnvironment) environment, "3");
     } catch (ClassNotFoundException e) {
       try {
-        return loadSpringDataContextV2(environment);
+        return loadSpringDataContextByVersion((AbstractEnvironment) environment, "2");
       } catch (ClassNotFoundException e2) {
         return null;
       }
@@ -26,34 +31,25 @@ public class MongoSpringDataImporter implements ContextImporter {
 
   @Override
   public List<ArtifactDescriptor> getArtifacts() {
+    String v = "3";
     return Arrays.asList(
-        new ArtifactDescriptor("MongoDB Spring data 3", "com.github.cloudyrock.mongock:mongodb-springdata-v3-driver"),
-        new ArtifactDescriptor("MongoDB Spring data 2", "com.github.cloudyrock.mongock:mongodb-springdata-v2-driver")
+        getArtifactDescriptor("3"),
+        getArtifactDescriptor("2")
     );
   }
 
-  private String[] loadSpringDataContextV2(Environment env) throws ClassNotFoundException {
-    String packageName = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v2.";
-    Class.forName(packageName + "SpringDataMongoV2Driver");
-
-    //temporally until deprecated Mongock runner and config is completely removed
-    String configImport = isChangockConfig((AbstractEnvironment) env)
-        ? "SpringDataMongoV2Configuration"
-        : "MongockSpringDataV2Configuration";
-
-    return new String[]{packageName + configImport, packageName + "SpringDataV2Context"};
+  private ArtifactDescriptor getArtifactDescriptor(String v) {
+    return new ArtifactDescriptor("MongoDB Spring data " + v, "com.github.cloudyrock.mongock:mongodb-springdata-v" + v + "-driver");
   }
 
-  private String[] loadSpringDataContextV3(Environment env) throws ClassNotFoundException {
-    String packageName = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.";
-    Class.forName(packageName + "SpringDataMongoV3Driver");
+
+  private String[] loadSpringDataContextByVersion(AbstractEnvironment env, String v) throws ClassNotFoundException {
+    Class.forName(String.format(DRIVER_TEMPLATE, v, v));
 
     //temporally until deprecated Mongock runner and config is completely removed
-    String configImport = isChangockConfig((AbstractEnvironment) env)
-        ? "SpringDataMongoV3Configuration"
-        : "MongockSpringDataV3Configuration";
+    String configImport = String.format(isChangockConfig(env) ? CONFIG_TEMPLATE : DEPRECATED_CONFIG_TEMPLATE, v, v);
 
-    return new String[]{packageName + configImport, packageName + "SpringDataV3Context"};
+    return new String[]{configImport, String.format(CONTEXT_TEMPLATE, v, v)};
   }
 
   private boolean isChangockConfig(AbstractEnvironment env) {
