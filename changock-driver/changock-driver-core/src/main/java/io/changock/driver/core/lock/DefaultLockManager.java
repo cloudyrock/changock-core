@@ -276,6 +276,11 @@ public class DefaultLockManager implements LockManager {
     return this.lockExpiresAt != null && timeUtils.currentTime().compareTo(lockExpiresAt) < 1;
   }
 
+  @Override
+  public void clean() {
+    repository.deleteAll();
+  }
+
   private boolean needsRefreshLock() {
     return this.lockExpiresAt == null
         || timeUtils.currentTime().compareTo(new Date(this.lockExpiresAt.getTime() - LOCK_REFRESH_MARGIN)) >= 0;

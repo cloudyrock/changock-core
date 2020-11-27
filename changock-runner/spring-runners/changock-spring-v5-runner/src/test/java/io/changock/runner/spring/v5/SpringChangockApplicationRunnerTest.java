@@ -17,9 +17,9 @@ import io.changock.runner.spring.v5.util.ClassNotInterfaced;
 import io.changock.runner.spring.v5.util.InterfaceDependency;
 import io.changock.runner.spring.v5.util.InterfaceDependencyImpl;
 import io.changock.runner.spring.v5.util.InterfaceDependencyImplNoLockGarded;
-import io.changock.runner.spring.v5.util.MongockTemplateForTest;
-import io.changock.runner.spring.v5.util.MongockTemplateForTestImpl;
-import io.changock.runner.spring.v5.util.MongockTemplateForTestImplChild;
+import io.changock.runner.spring.v5.util.TemplateForTestImplChild;
+import io.changock.runner.spring.v5.util.TemplateForTest;
+import io.changock.runner.spring.v5.util.TemplateForTestImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,12 +29,13 @@ import org.mockito.internal.verification.Times;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -75,7 +76,7 @@ public class SpringChangockApplicationRunnerTest {
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongockTemplateForTest.class)).thenReturn(new MongockTemplateForTestImpl());
+    when(springContext.getBean(TemplateForTest.class)).thenReturn(new TemplateForTestImpl());
     when(springContext.getBean(InterfaceDependency.class)).thenReturn(new InterfaceDependencyImpl());
     when(springContext.getBean(ClassNotInterfaced.class)).thenReturn(new ClassNotInterfaced());
   }
@@ -115,14 +116,14 @@ public class SpringChangockApplicationRunnerTest {
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
-    dependencySet.add(new ChangeSetDependency(MongockTemplateForTestImpl.class, new MongockTemplateForTestImplChild()));
+    dependencySet.add(new ChangeSetDependency(TemplateForTestImpl.class, new TemplateForTestImplChild()));
     when(driver.getDependencies()).thenReturn(dependencySet);
 
     Environment environment = mock(Environment.class);
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(MongockTemplateForTestImpl.class)).thenReturn(new MongockTemplateForTestImpl());
+    when(springContext.getBean(TemplateForTestImpl.class)).thenReturn(new TemplateForTestImpl());
 
     // when
     buildAndRun(EnsureDecoratorChangerLog.class.getPackage().getName());

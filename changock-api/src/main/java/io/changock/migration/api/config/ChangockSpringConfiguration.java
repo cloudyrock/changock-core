@@ -1,10 +1,8 @@
-package io.changock.runner.spring.util.config;
-
-import io.changock.runner.core.builder.configuration.ChangockConfiguration;
+package io.changock.migration.api.config;
 
 public abstract class ChangockSpringConfiguration extends ChangockConfiguration {
   /**
-   * Type of Spring bean Mongock should be: ApplicationRunner(default) or InitializingBean
+   * Type of Spring bean Changock should be: ApplicationRunner(default) or InitializingBean
    */
   private SpringRunnerType runnerType = SpringRunnerType.ApplicationRunner;
 

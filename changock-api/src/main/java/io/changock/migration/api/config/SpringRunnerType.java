@@ -1,4 +1,4 @@
-package io.changock.runner.spring.util.config;
+package io.changock.migration.api.config;
 
 public enum SpringRunnerType {
     InitializingBean, ApplicationRunner
