@@ -3,7 +3,7 @@
   <parent>
     <artifactId>changock</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.5-SNAPSHOT</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
@@ -12,19 +12,8 @@
   <name>Changock BOM</name>
   <description>Changock dependency management</description>
   <properties>
-    <changock.api.version>1.2.4-SNAPSHOT</changock.api.version>
-    <!-- driver -->
-    <changock.driver-api.version>1.0.6.alpha</changock.driver-api.version>
-    <changock.driver-core.version>1.0.6.alpha</changock.driver-core.version>
-    <!-- runner -->
-    <changock.runner-core.version>1.0.6.alpha</changock.runner-core.version>
-    <changock.runner-standalone.version>1.0.6.alpha</changock.runner-standalone.version>
-    <changock.runner-spring.version>1.0.6.alpha</changock.runner-spring.version>
-    <changock.runner-spring-util.version>1.0.6.alpha</changock.runner-spring-util.version>
-    <changock.runner-test.version>1.0.6.alpha</changock.runner-test.version>
-    <!-- util -->
-    <changock.test-util.version>1.0.6.alpha</changock.test-util.version>
-    <changock.decorator-util.version>1.0.6.alpha</changock.decorator-util.version>
+    <changock.version>1.2.5-SNAPSHOT</changock.version>
+
 
     <!-- spring -->
     <spring.v5.version>5.2.6.RELEASE</spring.v5.version>
@@ -36,37 +25,37 @@
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-api</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-driver-api</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-driver-core</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-runner-core</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-standalone-runner</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-spring-runner-util</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-spring-v5-runner</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -85,17 +74,17 @@
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-test-runner</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-test-util</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-decorator-util</artifactId>
-        <version>${changock.api.version}</version>
+        <version>${changock.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

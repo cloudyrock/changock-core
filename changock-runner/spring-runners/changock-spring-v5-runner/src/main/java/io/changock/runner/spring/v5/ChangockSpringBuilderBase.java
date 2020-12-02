@@ -63,8 +63,8 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
         buildSpringEventPublisher());
   }
 
-  public SpringInitializingBean buildInitializingBeanRunner() {
-    return new SpringInitializingBean(
+  public SpringInitializingBeanRunner buildInitializingBeanRunner() {
+    return new SpringInitializingBeanRunner(
         buildExecutorWithEnvironmentDependency(),
         buildProfiledChangeLogService(),
         throwExceptionIfCannotObtainLock,
