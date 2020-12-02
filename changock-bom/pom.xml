@@ -3,7 +3,7 @@
   <parent>
     <artifactId>changock</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <version>1.2.4</version>
+    <version>1.2.5-SNAPSHOT</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
@@ -12,7 +12,7 @@
   <name>Changock BOM</name>
   <description>Changock dependency management</description>
   <properties>
-    <changock.version>1.2.4</changock.version>
+    <changock.version>1.2.5-SNAPSHOT</changock.version>
 
 
     <!-- spring -->
