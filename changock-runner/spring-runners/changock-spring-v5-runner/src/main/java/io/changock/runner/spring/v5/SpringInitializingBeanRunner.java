@@ -6,13 +6,13 @@ import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
 import org.springframework.beans.factory.InitializingBean;
 
-public class SpringInitializingBean extends ChangockBase implements InitializingBean {
+public class SpringInitializingBeanRunner extends ChangockBase implements InitializingBean {
 
-  protected SpringInitializingBean(SpringMigrationExecutor executor,
-                                   ProfiledChangeLogService changeLogService,
-                                   boolean throwExceptionIfCannotObtainLock,
-                                   boolean enabled,
-                                   SpringEventPublisher eventPublisher) {
+  protected SpringInitializingBeanRunner(SpringMigrationExecutor executor,
+                                         ProfiledChangeLogService changeLogService,
+                                         boolean throwExceptionIfCannotObtainLock,
+                                         boolean enabled,
+                                         SpringEventPublisher eventPublisher) {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 

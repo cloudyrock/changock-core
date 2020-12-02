@@ -5,9 +5,8 @@ import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.ChangockSpring5;
 import io.changock.runner.spring.v5.SpringApplicationRunner;
-import io.changock.runner.spring.v5.SpringInitializingBean;
+import io.changock.runner.spring.v5.SpringInitializingBeanRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -30,10 +29,10 @@ public class ChangockContext {
 
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean') || '${changock.runner-type:null}'.equals('InitializingBean')")
-  public SpringInitializingBean initializingBeanRunner(ConnectionDriver connectionDriver,
-                                                       ChangockSpringConfiguration springConfiguration,
-                                                       ApplicationContext springContext,
-                                                       ApplicationEventPublisher applicationEventPublisher) {
+  public SpringInitializingBeanRunner initializingBeanRunner(ConnectionDriver connectionDriver,
+                                                             ChangockSpringConfiguration springConfiguration,
+                                                             ApplicationContext springContext,
+                                                             ApplicationEventPublisher applicationEventPublisher) {
     return getBuilder(connectionDriver, springConfiguration, springContext, applicationEventPublisher)
         .buildInitializingBeanRunner();
   }
