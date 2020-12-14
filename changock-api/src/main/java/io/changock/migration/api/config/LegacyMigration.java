@@ -3,8 +3,6 @@ package io.changock.migration.api.config;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import io.changock.migration.api.annotations.NonLockGuardedType;
 
-import java.util.Objects;
-
 @NonLockGuarded(NonLockGuardedType.NONE)
 public abstract class LegacyMigration {
 
@@ -17,6 +15,40 @@ public abstract class LegacyMigration {
   private LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
 
   private boolean runAlways = false;
+
+
+  public LegacyMigration() {
+  }
+
+  public LegacyMigration(String origin) {
+    setOrigin(origin);
+  }
+
+  public LegacyMigration(String origin,
+                         boolean failFast,
+                         String changeId,
+                         String author,
+                         String timestamp,
+                         String changeLogClass,
+                         String changeSetMethod) {
+
+    this(origin, failFast, changeId, author, timestamp, changeLogClass, changeSetMethod, null, null);
+  }
+
+  public LegacyMigration(String origin,
+                         boolean failFast,
+                         String changeId,
+                         String author,
+                         String timestamp,
+                         String changeLogClass,
+                         String changeSetMethod,
+                         String metadata,
+                         Integer changesCountExpectation) {
+    setOrigin(origin);
+    setFailFast(failFast);
+    setChangesCountExpectation(changesCountExpectation);
+    setMappingFields(new LegacyMigrationMappingFields(changeId, author, timestamp, changeLogClass, changeSetMethod, metadata));
+  }
 
   public LegacyMigrationMappingFields getMappingFields() {
     return mappingFields;

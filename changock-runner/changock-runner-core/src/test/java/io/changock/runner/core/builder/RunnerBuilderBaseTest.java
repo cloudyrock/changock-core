@@ -210,6 +210,16 @@ class DummyChangockConfiguration extends ChangockConfiguration{
   public LegacyMigration getLegacyMigration() {
     return new LegacyMigrationDummyImpl();
   }
+
+  @Override
+  protected String getLockRepositoryNameDefault() {
+    return "lockRepositoryName";
+  }
+
+  @Override
+  protected String getChangeLogRepositoryNameDefault() {
+    return "changeLogRepositoryName";
+  }
 }
 
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, ChangockConfiguration> {

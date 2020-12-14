@@ -6,6 +6,22 @@ import java.util.Map;
 public abstract class ChangockConfiguration {
 
   /**
+   * Repository name for changeLogs history
+   */
+  private String changeLogRepositoryName;
+
+  /**
+   * Repository name for locking mechanism
+   */
+  private String lockRepositoryName;
+
+  /**
+   * If false, Changock won't create the necessary index. However it will check that they are already
+   * created, failing otherwise. Default true
+   */
+  private boolean indexCreation = true;
+
+  /**
    * How long the lock will be hold once acquired in minutes. Default 3
    */
   private int lockAcquiredForMinutes = 3;
@@ -60,7 +76,38 @@ public abstract class ChangockConfiguration {
    */
   private boolean transactionEnabled = true;
 
+  private LegacyMigration legacyMigration = null;
 
+
+  public ChangockConfiguration() {
+    setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
+    setLockRepositoryName(getLockRepositoryNameDefault());
+  }
+
+
+  public String getChangeLogRepositoryName() {
+    return changeLogRepositoryName;
+  }
+
+  public void setChangeLogRepositoryName(String changeLogRepositoryName) {
+    this.changeLogRepositoryName = changeLogRepositoryName;
+  }
+
+  public String getLockRepositoryName() {
+    return lockRepositoryName;
+  }
+
+  public void setLockRepositoryName(String lockRepositoryName) {
+    this.lockRepositoryName = lockRepositoryName;
+  }
+
+  public boolean isIndexCreation() {
+    return indexCreation;
+  }
+
+  public void setIndexCreation(boolean indexCreation) {
+    this.indexCreation = indexCreation;
+  }
 
   public int getLockAcquiredForMinutes() {
     return lockAcquiredForMinutes;
@@ -150,6 +197,16 @@ public abstract class ChangockConfiguration {
     this.transactionEnabled = transactionEnabled;
   }
 
-  public abstract <T extends LegacyMigration> T getLegacyMigration();
+  public LegacyMigration getLegacyMigration() {
+    return legacyMigration;
+  }
+
+  public void setLegacyMigration(LegacyMigration legacyMigration) {
+    this.legacyMigration = legacyMigration;
+  }
+
+  protected abstract String getLockRepositoryNameDefault();
+
+  protected abstract String getChangeLogRepositoryNameDefault();
 
 }
