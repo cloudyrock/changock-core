@@ -8,6 +8,10 @@ import java.util.Objects;
 @NonLockGuarded(NonLockGuardedType.NONE)
 public abstract class LegacyMigration {
 
+  private String origin;
+
+  private boolean failFast = true;
+
   private Integer changesCountExpectation = null;
 
   private LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
@@ -38,16 +42,19 @@ public abstract class LegacyMigration {
     this.runAlways = runAlways;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    LegacyMigration that = (LegacyMigration) o;
-    return Objects.equals(mappingFields, that.mappingFields);
+  public String getOrigin() {
+    return origin;
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(mappingFields);
+  public void setOrigin(String origin) {
+    this.origin = origin;
+  }
+
+  public boolean isFailFast() {
+    return failFast;
+  }
+
+  public void setFailFast(boolean failFast) {
+    this.failFast = failFast;
   }
 }
