@@ -1,8 +1,11 @@
 package io.changock.runner.spring.v5.config.test;
 
 import io.changock.driver.api.driver.ConnectionDriver;
+import io.changock.runner.spring.v5.SpringApplicationRunner;
+import io.changock.runner.spring.v5.SpringInitializingBeanRunner;
 import io.changock.runner.spring.v5.config.ChangockContextSelector;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -13,6 +16,7 @@ public class ChangockTestContext {
 
 
   @Bean
+  @ConditionalOnMissingBean({SpringInitializingBeanRunner.class, SpringApplicationRunner.class})
   public TestDriverInitializingBean testDriverInitializingBean(ConnectionDriver connectionDriver) {
     return new TestDriverInitializingBean(connectionDriver);
   }
