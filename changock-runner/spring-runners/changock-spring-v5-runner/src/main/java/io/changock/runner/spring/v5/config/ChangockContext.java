@@ -1,6 +1,5 @@
 package io.changock.runner.spring.v5.config;
 
-import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.migration.api.config.ChangockSpringConfiguration;
 import io.changock.runner.spring.v5.ChangockSpring5;
@@ -14,11 +13,11 @@ import org.springframework.context.annotation.Import;
 
 //@Configuration
 @Import(ChangockContextSelector.class)
-@ConditionalOnExpression("${mongock.enabled:true} && ${changock.enabled:true}")
+@ConditionalOnExpression("${changock.enabled:true}")
 public class ChangockContext {
 
   @Bean
-  @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner') && '${changock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
+  @ConditionalOnExpression("'${changock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
   public SpringApplicationRunner applicationRunner(ConnectionDriver connectionDriver,
                                                    ChangockSpringConfiguration springConfiguration,
                                                    ApplicationContext springContext,
@@ -28,7 +27,7 @@ public class ChangockContext {
   }
 
   @Bean
-  @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean') || '${changock.runner-type:null}'.equals('InitializingBean')")
+  @ConditionalOnExpression("'${changock.runner-type:null}'.equals('InitializingBean')")
   public SpringInitializingBeanRunner initializingBeanRunner(ConnectionDriver connectionDriver,
                                                              ChangockSpringConfiguration springConfiguration,
                                                              ApplicationContext springContext,
@@ -46,7 +45,6 @@ public class ChangockContext {
         .setDriver(connectionDriver)
         .setConfig(springConfiguration)
         .setSpringContext(springContext)
-        .overrideAnnoatationProcessor(new MongockAnnotationProcessor())
         .setEventPublisher(applicationEventPublisher);
   }
 }
