@@ -3,7 +3,7 @@
   <parent>
     <artifactId>changock-runner</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -23,8 +23,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-    <spring.version>5.2.6.RELEASE</spring.version>
-    <springboot.version>2.2.6.RELEASE</springboot.version>
   </properties>
 
 
