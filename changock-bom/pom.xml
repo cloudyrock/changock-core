@@ -3,7 +3,7 @@
   <parent>
     <artifactId>changock</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.8-SNAPSHOT</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
@@ -12,10 +12,7 @@
   <name>Changock BOM</name>
   <description>Changock dependency management</description>
   <properties>
-
-    <!-- spring -->
-    <spring.v5.version>5.2.6.RELEASE</spring.v5.version>
-    <springboot.v2.version>2.2.6.RELEASE</springboot.v2.version>
+    <changock.version>1.2.8-SNAPSHOT</changock.version>
   </properties>
 
   <dependencyManagement>
@@ -23,37 +20,37 @@
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-api</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-driver-api</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-driver-core</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-runner-core</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-standalone-runner</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-spring-runner-util</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-spring-v5-runner</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -72,17 +69,17 @@
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-test-runner</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-test-util</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
         <artifactId>changock-decorator-util</artifactId>
-        <version>${project.version}</version>
+        <version>${changock.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

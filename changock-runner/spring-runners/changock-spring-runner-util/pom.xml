@@ -3,7 +3,7 @@
   <parent>
     <artifactId>spring-runners</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
+      <version>${spring.v5.version}</version>
     </dependency>
     <!-- TEST -->
     <dependency>
