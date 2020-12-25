@@ -3,7 +3,9 @@ package io.changock.migration.api.config;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ChangockConfiguration {
+public class ChangockConfiguration {
+  private final static String LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME = "mongockChangeLog";
+  private final static String LEGACY_DEFAULT_LOCK_REPOSITORY_NAME = "mongockLock";
 
   /**
    * Repository name for changeLogs history
@@ -205,8 +207,12 @@ public abstract class ChangockConfiguration {
     this.legacyMigration = legacyMigration;
   }
 
-  protected abstract String getLockRepositoryNameDefault();
+  protected String getLockRepositoryNameDefault() {
+    return LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME;
+  }
 
-  protected abstract String getChangeLogRepositoryNameDefault();
+  protected String getChangeLogRepositoryNameDefault() {
+    return LEGACY_DEFAULT_LOCK_REPOSITORY_NAME;
+  }
 
 }

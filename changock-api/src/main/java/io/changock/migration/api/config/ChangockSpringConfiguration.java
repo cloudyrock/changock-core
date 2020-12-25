@@ -1,6 +1,6 @@
 package io.changock.migration.api.config;
 
-public abstract class ChangockSpringConfiguration extends ChangockConfiguration {
+public class ChangockSpringConfiguration extends ChangockConfiguration {
   /**
    * Type of Spring bean Changock should be: ApplicationRunner(default) or InitializingBean
    */
