@@ -7,12 +7,12 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>changock-runner</artifactId>
+  <artifactId>mongock-runner</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>changock-runner-core</module>
-    <module>changock-test-runner</module>
-    <module>changock-standalone-runner</module>
+    <module>mongock-runner-core</module>
+    <module>mongock-test-runner</module>
+    <module>mongock-standalone-runner</module>
     <module>spring-runners</module>
   </modules>
 

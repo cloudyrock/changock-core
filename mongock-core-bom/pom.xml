@@ -34,22 +34,22 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-runner-core</artifactId>
+        <artifactId>mongock-runner-core</artifactId>
         <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-standalone-runner</artifactId>
+        <artifactId>mongock-standalone-runner</artifactId>
         <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-spring-runner-util</artifactId>
+        <artifactId>mongock-spring-runner-util</artifactId>
         <version>${changock.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-spring-v5-runner</artifactId>
+        <artifactId>mongock-spring-v5-runner</artifactId>
         <version>${changock.version}</version>
         <exclusions>
           <exclusion>
@@ -68,7 +68,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-test-runner</artifactId>
+        <artifactId>mongock-test-runner</artifactId>
         <version>${changock.version}</version>
       </dependency>
       <dependency>

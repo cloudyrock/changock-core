@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>changock-runner</artifactId>
+    <artifactId>mongock-runner</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
     <version>2.0.0.BETA-SNAPSHOT</version>
   </parent>
@@ -12,8 +12,8 @@
   <name>Changock Spring 5 runner</name>
   <description>Spring runner for changock</description>
   <modules>
-    <module>changock-spring-runner-util</module>
-    <module>changock-spring-v5-runner</module>
+    <module>mongock-spring-runner-util</module>
+    <module>mongock-spring-v5-runner</module>
   </modules>
 
   <properties>

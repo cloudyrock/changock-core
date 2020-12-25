@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
+    <artifactId>spring-runners</artifactId>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <artifactId>changock-runner</artifactId>
     <version>2.0.0.BETA-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>changock-runner-core</artifactId>
+  <artifactId>mongock-spring-runner-util</artifactId>
+
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -17,43 +18,22 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
   </properties>
+
   <dependencies>
-    <!-- CHANGOCK DEPENDENCIES -->
+    <!-- CHANGOCK -->
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>mongock-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>mongock-driver-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>mongock-utils</artifactId>
+      <artifactId>mongock-runner-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <!-- GENERIC DEPENDENCIES -->
+    <!-- SPRING -->
     <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.9</version>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.v5.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>3.6.1</version>
-    </dependency>
-
-
-    <!-- TESTS -->
+    <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -67,6 +47,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 
 </project>

@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <artifactId>spring-runners</artifactId>
-    <groupId>com.github.cloudyrock.changock</groupId>
-    <version>2.0.0.BETA-SNAPSHOT</version>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>changock-spring-runner-util</artifactId>
+  <parent>
+    <groupId>com.github.cloudyrock.changock</groupId>
+    <artifactId>mongock-runner</artifactId>
+    <version>2.0.0.BETA-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>mongock-standalone-runner</artifactId>
+  <name>Changock standalone runner</name>
+  <description>Standalone runner for Changock</description>
+  <url>https://github.com/cloudyrock/mongock-standalone-runner</url>
+
 
 
   <properties>
@@ -20,20 +25,19 @@
   </properties>
 
   <dependencies>
-    <!-- CHANGOCK -->
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>changock-runner-core</artifactId>
+      <artifactId>mongock-runner-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.cloudyrock.changock</groupId>
+      <artifactId>mongock-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <!-- SPRING -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${spring.v5.version}</version>
-    </dependency>
-    <!-- TEST -->
+
+    <!-- TESTS -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
