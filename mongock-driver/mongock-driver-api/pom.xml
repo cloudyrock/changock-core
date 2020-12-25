@@ -40,7 +40,7 @@
     <!-- TESTS -->
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>changock-test-util</artifactId>
+      <artifactId>mongock-test-util</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

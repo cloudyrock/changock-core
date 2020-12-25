@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>changock-test-util</artifactId>
+  <artifactId>mongock-test-util</artifactId>
 
 
   <properties>

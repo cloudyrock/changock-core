@@ -12,7 +12,7 @@
     <module>changock-runner</module>
     <module>mongock-utils</module>
     <module>mongock-decorator-util</module>
-    <module>changock-test-util</module>
+    <module>mongock-test-util</module>
     <module>mongock-core-bom</module>
   </modules>
 

@@ -73,7 +73,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-test-util</artifactId>
+        <artifactId>mongock-test-util</artifactId>
         <version>${changock.version}</version>
       </dependency>
       <dependency>
