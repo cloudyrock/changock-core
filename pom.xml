@@ -5,7 +5,7 @@
 
   <name>Changock core</name>
   <description>Migration runner classes base for</description>
-  <url>https://github.com/cloudyrock/changock-core</url>
+  <url>https://github.com/cloudyrock/mongock-core</url>
   <modules>
     <module>mongock-api</module>
     <module>mongock-driver</module>
@@ -58,9 +58,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:cloudyrock/changock-core.git</connection>
-    <developerConnection>scm:git:git@github.com:cloudyrock/changock-core.git</developerConnection>
-    <url>https://github.com/cloudyrock/changock-core</url>
+    <connection>scm:git:git@github.com:cloudyrock/mongock-core.git</connection>
+    <developerConnection>scm:git:git@github.com:cloudyrock/mongock-core.git</developerConnection>
+    <url>https://github.com/cloudyrock/mongock-core</url>
     <tag>changock-1.0.0.alpha-SNAPSHOT</tag>
   </scm>
 
