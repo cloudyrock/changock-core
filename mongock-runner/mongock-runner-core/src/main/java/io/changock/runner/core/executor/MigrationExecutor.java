@@ -61,14 +61,14 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       if(!this.isThereAnyChangeSetItemToBeExecuted(changeLogs)) {
-        logger.info("Changock skipping the data migration. All change set items are already executed or there is no change set item.");
+        logger.info("Mongock skipping the data migration. All change set items are already executed or there is no change set item.");
         return;
       }
       lockManager.acquireLockDefault();
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processAllChangeLogs(changeLogs));
     } finally {
       this.executionInProgress = false;
-      logger.info("Changock has finished");
+      logger.info("Mongock has finished");
     }
   }
 
@@ -82,7 +82,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   protected void processAllChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
     String executionId = generateExecutionId();
-    logger.info("Changock starting the data migration sequence id[{}]...", executionId);
+    logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
     for (ChangeLogItem changeLog : changeLogs) {
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, changeLog));
     }

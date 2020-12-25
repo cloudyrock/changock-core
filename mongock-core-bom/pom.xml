@@ -9,8 +9,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>mongock-core-bom</artifactId>
-  <name>Changock BOM</name>
-  <description>Changock dependency management</description>
+  <name>Mongock core BOM</name>
+  <description>Mongock core dependency management</description>
   <properties>
     <changock.version>2.0.0.BETA-SNAPSHOT</changock.version>
   </properties>

@@ -30,7 +30,7 @@ public class DefaultLockManager implements LockManager {
   private static final String MAX_WAIT_EXCEEDED_ERROR_MSG =
       "Waiting time required(%d ms) to take the lock is longer than maxWaitingTime(%d ms)";
   private static final String GOING_TO_SLEEP_MSG =
-      "Changock is going to sleep to wait for the lock:  {} ms({} minutes)";
+      "Mongock is going to sleep to wait for the lock:  {} ms({} minutes)";
   private static final String EXPIRATION_ARG_ERROR_MSG = "Lock expiration period must be greater than %d ms";
   private static final String MAX_TRIES_ERROR_TEMPLATE = "MaxTries(%d) reached due to LockPersistenceException: \n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
   private static final String LOCK_HELD_BY_OTHER_PROCESS = "Lock held by other process. Cannot ensure lock.\n\tCurrent try: %d\n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
@@ -95,10 +95,10 @@ public class DefaultLockManager implements LockManager {
     boolean keepLooping = true;
     do {
       try {
-        logger.info("Changock trying to acquire the lock");
+        logger.info("Mongock trying to acquire the lock");
         Date newLockExpiresAt = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
         repository.insertUpdate(new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, newLockExpiresAt));
-        logger.info("Changock acquired the lock until: {}", newLockExpiresAt);
+        logger.info("Mongock acquired the lock until: {}", newLockExpiresAt);
         updateStatus(newLockExpiresAt);
         keepLooping = false;
       } catch (LockPersistenceException ex) {
@@ -123,12 +123,12 @@ public class DefaultLockManager implements LockManager {
     do {
       if (needsRefreshLock()) {
         try {
-          logger.info("Changock trying to refresh the lock");
+          logger.info("Mongock trying to refresh the lock");
           Date lockExpiresAtTemp = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
           LockEntry lockEntry = new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, lockExpiresAtTemp);
           repository.updateIfSameOwner(lockEntry);
           updateStatus(lockExpiresAtTemp);
-          logger.info("Changock refreshed the lock until: {}", lockExpiresAtTemp);
+          logger.info("Mongock refreshed the lock until: {}", lockExpiresAtTemp);
           keepLooping = false;
         } catch (LockPersistenceException ex) {
           handleLockException(false, ex);
@@ -158,10 +158,10 @@ public class DefaultLockManager implements LockManager {
   }
 
   private void releaseLock(String lockKey) {
-    logger.info("Changock releasing the lock");
+    logger.info("Mongock releasing the lock");
     repository.removeByKeyAndOwner(lockKey, this.getOwner());
     this.lockExpiresAt = null;
-    logger.info("Changock released the lock");
+    logger.info("Mongock released the lock");
 
   }
 

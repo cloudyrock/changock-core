@@ -18,7 +18,7 @@ public class ChangockConfiguration {
   private String lockRepositoryName;
 
   /**
-   * If false, Changock won't create the necessary index. However it will check that they are already
+   * If false, Mongock won't create the necessary index. However it will check that they are already
    * created, failing otherwise. Default true
    */
   private boolean indexCreation = true;
@@ -34,7 +34,7 @@ public class ChangockConfiguration {
   private int maxWaitingForLockMinutes = 4;
 
   /**
-   * Max number of times Changock will try to acquire the lock. Default 3
+   * Max number of times Mongock will try to acquire the lock. Default 3
    */
   private int maxTries = 3;
 
@@ -44,12 +44,12 @@ public class ChangockConfiguration {
   private boolean trackIgnored = false;
 
   /**
-   * Changock will throw ChangockException if lock can not be obtained. Default true
+   * Mongock will throw ChangockException if lock can not be obtained. Default true
    */
   private boolean throwExceptionIfCannotObtainLock = true;
 
   /**
-   * If false, will disable Changock. Default true
+   * If false, will disable Mongock. Default true
    */
   private boolean enabled = true;
 

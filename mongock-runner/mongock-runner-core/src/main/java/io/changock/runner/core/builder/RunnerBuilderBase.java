@@ -186,21 +186,21 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public void runValidation() throws ChangockException {
     if (driver == null) {
-      throw new ChangockException("Driver must be injected to Changock builder");
+      throw new ChangockException("Driver must be injected to Mongock builder");
     }
     if (changeLogsScanPackage == null || changeLogsScanPackage.isEmpty()) {
-      throw new ChangockException("changeLogsScanPackage must be injected to Changock builder");
+      throw new ChangockException("changeLogsScanPackage must be injected to Mongock builder");
     }
     if (!throwExceptionIfCannotObtainLock) {
-      logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Changock will continue even if it's not able to acquire the lock");
+      logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Mongock will continue even if it's not able to acquire the lock");
     }
     if (!"0".equals(startSystemVersion) || !String.valueOf(Integer.MAX_VALUE).equals(endSystemVersion)) {
-      logger.info("Running Changock with startSystemVersion[{}] and endSystemVersion[{}]", startSystemVersion, endSystemVersion);
+      logger.info("Running Mongock with startSystemVersion[{}] and endSystemVersion[{}]", startSystemVersion, endSystemVersion);
     }
     if (metadata == null) {
-      logger.info("Running Changock with NO metadata");
+      logger.info("Running Mongock with NO metadata");
     } else {
-      logger.info("Running Changock with metadata");
+      logger.info("Running Mongock with metadata");
     }
   }
 

@@ -8,7 +8,7 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <name>Changock test runner</name>
+  <name>Mongock test runner</name>
   <description>Runner for tests</description>
   <url>https://github.com/cloudyrock/mongock-test-runner</url>
 

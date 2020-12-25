@@ -36,7 +36,7 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
   }
 
   /**
-   * @return true if Changock runner is enabled and able to run, otherwise false
+   * @return true if Mongock runner is enabled and able to run, otherwise false
    */
   public boolean isEnabled() {
     return enabled;
@@ -44,7 +44,7 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
 
   public void execute() throws ChangockException {
     if (!isEnabled()) {
-      logger.info("Changock is disabled. Exiting.");
+      logger.info("Mongock is disabled. Exiting.");
     } else {
       try {
         this.validate();
@@ -57,11 +57,11 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
         ChangockException changockException = new ChangockException(lockEx);
         eventPublisher.publishMigrationFailedEvent(changockException);
         if (throwExceptionIfCannotObtainLock) {
-          logger.error("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
+          logger.error("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
           throw changockException;
 
         } else {
-          logger.warn("Changock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
+          logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
         }
 
       } catch (Exception ex) {

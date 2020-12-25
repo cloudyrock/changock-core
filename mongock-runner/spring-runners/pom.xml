@@ -9,7 +9,7 @@
 
   <artifactId>spring-runners</artifactId>
   <packaging>pom</packaging>
-  <name>Changock Spring 5 runner</name>
+  <name>Mongock Spring 5 runner</name>
   <description>Spring runner for changock</description>
   <modules>
     <module>mongock-spring-runner-util</module>

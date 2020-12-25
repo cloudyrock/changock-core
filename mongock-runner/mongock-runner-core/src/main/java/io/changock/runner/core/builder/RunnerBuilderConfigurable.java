@@ -34,7 +34,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setTrackIgnored(boolean trackIgnored);
 
   /**
-   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Changock won't throw
+   * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Mongock won't throw
    * any exception and the application will carry on.
    *
    * Only set this to false if the changes are not mandatory and the application can work without them. Leave it true otherwise.
@@ -49,7 +49,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    * Set up the start Version for versioned schema changes.
    * This shouldn't be confused with a supposed change version(Notice, currently changeSet doesn't have version).
    * This is from a consultancy point of view. So the changeSet are tagged with a systemVersion and then when building
-   * Changock, you specify the systemVersion range you want to apply, so all the changeSets tagged with systemVersion
+   * Mongock, you specify the systemVersion range you want to apply, so all the changeSets tagged with systemVersion
    * inside that range will be applied
    * <b>Optional</b> Default value 0
    *
@@ -61,7 +61,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   /**
    * Set up the end Version for versioned schema changes.
    * This shouldn't be confused with the changeSet systemVersion. This is from a consultancy point of view.
-   * So the changeSet are tagged with a systemVersion and then when building Changock, you specify
+   * So the changeSet are tagged with a systemVersion and then when building Mongock, you specify
    * the systemVersion range you want to apply, so all the changeSets tagged with systemVersion inside that
    * range will be applied.
    * <b>Optional</b> Default value string value of MAX_INTEGER
@@ -72,7 +72,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setEndSystemVersion(String endSystemVersion);
 
   /**
-   * Set the metadata for the Changock process. This metadata will be added to each document in the ChangockChangeLog
+   * Set the metadata for the Mongock process. This metadata will be added to each document in the ChangockChangeLog
    * collection. This is useful when the system needs to add some extra info to the changeLog.
    * <b>Optional</b> Default value empty Map
    *

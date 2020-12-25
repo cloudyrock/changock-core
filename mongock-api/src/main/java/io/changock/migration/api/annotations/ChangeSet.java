@@ -41,7 +41,7 @@ public @interface ChangeSet {
   String order();   // must be set
 
   /**
-   * Executes the change set on every Changock's execution, even if it has been run before.
+   * Executes the change set on every Mongock's execution, even if it has been run before.
    * Optional (default is false)
    *
    * @return should run always?

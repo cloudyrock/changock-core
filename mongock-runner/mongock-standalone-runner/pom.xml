@@ -9,8 +9,8 @@
   </parent>
 
   <artifactId>mongock-standalone-runner</artifactId>
-  <name>Changock standalone runner</name>
-  <description>Standalone runner for Changock</description>
+  <name>Mongock standalone runner</name>
+  <description>Standalone runner for Mongock</description>
   <url>https://github.com/cloudyrock/mongock-standalone-runner</url>
 
 
