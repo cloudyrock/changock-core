@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>changock-decorator-util</artifactId>
+  <artifactId>mongock-decorator-util</artifactId>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>

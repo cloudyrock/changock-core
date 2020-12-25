@@ -78,7 +78,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.changock</groupId>
-        <artifactId>changock-decorator-util</artifactId>
+        <artifactId>mongock-decorator-util</artifactId>
         <version>${changock.version}</version>
       </dependency>
     </dependencies>

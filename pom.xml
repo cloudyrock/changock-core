@@ -11,7 +11,7 @@
     <module>changock-driver</module>
     <module>changock-runner</module>
     <module>changock-utils</module>
-    <module>changock-decorator-util</module>
+    <module>mongock-decorator-util</module>
     <module>changock-test-util</module>
     <module>mongock-core-bom</module>
   </modules>
