@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>spring-runners</artifactId>
-    <groupId>com.github.cloudyrock.changock</groupId>
+    <groupId>com.github.cloudyrock.mongock</groupId>
     <version>2.0.0.BETA-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -23,22 +23,22 @@
     <!-- CHANGOCK -->
 
     <dependency>
-      <groupId>com.github.cloudyrock.changock</groupId>
+      <groupId>com.github.cloudyrock.mongock</groupId>
       <artifactId>mongock-spring-runner-util</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.cloudyrock.changock</groupId>
+      <groupId>com.github.cloudyrock.mongock</groupId>
       <artifactId>mongock-runner-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.cloudyrock.changock</groupId>
+      <groupId>com.github.cloudyrock.mongock</groupId>
       <artifactId>mongock-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.cloudyrock.changock</groupId>
+      <groupId>com.github.cloudyrock.mongock</groupId>
       <artifactId>mongock-utils</artifactId>
       <version>${project.version}</version>
     </dependency>
