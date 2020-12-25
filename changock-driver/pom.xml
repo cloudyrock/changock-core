@@ -10,8 +10,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>changock-driver-api</module>
-    <module>changock-driver-core</module>
+    <module>mongock-driver-api</module>
+    <module>mongock-driver-core</module>
   </modules>
 
   <properties>

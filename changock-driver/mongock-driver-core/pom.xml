@@ -8,7 +8,7 @@
     <version>2.0.0.BETA-SNAPSHOT</version>
   </parent>
 
-  <artifactId>changock-driver-core</artifactId>
+  <artifactId>mongock-driver-core</artifactId>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>changock-driver-api</artifactId>
+      <artifactId>mongock-driver-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

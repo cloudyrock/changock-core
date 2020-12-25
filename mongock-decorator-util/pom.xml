@@ -21,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>changock-driver-core</artifactId>
+      <artifactId>mongock-driver-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

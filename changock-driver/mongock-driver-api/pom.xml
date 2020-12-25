@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>changock-driver-api</artifactId>
+  <artifactId>mongock-driver-api</artifactId>
 
 
   <properties>
