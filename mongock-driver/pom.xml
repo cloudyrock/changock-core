@@ -6,7 +6,7 @@
     <artifactId>changock</artifactId>
     <version>2.0.0.BETA-SNAPSHOT</version>
   </parent>
-  <artifactId>changock-driver</artifactId>
+  <artifactId>mongock-driver</artifactId>
   <packaging>pom</packaging>
 
   <modules>

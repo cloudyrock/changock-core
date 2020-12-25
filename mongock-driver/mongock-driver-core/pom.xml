@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.github.cloudyrock.changock</groupId>
-    <artifactId>changock-driver</artifactId>
+    <artifactId>mongock-driver</artifactId>
     <version>2.0.0.BETA-SNAPSHOT</version>
   </parent>
 

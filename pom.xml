@@ -8,7 +8,7 @@
   <url>https://github.com/cloudyrock/changock-core</url>
   <modules>
     <module>mongock-api</module>
-    <module>changock-driver</module>
+    <module>mongock-driver</module>
     <module>changock-runner</module>
     <module>changock-utils</module>
     <module>mongock-decorator-util</module>
