@@ -10,7 +10,7 @@
     <module>mongock-api</module>
     <module>mongock-driver</module>
     <module>changock-runner</module>
-    <module>changock-utils</module>
+    <module>mongock-utils</module>
     <module>mongock-decorator-util</module>
     <module>changock-test-util</module>
     <module>mongock-core-bom</module>

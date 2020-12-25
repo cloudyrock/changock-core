@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>changock-utils</artifactId>
+      <artifactId>mongock-utils</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
