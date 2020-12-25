@@ -7,7 +7,7 @@
   <description>Migration runner classes base for</description>
   <url>https://github.com/cloudyrock/changock-core</url>
   <modules>
-    <module>changock-api</module>
+    <module>mongock-api</module>
     <module>changock-driver</module>
     <module>changock-runner</module>
     <module>changock-utils</module>

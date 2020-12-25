@@ -58,7 +58,7 @@ public class ChangeLogService implements Validable {
    * @param changeLogsBasePackageList   list of changeLog packages
    * @param startSystemVersionInclusive inclusive starting systemVersion
    * @param endSystemVersionInclusive   inclusive ending systemVersion
-   * @param annotationProcessor         in case the annotations are different from the ones define in changock-api, its required a class to manage them
+   * @param annotationProcessor         in case the annotations are different from the ones define in mongock-api, its required a class to manage them
    */
   public ChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive, AnnotationProcessor annotationProcessor) {
     this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor);

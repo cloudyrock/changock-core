@@ -21,7 +21,7 @@
     <!-- CHANGOCK DEPENDENCIES -->
     <dependency>
       <groupId>com.github.cloudyrock.changock</groupId>
-      <artifactId>changock-api</artifactId>
+      <artifactId>mongock-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
