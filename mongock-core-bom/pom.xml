@@ -12,7 +12,7 @@
   <name>Mongock core BOM</name>
   <description>Mongock core dependency management</description>
   <properties>
-    <changock.version>2.0.0.BETA-SNAPSHOT</changock.version>
+    <mongock-core.version>2.0.0.BETA-SNAPSHOT</mongock-core.version>
   </properties>
 
   <dependencyManagement>
@@ -20,37 +20,37 @@
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-api</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-driver-api</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-driver-core</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-runner-core</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-standalone-runner</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-spring-runner-util</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-spring-v5-runner</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -69,17 +69,17 @@
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-test-runner</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-test-util</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-decorator-util</artifactId>
-        <version>${changock.version}</version>
+        <version>${mongock-core.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -1,8 +1,8 @@
 package io.changock.driver.core.common;
 
-import io.changock.utils.Process;
-import io.changock.utils.field.FieldInstance;
-import io.changock.utils.field.FieldUtil;
+import com.github.cloudyrock.mongock.utils.Process;
+import com.github.cloudyrock.mongock.utils.field.FieldInstance;
+import com.github.cloudyrock.mongock.utils.field.FieldUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;

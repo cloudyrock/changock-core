@@ -1,8 +1,8 @@
 package io.changock.driver.api.entry;
 
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import io.changock.utils.StringUtils;
-import io.changock.utils.field.Field;
+import com.github.cloudyrock.mongock.utils.StringUtils;
+import com.github.cloudyrock.mongock.utils.field.Field;
 
 import java.util.Date;
 

@@ -1,6 +1,6 @@
 package io.changock.driver.core.lock;
 
-import io.changock.utils.field.Field;
+import com.github.cloudyrock.mongock.utils.field.Field;
 
 import java.util.Date;
 

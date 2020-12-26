@@ -12,7 +12,7 @@ import io.changock.runner.spring.util.SpringEventPublisher;
 import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
-import io.changock.utils.CollectionUtils;
+import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;

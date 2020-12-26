@@ -1,7 +1,7 @@
 package io.changock.driver.api.driver;
 
 import io.changock.driver.api.common.ForbiddenParameterException;
-import io.changock.utils.OrSupplier;
+import com.github.cloudyrock.mongock.utils.OrSupplier;
 
 import java.util.HashMap;
 import java.util.Optional;

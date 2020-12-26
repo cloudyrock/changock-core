@@ -12,7 +12,7 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.utils.LogUtils;
+import com.github.cloudyrock.mongock.utils.LogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

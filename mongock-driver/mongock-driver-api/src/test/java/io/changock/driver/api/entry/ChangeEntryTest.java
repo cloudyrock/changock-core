@@ -2,8 +2,8 @@ package io.changock.driver.api.entry;
 
 
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import io.changock.utils.field.FieldInstance;
-import io.changock.utils.field.FieldUtil;
+import com.github.cloudyrock.mongock.utils.field.FieldInstance;
+import com.github.cloudyrock.mongock.utils.field.FieldUtil;
 import org.junit.Assert;
 import org.junit.Test;
 

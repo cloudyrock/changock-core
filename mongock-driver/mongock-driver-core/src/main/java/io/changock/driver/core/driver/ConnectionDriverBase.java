@@ -6,8 +6,8 @@ import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.lock.DefaultLockManager;
 import io.changock.driver.core.lock.LockRepository;
-import io.changock.utils.TimeService;
-import io.changock.utils.annotation.NotThreadSafe;
+import com.github.cloudyrock.mongock.utils.TimeService;
+import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 
 @NotThreadSafe
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {

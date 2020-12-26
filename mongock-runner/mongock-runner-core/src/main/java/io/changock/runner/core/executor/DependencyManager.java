@@ -5,7 +5,7 @@ import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.utils.annotation.NotThreadSafe;
+import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

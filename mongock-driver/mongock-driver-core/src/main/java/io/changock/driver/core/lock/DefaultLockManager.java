@@ -2,8 +2,8 @@ package io.changock.driver.core.lock;
 
 import io.changock.driver.api.lock.LockCheckException;
 import io.changock.driver.api.lock.LockManager;
-import io.changock.utils.TimeService;
-import io.changock.utils.annotation.NotThreadSafe;
+import com.github.cloudyrock.mongock.utils.TimeService;
+import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

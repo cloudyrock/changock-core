@@ -1,7 +1,7 @@
 package io.changock.driver.api.entry;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.utils.Process;
+import com.github.cloudyrock.mongock.utils.Process;
 
 
 public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Process {

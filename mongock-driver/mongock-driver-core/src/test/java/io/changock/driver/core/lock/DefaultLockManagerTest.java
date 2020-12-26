@@ -2,7 +2,7 @@ package io.changock.driver.core.lock;
 
 import io.changock.driver.api.lock.LockCheckException;
 import io.changock.driver.api.lock.LockManager;
-import io.changock.utils.TimeService;
+import com.github.cloudyrock.mongock.utils.TimeService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
