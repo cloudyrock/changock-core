@@ -1,11 +1,11 @@
 package io.changock.driver.core.driver;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.core.lock.DefaultLockManager;
 import io.changock.driver.core.lock.LockRepository;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.utils.TimeService;
 import io.changock.utils.annotation.NotThreadSafe;
 
@@ -50,7 +50,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   @Override
   public LockManager getLockManager() {
     if(lockManager == null) {
-      throw new ChangockException("Internal error: Driver needs to be initialized by the runner");
+      throw new MongockException("Internal error: Driver needs to be initialized by the runner");
     }
     return lockManager;
   }
@@ -132,7 +132,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   protected abstract void specificInitialization();
 
   @Override
-  public void runValidation() throws ChangockException {
+  public void runValidation() throws MongockException {
 
   }
 }

@@ -1,9 +1,9 @@
-package io.changock.migration.api.config;
+package com.github.cloudyrock.mongock.config;
 
 import java.util.List;
 import java.util.Map;
 
-public class ChangockConfiguration {
+public class MongockConfiguration {
   private final static String LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME = "mongockChangeLog";
   private final static String LEGACY_DEFAULT_LOCK_REPOSITORY_NAME = "mongockLock";
 
@@ -44,7 +44,7 @@ public class ChangockConfiguration {
   private boolean trackIgnored = false;
 
   /**
-   * Mongock will throw ChangockException if lock can not be obtained. Default true
+   * Mongock will throw MongockException if lock can not be obtained. Default true
    */
   private boolean throwExceptionIfCannotObtainLock = true;
 
@@ -81,7 +81,7 @@ public class ChangockConfiguration {
   private LegacyMigration legacyMigration = null;
 
 
-  public ChangockConfiguration() {
+  public MongockConfiguration() {
     setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
     setLockRepositoryName(getLockRepositoryNameDefault());
   }

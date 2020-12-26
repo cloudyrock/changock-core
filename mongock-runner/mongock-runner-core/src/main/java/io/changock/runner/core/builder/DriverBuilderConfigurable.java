@@ -1,9 +1,9 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.config.ChangockConfiguration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 
-public interface DriverBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration> {
+public interface DriverBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, DRIVER extends ConnectionDriver, CONFIG extends MongockConfiguration> {
   /**
    * Set the specific connection driver
    * <b>Mandatory</b>

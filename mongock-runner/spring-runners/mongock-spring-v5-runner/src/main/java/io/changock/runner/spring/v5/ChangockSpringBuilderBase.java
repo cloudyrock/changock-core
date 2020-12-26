@@ -1,15 +1,15 @@
 package io.changock.runner.spring.v5;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.RunnerBuilderBase;
-import io.changock.migration.api.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
 import io.changock.runner.spring.util.SpringDependencyContext;
 import io.changock.runner.core.executor.DependencyManagerWithContext;
 import io.changock.runner.spring.util.SpringEventPublisher;
-import io.changock.migration.api.config.ChangockSpringConfiguration;
+import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import io.changock.runner.spring.v5.core.ProfiledChangeLogService;
 import io.changock.runner.spring.v5.core.SpringMigrationExecutor;
 import io.changock.utils.CollectionUtils;
@@ -21,9 +21,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static io.changock.migration.api.config.ChangockConstants.LEGACY_MIGRATION_NAME;
+import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends ChangockSpringConfiguration>
+public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends MongockSpringConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
 
   protected static final String DEFAULT_PROFILE = "default";
@@ -98,7 +98,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
 
   protected ProfiledChangeLogService buildProfiledChangeLogService() {
     if (springContext == null) {
-      throw new ChangockException("ApplicationContext from Spring must be injected to Builder");
+      throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
     Environment springEnvironment = springContext.getEnvironment();
     List<String> activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
@@ -122,7 +122,7 @@ public abstract class ChangockSpringBuilderBase<BUILDER_TYPE extends ChangockSpr
   public void runValidation() {
     super.runValidation();
     if (springContext == null) {
-      throw new ChangockException("ApplicationContext from Spring must be injected to Builder");
+      throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
   }
 

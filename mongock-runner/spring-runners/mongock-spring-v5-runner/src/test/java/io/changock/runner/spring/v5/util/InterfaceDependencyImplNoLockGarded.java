@@ -1,6 +1,6 @@
 package io.changock.runner.spring.v5.util;
 
-import io.changock.migration.api.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
 
 @NonLockGuarded
 public class InterfaceDependencyImplNoLockGarded implements InterfaceDependency {

@@ -2,7 +2,7 @@ package io.changock.runner.standalone;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.builder.RunnerBuilderBase;
-import io.changock.migration.api.config.ChangockConfiguration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import io.changock.runner.standalone.event.StandaloneMigrationFailureEvent;
 import io.changock.runner.standalone.event.StandaloneMigrationSuccessEvent;
 import io.changock.runner.standalone.event.StandaloneEventPublisher;
@@ -10,7 +10,7 @@ import io.changock.runner.standalone.event.StandaloneEventPublisher;
 import java.util.function.Consumer;
 
 public abstract class StandaloneBuilderBase<BUILDER extends StandaloneBuilderBase, DRIVER extends ConnectionDriver>
-    extends RunnerBuilderBase<BUILDER, DRIVER, ChangockConfiguration> {
+    extends RunnerBuilderBase<BUILDER, DRIVER, MongockConfiguration> {
 
   protected Runnable migrationStartedListener;
   protected Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;

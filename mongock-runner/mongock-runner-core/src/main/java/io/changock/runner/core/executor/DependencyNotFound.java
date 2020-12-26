@@ -1,8 +1,8 @@
 package io.changock.runner.core.executor;
 
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 
-public class DependencyNotFound extends ChangockException {
+public class DependencyNotFound extends MongockException {
   public DependencyNotFound(Exception exception) {
     super(exception);
   }

@@ -2,9 +2,9 @@ package io.changock.runner.spring.v5.core;
 
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.entry.ChangeEntry;
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.runner.core.executor.MigrationExecutor;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 import io.changock.runner.core.executor.DependencyManagerWithContext;
@@ -27,7 +27,7 @@ public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends M
   }
 
   @Override
-  public void initializationAndValidation() throws ChangockException {
+  public void initializationAndValidation() throws MongockException {
     super.initializationAndValidation();
     ((DependencyManagerWithContext) this.dependencyManager).runValidation();
   }

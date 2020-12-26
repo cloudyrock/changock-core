@@ -1,7 +1,7 @@
 package io.changock.driver.api.lock.guard.proxy;
 
 import io.changock.driver.api.lock.LockManager;
-import io.changock.migration.api.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
 import io.changock.utils.Utils;
 
 import java.lang.reflect.Proxy;

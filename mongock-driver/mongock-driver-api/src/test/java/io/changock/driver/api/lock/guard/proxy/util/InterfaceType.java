@@ -1,7 +1,7 @@
 package io.changock.driver.api.lock.guard.proxy.util;
 
-import io.changock.migration.api.annotations.NonLockGuarded;
-import io.changock.migration.api.annotations.NonLockGuardedType;
+import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.annotations.NonLockGuardedType;
 
 public interface InterfaceType {
 

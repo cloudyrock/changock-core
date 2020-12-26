@@ -1,7 +1,7 @@
 package io.changock.runner.core.changelogs.executor.test3_with_nonFailFast;
 
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
 import io.changock.runner.core.util.DummyDependencyClass;
 
 import java.util.concurrent.CountDownLatch;

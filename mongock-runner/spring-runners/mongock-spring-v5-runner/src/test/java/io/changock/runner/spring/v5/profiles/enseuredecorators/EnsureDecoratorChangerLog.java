@@ -1,8 +1,8 @@
 package io.changock.runner.spring.v5.profiles.enseuredecorators;
 
 
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
 import io.changock.runner.spring.v5.util.CallVerifier;
 import io.changock.runner.spring.v5.util.TemplateForTestImpl;
 import io.changock.runner.spring.v5.util.TemplateForTestImplChild;

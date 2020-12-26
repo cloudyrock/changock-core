@@ -1,11 +1,11 @@
 package io.changock.runner.core.executor;
 
 import io.changock.driver.api.common.Validable;
-import io.changock.migration.api.AnnotationProcessor;
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.ChangockAnnotationProcessor;
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.AnnotationProcessor;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.utils.CollectionUtils;
 import io.changock.utils.StringUtils;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -51,7 +51,7 @@ public class ChangeLogService implements Validable {
    * @param endSystemVersionInclusive   inclusive ending systemVersion
    */
   public ChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
-    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new ChangockAnnotationProcessor());
+    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new MongockAnnotationProcessor());
   }
 
   /**
@@ -77,15 +77,15 @@ public class ChangeLogService implements Validable {
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
     this.changeLogFilter = changeLogFilter;
     this.changeSetFilter = changeSetFilter;
-    this.annotationManager = annotationProcessor != null ? annotationProcessor : new ChangockAnnotationProcessor();
+    this.annotationManager = annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor();
   }
 
   @Override
-  public void runValidation() throws ChangockException {
+  public void runValidation() throws MongockException {
     if (
         (CollectionUtils.isNullEmpty(changeLogsBasePackageList) || !changeLogsBasePackageList.stream().allMatch(StringUtils::hasText))
             && CollectionUtils.isNullEmpty(changeLogsBaseClassList)) {
-      throw new ChangockException("Scan package for changeLogs is not set: use appropriate setter");
+      throw new MongockException("Scan package for changeLogs is not set: use appropriate setter");
     }
   }
 
@@ -111,10 +111,10 @@ public class ChangeLogService implements Validable {
   private ChangeLogItem buildChangeLogObject(Class<?> type) {
     try {
       return new ChangeLogItem(type, type.getConstructor().newInstance(), annotationManager.getChangeLogOrder(type), fetchChangeSetFromClass(type));
-    } catch (ChangockException ex) {
+    } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {
-      throw new ChangockException(ex);
+      throw new MongockException(ex);
     }
   }
 
@@ -127,14 +127,14 @@ public class ChangeLogService implements Validable {
   }
 
   @SuppressWarnings("unchecked")
-  private List<Method> fetchChangeSetMethodsSorted(final Class<?> type) throws ChangockException {
+  private List<Method> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
     final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
     changeSets.sort(new ChangeSetComparator(annotationManager));
     return changeSets;
   }
 
 
-  private List<Method> filterChangeSetAnnotation(List<Method> allMethods) throws ChangockException {
+  private List<Method> filterChangeSetAnnotation(List<Method> allMethods) throws MongockException {
     final Set<String> changeSetIds = new HashSet<>();
     final List<Method> changeSetMethods = new ArrayList<>();
     for (final Method method : allMethods) {
@@ -142,7 +142,7 @@ public class ChangeLogService implements Validable {
         ChangeSetItem changeSetItem = annotationManager.getChangeSet(method);
         String id = changeSetItem.getId();
         if (changeSetIds.contains(id)) {
-          throw new ChangockException(String.format("Duplicated changeset id found: '%s'", id));
+          throw new MongockException(String.format("Duplicated changeset id found: '%s'", id));
         }
         changeSetIds.add(id);
         if (isChangeSetWithinSystemVersionRange(changeSetItem)) {

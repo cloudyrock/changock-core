@@ -1,14 +1,11 @@
-package io.changock.migration.api;
-
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
+package com.github.cloudyrock.mongock;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ChangockAnnotationProcessor implements AnnotationProcessor {
+public class MongockAnnotationProcessor implements AnnotationProcessor {
 
   public Collection<Class<? extends Annotation>> getChangeLogAnnotationClass() {
     return Collections.singletonList(ChangeLog.class);

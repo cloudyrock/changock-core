@@ -8,10 +8,10 @@ import io.changock.driver.api.entry.ChangeEntry;
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.annotations.NonLockGuarded;
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.utils.LogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,7 +191,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
         : exception.getMessage();
     String finalMessage = String.format("Error in method[%s.%s] : %s", method.getDeclaringClass().getSimpleName(), method.getName(), exceptionMsg);
     if (throwException) {
-      throw new ChangockException(finalMessage, exception);
+      throw new MongockException(finalMessage, exception);
 
     } else {
       logger.warn(finalMessage, exception);
@@ -199,7 +199,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   }
 
   @SuppressWarnings("unchecked")
-  protected void initializationAndValidation() throws ChangockException {
+  protected void initializationAndValidation() throws MongockException {
     this.executionInProgress = true;
     driver.initialize();
     driver.runValidation();

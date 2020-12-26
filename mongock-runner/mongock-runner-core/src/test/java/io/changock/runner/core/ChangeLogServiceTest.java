@@ -1,9 +1,9 @@
 package io.changock.runner.core;
 
 
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.runner.core.changelogs.comparator.Comparator1ChangeLog;
 import io.changock.runner.core.changelogs.comparator.Comparator2ChangeLog;
 import io.changock.runner.core.changelogs.multipackage.ChangeLogNoPackage;
@@ -32,7 +32,7 @@ public class ChangeLogServiceTest {
         .runValidation();
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldFail_WhenValidate_ifParametersEmpty() {
     new ChangeLogService(Collections.emptyList(), Collections.emptyList(), "0", "999")
         .runValidation();

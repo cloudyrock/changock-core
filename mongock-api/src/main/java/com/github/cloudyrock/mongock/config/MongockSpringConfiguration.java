@@ -1,6 +1,6 @@
-package io.changock.migration.api.config;
+package com.github.cloudyrock.mongock.config;
 
-public class ChangockSpringConfiguration extends ChangockConfiguration {
+public class MongockSpringConfiguration extends MongockConfiguration {
   /**
    * Type of Spring bean Mongock should be: ApplicationRunner(default) or InitializingBean
    */

@@ -1,4 +1,6 @@
-package io.changock.migration.api.annotations;
+package com.github.cloudyrock.mongock.annotations;
+
+import com.github.cloudyrock.mongock.ChangeLog;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

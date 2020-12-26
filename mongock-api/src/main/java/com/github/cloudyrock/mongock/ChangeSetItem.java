@@ -1,4 +1,4 @@
-package io.changock.migration.api;
+package com.github.cloudyrock.mongock;
 
 import java.lang.reflect.Method;
 import java.util.Objects;

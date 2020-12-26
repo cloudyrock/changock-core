@@ -9,11 +9,11 @@ import io.changock.runner.core.executor.MigrationExecutor;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
 import io.changock.runner.core.builder.RunnerBuilderBase;
-import io.changock.migration.api.config.ChangockConfiguration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 
 public class TestChangockRunner extends ChangockBase {
 
-  public static DriverBuilderConfigurable<Builder, ConnectionDriver, ChangockConfiguration> builder() {
+  public static DriverBuilderConfigurable<Builder, ConnectionDriver, MongockConfiguration> builder() {
     return new Builder();
   }
 
@@ -25,7 +25,7 @@ public class TestChangockRunner extends ChangockBase {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, ConnectionDriver, ChangockConfiguration> {
+  public static class Builder extends RunnerBuilderBase<Builder, ConnectionDriver, MongockConfiguration> {
 
     private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;

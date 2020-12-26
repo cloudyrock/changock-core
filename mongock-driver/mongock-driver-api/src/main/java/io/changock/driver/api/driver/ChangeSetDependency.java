@@ -1,6 +1,6 @@
 package io.changock.driver.api.driver;
 
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 
 import java.util.Objects;
 
@@ -30,13 +30,13 @@ public class ChangeSetDependency {
 
   private void checkParameters(String name, Class<?> type, Object instance) {
     if(name == null || name.isEmpty()) {
-      throw new ChangockException("dependency name cannot be null/empty");
+      throw new MongockException("dependency name cannot be null/empty");
     }
     if(type ==null) {
-      throw new ChangockException("dependency type cannot be null");
+      throw new MongockException("dependency type cannot be null");
     }
     if(instance ==null) {
-      throw new ChangockException("dependency instance cannot be null");
+      throw new MongockException("dependency instance cannot be null");
     }
   }
 

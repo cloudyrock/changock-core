@@ -1,11 +1,11 @@
 package io.changock.runner.core.builder;
 
-import io.changock.migration.api.config.ChangockConfiguration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 
 import java.util.Collections;
 import java.util.List;
 
-public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration> {
+public interface PackageBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends MongockConfiguration> {
 
 
   BUILDER_TYPE setConfig(CONFIG config);

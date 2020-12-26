@@ -1,8 +1,8 @@
 package io.changock.runner.core.executor;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.migration.api.exception.ChangockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class DependencyManagerWithContext extends DependencyManager implements V
             byName ? context.getBean(name) : context.getBean(type));
         if (lockGuarded) {
           if (!type.isInterface()) {
-            throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
+            throw new MongockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
           }
           return dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
         } else {
@@ -55,9 +55,9 @@ public class DependencyManagerWithContext extends DependencyManager implements V
   }
 
   @Override
-  public void runValidation() throws ChangockException {
+  public void runValidation() throws MongockException {
     if (context == null) {
-      throw new ChangockException("SpringContext not injected to SpringDependencyManager");
+      throw new MongockException("SpringContext not injected to SpringDependencyManager");
     }
   }
 }

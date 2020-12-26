@@ -1,9 +1,9 @@
 package io.changock.runner.spring.v5.core;
 
 
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.ChangockAnnotationProcessor;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import io.changock.runner.spring.v5.profiles.defaultProfiled.DefaultProfiledChangerLog;
 import io.changock.runner.spring.v5.profiles.dev.DevProfiledChangerLog;
 import io.changock.runner.spring.v5.profiles.pro.ProProfiledChangeLog;
@@ -32,7 +32,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         Collections.singletonList("dev"),
-        new ChangockAnnotationProcessor()
+        new MongockAnnotationProcessor()
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
@@ -67,7 +67,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         Collections.singletonList("default"),
-        new ChangockAnnotationProcessor()
+        new MongockAnnotationProcessor()
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
@@ -101,7 +101,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         Collections.singletonList("anotherProfile"),
-        new ChangockAnnotationProcessor()
+        new MongockAnnotationProcessor()
     );
     assertEquals(0, changeLogService.fetchChangeLogs().size());
   }
@@ -116,7 +116,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         Collections.singletonList("anotherProfile"),
-        new ChangockAnnotationProcessor()
+        new MongockAnnotationProcessor()
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
@@ -141,7 +141,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         Collections.singletonList("default"),
-        new ChangockAnnotationProcessor()
+        new MongockAnnotationProcessor()
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);

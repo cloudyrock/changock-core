@@ -1,7 +1,7 @@
 package io.changock.runner.spring.v5.profiles.pro;
 
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
 import org.springframework.context.annotation.Profile;
 
 

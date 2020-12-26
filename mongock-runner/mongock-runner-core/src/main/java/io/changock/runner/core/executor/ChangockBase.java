@@ -1,7 +1,7 @@
 package io.changock.runner.core.executor;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.lock.LockCheckException;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.event.EventPublisher;
 import io.changock.runner.core.event.MigrationResult;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
     return enabled;
   }
 
-  public void execute() throws ChangockException {
+  public void execute() throws MongockException {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
     } else {
@@ -54,18 +54,18 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
         eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
 
       } catch (LockCheckException lockEx) {
-        ChangockException changockException = new ChangockException(lockEx);
-        eventPublisher.publishMigrationFailedEvent(changockException);
+        MongockException mongockException = new MongockException(lockEx);
+        eventPublisher.publishMigrationFailedEvent(mongockException);
         if (throwExceptionIfCannotObtainLock) {
           logger.error("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
-          throw changockException;
+          throw mongockException;
 
         } else {
           logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
         }
 
       } catch (Exception ex) {
-        ChangockException exWrapper = ChangockException.class.isAssignableFrom(ex.getClass()) ? (ChangockException) ex : new ChangockException(ex);
+        MongockException exWrapper = MongockException.class.isAssignableFrom(ex.getClass()) ? (MongockException) ex : new MongockException(ex);
         logger.error("Error in changock process. ABORTED MIGRATION", exWrapper);
         eventPublisher.publishMigrationFailedEvent(exWrapper);
         throw exWrapper;
@@ -74,7 +74,7 @@ public class ChangockBase<EXECUTOR extends MigrationExecutor> {
     }
   }
 
-  protected void validate() throws ChangockException {
+  protected void validate() throws MongockException {
     chanLogService.runValidation();
   }
 }

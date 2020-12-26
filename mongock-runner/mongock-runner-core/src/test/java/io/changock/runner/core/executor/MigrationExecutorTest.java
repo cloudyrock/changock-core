@@ -9,10 +9,10 @@ import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.api.entry.ChangeState;
 import io.changock.driver.api.lock.LockManager;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.exception.ChangockException;
-import io.changock.migration.api.config.LegacyMigration;
-import io.changock.migration.api.config.LegacyMigrationMappingFields;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
 import io.changock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import io.changock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import io.changock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
@@ -192,7 +192,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
 
     // then
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Wrong parameter[DummyDependencyClass]");
 
     // when
@@ -208,7 +208,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
 
     //then
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("argument type mismatch");
 
     // when
@@ -235,13 +235,13 @@ public class MigrationExecutorTest {
   }
 
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   @SuppressWarnings("unchecked")
   public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfDriverNotValidated() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
-    doThrow(ChangockException.class).when(driver).runValidation();
+    doThrow(MongockException.class).when(driver).runValidation();
 
     // when
     new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
@@ -300,7 +300,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
 
     // then
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
 
     // when
@@ -316,7 +316,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
 
     // then
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Parameter of type [DummyDependencyClass] must be an interface");
 
     // when

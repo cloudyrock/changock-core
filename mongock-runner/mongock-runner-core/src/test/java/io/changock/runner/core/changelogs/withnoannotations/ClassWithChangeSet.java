@@ -1,6 +1,6 @@
 package io.changock.runner.core.changelogs.withnoannotations;
 
-import io.changock.migration.api.annotations.ChangeSet;
+import com.github.cloudyrock.mongock.ChangeSet;
 
 
 public class ClassWithChangeSet {

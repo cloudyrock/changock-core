@@ -1,14 +1,12 @@
 package io.changock.driver.api.entry;
 
 
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.migration.api.ChangeSetItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import io.changock.utils.field.FieldInstance;
 import io.changock.utils.field.FieldUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

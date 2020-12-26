@@ -1,8 +1,8 @@
 package io.changock.driver.api.common;
 
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 
 public interface Validable {
 
-  void runValidation() throws ChangockException;
+  void runValidation() throws MongockException;
 }

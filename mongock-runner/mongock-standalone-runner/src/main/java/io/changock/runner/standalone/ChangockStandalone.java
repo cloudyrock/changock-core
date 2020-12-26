@@ -1,13 +1,13 @@
 package io.changock.runner.standalone;
 
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.config.ChangockConfiguration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import io.changock.runner.core.builder.DriverBuilderConfigurable;
 
 public final class ChangockStandalone {
 
 
-  public static DriverBuilderConfigurable<Builder, ConnectionDriver, ChangockConfiguration> builder() {
+  public static DriverBuilderConfigurable<Builder, ConnectionDriver, MongockConfiguration> builder() {
     return new Builder();
   }
 

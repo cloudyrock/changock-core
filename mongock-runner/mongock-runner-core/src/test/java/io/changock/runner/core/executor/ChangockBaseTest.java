@@ -1,13 +1,10 @@
 package io.changock.runner.core.executor;
 
-import io.changock.migration.api.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.lock.LockCheckException;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.core.event.EventPublisher;
 import io.changock.runner.core.event.MigrationResult;
-import io.changock.runner.core.executor.ChangeLogService;
-import io.changock.runner.core.executor.ChangockBase;
-import io.changock.runner.core.executor.MigrationExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -63,13 +60,13 @@ public class ChangockBaseTest {
     verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateException_IfChangeLogServiceNotValidated() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    doThrow(ChangockException.class).when(changeLogService).runValidation();
+    doThrow(MongockException.class).when(changeLogService).runValidation();
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
@@ -78,13 +75,13 @@ public class ChangockBaseTest {
 
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateException_IfFetchingLogsFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    doThrow(ChangockException.class).when(changeLogService).fetchChangeLogs();
+    doThrow(MongockException.class).when(changeLogService).fetchChangeLogs();
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
@@ -93,13 +90,13 @@ public class ChangockBaseTest {
 
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateException_IfFExecuteMigrationFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    doThrow(ChangockException.class).when(executor).executeMigration(any());
+    doThrow(MongockException.class).when(executor).executeMigration(any());
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new ChangockBase(executor, changeLogService, true, true, eventPublisher).execute();
@@ -125,43 +122,43 @@ public class ChangockBaseTest {
 
 
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfChangelogServiceNotValidated() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    doThrow(ChangockException.class).when(changeLogService).runValidation();
+    doThrow(MongockException.class).when(changeLogService).runValidation();
 
     new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfFetchFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    doThrow(ChangockException.class).when(changeLogService).fetchChangeLogs();
+    doThrow(MongockException.class).when(changeLogService).fetchChangeLogs();
 
     new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfMigrationExecutionFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    doThrow(ChangockException.class).when(executor).executeMigration(any());
+    doThrow(MongockException.class).when(executor).executeMigration(any());
 
     new ChangockBase(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldPropagateLockExceptionWrappedInChangockException_whenExecuteMigrationFails_IfThrowExceptionIfCannotObtainLockTrue() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
@@ -187,7 +184,7 @@ public class ChangockBaseTest {
 
 
 
-  @Test(expected = ChangockException.class)
+  @Test(expected = MongockException.class)
   public void shouldWrapGenericExceptionInChangockException() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);

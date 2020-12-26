@@ -1,6 +1,6 @@
 package io.changock.runner.spring.v5.core;
 
-import io.changock.migration.api.AnnotationProcessor;
+import com.github.cloudyrock.mongock.AnnotationProcessor;
 import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.spring.util.ProfileUtil;
 

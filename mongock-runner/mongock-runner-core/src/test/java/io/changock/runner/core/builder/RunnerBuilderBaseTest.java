@@ -1,15 +1,15 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.ChangeLogItem;
-import io.changock.migration.api.ChangeSetItem;
-import io.changock.migration.api.annotations.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.ChangeLog;
 import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.core.executor.ChangockBase;
 import io.changock.runner.core.event.EventPublisher;
 import io.changock.runner.core.executor.MigrationExecutor;
-import io.changock.migration.api.config.ChangockConfiguration;
-import io.changock.migration.api.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
 import io.changock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import io.changock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import io.changock.runner.core.util.LegacyMigrationDummyImpl;
@@ -187,8 +187,8 @@ public class RunnerBuilderBaseTest {
     verify(builder, new Times(1)).withMetadata(METADATA);
   }
 
-  private ChangockConfiguration getConfig(Boolean throwEx, String... packages) {
-    ChangockConfiguration config = new DummyChangockConfiguration();
+  private MongockConfiguration getConfig(Boolean throwEx, String... packages) {
+    MongockConfiguration config = new DummyMongockConfiguration();
     config.setChangeLogsScanPackage(Arrays.asList(packages));
     config.setEnabled(false);
     config.setStartSystemVersion(START_SYSTEM_VERSION);
@@ -204,7 +204,7 @@ public class RunnerBuilderBaseTest {
   }
 }
 
-class DummyChangockConfiguration extends ChangockConfiguration{
+class DummyMongockConfiguration extends MongockConfiguration{
 
   @Override
   public LegacyMigration getLegacyMigration() {
@@ -222,7 +222,7 @@ class DummyChangockConfiguration extends ChangockConfiguration{
   }
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, ChangockConfiguration> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, MongockConfiguration> {
 
 
   private MigrationExecutor executor;

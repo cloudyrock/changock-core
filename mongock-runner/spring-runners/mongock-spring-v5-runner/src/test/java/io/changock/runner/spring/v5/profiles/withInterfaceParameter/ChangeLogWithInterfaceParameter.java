@@ -1,8 +1,8 @@
 package io.changock.runner.spring.v5.profiles.withInterfaceParameter;
 
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
-import io.changock.migration.api.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
+import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
 import io.changock.runner.spring.v5.util.ClassNotInterfaced;
 import io.changock.runner.spring.v5.util.InterfaceDependency;
 

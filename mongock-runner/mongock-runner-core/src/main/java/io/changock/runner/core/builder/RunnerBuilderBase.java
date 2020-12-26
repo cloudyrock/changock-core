@@ -1,16 +1,16 @@
 package io.changock.runner.core.builder;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.common.Validable;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.migration.api.AnnotationProcessor;
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.AnnotationProcessor;
 import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.core.executor.DependencyManager;
 import io.changock.runner.core.executor.MigrationExecutor;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
-import io.changock.migration.api.config.ChangockConfiguration;
-import io.changock.migration.api.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static io.changock.migration.api.config.ChangockConstants.LEGACY_MIGRATION_NAME;
+import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends ChangockConfiguration>
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends MongockConfiguration>
     implements
     DriverBuilderConfigurable<BUILDER_TYPE, DRIVER, CONFIG>,
     RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
@@ -184,12 +184,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public void runValidation() throws ChangockException {
+  public void runValidation() throws MongockException {
     if (driver == null) {
-      throw new ChangockException("Driver must be injected to Mongock builder");
+      throw new MongockException("Driver must be injected to Mongock builder");
     }
     if (changeLogsScanPackage == null || changeLogsScanPackage.isEmpty()) {
-      throw new ChangockException("changeLogsScanPackage must be injected to Mongock builder");
+      throw new MongockException("changeLogsScanPackage must be injected to Mongock builder");
     }
     if (!throwExceptionIfCannotObtainLock) {
       logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Mongock will continue even if it's not able to acquire the lock");

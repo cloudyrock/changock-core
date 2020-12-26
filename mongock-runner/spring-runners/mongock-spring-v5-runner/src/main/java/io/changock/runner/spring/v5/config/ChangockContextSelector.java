@@ -1,6 +1,6 @@
 package io.changock.runner.spring.v5.config;
 
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.runner.spring.v5.config.importers.ContextImporter;
 import io.changock.runner.spring.v5.config.importers.MongoSpringDataImporter;
 import org.springframework.context.annotation.ImportSelector;
@@ -47,7 +47,7 @@ public class ChangockContextSelector implements ImportSelector {
         .map(contextImporter -> contextImporter.getPaths(environment))
         .filter(Objects::nonNull)
         .findFirst()
-        .orElseThrow(() ->  new ChangockException(String.format("\n\n%s\n\n", DRIVER_NOT_FOUND_ERROR)));
+        .orElseThrow(() ->  new MongockException(String.format("\n\n%s\n\n", DRIVER_NOT_FOUND_ERROR)));
   }
 
 }

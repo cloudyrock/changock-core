@@ -1,6 +1,6 @@
 package io.changock.driver.api.entry;
 
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.utils.Process;
 
 
@@ -13,11 +13,11 @@ public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Pr
    * @param changeSetId changeSet id
    * @param author changeSet's author
    * @return tru if it has not been executed yet, false otherwise
-   * @throws ChangockException if anything goes wrong
+   * @throws MongockException if anything goes wrong
    */
-  boolean isAlreadyExecuted(String changeSetId, String author) throws ChangockException;
+  boolean isAlreadyExecuted(String changeSetId, String author) throws MongockException;
 
-  void save(CHANGE_ENTRY changeEntry) throws ChangockException;
+  void save(CHANGE_ENTRY changeEntry) throws MongockException;
 
 
 }

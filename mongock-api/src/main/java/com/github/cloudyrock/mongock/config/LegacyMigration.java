@@ -1,7 +1,7 @@
-package io.changock.migration.api.config;
+package com.github.cloudyrock.mongock.config;
 
-import io.changock.migration.api.annotations.NonLockGuarded;
-import io.changock.migration.api.annotations.NonLockGuardedType;
+import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.annotations.NonLockGuardedType;
 
 @NonLockGuarded(NonLockGuardedType.NONE)
 public abstract class LegacyMigration {

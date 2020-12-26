@@ -1,12 +1,12 @@
 package io.changock.runner.spring.v5;
 
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ConnectionDriver;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.entry.ChangeEntryService;
 import io.changock.driver.api.lock.LockManager;
-import io.changock.migration.api.exception.ChangockException;
 import io.changock.runner.spring.v5.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import io.changock.runner.spring.v5.profiles.integration.IntegrationProfiledChangerLog;
 import io.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
@@ -135,7 +135,7 @@ public class SpringChangockApplicationRunnerTest {
   @Test
   public void shouldFail_IfSpringContextNotInjected() {
 
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("ApplicationContext from Spring must be injected to Builder");
 
     ChangockSpring5.builder()
@@ -151,7 +151,7 @@ public class SpringChangockApplicationRunnerTest {
     when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
 
     // then
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
 
     // when
@@ -170,7 +170,7 @@ public class SpringChangockApplicationRunnerTest {
     when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(false);
 
     // then
-    exceptionExpected.expect(ChangockException.class);
+    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("Error in method[ChangeLogWithInterfaceParameter.withClassNotInterfacedParameter] : Parameter of type [ClassNotInterfaced] must be an interface");
 
     // when

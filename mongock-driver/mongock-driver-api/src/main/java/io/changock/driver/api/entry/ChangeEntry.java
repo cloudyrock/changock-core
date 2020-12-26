@@ -1,6 +1,6 @@
 package io.changock.driver.api.entry;
 
-import io.changock.migration.api.ChangeSetItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import io.changock.utils.StringUtils;
 import io.changock.utils.field.Field;
 

@@ -4,7 +4,7 @@ import io.changock.driver.api.common.ForbiddenParameterException;
 import io.changock.driver.api.driver.ChangeSetDependency;
 import io.changock.driver.api.driver.ForbiddenParametersMap;
 import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import io.changock.migration.api.exception.ChangockException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import io.changock.utils.annotation.NotThreadSafe;
 
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class DependencyManager {
     Optional<Object> dependencyOpt = getDependencyFromStore(standardDependencies, type, name);
     if (dependencyOpt.isPresent() && lockProxy) {
       if (!type.isInterface()) {
-        throw new ChangockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
+        throw new MongockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
       }
       return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
     } else {

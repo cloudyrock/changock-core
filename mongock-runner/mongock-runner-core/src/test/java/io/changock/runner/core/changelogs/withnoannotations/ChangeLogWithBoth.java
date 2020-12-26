@@ -1,7 +1,7 @@
 package io.changock.runner.core.changelogs.withnoannotations;
 
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
 
 @ChangeLog(order = "2")
 public class ChangeLogWithBoth {

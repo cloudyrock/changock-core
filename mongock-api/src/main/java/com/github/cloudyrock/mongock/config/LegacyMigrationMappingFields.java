@@ -1,4 +1,4 @@
-package io.changock.migration.api.config;
+package com.github.cloudyrock.mongock.config;
 
 import java.util.Objects;
 

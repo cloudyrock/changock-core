@@ -1,12 +1,12 @@
 package io.changock.runner.core.builder;
 
 import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.migration.api.config.ChangockConfiguration;
-import io.changock.migration.api.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
 
 import java.util.Map;
 
-public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends ChangockConfiguration>
+public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends MongockConfiguration>
     extends PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> {
 
   /**
