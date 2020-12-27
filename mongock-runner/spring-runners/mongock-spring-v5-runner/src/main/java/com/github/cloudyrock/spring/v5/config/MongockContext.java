@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Import;
 
 //@Configuration
 @Import(MongockContextSelector.class)
-@ConditionalOnExpression("${changock.enabled:true}")
+@ConditionalOnExpression("${mongock.enabled:true}")
 public class MongockContext {
 
   @Bean
-  @ConditionalOnExpression("'${changock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
+  @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
   public SpringApplicationRunner applicationRunner(ConnectionDriver connectionDriver,
                                                    MongockSpringConfiguration springConfiguration,
                                                    ApplicationContext springContext,
@@ -27,7 +27,7 @@ public class MongockContext {
   }
 
   @Bean
-  @ConditionalOnExpression("'${changock.runner-type:null}'.equals('InitializingBean')")
+  @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean')")
   public SpringInitializingBeanRunner initializingBeanRunner(ConnectionDriver connectionDriver,
                                                              MongockSpringConfiguration springConfiguration,
                                                              ApplicationContext springContext,

@@ -66,7 +66,7 @@ public class MongockRunnerBase<EXECUTOR extends MigrationExecutor> {
 
       } catch (Exception ex) {
         MongockException exWrapper = MongockException.class.isAssignableFrom(ex.getClass()) ? (MongockException) ex : new MongockException(ex);
-        logger.error("Error in changock process. ABORTED MIGRATION", exWrapper);
+        logger.error("Error in mongock process. ABORTED MIGRATION", exWrapper);
         eventPublisher.publishMigrationFailedEvent(exWrapper);
         throw exWrapper;
 

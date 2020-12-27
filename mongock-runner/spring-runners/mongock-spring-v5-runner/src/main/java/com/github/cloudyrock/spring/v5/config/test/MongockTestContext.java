@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(MongockContextSelector.class)
-@ConditionalOnProperty(prefix = "changock", name = "enabled", matchIfMissing = true, havingValue = "true")
+@ConditionalOnProperty(prefix = "mongock", name = "enabled", matchIfMissing = true, havingValue = "true")
 public class MongockTestContext {
 
 

@@ -61,7 +61,7 @@
     <connection>scm:git:git@github.com:cloudyrock/mongock-core.git</connection>
     <developerConnection>scm:git:git@github.com:cloudyrock/mongock-core.git</developerConnection>
     <url>https://github.com/cloudyrock/mongock-core</url>
-    <tag>changock-1.0.0.alpha-SNAPSHOT</tag>
+    <tag>mongock-core-2.0.0.BETA-SNAPSHOT</tag>
   </scm>
 
   <developers>
