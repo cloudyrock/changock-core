@@ -11,17 +11,17 @@ import com.github.cloudyrock.mongock.runner.core.builder.DriverBuilderConfigurab
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 
-public class TestChangockRunner extends MongockRunnerBase {
+public class TestMongockRunner extends MongockRunnerBase {
 
   public static DriverBuilderConfigurable<Builder, ConnectionDriver, MongockConfiguration> builder() {
     return new Builder();
   }
 
-  public static TestChangockRunner.Builder testBuilder() {
+  public static TestMongockRunner.Builder testBuilder() {
     return new Builder();
   }
 
-  private TestChangockRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+  private TestMongockRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
@@ -38,7 +38,7 @@ public class TestChangockRunner extends MongockRunnerBase {
       return this;
     }
 
-    public TestChangockRunner build() {
+    public TestMongockRunner build() {
       return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, new DummyEventPublisher());
     }
 
@@ -53,8 +53,8 @@ public class TestChangockRunner extends MongockRunnerBase {
     }
 
 
-    public TestChangockRunner build(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-      return new TestChangockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+    public TestMongockRunner build(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+      return new TestMongockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
     @Override

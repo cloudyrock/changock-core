@@ -1,5 +1,6 @@
-package com.github.cloudyrock.spring.v5.config;
+package com.github.cloudyrock.spring.v5;
 
+import com.github.cloudyrock.spring.v5.config.MongockContext;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -12,5 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import({MongockContext.class})
-public @interface EnableChangock {
+public @interface EnableMongock {
 }

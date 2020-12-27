@@ -72,7 +72,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setEndSystemVersion(String endSystemVersion);
 
   /**
-   * Set the metadata for the Mongock process. This metadata will be added to each document in the ChangockChangeLog
+   * Set the metadata for the Mongock process. This metadata will be added to each document in the MongockChangeLog
    * collection. This is useful when the system needs to add some extra info to the changeLog.
    * <b>Optional</b> Default value empty Map
    *

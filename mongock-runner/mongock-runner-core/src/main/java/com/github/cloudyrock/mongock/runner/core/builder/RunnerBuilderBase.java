@@ -179,7 +179,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
-        annotationProcessor// if null, it will take default ChangockAnnotationManager
+        annotationProcessor// if null, it will take default MongockAnnotationManager
     );
   }
 

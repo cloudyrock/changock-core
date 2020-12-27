@@ -15,7 +15,7 @@ public class MongockContextSelector implements ImportSelector {
 
 
 
-  private final static String DRIVER_NOT_FOUND_ERROR_TEMPLATE = "CHANGOCK DRIVER HAS NOT BEEN IMPORTED" +
+  private final static String DRIVER_NOT_FOUND_ERROR_TEMPLATE = "MONGOCK DRIVER HAS NOT BEEN IMPORTED" +
       "\n====================================" +
       "\n\tSOLUTION: You need to import one of the following artifacts";
 

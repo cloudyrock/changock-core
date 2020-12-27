@@ -20,7 +20,7 @@
   </properties>
 
   <dependencies>
-    <!-- CHANGOCK -->
+    <!-- MONGOCK -->
     <dependency>
       <groupId>com.github.cloudyrock.mongock</groupId>
       <artifactId>mongock-runner-core</artifactId>
