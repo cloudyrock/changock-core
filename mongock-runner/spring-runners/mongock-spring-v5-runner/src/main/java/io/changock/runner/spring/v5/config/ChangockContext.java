@@ -1,6 +1,6 @@
 package io.changock.runner.spring.v5.config;
 
-import io.changock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import io.changock.runner.spring.v5.ChangockSpring5;
 import io.changock.runner.spring.v5.SpringApplicationRunner;

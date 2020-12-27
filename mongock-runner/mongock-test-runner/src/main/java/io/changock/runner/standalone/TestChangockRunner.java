@@ -1,6 +1,6 @@
 package io.changock.runner.standalone;
 
-import io.changock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.core.executor.ChangockBase;
 import io.changock.runner.core.executor.DependencyManager;

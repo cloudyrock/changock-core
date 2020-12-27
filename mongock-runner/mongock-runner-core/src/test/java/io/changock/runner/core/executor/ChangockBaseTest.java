@@ -2,7 +2,7 @@ package io.changock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.driver.api.lock.LockCheckException;
+import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import io.changock.runner.core.event.EventPublisher;
 import io.changock.runner.core.event.MigrationResult;
 import org.junit.Assert;

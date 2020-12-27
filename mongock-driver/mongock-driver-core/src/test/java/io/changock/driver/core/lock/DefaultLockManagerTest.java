@@ -1,7 +1,7 @@
 package io.changock.driver.core.lock;
 
-import io.changock.driver.api.lock.LockCheckException;
-import io.changock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.utils.TimeService;
 import org.junit.Before;
 import org.junit.Test;

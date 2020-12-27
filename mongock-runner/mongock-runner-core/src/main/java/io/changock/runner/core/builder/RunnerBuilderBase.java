@@ -1,9 +1,9 @@
 package io.changock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.driver.api.common.Validable;
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.common.Validable;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import io.changock.runner.core.executor.ChangeLogService;
 import io.changock.runner.core.executor.DependencyManager;

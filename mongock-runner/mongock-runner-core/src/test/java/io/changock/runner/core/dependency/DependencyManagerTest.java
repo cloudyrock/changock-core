@@ -1,9 +1,9 @@
 package io.changock.runner.core.dependency;
 
 
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import io.changock.runner.core.executor.DependencyManager;
 import io.changock.runner.core.util.InterfaceDependency;
 import io.changock.runner.core.util.InterfaceDependencyImpl;

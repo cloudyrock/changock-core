@@ -1,9 +1,9 @@
 package io.changock.runner.core.executor;
 
-import io.changock.driver.api.common.ForbiddenParameterException;
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.ForbiddenParametersMap;
-import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 

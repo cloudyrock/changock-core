@@ -1,6 +1,6 @@
 package io.changock.runner.core.builder;
 
-import io.changock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 

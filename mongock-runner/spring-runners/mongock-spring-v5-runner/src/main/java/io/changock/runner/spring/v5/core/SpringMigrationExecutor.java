@@ -1,7 +1,7 @@
 package io.changock.runner.spring.v5.core;
 
-import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.exception.MongockException;

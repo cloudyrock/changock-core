@@ -1,8 +1,8 @@
 package io.changock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.driver.api.common.Validable;
-import io.changock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.common.Validable;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

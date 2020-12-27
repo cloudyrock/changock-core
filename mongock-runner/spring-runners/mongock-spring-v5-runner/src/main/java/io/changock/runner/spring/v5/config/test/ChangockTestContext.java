@@ -1,6 +1,6 @@
 package io.changock.runner.spring.v5.config.test;
 
-import io.changock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.spring.v5.SpringApplicationRunner;
 import io.changock.runner.spring.v5.SpringInitializingBeanRunner;
 import io.changock.runner.spring.v5.config.ChangockContextSelector;

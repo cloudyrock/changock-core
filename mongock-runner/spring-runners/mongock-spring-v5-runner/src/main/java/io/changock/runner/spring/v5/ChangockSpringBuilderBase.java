@@ -1,8 +1,8 @@
 package io.changock.runner.spring.v5;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import io.changock.runner.core.executor.MigrationExecutorConfiguration;
 import io.changock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.config.LegacyMigration;

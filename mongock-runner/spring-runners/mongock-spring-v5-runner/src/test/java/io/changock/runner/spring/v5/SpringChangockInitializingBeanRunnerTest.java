@@ -2,11 +2,11 @@ package io.changock.runner.spring.v5;
 
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.driver.api.driver.ForbiddenParametersMap;
-import io.changock.driver.api.entry.ChangeEntryService;
-import io.changock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import io.changock.runner.spring.v5.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import io.changock.runner.spring.v5.profiles.integration.IntegrationProfiledChangerLog;
 import io.changock.runner.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;

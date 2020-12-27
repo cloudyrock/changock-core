@@ -1,14 +1,14 @@
 package io.changock.runner.core.executor;
 
 
-import io.changock.driver.api.driver.ChangeSetDependency;
-import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.driver.api.driver.ForbiddenParametersMap;
-import io.changock.driver.api.entry.ChangeEntry;
-import io.changock.driver.api.entry.ChangeEntryService;
-import io.changock.driver.api.entry.ChangeState;
-import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.config.LegacyMigration;

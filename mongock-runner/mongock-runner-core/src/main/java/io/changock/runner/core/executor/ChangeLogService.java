@@ -1,6 +1,6 @@
 package io.changock.runner.core.executor;
 
-import io.changock.driver.api.common.Validable;
+import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;

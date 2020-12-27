@@ -1,9 +1,9 @@
 package com.github.cloudyrock.mongock.test.util.decorator;
 
-import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.api.lock.guard.decorator.DecoratorBase;
-import io.changock.driver.api.lock.guard.invoker.LockGuardInvoker;
-import io.changock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.decorator.DecoratorBase;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.invoker.LockGuardInvoker;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import com.github.cloudyrock.mongock.annotations.DecoratorDiverted;
 import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
 import com.github.cloudyrock.mongock.annotations.NonLockGuardedType;

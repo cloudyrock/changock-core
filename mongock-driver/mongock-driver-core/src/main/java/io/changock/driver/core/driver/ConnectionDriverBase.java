@@ -1,9 +1,9 @@
 package io.changock.driver.core.driver;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.driver.api.entry.ChangeEntry;
-import io.changock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import io.changock.driver.core.lock.DefaultLockManager;
 import io.changock.driver.core.lock.LockRepository;
 import com.github.cloudyrock.mongock.utils.TimeService;

@@ -1,13 +1,13 @@
 package io.changock.runner.core.executor;
 
-import io.changock.driver.api.common.DependencyInjectionException;
-import io.changock.driver.api.driver.ConnectionDriver;
-import io.changock.driver.api.driver.TransactionStrategy;
-import io.changock.driver.api.driver.Transactionable;
-import io.changock.driver.api.entry.ChangeEntry;
-import io.changock.driver.api.entry.ChangeState;
-import io.changock.driver.api.lock.LockManager;
-import io.changock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
+import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.TransactionStrategy;
+import com.github.cloudyrock.mongock.driver.api.driver.Transactionable;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.SortedSet;
 
-import static io.changock.driver.api.entry.ChangeState.EXECUTED;
-import static io.changock.driver.api.entry.ChangeState.FAILED;
-import static io.changock.driver.api.entry.ChangeState.IGNORED;
+import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
+import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
+import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
 public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
