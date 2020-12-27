@@ -8,18 +8,13 @@ import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.spring.v5.util.CallVerifier;
-import com.github.cloudyrock.spring.v5.util.ClassNotInterfaced;
-import com.github.cloudyrock.spring.v5.util.InterfaceDependency;
-import com.github.cloudyrock.spring.v5.util.InterfaceDependencyImpl;
-import com.github.cloudyrock.spring.v5.util.InterfaceDependencyImplNoLockGarded;
-import com.github.cloudyrock.spring.v5.util.TemplateForTest;
 import com.github.cloudyrock.spring.v5.util.TemplateForTestImpl;
-import com.github.cloudyrock.spring.v5.util.TemplateForTestImplChild;
 import com.github.cloudyrock.spring.v5.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import com.github.cloudyrock.spring.v5.profiles.integration.IntegrationProfiledChangerLog;
 import com.github.cloudyrock.spring.v5.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
 import com.github.cloudyrock.spring.v5.profiles.withForbiddenParameter.ForbiddenParameter;
-import com.github.cloudyrock.spring.v5.profiles.withInterfaceParameter.ChangeLogWithInterfaceParameter;
+import com.github.cloudyrock.spring.v5.util.TemplateForTest;
+import com.github.cloudyrock.spring.v5.util.TemplateForTestImplChild;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SpringChangockApplicationRunnerTest {
+public class SpringMongockInitializingBeanRunnerTest {
 
   private ChangeEntryService changeEntryService;
   private LockManager lockManager;
@@ -59,7 +54,6 @@ public class SpringChangockApplicationRunnerTest {
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getLockManager()).thenReturn(lockManager);
-    when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
     ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
     forbiddenParameters.put(ForbiddenParameter.class, String.class);
@@ -70,22 +64,26 @@ public class SpringChangockApplicationRunnerTest {
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
     when(driver.getDependencies()).thenReturn(dependencySet);
 
-
     Environment environment = mock(Environment.class);
     when(environment.getActiveProfiles()).thenReturn(new String[]{"profileIncluded1", "profileIncluded2"});
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(TemplateForTest.class)).thenReturn(new TemplateForTestImpl());
-    when(springContext.getBean(InterfaceDependency.class)).thenReturn(new InterfaceDependencyImpl());
-    when(springContext.getBean(ClassNotInterfaced.class)).thenReturn(new ClassNotInterfaced());
+    when(springContext.getBean(TemplateForTest.class))
+        .thenReturn(new TemplateForTestImpl());
   }
 
   @Test
   public void shouldRunOnlyProfiledChangeSets() {
 
     // when
-    buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
+//        Spring5Runner.builder()
+    MongockSpring5.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
 
     // then
     ArgumentCaptor<String> changeSetIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -101,9 +99,17 @@ public class SpringChangockApplicationRunnerTest {
 
   @Test
   public void shouldInjectEnvironmentToChangeSet() {
+    // given
+    when(changeEntryService.isAlreadyExecuted("testWithProfileIncluded1OrProfileINotIncluded", "testuser"))
+        .thenReturn(false);
 
     // when
-    buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
+    MongockSpring5.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
 
     // then
     assertEquals(1, callVerifier.counter);
@@ -126,7 +132,12 @@ public class SpringChangockApplicationRunnerTest {
     when(springContext.getBean(TemplateForTestImpl.class)).thenReturn(new TemplateForTestImpl());
 
     // when
-    buildAndRun(EnsureDecoratorChangerLog.class.getPackage().getName());
+    MongockSpring5.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(EnsureDecoratorChangerLog.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
 
     // then
     assertEquals(1, callVerifier.counter);
@@ -141,8 +152,8 @@ public class SpringChangockApplicationRunnerTest {
     MongockSpring5.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
-        .buildApplicationRunner()
-        .run(null);
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
   }
 
   @Test
@@ -155,96 +166,12 @@ public class SpringChangockApplicationRunnerTest {
     exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
 
     // when
-    buildAndRun(ChangeLogWithForbiddenParameter.class.getPackage().getName());
-  }
-
-
-
-
-
-  @Test
-  public void shouldThrowException_IfChangeSetParameterfNotInterface() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(false);
-
-    // then
-    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ChangeLogWithInterfaceParameter.withClassNotInterfacedParameter] : Parameter of type [ClassNotInterfaced] must be an interface");
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-  }
-
-  @Test
-  public void shouldReturnProxy_IfStandardDependency() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(1)).ensureLockDefault();
-  }
-
-  @Test
-  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(2)).ensureLockDefault();
-  }
-
-
-  @Test
-  public void shouldNotReturnProxy_IfClassAnnotatedWithNonLockGuarded() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-    when(springContext.getBean(InterfaceDependency.class)).thenReturn(new InterfaceDependencyImplNoLockGarded());
-
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(0)).ensureLockDefault();
-  }
-
-  @Test
-  public void shouldNotReturnProxy_IfParameterAnnotatedWithNonLockGuarded() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(false);
-
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(0)).ensureLockDefault();
-  }
-
-  private void buildAndRun(String packageName) {
     MongockSpring5.builder()
         .setDriver(driver)
-        .addChangeLogsScanPackage(packageName)
+        .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
         .setSpringContext(springContext)
         .buildApplicationRunner()
         .run(null);
   }
+
 }

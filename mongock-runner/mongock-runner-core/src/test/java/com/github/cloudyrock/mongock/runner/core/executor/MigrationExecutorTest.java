@@ -237,7 +237,7 @@ public class MigrationExecutorTest {
 
   @Test(expected = MongockException.class)
   @SuppressWarnings("unchecked")
-  public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfDriverNotValidated() {
+  public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfDriverNotValidated() {
     // given
     injectDummyDependency(DummyDependencyClass.class, "Wrong parameter");
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);

@@ -123,7 +123,7 @@ public class MongockRunnerBaseTest {
 
 
   @Test(expected = MongockException.class)
-  public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfChangelogServiceNotValidated() {
+  public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfChangelogServiceNotValidated() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
@@ -135,7 +135,7 @@ public class MongockRunnerBaseTest {
   }
 
   @Test(expected = MongockException.class)
-  public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfFetchFails() {
+  public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfFetchFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
@@ -147,7 +147,7 @@ public class MongockRunnerBaseTest {
   }
 
   @Test(expected = MongockException.class)
-  public void shouldPropagateChangockException_EvenWhenThrowExIfCannotLock_IfMigrationExecutionFails() {
+  public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfMigrationExecutionFails() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
@@ -159,7 +159,7 @@ public class MongockRunnerBaseTest {
   }
 
   @Test(expected = MongockException.class)
-  public void shouldPropagateLockExceptionWrappedInChangockException_whenExecuteMigrationFails_IfThrowExceptionIfCannotObtainLockTrue() {
+  public void shouldPropagateLockExceptionWrappedInMongockException_whenExecuteMigrationFails_IfThrowExceptionIfCannotObtainLockTrue() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
@@ -185,7 +185,7 @@ public class MongockRunnerBaseTest {
 
 
   @Test(expected = MongockException.class)
-  public void shouldWrapGenericExceptionInChangockException() {
+  public void shouldWrapGenericExceptionInMongockException() {
 
     MigrationExecutor executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
