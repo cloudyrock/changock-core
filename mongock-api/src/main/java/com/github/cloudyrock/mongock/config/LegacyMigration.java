@@ -4,7 +4,7 @@ import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
 import com.github.cloudyrock.mongock.annotations.NonLockGuardedType;
 
 @NonLockGuarded(NonLockGuardedType.NONE)
-public abstract class LegacyMigration {
+public class LegacyMigration {
 
   private String origin;
 
