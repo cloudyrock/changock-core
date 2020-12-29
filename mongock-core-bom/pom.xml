@@ -39,7 +39,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-standalone-runner</artifactId>
+        <artifactId>mongock-standalone</artifactId>
         <version>${mongock-core.version}</version>
       </dependency>
       <dependency>
@@ -49,7 +49,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-spring-v5-runner</artifactId>
+        <artifactId>mongock-spring-v5</artifactId>
         <version>${mongock-core.version}</version>
         <exclusions>
           <exclusion>

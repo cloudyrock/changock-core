@@ -12,7 +12,7 @@
   <modules>
     <module>mongock-runner-core</module>
     <module>mongock-test-runner</module>
-    <module>mongock-standalone-runner</module>
+    <module>mongock-standalone</module>
     <module>spring-runners</module>
   </modules>
 
