@@ -54,8 +54,8 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
   }
 
 
-  public SpringApplicationRunner buildApplicationRunner() {
-    return new SpringApplicationRunner(
+  public MongockApplicationRunner buildApplicationRunner() {
+    return new MongockApplicationRunner(
         buildExecutorWithEnvironmentDependency(),
         buildProfiledChangeLogService(),
         throwExceptionIfCannotObtainLock,
@@ -63,8 +63,8 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
         buildSpringEventPublisher());
   }
 
-  public SpringInitializingBeanRunner buildInitializingBeanRunner() {
-    return new SpringInitializingBeanRunner(
+  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
+    return new MongockInitializingBeanRunner(
         buildExecutorWithEnvironmentDependency(),
         buildProfiledChangeLogService(),
         throwExceptionIfCannotObtainLock,

@@ -16,7 +16,23 @@ public final class MongockSpring5 {
     private Builder() {
     }
 
+    public MongockApplicationRunner buildApplicationRunner() {
+      return new MongockApplicationRunner(
+          buildExecutorWithEnvironmentDependency(),
+          buildProfiledChangeLogService(),
+          throwExceptionIfCannotObtainLock,
+          enabled,
+          buildSpringEventPublisher());
+    }
 
+    public MongockInitializingBeanRunner buildInitializingBeanRunner() {
+      return new MongockInitializingBeanRunner(
+          buildExecutorWithEnvironmentDependency(),
+          buildProfiledChangeLogService(),
+          throwExceptionIfCannotObtainLock,
+          enabled,
+          buildSpringEventPublisher());
+    }
 
     @Override
     protected Builder returnInstance() {
