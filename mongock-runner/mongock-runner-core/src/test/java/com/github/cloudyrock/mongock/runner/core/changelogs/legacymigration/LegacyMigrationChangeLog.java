@@ -2,7 +2,7 @@ package com.github.cloudyrock.mongock.runner.core.changelogs.legacymigration;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuarded;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 
 import javax.inject.Named;

@@ -216,4 +216,37 @@ public class MongockConfiguration {
   }
 
 
+
+  //TODO remove this legacy methods
+  /**
+   * @see MongockConfiguration#getChangeLogRepositoryName()
+   */
+  @Deprecated
+  public String getChangeLogCollectionName() {
+    return changeLogRepositoryName;
+  }
+
+  /**
+   * @see MongockConfiguration#setChangeLogRepositoryName(String)
+   */
+  @Deprecated
+  public void setChangeLogCollectionName(String changeLogRepositoryName) {
+    this.changeLogRepositoryName = changeLogRepositoryName;
+  }
+
+  /**
+   * @see MongockConfiguration#getLockRepositoryName()
+   */
+  @Deprecated
+  public String getLockCollectionName() {
+    return lockRepositoryName;
+  }
+
+  /**
+   * @see MongockConfiguration#setLockRepositoryName(String)
+   */
+  @Deprecated
+  public void setLockCollectionName(String lockRepositoryName) {
+    this.lockRepositoryName = lockRepositoryName;
+  }
 }

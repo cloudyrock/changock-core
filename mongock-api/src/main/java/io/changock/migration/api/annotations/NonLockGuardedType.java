@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.annotations;
+package io.changock.migration.api.annotations;
 
 public enum NonLockGuardedType {
   /**

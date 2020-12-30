@@ -1,7 +1,7 @@
 package com.github.cloudyrock.mongock.config;
 
-import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
-import com.github.cloudyrock.mongock.annotations.NonLockGuardedType;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 
 @NonLockGuarded(NonLockGuardedType.NONE)
 public class LegacyMigration {
@@ -88,5 +88,22 @@ public class LegacyMigration {
 
   public void setFailFast(boolean failFast) {
     this.failFast = failFast;
+  }
+
+  //TODO remove this legacy methods
+  /**
+   * @see LegacyMigration#getOrigin()
+   */
+  @Deprecated
+  public void setCollectionName(String collectionName) {
+    this.origin = collectionName;
+  }
+
+  /**
+   * @see LegacyMigration#setOrigin(String)
+   */
+  @Deprecated
+  public String getCollectionName() {
+    return origin;
   }
 }

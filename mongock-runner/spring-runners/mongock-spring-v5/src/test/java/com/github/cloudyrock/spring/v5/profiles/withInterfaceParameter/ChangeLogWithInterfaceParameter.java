@@ -2,7 +2,7 @@ package com.github.cloudyrock.spring.v5.profiles.withInterfaceParameter;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuarded;
 import com.github.cloudyrock.spring.v5.util.ClassNotInterfaced;
 import com.github.cloudyrock.spring.v5.util.InterfaceDependency;
 

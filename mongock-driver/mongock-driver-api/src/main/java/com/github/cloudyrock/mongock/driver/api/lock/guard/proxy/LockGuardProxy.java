@@ -1,8 +1,8 @@
 package com.github.cloudyrock.mongock.driver.api.lock.guard.proxy;
 
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
-import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
-import com.github.cloudyrock.mongock.annotations.NonLockGuardedType;
+import io.changock.migration.api.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuardedType;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

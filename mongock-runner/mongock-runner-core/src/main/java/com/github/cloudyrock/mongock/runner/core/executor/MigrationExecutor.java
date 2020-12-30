@@ -10,7 +10,7 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.annotations.NonLockGuarded;
+import io.changock.migration.api.annotations.NonLockGuarded;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.LogUtils;
 import org.slf4j.Logger;
