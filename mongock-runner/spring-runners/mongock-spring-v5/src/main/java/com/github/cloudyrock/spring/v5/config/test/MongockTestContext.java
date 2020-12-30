@@ -1,9 +1,8 @@
 package com.github.cloudyrock.spring.v5.config.test;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.spring.v5.MongockSpring5;
 import com.github.cloudyrock.spring.v5.config.MongockDriverContextSelector;
-import com.github.cloudyrock.spring.v5.MongockApplicationRunner;
-import com.github.cloudyrock.spring.v5.MongockInitializingBeanRunner;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,7 +15,7 @@ public class MongockTestContext {
 
 
   @Bean
-  @ConditionalOnMissingBean({MongockInitializingBeanRunner.class, MongockApplicationRunner.class})
+  @ConditionalOnMissingBean({MongockSpring5.MongockInitializingBeanRunner.class, MongockSpring5.MongockApplicationRunner.class})
   public TestDriverInitializingBean testDriverInitializingBean(ConnectionDriver connectionDriver) {
     return new TestDriverInitializingBean(connectionDriver);
   }

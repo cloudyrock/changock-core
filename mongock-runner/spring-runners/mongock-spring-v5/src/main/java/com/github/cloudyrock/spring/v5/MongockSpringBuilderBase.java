@@ -13,6 +13,8 @@ import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.spring.v5.core.ProfiledChangeLogService;
 import com.github.cloudyrock.spring.v5.core.SpringMigrationExecutor;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
@@ -23,7 +25,12 @@ import java.util.List;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSpringBuilderBase, DRIVER extends ConnectionDriver, SPRING_CONFIG extends MongockSpringConfiguration>
+public abstract class MongockSpringBuilderBase<
+    BUILDER_TYPE extends MongockSpringBuilderBase,
+    SPRING_APP_RUNNER_TYPE extends ApplicationRunner,
+    SPRING_INIT_BEAN_TYPE extends InitializingBean,
+    DRIVER extends ConnectionDriver,
+    SPRING_CONFIG extends MongockSpringConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
 
   protected static final String DEFAULT_PROFILE = "default";
@@ -53,25 +60,9 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
     return returnInstance();
   }
 
+  public abstract SPRING_APP_RUNNER_TYPE buildApplicationRunner();
 
-  public MongockApplicationRunner buildApplicationRunner() {
-    return new MongockApplicationRunner(
-        buildExecutorWithEnvironmentDependency(),
-        buildProfiledChangeLogService(),
-        throwExceptionIfCannotObtainLock,
-        enabled,
-        buildSpringEventPublisher());
-  }
-
-  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-    return new MongockInitializingBeanRunner(
-        buildExecutorWithEnvironmentDependency(),
-        buildProfiledChangeLogService(),
-        throwExceptionIfCannotObtainLock,
-        enabled,
-        buildSpringEventPublisher());
-  }
-
+  public abstract SPRING_INIT_BEAN_TYPE buildInitializingBeanRunner();
 
   //Following methods are used to build the runners. All of them are protected in case they need to be overwritten by
   //children classes
