@@ -177,7 +177,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   protected Object getParameter(Class<?> parameterType, Parameter parameter) {
     String name = getParameterName(parameter);
     return dependencyManager
-        .getDependency(parameterType, name, !parameter.isAnnotationPresent(NonLockGuarded.class) || parameterType.isAnnotationPresent(NonLockGuarded.class))
+        .getDependency(parameterType, name, !parameterType.isAnnotationPresent(NonLockGuarded.class) && !parameter.isAnnotationPresent(NonLockGuarded.class))
         .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
   }
 

@@ -18,4 +18,17 @@
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${springboot.v2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <version>${springboot.v2.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>
