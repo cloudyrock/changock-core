@@ -11,8 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-//@Configuration
-@Import(MongockContextSelector.class)
+@Import(MongockDriverContextSelector.class)
 @ConditionalOnExpression("${mongock.enabled:true}")
 public class MongockContext {
 

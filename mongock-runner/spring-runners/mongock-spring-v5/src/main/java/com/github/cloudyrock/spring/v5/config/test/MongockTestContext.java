@@ -1,7 +1,7 @@
 package com.github.cloudyrock.spring.v5.config.test;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.spring.v5.config.MongockContextSelector;
+import com.github.cloudyrock.spring.v5.config.MongockDriverContextSelector;
 import com.github.cloudyrock.spring.v5.MongockApplicationRunner;
 import com.github.cloudyrock.spring.v5.MongockInitializingBeanRunner;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@Import(MongockContextSelector.class)
+@Import(MongockDriverContextSelector.class)
 @ConditionalOnProperty(prefix = "mongock", name = "enabled", matchIfMissing = true, havingValue = "true")
 public class MongockTestContext {
 

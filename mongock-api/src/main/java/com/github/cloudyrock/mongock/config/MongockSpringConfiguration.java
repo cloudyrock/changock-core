@@ -3,6 +3,11 @@ package com.github.cloudyrock.mongock.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * It needs to be loaded explicitly in the Driver importer(example MongoSpringDataImporter.java)
+ * So each driver can override the MongockSpringConfiguration in case it adds any new parameter
+ */
 @Configuration
 @ConfigurationProperties("mongock")
 public class MongockSpringConfiguration extends MongockConfiguration {

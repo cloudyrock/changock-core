@@ -207,12 +207,13 @@ public class MongockConfiguration {
     this.legacyMigration = legacyMigration;
   }
 
-  protected String getLockRepositoryNameDefault() {
+  protected String getChangeLogRepositoryNameDefault() {
     return LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME;
   }
 
-  protected String getChangeLogRepositoryNameDefault() {
+  protected String getLockRepositoryNameDefault() {
     return LEGACY_DEFAULT_LOCK_REPOSITORY_NAME;
   }
+
 
 }

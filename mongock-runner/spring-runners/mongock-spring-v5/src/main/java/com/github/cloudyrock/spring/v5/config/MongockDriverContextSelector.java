@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class MongockContextSelector implements ImportSelector {
+public class MongockDriverContextSelector implements ImportSelector {
 
 
 
@@ -37,7 +37,7 @@ public class MongockContextSelector implements ImportSelector {
   private final Environment environment;
 
 
-  public MongockContextSelector(Environment environment) {
+  public MongockDriverContextSelector(Environment environment) {
     this.environment = environment;
   }
 
