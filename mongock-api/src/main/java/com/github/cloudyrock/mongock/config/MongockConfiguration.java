@@ -219,7 +219,7 @@ public class MongockConfiguration {
 
   //TODO remove this legacy methods
   /**
-   * @see MongockConfiguration#getChangeLogRepositoryName()
+//   * @see MongockConfiguration#getChangeLogRepositoryName()
    */
   @Deprecated
   public String getChangeLogCollectionName() {
