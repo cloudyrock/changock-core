@@ -231,7 +231,7 @@ public class MongockConfiguration {
    */
   @Deprecated
   public void setChangeLogCollectionName(String changeLogRepositoryName) {
-    this.changeLogRepositoryName = changeLogRepositoryName;
+    setChangeLogRepositoryName(changeLogRepositoryName);
   }
 
   /**
@@ -247,6 +247,6 @@ public class MongockConfiguration {
    */
   @Deprecated
   public void setLockCollectionName(String lockRepositoryName) {
-    this.lockRepositoryName = lockRepositoryName;
+    setLockRepositoryName(lockRepositoryName);
   }
 }
