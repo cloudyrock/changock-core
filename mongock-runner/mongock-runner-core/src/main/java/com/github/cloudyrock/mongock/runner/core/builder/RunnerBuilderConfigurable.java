@@ -5,9 +5,19 @@ import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends MongockConfiguration>
     extends PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> {
+
+  /**
+   * Sets a function that will be used to instantiate ChangeLog classes.
+   * If unset, Class.getConstructor().newInstance() will be used
+   *
+   * @param changeLogInstantiator the function that will create an instance of a class
+   * @return builder for fluent interface
+   */
+  BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator);
 
   /**
    * Adds a legacy migration to be executed before the actual migration

@@ -6,6 +6,7 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.changelogs.comparator.Comparator1ChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.comparator.Comparator2ChangeLog;
+import com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.ChangeLogCustomConstructor;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.ChangeLogNoPackage;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package1.ChangeLogMultiPackage1;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPackage2;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +38,36 @@ public class ChangeLogServiceTest {
   public void shouldFail_WhenValidate_ifParametersEmpty() {
     new ChangeLogService(Collections.emptyList(), Collections.emptyList(), "0", "999")
         .runValidation();
+  }
+
+  @Test
+  public void shouldUseCustomChangeLogInstantiator() {
+    Function<Class<?>, Object> changeLogInstantiator = (type) -> {
+      try {
+        if (type == ChangeLogCustomConstructor.class) {
+          return type.getConstructor(String.class, int.class).newInstance("string", 10);
+        } else {
+          return type.getConstructor().newInstance();
+        }
+      } catch (Exception e) {
+        throw new MongockException(e);
+      }
+    };
+
+    List<ChangeLogItem> changeLogItems = new ArrayList<>(new ChangeLogService(
+        Collections.singletonList(ChangeLogCustomConstructor.class.getPackage().getName()),
+        Collections.emptyList(),
+        "0",
+        "9999",
+        null,
+        changeLogInstantiator
+    ).fetchChangeLogs());
+
+    assertEquals(1, changeLogItems.size());
+    assertEquals(ChangeLogCustomConstructor.class, changeLogItems.get(0).getInstance().getClass());
+    ChangeLogCustomConstructor changeLogCustomConstructor = (ChangeLogCustomConstructor) changeLogItems.get(0).getInstance();
+    assertEquals("string", changeLogCustomConstructor.getStringValue());
+    assertEquals(10, changeLogCustomConstructor.getIntegerValue());
   }
 
   @Test
