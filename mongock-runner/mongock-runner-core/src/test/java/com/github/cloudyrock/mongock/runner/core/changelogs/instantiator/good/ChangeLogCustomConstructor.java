@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.changelogs.instantiator;
+package com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.good;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;

@@ -3,9 +3,9 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogInstantiator;
 
 import java.util.Map;
-import java.util.function.Function;
 
 public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderConfigurable, CONFIG extends MongockConfiguration>
     extends PackageBuilderConfigurable<BUILDER_TYPE, CONFIG> {
@@ -17,7 +17,7 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
    * @param changeLogInstantiator the function that will create an instance of a class
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator);
+  BUILDER_TYPE setChangeLogInstantiator(ChangeLogInstantiator changeLogInstantiator);
 
   /**
    * Adds a legacy migration to be executed before the actual migration

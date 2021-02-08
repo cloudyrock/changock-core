@@ -13,7 +13,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.reflections.Reflections;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +44,7 @@ public class ChangeLogService implements Validable {
   private final Function<Class, Boolean> changeLogFilter;
   private final Function<Method, Boolean> changeSetFilter;
   private final AnnotationProcessor annotationManager;
-  private final Function<Class<?>, Object> changeLogInstantiator;
+  private final ChangeLogInstantiator changeLogInstantiator;
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
@@ -67,7 +66,7 @@ public class ChangeLogService implements Validable {
                           String startSystemVersionInclusive,
                           String endSystemVersionInclusive,
                           AnnotationProcessor annotationProcessor,
-                          Function<Class<?>, Object> changeLogInstantiator) {
+                          ChangeLogInstantiator changeLogInstantiator) {
     this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor, changeLogInstantiator);
   }
 
@@ -78,7 +77,7 @@ public class ChangeLogService implements Validable {
                              Function<Class, Boolean> changeLogFilter,
                              Function<Method, Boolean> changeSetFilter,
                              AnnotationProcessor annotationProcessor,
-                             Function<Class<?>, Object> changeLogInstantiator) {
+                             ChangeLogInstantiator changeLogInstantiator) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
@@ -127,9 +126,9 @@ public class ChangeLogService implements Validable {
     }
   }
 
-  private Object instantiateChangeLogClass(Class<?> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+  private Object instantiateChangeLogClass(Class<?> type) throws Exception {
     if (this.changeLogInstantiator != null) {
-      return this.changeLogInstantiator.apply(type);
+      return this.changeLogInstantiator.instantiate(type);
     } else {
       return type.getConstructor().newInstance();
     }
