@@ -14,8 +14,10 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package
 import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
-import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogInstantiator;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.Function;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -41,17 +43,20 @@ public class ChangeLogServiceTest {
         .runValidation();
   }
 
-  private static class MockInjector implements ChangeLogInstantiator {
-    @Override
-    public <T> T instantiate(Class<T> type) throws Exception {
-      if (type == ChangeLogCustomConstructor.class) {
-        return type.getConstructor(String.class, int.class).newInstance("string", 10);
-      } else if (type == BadChangeLogCustomConstructor.class) {
-        throw new Exception("Cannot instantiate BadChangeLogCustomConstructor");
-      } else {
-        return type.getConstructor().newInstance();
+  private static Function<Class, Object> mockInjector() {
+    return (type) -> {
+      try {
+        if (type == ChangeLogCustomConstructor.class) {
+          return type.getConstructor(String.class, int.class).newInstance("string", 10);
+        } else if (type == BadChangeLogCustomConstructor.class) {
+          throw new RuntimeException("Cannot instantiate BadChangeLogCustomConstructor");
+        } else {
+          return type.getConstructor().newInstance();
+        }
+      } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        throw new MongockException(e);
       }
-    }
+    };
   }
 
   @Test
@@ -62,7 +67,7 @@ public class ChangeLogServiceTest {
         "0",
         "9999",
         null,
-        new MockInjector()
+        mockInjector()
     ).fetchChangeLogs());
 
     assertEquals(1, changeLogItems.size());
@@ -84,7 +89,7 @@ public class ChangeLogServiceTest {
         "0",
         "9999",
         null,
-        new MockInjector()
+        mockInjector()
     ).fetchChangeLogs();
   }
 

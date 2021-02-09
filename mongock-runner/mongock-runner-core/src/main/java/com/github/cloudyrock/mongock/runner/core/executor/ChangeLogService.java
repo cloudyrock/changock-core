@@ -13,6 +13,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.reflections.Reflections;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,14 @@ import static java.util.Arrays.asList;
  */
 public class ChangeLogService implements Validable {
 
+  private static final Function<Class, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
+    try {
+      return  type.getConstructor().newInstance();
+    } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+      throw new MongockException(e);
+    }
+  };
+
   private final List<String> changeLogsBasePackageList;
   private final List<Class<?>> changeLogsBaseClassList;
   private final ArtifactVersion startSystemVersion;
@@ -44,7 +53,7 @@ public class ChangeLogService implements Validable {
   private final Function<Class, Boolean> changeLogFilter;
   private final Function<Method, Boolean> changeSetFilter;
   private final AnnotationProcessor annotationManager;
-  private final ChangeLogInstantiator changeLogInstantiator;
+  private final Function<Class, Object> changeLogInstantiator;
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
@@ -66,7 +75,7 @@ public class ChangeLogService implements Validable {
                           String startSystemVersionInclusive,
                           String endSystemVersionInclusive,
                           AnnotationProcessor annotationProcessor,
-                          ChangeLogInstantiator changeLogInstantiator) {
+                          Function<Class, Object> changeLogInstantiator) {
     this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor, changeLogInstantiator);
   }
 
@@ -77,7 +86,7 @@ public class ChangeLogService implements Validable {
                              Function<Class, Boolean> changeLogFilter,
                              Function<Method, Boolean> changeSetFilter,
                              AnnotationProcessor annotationProcessor,
-                             ChangeLogInstantiator changeLogInstantiator) {
+                             Function<Class, Object> changeLogInstantiator) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
@@ -85,7 +94,7 @@ public class ChangeLogService implements Validable {
     this.changeLogFilter = changeLogFilter;
     this.changeSetFilter = changeSetFilter;
     this.annotationManager = annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor();
-    this.changeLogInstantiator = changeLogInstantiator;
+    this.changeLogInstantiator = changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR;
   }
 
   @Override
@@ -118,19 +127,11 @@ public class ChangeLogService implements Validable {
 
   private ChangeLogItem buildChangeLogObject(Class<?> type) {
     try {
-      return new ChangeLogItem(type, instantiateChangeLogClass(type), annotationManager.getChangeLogOrder(type), fetchChangeSetFromClass(type));
+      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationManager.getChangeLogOrder(type), fetchChangeSetFromClass(type));
     } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {
       throw new MongockException(ex);
-    }
-  }
-
-  private Object instantiateChangeLogClass(Class<?> type) throws Exception {
-    if (this.changeLogInstantiator != null) {
-      return this.changeLogInstantiator.instantiate(type);
-    } else {
-      return type.getConstructor().newInstance();
     }
   }
 

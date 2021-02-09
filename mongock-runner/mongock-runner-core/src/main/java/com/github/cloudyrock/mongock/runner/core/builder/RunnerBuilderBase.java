@@ -5,7 +5,6 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
-import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogInstantiator;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
@@ -42,7 +42,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected AnnotationProcessor annotationProcessor;
   protected LegacyMigration legacyMigration = null;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
-  protected ChangeLogInstantiator changeLogInstantiator;
+  protected Function<Class, Object> changeLogInstantiator;
 
 
   protected RunnerBuilderBase() {
@@ -81,7 +81,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setChangeLogInstantiator(ChangeLogInstantiator changeLogInstantiator) {
+  public BUILDER_TYPE setChangeLogInstantiator(Function<Class, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
     return returnInstance();
   }
