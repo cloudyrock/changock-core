@@ -6,6 +6,8 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.changelogs.comparator.Comparator1ChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.comparator.Comparator2ChangeLog;
+import com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.good.ChangeLogCustomConstructor;
+import com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.bad.BadChangeLogCustomConstructor;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.ChangeLogNoPackage;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package1.ChangeLogMultiPackage1;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPackage2;
@@ -13,6 +15,9 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.Change
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.Function;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -36,6 +41,56 @@ public class ChangeLogServiceTest {
   public void shouldFail_WhenValidate_ifParametersEmpty() {
     new ChangeLogService(Collections.emptyList(), Collections.emptyList(), "0", "999")
         .runValidation();
+  }
+
+  private static Function<Class, Object> mockInjector() {
+    return (type) -> {
+      try {
+        if (type == ChangeLogCustomConstructor.class) {
+          return type.getConstructor(String.class, int.class).newInstance("string", 10);
+        } else if (type == BadChangeLogCustomConstructor.class) {
+          throw new RuntimeException("Cannot instantiate BadChangeLogCustomConstructor");
+        } else {
+          return type.getConstructor().newInstance();
+        }
+      } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        throw new MongockException(e);
+      }
+    };
+  }
+
+  @Test
+  public void shouldUseCustomChangeLogInstantiator() {
+    List<ChangeLogItem> changeLogItems = new ArrayList<>(new ChangeLogService(
+        Collections.singletonList(ChangeLogCustomConstructor.class.getPackage().getName()),
+        Collections.emptyList(),
+        "0",
+        "9999",
+        null,
+        mockInjector()
+    ).fetchChangeLogs());
+
+    assertEquals(1, changeLogItems.size());
+    assertEquals(ChangeLogCustomConstructor.class, changeLogItems.get(0).getInstance().getClass());
+    ChangeLogCustomConstructor changeLogCustomConstructor = (ChangeLogCustomConstructor) changeLogItems.get(0).getInstance();
+    assertEquals("string", changeLogCustomConstructor.getStringValue());
+    assertEquals(10, changeLogCustomConstructor.getIntegerValue());
+  }
+
+  /**
+   * The MockInjector will fail to instantiate BadChangeLogCustomConstructor by throwing an Exception.
+   * This exception should be repackaged as a MongockException
+   */
+  @Test(expected = MongockException.class)
+  public void shouldHandleExceptionsFromCustomChangeLogInstantiator() {
+    new ChangeLogService(
+        Collections.singletonList(BadChangeLogCustomConstructor.class.getPackage().getName()),
+        Collections.emptyList(),
+        "0",
+        "9999",
+        null,
+        mockInjector()
+    ).fetchChangeLogs();
   }
 
   @Test

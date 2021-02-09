@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
@@ -41,6 +42,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected AnnotationProcessor annotationProcessor;
   protected LegacyMigration legacyMigration = null;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
+  protected Function<Class, Object> changeLogInstantiator;
 
 
   protected RunnerBuilderBase() {
@@ -75,6 +77,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (legacyMigration != null) {
       changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     }
+    return returnInstance();
+  }
+
+  @Override
+  public BUILDER_TYPE setChangeLogInstantiator(Function<Class, Object> changeLogInstantiator) {
+    this.changeLogInstantiator = changeLogInstantiator;
     return returnInstance();
   }
 
@@ -179,7 +187,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
-        annotationProcessor// if null, it will take default MongockAnnotationManager
+        annotationProcessor, // if null, it will take default MongockAnnotationManager
+        changeLogInstantiator
     );
   }
 
