@@ -8,17 +8,16 @@ import java.util.List;
 
 public class MongoSpringDataImporter implements ContextImporter {
 
-  private final static String PACKAGE_TEMPLATE = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v%s.";
-  private final static String DRIVER_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sDriver";
+  private final static String PACKAGE_TEMPLATE = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v%s.config.";
   private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sContext";
 
   @Override
   public String[] getPaths(Environment environment) {
     try {
-      return loadSpringDataContextByVersion("3");
+      return loadSpringDataContextByVersion("2");
     } catch (ClassNotFoundException e) {
       try {
-        return loadSpringDataContextByVersion("2");
+        return loadSpringDataContextByVersion("3");
       } catch (ClassNotFoundException e2) {
         return null;
       }
@@ -28,8 +27,8 @@ public class MongoSpringDataImporter implements ContextImporter {
   @Override
   public List<ArtifactDescriptor> getArtifacts() {
     return Arrays.asList(
-        getArtifactDescriptor("3"),
-        getArtifactDescriptor("2")
+        getArtifactDescriptor("2"),
+        getArtifactDescriptor("3")
     );
   }
 
@@ -38,10 +37,11 @@ public class MongoSpringDataImporter implements ContextImporter {
   }
 
   private String[] loadSpringDataContextByVersion(String v) throws ClassNotFoundException {
-    Class.forName(String.format(DRIVER_TEMPLATE, v, v));
+    String contextClassName = String.format(CONTEXT_TEMPLATE, v, v);
+    Class.forName(contextClassName);
     return new String[]{
-        MongockSpringConfiguration.class.getCanonicalName(),
-        String.format(CONTEXT_TEMPLATE, v, v)};
+//        MongockSpringConfiguration.class.getCanonicalName(),
+        contextClassName};
   }
 
 
