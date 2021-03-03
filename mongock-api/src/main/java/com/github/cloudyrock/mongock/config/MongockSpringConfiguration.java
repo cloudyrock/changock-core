@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties("mongock")
 public class MongockSpringConfiguration extends MongockConfiguration {
+
+
+  private boolean testEnabled = false;
   /**
    * Type of Spring bean Mongock should be: ApplicationRunner(default) or InitializingBean
    */
@@ -22,5 +25,13 @@ public class MongockSpringConfiguration extends MongockConfiguration {
 
   public void setRunnerType(SpringRunnerType runnerType) {
     this.runnerType = runnerType;
+  }
+
+  public boolean isTestEnabled() {
+    return testEnabled;
+  }
+
+  public void setTestEnabled(boolean testEnabled) {
+    this.testEnabled = testEnabled;
   }
 }
