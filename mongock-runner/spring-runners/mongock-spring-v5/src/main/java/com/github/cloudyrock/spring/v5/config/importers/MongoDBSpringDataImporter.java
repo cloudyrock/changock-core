@@ -6,7 +6,7 @@ import org.springframework.core.env.Environment;
 import java.util.Arrays;
 import java.util.List;
 
-public class MongoSpringDataImporter implements ContextImporter {
+public class MongoDBSpringDataImporter implements ContextImporter {
 
   private final static String PACKAGE_TEMPLATE = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v%s.config.";
   private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sContext";
