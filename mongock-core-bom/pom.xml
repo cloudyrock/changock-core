@@ -3,7 +3,7 @@
   <parent>
     <artifactId>mongock-core</artifactId>
     <groupId>com.github.cloudyrock.mongock</groupId>
-    <version>4.3.7-SNAPSHOT</version>
+    <version>4.3.7</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
@@ -18,37 +18,37 @@
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-api</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-driver-api</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-driver-core</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-runner-core</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-standalone</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-spring-runner-util</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-spring-v5</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -67,17 +67,17 @@
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-test-runner</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-test-util</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-decorator-util</artifactId>
-        <version>4.3.7-SNAPSHOT</version>
+        <version>4.3.7</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
