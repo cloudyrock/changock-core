@@ -2,7 +2,7 @@ package com.github.cloudyrock.spring.v5.config;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.spring.v5.config.importers.ContextImporter;
-import com.github.cloudyrock.spring.v5.config.importers.MongoSpringDataImporter;
+import com.github.cloudyrock.spring.v5.config.importers.MongoDBSpringDataImporter;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
@@ -20,7 +20,7 @@ public class MongockDriverContextSelector implements ImportSelector {
       "\n\tSOLUTION: You need to import one of the following artifacts";
 
   private static final List<ContextImporter> contextImporters = Collections.singletonList(
-      new MongoSpringDataImporter()
+      new MongoDBSpringDataImporter()
   );
 
   private static final String DRIVER_NOT_FOUND_ERROR;
