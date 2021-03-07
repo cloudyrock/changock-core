@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>mongock-core</artifactId>
+    <artifactId>spring</artifactId>
     <groupId>com.github.cloudyrock.mongock</groupId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>mongock-runner</artifactId>
+  <artifactId>springboot-v2.2</artifactId>
   <packaging>pom</packaging>
+
   <modules>
-    <module>mongock-runner-core</module>
-    <module>mongock-test-runner</module>
-    <module>mongock-standalone</module>
-    <module>spring</module>
+    <module>mongock-springboot-v2.2</module>
+    <module>mongock-springboot-v2.2-dependencies</module>
   </modules>
+
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -24,5 +26,4 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
   </properties>
-
 </project>
