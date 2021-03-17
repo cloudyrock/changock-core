@@ -18,7 +18,7 @@
 
   <groupId>com.github.cloudyrock.mongock</groupId>
   <artifactId>mongock-core</artifactId>
-  <version>4.3.8-SNAPSHOT</version>
+  <version>4.3.8</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -61,7 +61,7 @@
     <connection>scm:git:git@github.com:cloudyrock/mongock-core.git</connection>
     <developerConnection>scm:git:git@github.com:cloudyrock/mongock-core.git</developerConnection>
     <url>https://github.com/cloudyrock/mongock-core</url>
-    <tag>mongock-core-4.3.5-SNAPSHOT</tag>
+    <tag>mongock-core-4.3.8</tag>
   </scm>
 
   <developers>
