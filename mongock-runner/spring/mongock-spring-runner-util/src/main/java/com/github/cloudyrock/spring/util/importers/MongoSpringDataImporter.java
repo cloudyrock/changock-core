@@ -1,7 +1,6 @@
-package com.github.cloudyrock.springboot.v2_2.config.importers;
+package com.github.cloudyrock.spring.util.importers;
 
 import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +12,7 @@ public class MongoSpringDataImporter implements ContextImporter {
   private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sContext";
 
   @Override
-  public String[] getPaths(Environment environment) {
+  public String[] getPaths() {
     try {
       return loadSpringDataContextByVersion("3");
     } catch (ClassNotFoundException e) {

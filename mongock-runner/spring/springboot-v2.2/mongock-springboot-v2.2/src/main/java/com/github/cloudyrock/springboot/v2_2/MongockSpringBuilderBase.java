@@ -3,6 +3,7 @@ package com.github.cloudyrock.springboot.v2_2;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.runner.core.executor.DefaultDependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
@@ -76,7 +77,10 @@ public abstract class MongockSpringBuilderBase<
   }
 
   protected DependencyManagerWithContext buildDependencyManagerWithContext() {
-    DependencyManagerWithContext dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
+    DependencyManagerWithContext dependencyManager = new DependencyManagerWithContext(
+      new DefaultDependencyContext(type -> springContext.getBean(type), name -> springContext.getBean(name)
+      )
+    );
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
