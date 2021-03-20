@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
-import com.github.cloudyrock.spring.util.SpringDependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
 import com.github.cloudyrock.spring.util.SpringEventPublisher;
 import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;

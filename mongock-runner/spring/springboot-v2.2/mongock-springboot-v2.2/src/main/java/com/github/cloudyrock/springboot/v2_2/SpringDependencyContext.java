@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring.util;
+package com.github.cloudyrock.springboot.v2_2;
 
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyNotFound;
