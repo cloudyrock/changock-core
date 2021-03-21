@@ -1,7 +1,5 @@
 package com.github.cloudyrock.spring.util.importers;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +37,6 @@ public class MongoSpringDataImporter implements ContextImporter {
   private String[] loadSpringDataContextByVersion(String v) throws ClassNotFoundException {
     Class.forName(String.format(DRIVER_TEMPLATE, v, v));
     return new String[]{
-        MongockSpringConfiguration.class.getCanonicalName(),
         String.format(CONTEXT_TEMPLATE, v, v)};
   }
 

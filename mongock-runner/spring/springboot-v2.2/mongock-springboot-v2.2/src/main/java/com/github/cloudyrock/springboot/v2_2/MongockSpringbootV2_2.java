@@ -6,7 +6,7 @@ import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
-import com.github.cloudyrock.spring.util.SpringEventPublisher;
+import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -29,21 +29,11 @@ public final class MongockSpringbootV2_2 {
     }
 
     public MongockApplicationRunner buildApplicationRunner() {
-      return new MongockApplicationRunner(
-          buildExecutorWithEnvironmentDependency(),
-          getChangeLogService(),
-          throwExceptionIfCannotObtainLock,
-          enabled,
-          buildSpringEventPublisher());
+      return new MongockApplicationRunner(buildExecutorWithEnvironmentDependency(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, buildSpringEventPublisher());
     }
 
     public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      return new MongockInitializingBeanRunner(
-          buildExecutorWithEnvironmentDependency(),
-          getChangeLogService(),
-          throwExceptionIfCannotObtainLock,
-          enabled,
-          buildSpringEventPublisher());
+      return new MongockInitializingBeanRunner(buildExecutorWithEnvironmentDependency(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, buildSpringEventPublisher());
     }
 
     @Override
