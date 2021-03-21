@@ -18,7 +18,7 @@ public final class MongockStandalone {
 
 
     @Override
-    protected Builder returnInstance() {
+    protected Builder getInstance() {
       return this;
     }
 

@@ -29,49 +29,49 @@ public final class MongockSpringbootV2_2 {
     }
 
     public MongockApplicationRunner buildApplicationRunner() {
-      return new MongockApplicationRunner(buildExecutorWithEnvironmentDependency(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, buildSpringEventPublisher());
+      return new MongockApplicationRunner(getRunner());
     }
 
     public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      return new MongockInitializingBeanRunner(buildExecutorWithEnvironmentDependency(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, buildSpringEventPublisher());
+      return new MongockInitializingBeanRunner(getRunner());
+    }
+
+    private MongockRunnerBase getRunner() {
+      return new MongockRunnerBase(buildExecutorWithEnvironmentDependency(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
 
     @Override
-    protected Builder returnInstance() {
+    protected Builder getInstance() {
       return this;
     }
 
   }
 
-  public static class MongockApplicationRunner extends MongockRunnerBase implements ApplicationRunner {
+  public static class MongockApplicationRunner implements ApplicationRunner {
 
-    protected MongockApplicationRunner(MigrationExecutor executor,
-                                       ChangeLogService changeLogService,
-                                       boolean throwExceptionIfCannotObtainLock,
-                                       boolean enabled,
-                                       SpringEventPublisher eventPublisher) {
-      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+    private final MongockRunnerBase runner;
+
+    protected MongockApplicationRunner(MongockRunnerBase runner) {
+      this.runner = runner;
     }
 
     @Override
     public void run(ApplicationArguments args) {
-      this.execute();
+      runner.execute();
     }
   }
 
-  public static class MongockInitializingBeanRunner extends MongockRunnerBase implements InitializingBean {
+  public static class MongockInitializingBeanRunner implements InitializingBean {
 
-    protected MongockInitializingBeanRunner(MigrationExecutor executor,
-                                            ChangeLogService changeLogService,
-                                            boolean throwExceptionIfCannotObtainLock,
-                                            boolean enabled,
-                                            SpringEventPublisher eventPublisher) {
-      super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+    private final MongockRunnerBase runner;
+
+    protected MongockInitializingBeanRunner(MongockRunnerBase runner) {
+      this.runner = runner;
     }
 
     @Override
     public void afterPropertiesSet() {
-      execute();
+      runner.execute();
     }
   }
 }

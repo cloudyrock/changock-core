@@ -239,7 +239,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
   }
 
   @Override
-  protected DummyRunnerBuilder returnInstance() {
+  protected DummyRunnerBuilder getInstance() {
     return this;
   }
 

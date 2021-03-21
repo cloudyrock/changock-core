@@ -58,7 +58,7 @@ public class TestMongockRunner extends MongockRunnerBase {
     }
 
     @Override
-    protected Builder returnInstance() {
+    protected Builder getInstance() {
       return this;
     }
   }

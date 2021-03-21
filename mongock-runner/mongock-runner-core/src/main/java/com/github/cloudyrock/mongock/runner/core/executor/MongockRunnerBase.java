@@ -16,7 +16,7 @@ public class MongockRunnerBase<EXECUTOR extends MigrationExecutor> {
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
 
-  protected MongockRunnerBase(EXECUTOR executor,
+  public MongockRunnerBase(EXECUTOR executor,
                               ChangeLogService changeLogService,
                               boolean throwExceptionIfCannotObtainLock,
                               boolean enabled,

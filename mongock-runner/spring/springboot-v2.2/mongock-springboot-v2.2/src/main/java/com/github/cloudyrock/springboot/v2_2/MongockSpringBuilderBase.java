@@ -6,7 +6,10 @@ import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.DefaultDependencyContext;
+import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
+import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
@@ -36,8 +39,9 @@ public abstract class MongockSpringBuilderBase<
     extends RunnerBuilderBase<BUILDER_TYPE, DRIVER, SPRING_CONFIG> {
 
   protected static final String DEFAULT_PROFILE = "default";
-  protected ApplicationContext springContext;
-  protected ApplicationEventPublisher applicationEventPublisher;
+  protected DependencyManager dependencyManager;
+  protected EventPublisher applicationEventPublisher =  new SpringEventPublisher(null);
+  protected List<String> activeProfiles;
 
   /**
    * Set ApplicationContext from Spring
@@ -47,19 +51,52 @@ public abstract class MongockSpringBuilderBase<
    * @see org.springframework.context.annotation.Profile
    */
   public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
-    this.springContext = springContext;
-    return returnInstance();
+    DefaultDependencyContext dependencyContext =
+        new DefaultDependencyContext(type -> springContext.getBean(type), name -> springContext.getBean(name));
+    addDependencyManager(dependencyContext);
+    setActiveProfiles(getActiveProfilesFromContext(springContext));
+    return getInstance();
   }
 
   public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    this.applicationEventPublisher = applicationEventPublisher;
-    return returnInstance();
+    this.applicationEventPublisher = new SpringEventPublisher(applicationEventPublisher);
+    return getInstance();
+  }
+
+  private List<String> getActiveProfilesFromContext(ApplicationContext springContext) {
+    Environment springEnvironment = springContext.getEnvironment();
+    return springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
+        ? Arrays.asList(springEnvironment.getActiveProfiles())
+        : Collections.singletonList(DEFAULT_PROFILE);
+  }
+
+
+  ///generic
+
+  private BUILDER_TYPE setActiveProfiles(List<String> activeProfiles) {
+    this.activeProfiles = activeProfiles;
+    return getInstance();
+  }
+
+  private BUILDER_TYPE addDependencyManager(DependencyContext dependencyContext) {
+    this.dependencyManager = new DependencyManagerWithContext(dependencyContext);
+    addLegacyMigration();
+    this.dependencyManager.addDriverDependencies(dependencies);
+    return getInstance();
+  }
+
+  private void addLegacyMigration() {
+    if (legacyMigration != null) {
+      dependencyManager.addStandardDependency(
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
+      );
+    }
   }
 
   @Override
   public BUILDER_TYPE setConfig(SPRING_CONFIG config) {
     super.setConfig(config);
-    return returnInstance();
+    return getInstance();
   }
 
   public abstract SPRING_APP_RUNNER_TYPE buildApplicationRunner();
@@ -70,59 +107,39 @@ public abstract class MongockSpringBuilderBase<
   //children classes
 
   protected SpringMigrationExecutor buildExecutorWithEnvironmentDependency() {
+    checkDependencyManagerNotNull();
     return new SpringMigrationExecutor(
         driver,
-        buildDependencyManagerWithContext(),
+        dependencyManager,
         new MigrationExecutorConfiguration(trackIgnored),
         metadata
     );
   }
 
-  protected DependencyManagerWithContext buildDependencyManagerWithContext() {
-    DependencyManagerWithContext dependencyManager = new DependencyManagerWithContext(
-      new DefaultDependencyContext(type -> springContext.getBean(type), name -> springContext.getBean(name)
-      )
-    );
-    if (legacyMigration != null) {
-      dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
-      );
-    }
-    dependencyManager.addDriverDependencies(dependencies);
-    return dependencyManager;
-  }
 
   @Override
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
-    if (springContext == null) {
-      throw new MongockException("ApplicationContext from Spring must be injected to Builder");
-    }
     return annotated -> ProfileUtil.matchesActiveSpringProfile(
-            getActiveProfiles(),
+            activeProfiles,
             Profile.class,
             annotated,
             (AnnotatedElement element) ->element.getAnnotation(Profile.class).value());
   }
 
-  private List<String> getActiveProfiles() {
-    Environment springEnvironment = springContext.getEnvironment();
-    return springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
-        ? Arrays.asList(springEnvironment.getActiveProfiles())
-        : Collections.singletonList(DEFAULT_PROFILE);
-  }
 
-  protected SpringEventPublisher buildSpringEventPublisher() {
-    return new SpringEventPublisher(applicationEventPublisher);
-  }
 
   @Override
   public void runValidation() {
     super.runValidation();
-    if (springContext == null) {
+    checkDependencyManagerNotNull();
+  }
+
+
+  private void checkDependencyManagerNotNull() {
+    if (dependencyManager == null) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
   }
-
 }
 
 
