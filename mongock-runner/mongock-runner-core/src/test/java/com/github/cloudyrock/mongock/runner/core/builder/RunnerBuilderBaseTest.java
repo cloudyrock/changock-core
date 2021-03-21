@@ -249,7 +249,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
   }
 
   public MongockRunnerBase build() {
-    return new DummyRunner(
+    return new MongockRunnerBase(
         executor != null ? executor : buildExecutorDefault(),
         getChangeLogService(),
         throwExceptionIfCannotObtainLock,
@@ -264,9 +264,4 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
   }
 }
 
-class DummyRunner extends MongockRunnerBase<MigrationExecutor> {
-  DummyRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-  }
-}
 

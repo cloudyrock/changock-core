@@ -7,16 +7,16 @@ import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongockRunnerBase<EXECUTOR extends MigrationExecutor> {
+public class MongockRunnerBase {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunnerBase.class);
 
   private final boolean enabled;
-  private final EXECUTOR executor;
+  private final MigrationExecutor executor;
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
 
-  public MongockRunnerBase(EXECUTOR executor,
+  public MongockRunnerBase(MigrationExecutor executor,
                            ChangeLogService changeLogService,
                            boolean throwExceptionIfCannotObtainLock,
                            boolean enabled,
