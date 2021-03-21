@@ -12,7 +12,6 @@ import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
-import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 
 import java.util.List;
 
@@ -21,10 +20,10 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSpringBuilderBase>
     extends RunnerBuilderBase<BUILDER_TYPE, ConnectionDriver, MongockSpringConfiguration> {
 
-  protected static final String DEFAULT_PROFILE = "default";
-  protected DependencyManager dependencyManager;
-  protected EventPublisher applicationEventPublisher = EventPublisher.empty();
-  protected List<String> activeProfiles;
+  static final String DEFAULT_PROFILE = "default";
+  DependencyManager dependencyManager;
+  EventPublisher applicationEventPublisher = EventPublisher.empty();
+  List<String> activeProfiles;
 
   protected BUILDER_TYPE setActiveProfiles(List<String> activeProfiles) {
     this.activeProfiles = activeProfiles;
@@ -57,7 +56,7 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
   //children classes
 
   protected MigrationExecutor buildExecutorWithEnvironmentDependency() {
-    checkDependencyManagerNotNull();
+    runValidation();
     return new SpringMigrationExecutor(
         driver,
         dependencyManager,
@@ -72,15 +71,12 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
   @Override
   public void runValidation() {
     super.runValidation();
-    checkDependencyManagerNotNull();
-  }
-
-
-  private void checkDependencyManagerNotNull() {
     if (dependencyManager == null) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
   }
+
+
 }
 
 

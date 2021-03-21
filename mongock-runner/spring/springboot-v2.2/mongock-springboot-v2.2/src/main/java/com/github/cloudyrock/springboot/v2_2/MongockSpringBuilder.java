@@ -1,13 +1,9 @@
 package com.github.cloudyrock.springboot.v2_2;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.executor.DefaultDependencyContext;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
