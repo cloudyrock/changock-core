@@ -14,6 +14,7 @@ import com.github.cloudyrock.mongock.config.LegacyMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -181,15 +182,20 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return dependencyManager;
   }
 
-  protected ChangeLogService buildChangeLogServiceDefault() {
+  protected ChangeLogService getChangeLogService() {
     return new ChangeLogService(
         changeLogsScanPackage,
         changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
+        getAnnotationFilter(),
         annotationProcessor, // if null, it will take default MongockAnnotationManager
         changeLogInstantiator
     );
+  }
+
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    return annotatedElement -> true;
   }
 
   @Override

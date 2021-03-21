@@ -1,27 +1,31 @@
 package com.github.cloudyrock.springboot.v2_2;
 
-import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.runner.core.executor.DefaultDependencyContext;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
-import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.DefaultDependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
-import com.github.cloudyrock.spring.util.SpringEventPublisher;
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import com.github.cloudyrock.springboot.v2_2.core.ProfiledChangeLogService;
-import com.github.cloudyrock.springboot.v2_2.core.SpringMigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
+import com.github.cloudyrock.spring.util.ProfileUtil;
+import com.github.cloudyrock.spring.util.SpringEventPublisher;
+import com.github.cloudyrock.springboot.v2_2.core.SpringMigrationExecutor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
@@ -90,22 +94,23 @@ public abstract class MongockSpringBuilderBase<
     return dependencyManager;
   }
 
-  protected ProfiledChangeLogService buildProfiledChangeLogService() {
+  @Override
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
     if (springContext == null) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
+    return annotated -> ProfileUtil.matchesActiveSpringProfile(
+            getActiveProfiles(),
+            Profile.class,
+            annotated,
+            (AnnotatedElement element) ->element.getAnnotation(Profile.class).value());
+  }
+
+  private List<String> getActiveProfiles() {
     Environment springEnvironment = springContext.getEnvironment();
-    List<String> activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
+    return springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
         ? Arrays.asList(springEnvironment.getActiveProfiles())
         : Collections.singletonList(DEFAULT_PROFILE);
-    return new ProfiledChangeLogService(
-        changeLogsScanPackage,
-        changeLogsScanClasses,
-        startSystemVersion,
-        endSystemVersion,
-        activeProfiles,
-        annotationProcessor
-    );
   }
 
   protected SpringEventPublisher buildSpringEventPublisher() {

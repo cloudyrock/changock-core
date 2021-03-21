@@ -40,7 +40,7 @@ public abstract class StandaloneBuilderBase<BUILDER extends StandaloneBuilderBas
   }
 
   public StandaloneRunner buildRunner() {
-    return new StandaloneRunner(buildExecutorDefault(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
+    return new StandaloneRunner(buildExecutorDefault(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
   }
 
 }

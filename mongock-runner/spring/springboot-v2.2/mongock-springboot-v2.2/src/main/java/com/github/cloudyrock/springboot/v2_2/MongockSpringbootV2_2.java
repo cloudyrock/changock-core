@@ -31,7 +31,7 @@ public final class MongockSpringbootV2_2 {
     public MongockApplicationRunner buildApplicationRunner() {
       return new MongockApplicationRunner(
           buildExecutorWithEnvironmentDependency(),
-          buildProfiledChangeLogService(),
+          getChangeLogService(),
           throwExceptionIfCannotObtainLock,
           enabled,
           buildSpringEventPublisher());
@@ -40,7 +40,7 @@ public final class MongockSpringbootV2_2 {
     public MongockInitializingBeanRunner buildInitializingBeanRunner() {
       return new MongockInitializingBeanRunner(
           buildExecutorWithEnvironmentDependency(),
-          buildProfiledChangeLogService(),
+          getChangeLogService(),
           throwExceptionIfCannotObtainLock,
           enabled,
           buildSpringEventPublisher());

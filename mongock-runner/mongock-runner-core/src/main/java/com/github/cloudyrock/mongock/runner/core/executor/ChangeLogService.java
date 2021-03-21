@@ -41,7 +41,7 @@ public class ChangeLogService implements Validable {
 
   private static final Function<Class, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
-      return  type.getConstructor().newInstance();
+      return type.getConstructor().newInstance();
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
       throw new MongockException(e);
     }
@@ -79,13 +79,13 @@ public class ChangeLogService implements Validable {
     this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, annotationProcessor, changeLogInstantiator);
   }
 
-  protected ChangeLogService(List<String> changeLogsBasePackageList,
-                             List<Class<?>> changeLogsBaseClassList,
-                             String startSystemVersionInclusive,
-                             String endSystemVersionInclusive,
-                             Function<AnnotatedElement, Boolean> profileFilter,
-                             AnnotationProcessor annotationProcessor,
-                             Function<Class, Object> changeLogInstantiator) {
+  public ChangeLogService(List<String> changeLogsBasePackageList,
+                          List<Class<?>> changeLogsBaseClassList,
+                          String startSystemVersionInclusive,
+                          String endSystemVersionInclusive,
+                          Function<AnnotatedElement, Boolean> profileFilter,
+                          AnnotationProcessor annotationProcessor,
+                          Function<Class, Object> changeLogInstantiator) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);

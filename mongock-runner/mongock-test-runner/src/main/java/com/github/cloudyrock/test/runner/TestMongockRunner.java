@@ -39,7 +39,7 @@ public class TestMongockRunner extends MongockRunnerBase {
     }
 
     public TestMongockRunner build() {
-      return build(buildExecutorForTest(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, new DummyEventPublisher());
+      return build(buildExecutorForTest(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, new DummyEventPublisher());
     }
 
     protected MigrationExecutor buildExecutorForTest() {
