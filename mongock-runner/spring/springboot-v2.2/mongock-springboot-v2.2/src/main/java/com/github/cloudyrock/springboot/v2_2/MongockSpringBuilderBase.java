@@ -10,8 +10,6 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 
 import java.util.List;
 
@@ -50,23 +48,6 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
     super.setConfig(config);
     return getInstance();
   }
-
-
-  //Following methods are used to build the runners. All of them are protected in case they need to be overwritten by
-  //children classes
-
-  protected MigrationExecutor buildExecutorWithEnvironmentDependency() {
-    runValidation();
-    return new SpringMigrationExecutor(
-        driver,
-        dependencyManager,
-        new MigrationExecutorConfiguration(trackIgnored),
-        metadata
-    );
-  }
-
-
-
 
   @Override
   public void runValidation() {

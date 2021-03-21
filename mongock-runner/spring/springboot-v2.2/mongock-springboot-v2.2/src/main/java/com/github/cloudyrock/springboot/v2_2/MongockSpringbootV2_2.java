@@ -1,13 +1,11 @@
 package com.github.cloudyrock.springboot.v2_2;
 
+import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.builder.DriverBuilderConfigurable;
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
-import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -33,8 +31,16 @@ public final class MongockSpringbootV2_2 {
     }
 
     private MongockRunnerBase getRunner() {
-      return new MongockRunnerBase(buildExecutorWithEnvironmentDependency(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+      runValidation();
+      MigrationExecutor executor = new SpringMigrationExecutor(
+          driver,
+          dependencyManager,
+          new MigrationExecutorConfiguration(trackIgnored),
+          metadata
+      );
+      return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
+
 
     @Override
     protected Builder getInstance() {
