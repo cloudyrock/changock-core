@@ -4,9 +4,9 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.spring.util.SpringMigrationExecutorBase;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,11 @@ import java.lang.reflect.Parameter;
 import java.util.Map;
 
 public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends SpringMigrationExecutorBase<CHANGE_ENTRY> {
-  public SpringMigrationExecutor(ConnectionDriver driver, DependencyManager dependencyManager, MigrationExecutorConfiguration config, Map<String, Object> metadata) {
+  public SpringMigrationExecutor(
+      ConnectionDriver driver,
+      DependencyManager dependencyManager,
+      MigrationExecutorConfiguration config,
+      Map<String, Object> metadata) {
     super(driver, dependencyManager, config, metadata);
   }
 

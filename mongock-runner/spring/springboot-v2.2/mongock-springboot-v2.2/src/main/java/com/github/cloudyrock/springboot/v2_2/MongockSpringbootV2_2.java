@@ -12,7 +12,6 @@ import com.github.cloudyrock.spring.util.MongockSpringBuilderBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -69,57 +68,28 @@ public final class MongockSpringbootV2_2 {
     }
 
     public MongockApplicationRunner buildApplicationRunner() {
-      return new MongockApplicationRunner(getRunner());
+      return args -> getRunner().execute();
     }
 
     public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      return new MongockInitializingBeanRunner(getRunner());
+      return () -> getRunner().execute();
     }
 
     private MongockRunnerBase getRunner() {
       runValidation();
-      MigrationExecutor executor = new SpringMigrationExecutor(
-          driver,
-          dependencyManager,
-          new MigrationExecutorConfiguration(trackIgnored),
-          metadata
-      );
+      MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata);
       return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
-
 
     @Override
     protected Builder getInstance() {
       return this;
     }
-
   }
 
-  public static class MongockApplicationRunner implements ApplicationRunner {
+  @FunctionalInterface
+  public interface MongockApplicationRunner extends ApplicationRunner { }
 
-    private final MongockRunnerBase runner;
-
-    protected MongockApplicationRunner(MongockRunnerBase runner) {
-      this.runner = runner;
-    }
-
-    @Override
-    public void run(ApplicationArguments args) {
-      runner.execute();
-    }
-  }
-
-  public static class MongockInitializingBeanRunner implements InitializingBean {
-
-    private final MongockRunnerBase runner;
-
-    protected MongockInitializingBeanRunner(MongockRunnerBase runner) {
-      this.runner = runner;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-      runner.execute();
-    }
-  }
+  @FunctionalInterface
+  public interface MongockInitializingBeanRunner extends InitializingBean { }
 }
