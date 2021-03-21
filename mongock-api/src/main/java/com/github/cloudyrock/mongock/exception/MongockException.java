@@ -4,6 +4,11 @@ package com.github.cloudyrock.mongock.exception;
  *
  */
 public class MongockException extends RuntimeException {
+
+  public MongockException() {
+    super();
+  }
+
   public MongockException(Exception exception) {
     super(exception);
   }

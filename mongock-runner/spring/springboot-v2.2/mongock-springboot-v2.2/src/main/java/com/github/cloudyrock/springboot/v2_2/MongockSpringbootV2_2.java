@@ -18,9 +18,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,9 +84,10 @@ public final class MongockSpringbootV2_2 {
     private MongockRunnerBase getRunner() {
       runValidation();
       Function<Parameter, String> paramNameExtractor = Builder::getParameterName;
-      MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata, paramNameExtractor);
+      MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata, paramNameExtractor, new TransactionExecutorImpl());
       return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
+
 
     private static String getParameterName(Parameter parameter) {
       String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
@@ -104,4 +108,13 @@ public final class MongockSpringbootV2_2 {
 
   @FunctionalInterface
   public interface MongockInitializingBeanRunner extends InitializingBean { }
+
+  public static class TransactionExecutorImpl implements TransactionExecutor {
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void executionInTransaction(Runnable operation) {
+      operation.run();
+    }
+  }
 }
