@@ -12,13 +12,16 @@ import com.github.cloudyrock.spring.util.MongockSpringBuilderBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
+import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,8 +80,17 @@ public final class MongockSpringbootV2_2 {
 
     private MongockRunnerBase getRunner() {
       runValidation();
-      MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata);
+      Function<Parameter, String> paramNameExtractor = Builder::getParameterName;
+      MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata, paramNameExtractor);
       return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+    }
+
+    private static String getParameterName(Parameter parameter) {
+      String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+      if(name == null) {
+        name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
+      }
+      return name;
     }
 
     @Override
