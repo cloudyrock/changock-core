@@ -3,10 +3,7 @@ package com.github.cloudyrock.springboot.v2_2;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.builder.DriverBuilderConfigurable;
 import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
-import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -18,12 +15,7 @@ public final class MongockSpringbootV2_2 {
     return new Builder();
   }
 
-  public static class Builder extends MongockSpringBuilderBase<
-      Builder,
-      MongockApplicationRunner,
-      MongockInitializingBeanRunner,
-      ConnectionDriver,
-      MongockSpringConfiguration> {
+  public static class Builder extends MongockSpringBuilder<Builder> {
 
     private Builder() {
     }
