@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2;
+package com.github.cloudyrock.spring.util;
 
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
@@ -11,37 +11,30 @@ import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
 
-import java.util.List;
-
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSpringBuilderBase>
     extends RunnerBuilderBase<BUILDER_TYPE, ConnectionDriver, MongockSpringConfiguration> {
 
-  static final String DEFAULT_PROFILE = "default";
-  DependencyManager dependencyManager;
-  EventPublisher applicationEventPublisher = EventPublisher.empty();
-  List<String> activeProfiles;
-
-  protected BUILDER_TYPE setActiveProfiles(List<String> activeProfiles) {
-    this.activeProfiles = activeProfiles;
-    return getInstance();
-  }
+  protected DependencyManager dependencyManager;
+  protected EventPublisher applicationEventPublisher = EventPublisher.empty();
 
   protected BUILDER_TYPE addDependencyManager(DependencyContext dependencyContext) {
     this.dependencyManager = new DependencyManagerWithContext(dependencyContext);
-    addLegacyMigration();
-    this.dependencyManager.addDriverDependencies(dependencies);
-    return getInstance();
-  }
-
-  private void addLegacyMigration() {
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
       );
     }
+    this.dependencyManager.addDriverDependencies(dependencies);
+    return getInstance();
   }
+
+  protected BUILDER_TYPE setEventPublisher(EventPublisher eventPublisher) {
+    this.applicationEventPublisher = eventPublisher;
+    return getInstance();
+  }
+
 
   @Override
   public BUILDER_TYPE setConfig(MongockSpringConfiguration config) {
