@@ -22,10 +22,8 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
 
   protected static final String DEFAULT_PROFILE = "default";
   protected DependencyManager dependencyManager;
-  protected EventPublisher applicationEventPublisher =  new SpringEventPublisher(null);
+  protected EventPublisher applicationEventPublisher = EventPublisher.empty();
   protected List<String> activeProfiles;
-
-  ///generic
 
   protected BUILDER_TYPE setActiveProfiles(List<String> activeProfiles) {
     this.activeProfiles = activeProfiles;

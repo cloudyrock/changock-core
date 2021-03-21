@@ -1,7 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
 import org.slf4j.Logger;
@@ -17,10 +17,10 @@ public class MongockRunnerBase<EXECUTOR extends MigrationExecutor> {
   private final EventPublisher eventPublisher;
 
   public MongockRunnerBase(EXECUTOR executor,
-                              ChangeLogService changeLogService,
-                              boolean throwExceptionIfCannotObtainLock,
-                              boolean enabled,
-                              EventPublisher eventPublisher) {
+                           ChangeLogService changeLogService,
+                           boolean throwExceptionIfCannotObtainLock,
+                           boolean enabled,
+                           EventPublisher eventPublisher) {
     this.executor = executor;
     this.chanLogService = changeLogService;
     this.enabled = enabled;
