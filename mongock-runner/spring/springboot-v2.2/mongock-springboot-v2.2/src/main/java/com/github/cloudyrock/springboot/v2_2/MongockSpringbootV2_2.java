@@ -10,6 +10,8 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.MongockSpringBuilderBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
+import com.github.cloudyrock.spring.util.SpringMigrationExecutor;
+import com.github.cloudyrock.spring.util.TransactionExecutor;
 import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -110,7 +111,6 @@ public final class MongockSpringbootV2_2 {
   public interface MongockInitializingBeanRunner extends InitializingBean { }
 
   public static class TransactionExecutorImpl implements TransactionExecutor {
-
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void executionInTransaction(Runnable operation) {

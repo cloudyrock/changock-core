@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2;
+package com.github.cloudyrock.spring.util;
 
 public interface TransactionExecutor {
   void executionInTransaction(Runnable operation);

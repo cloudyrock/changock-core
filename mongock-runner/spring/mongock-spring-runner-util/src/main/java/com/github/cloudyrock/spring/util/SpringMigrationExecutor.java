@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2;
+package com.github.cloudyrock.spring.util;
 
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
-import com.github.cloudyrock.spring.util.SpringMigrationExecutorBase;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
