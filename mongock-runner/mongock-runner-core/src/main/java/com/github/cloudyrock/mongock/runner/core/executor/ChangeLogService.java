@@ -175,7 +175,7 @@ public class ChangeLogService implements Validable {
     boolean isWithinVersion = false;
     String versionString = changeSetAnn.getSystemVersion();
     ArtifactVersion version = new DefaultArtifactVersion(versionString);
-    if (version.compareTo(startSystemVersion) >= 0 && version.compareTo(endSystemVersion) <= 0) {
+    if (version.compareTo(startSystemVersion) >= 0 && version.compareTo(endSystemVersion) < 0) {
       isWithinVersion = true;
     }
     return isWithinVersion;
