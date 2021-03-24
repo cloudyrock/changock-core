@@ -7,7 +7,7 @@ public class MongoSpringDataImporter implements ContextImporter {
 
   private final static String PACKAGE_TEMPLATE = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v%s.";
   private final static String DRIVER_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sDriver";
-  private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sContext";
+  private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "config.SpringDataMongoV%sContext";
 
   @Override
   public String[] getPaths() {
