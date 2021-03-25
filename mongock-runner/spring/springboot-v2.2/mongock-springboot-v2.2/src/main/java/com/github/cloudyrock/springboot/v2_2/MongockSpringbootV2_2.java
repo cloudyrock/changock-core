@@ -40,7 +40,7 @@ public final class MongockSpringbootV2_2 {
 
   public static class Builder extends MongockSpringBuilderBase<Builder> {
 
-
+    private ApplicationContext springContext;
     private List<String> activeProfiles;
 
     private static final String DEFAULT_PROFILE = "default";
@@ -49,8 +49,8 @@ public final class MongockSpringbootV2_2 {
     }
 
     public Builder setSpringContext(ApplicationContext springContext) {
+      this.springContext = springContext;
       addDependencyManager(new DefaultDependencyContext(springContext::getBean, springContext::getBean));
-      setActiveProfilesFromContext(springContext);
       return getInstance();
     }
 
@@ -84,11 +84,12 @@ public final class MongockSpringbootV2_2 {
 
     private MongockRunnerBase getRunner() {
       runValidation();
+      setActiveProfilesFromContext(springContext);
+      injectLegacyMigration();
       Function<Parameter, String> paramNameExtractor = Builder::getParameterName;
       MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata, paramNameExtractor, new TransactionExecutorImpl());
       return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
-
 
     private static String getParameterName(Parameter parameter) {
       String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;

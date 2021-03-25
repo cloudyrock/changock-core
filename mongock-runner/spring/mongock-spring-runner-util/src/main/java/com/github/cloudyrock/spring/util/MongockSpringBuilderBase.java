@@ -21,13 +21,16 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
 
   protected BUILDER_TYPE addDependencyManager(DependencyContext dependencyContext) {
     this.dependencyManager = new DependencyManagerWithContext(dependencyContext);
+    return getInstance();
+  }
+
+  protected void injectLegacyMigration() {
     if (legacyMigration != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
       );
     }
     this.dependencyManager.addDriverDependencies(dependencies);
-    return getInstance();
   }
 
   protected BUILDER_TYPE setEventPublisher(EventPublisher eventPublisher) {
