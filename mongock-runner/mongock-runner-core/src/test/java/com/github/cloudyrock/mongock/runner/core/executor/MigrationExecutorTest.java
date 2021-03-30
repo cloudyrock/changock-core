@@ -91,7 +91,7 @@ public class MigrationExecutorTest {
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("runAlwaysAndNewChangeSet", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
@@ -461,10 +461,33 @@ public class MigrationExecutorTest {
     // Lock should not be acquired because all items are already executed.
     verify(lockManager, new Times(0)).acquireLockDefault();
   }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldStoreChangeLog_whenRunAlways_ifNotAlreadyExecuted() {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecutedRunAlways", "executor")).thenReturn(false);
+
+    when(driver.getLockManager()).thenReturn(lockManager);
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
+
+    //then
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should be stored
+    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
+  }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void shouldNotSkipMigration_whenAllChangeSetItemsAlreadyExecuted_ifAtLeastOneChangeSetFlaggedAsRunAlways() {
+  public void shouldNotStoreChangeLog_whenRunAlways_ifAlreadyExecuted() {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
@@ -481,8 +504,8 @@ public class MigrationExecutorTest {
     verify(lockManager, new Times(1)).acquireLockDefault();
 
     ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
-    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should be stored
-    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
+    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should not be stored
+    verify(changeEntryService, new Times(0)).save(changeEntryCaptor.capture());
   }
 
   private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
