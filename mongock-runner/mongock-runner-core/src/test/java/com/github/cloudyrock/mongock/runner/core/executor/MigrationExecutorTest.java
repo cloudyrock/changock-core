@@ -95,7 +95,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored, "myService"), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -111,6 +111,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
@@ -118,6 +119,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     int nextIndex = 2;
     if(trackingIgnored) {
@@ -127,6 +129,7 @@ public class MigrationExecutorTest {
       assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
       assertEquals("alreadyExecuted", entry.getChangeSetMethod());
       assertEquals(ChangeState.IGNORED, entry.getState());
+      assertTrue(entry.getExecutionHostname().endsWith("-myService"));
       nextIndex++;
     }
 
@@ -136,6 +139,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
   @Test
@@ -169,6 +173,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
@@ -176,6 +181,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(2);
     assertEquals("throwsException", entry.getChangeId());
@@ -183,6 +189,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("throwsException", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
   @Test
@@ -275,6 +282,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet1", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
 
     entry = entries.get(1);
@@ -283,6 +291,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("changeSetNonFailFast", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(2);
     assertEquals("newChangeSet2", entry.getChangeId());
@@ -290,6 +299,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet2", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
 
@@ -521,11 +531,11 @@ public class MigrationExecutorTest {
 
 
   private MigrationExecutorConfiguration getMigrationConfig() {
-    return getMigrationConfig(false);
+    return getMigrationConfig(false, "myService");
   }
 
-  private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored) {
-    return new MigrationExecutorConfiguration(trackIgnored);
+  private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored, String serviceIdentifier) {
+    return new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier);
   }
 
 }

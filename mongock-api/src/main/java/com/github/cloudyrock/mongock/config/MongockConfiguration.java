@@ -69,6 +69,11 @@ public class MongockConfiguration {
   private String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
 
   /**
+   * Service identifier.
+   */
+  private String serviceIdentifier = null;
+
+  /**
    * Map for custom data you want to attach to your migration
    */
   private Map<String, Object> metadata;
@@ -181,6 +186,14 @@ public class MongockConfiguration {
 
   public void setEndSystemVersion(String endSystemVersion) {
     this.endSystemVersion = endSystemVersion;
+  }
+
+  public String getServiceIdentifier() {
+    return this.serviceIdentifier;
+  }
+
+  public void setServiceIdentifier(String serviceIdentifier) {
+    this.serviceIdentifier = serviceIdentifier;
   }
 
   public Map<String, Object> getMetadata() {

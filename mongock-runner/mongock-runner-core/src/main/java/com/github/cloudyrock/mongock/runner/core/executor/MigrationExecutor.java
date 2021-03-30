@@ -13,6 +13,7 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import io.changock.migration.api.annotations.NonLockGuarded;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.LogUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import javax.inject.Named;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,21 +84,22 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   protected void processAllChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
     String executionId = generateExecutionId();
+    String executionHostname = generateExecutionHostname(executionId);
     logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
     for (ChangeLogItem changeLog : changeLogs) {
-      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, changeLog));
+      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, executionHostname, changeLog));
     }
   }
 
-  protected void processSingleChangeLog(String executionId, ChangeLogItem changeLog) {
+  protected void processSingleChangeLog(String executionId, String executionHostname, ChangeLogItem changeLog) {
     for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
-      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, changeLog, changeSet));
+      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, executionHostname, changeLog, changeSet));
     }
   }
 
-  protected void processSingleChangeSet(String executionId, ChangeLogItem changeLog, ChangeSetItem changeSet) {
+  protected void processSingleChangeSet(String executionId, String executionHostname, ChangeLogItem changeLog, ChangeSetItem changeSet) {
     try {
-      executeAndLogChangeSet(executionId, changeLog.getInstance(), changeSet);
+      executeAndLogChangeSet(executionId, executionHostname, changeLog.getInstance(), changeSet);
     } catch (Exception e) {
       processExceptionOnChangeSetExecution(e, changeSet.getMethod(), changeSet.isFailFast());
     }
@@ -104,6 +107,21 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
 
   protected String generateExecutionId() {
     return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
+  }
+
+  protected String generateExecutionHostname(String executionId) {
+    String hostname;
+    try {
+      hostname = InetAddress.getLocalHost().getHostName();
+    } catch (Exception e) {
+      hostname = "unknown-host." + executionId;
+    }
+
+    if(StringUtils.isNotEmpty(this.config.getServiceIdentifier())) {
+      hostname += "-";
+      hostname += this.config.getServiceIdentifier();
+    }
+    return hostname;
   }
 
   protected boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<ChangeLogItem> changeLogs) {
@@ -117,20 +135,20 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 
-  protected void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     ChangeEntry changeEntry = null;
     boolean alreadyExecuted = false;
     try {
       if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem)) || changeSetItem.isRunAlways()) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
-        changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
+        changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, executionTimeMillis, EXECUTED);
 
       } else {
-        changeEntry = createChangeEntryInstance(executionId, changeSetItem, -1L, IGNORED);
+        changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, IGNORED);
 
       }
     } catch (Exception ex) {
-      changeEntry = createChangeEntryInstance(executionId, changeSetItem, -1L, FAILED);
+      changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
       throw ex;
     } finally {
       if (changeEntry != null) {
@@ -160,8 +178,8 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  protected ChangeEntry createChangeEntryInstance(String executionId, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {
-    return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, metadata);
+  protected ChangeEntry createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {
+    return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, executionHostname, metadata);
   }
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {

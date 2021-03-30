@@ -71,7 +71,7 @@ public abstract class MongockSpringBuilderBase<
     return new SpringMigrationExecutor(
         driver,
         buildDependencyManagerWithContext(),
-        new MigrationExecutorConfiguration(trackIgnored),
+        new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier),
         metadata
     );
   }
