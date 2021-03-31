@@ -121,8 +121,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     ChangeEntry changeEntry = null;
     boolean alreadyExecuted = false;
     try {
-      if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem))
-          || changeSetItem.isRunAlways()) {
+      if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem)) || changeSetItem.isRunAlways()) {
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, changeSetItem, executionTimeMillis, EXECUTED);
 
@@ -136,8 +135,12 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     } finally {
       if (changeEntry != null) {
         logChangeEntry(changeEntry, changeSetItem, alreadyExecuted);
-        if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
-          driver.getChangeEntryService().save(changeEntry);
+        // if not runAlways or, being runAlways, it hasn't been executed before
+        if (!changeSetItem.isRunAlways() || !alreadyExecuted) {
+          //if not ignored or, being ignored, should be tracked anyway
+          if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
+            driver.getChangeEntryService().save(changeEntry);
+          }
         }
       }
     }
