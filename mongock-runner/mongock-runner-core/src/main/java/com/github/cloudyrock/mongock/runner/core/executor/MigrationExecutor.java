@@ -135,7 +135,9 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     } finally {
       if (changeEntry != null) {
         logChangeEntry(changeEntry, changeSetItem, alreadyExecuted);
+        // if not runAlways or, being runAlways, it hasn't been executed before
         if (!changeSetItem.isRunAlways() || !alreadyExecuted) {
+          //if not ignored or, being ignored, should be tracked anyway
           if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
             driver.getChangeEntryService().save(changeEntry);
           }
