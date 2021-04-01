@@ -91,11 +91,11 @@ public class MigrationExecutorTest {
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
     when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("runAlwaysAndNewChangeSet", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("runAlwaysAndAlreadyExecutedChangeSet", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored, "myService"), new HashMap<>())
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -111,6 +111,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
@@ -118,6 +119,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     int nextIndex = 2;
     if(trackingIgnored) {
@@ -127,6 +129,7 @@ public class MigrationExecutorTest {
       assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
       assertEquals("alreadyExecuted", entry.getChangeSetMethod());
       assertEquals(ChangeState.IGNORED, entry.getState());
+      assertTrue(entry.getExecutionHostname().endsWith("-myService"));
       nextIndex++;
     }
 
@@ -136,6 +139,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndAlreadyExecutedChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
   @Test
@@ -169,6 +173,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(1);
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeId());
@@ -176,6 +181,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("runAlwaysAndNewChangeSet", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(2);
     assertEquals("throwsException", entry.getChangeId());
@@ -183,6 +189,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("throwsException", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
   @Test
@@ -275,6 +282,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet1", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
 
     entry = entries.get(1);
@@ -283,6 +291,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("changeSetNonFailFast", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     entry = entries.get(2);
     assertEquals("newChangeSet2", entry.getChangeId());
@@ -290,6 +299,7 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet2", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
 
@@ -461,10 +471,33 @@ public class MigrationExecutorTest {
     // Lock should not be acquired because all items are already executed.
     verify(lockManager, new Times(0)).acquireLockDefault();
   }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldStoreChangeLog_whenRunAlways_ifNotAlreadyExecuted() {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecuted2", "executor")).thenReturn(true);
+    when(changeEntryService.isAlreadyExecuted("alreadyExecutedRunAlways", "executor")).thenReturn(false);
+
+    when(driver.getLockManager()).thenReturn(lockManager);
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
+
+    //then
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should be stored
+    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
+  }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void shouldNotSkipMigration_whenAllChangeSetItemsAlreadyExecuted_ifAtLeastOneChangeSetFlaggedAsRunAlways() {
+  public void shouldNotStoreChangeLog_whenRunAlways_ifAlreadyExecuted() {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
@@ -481,8 +514,8 @@ public class MigrationExecutorTest {
     verify(lockManager, new Times(1)).acquireLockDefault();
 
     ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
-    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should be stored
-    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
+    // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should not be stored
+    verify(changeEntryService, new Times(0)).save(changeEntryCaptor.capture());
   }
 
   private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
@@ -498,11 +531,11 @@ public class MigrationExecutorTest {
 
 
   private MigrationExecutorConfiguration getMigrationConfig() {
-    return getMigrationConfig(false);
+    return getMigrationConfig(false, "myService");
   }
 
-  private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored) {
-    return new MigrationExecutorConfiguration(trackIgnored);
+  private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored, String serviceIdentifier) {
+    return new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier);
   }
 
 }

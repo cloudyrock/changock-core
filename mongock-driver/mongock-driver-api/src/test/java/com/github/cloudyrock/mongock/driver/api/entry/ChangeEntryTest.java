@@ -50,6 +50,7 @@ public class ChangeEntryTest {
         ChangeState.EXECUTED,
         changeSetItem,
         333,
+        "localhost",
         metadata
     );
   }
@@ -67,6 +68,7 @@ public class ChangeEntryTest {
     fieldExpectation.put("changeSetMethod", "changeSetMethod");
     fieldExpectation.put("metadata", metadata);
     fieldExpectation.put("executionMillis", 333L);
+    fieldExpectation.put("executionHostname", "localhost");
     return fieldExpectation;
   }
 

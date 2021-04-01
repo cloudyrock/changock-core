@@ -37,6 +37,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected boolean enabled = true;
   protected String startSystemVersion = "0";
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
+  protected String serviceIdentifier = null;
   protected Map<String, Object> metadata;
   protected DRIVER driver;
   protected AnnotationProcessor annotationProcessor;
@@ -117,6 +118,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
+  public BUILDER_TYPE setServiceIdentifier(String serviceIdentifier) {
+    this.serviceIdentifier = serviceIdentifier;
+    return returnInstance();
+  }
+
+  @Override
   public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
     return returnInstance();
@@ -139,6 +146,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .setEnabled(config.isEnabled())
         .setStartSystemVersion(config.getStartSystemVersion())
         .setEndSystemVersion(config.getEndSystemVersion())
+        .setServiceIdentifier(config.getServiceIdentifier())
         .withMetadata(config.getMetadata())
         .setLegacyMigration(config.getLegacyMigration());
     return returnInstance();
@@ -165,7 +173,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return new MigrationExecutor(
         driver,
         buildDependencyManager(),
-        new MigrationExecutorConfiguration(trackIgnored),
+        new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier),
         metadata
     );
   }
