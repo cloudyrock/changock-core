@@ -41,8 +41,10 @@ public class ChangeEntry {
   @Field("executionMillis")
   private final long executionMillis;
 
+  @Field("executionHostname")
+  private final String executionHostname;
 
-  public static ChangeEntry createInstance(String executionId, ChangeState state, ChangeSetItem changeSet, long executionMillis, Object metadata) {
+  public static ChangeEntry createInstance(String executionId, ChangeState state, ChangeSetItem changeSet, long executionMillis, String executionHostname, Object metadata) {
     return new ChangeEntry(
         executionId,
         changeSet.getId(),
@@ -52,6 +54,7 @@ public class ChangeEntry {
         changeSet.getMethod().getDeclaringClass().getName(),
         changeSet.getMethod().getName(),
         executionMillis,
+        executionHostname,
         metadata);
   }
 
@@ -63,6 +66,7 @@ public class ChangeEntry {
                      String changeLogClass,
                      String changeSetMethod,
                      long executionMillis,
+                     String executionHostname,
                      Object metadata) {
     this.executionId = executionId;
     this.changeId = changeId;
@@ -72,6 +76,7 @@ public class ChangeEntry {
     this.changeLogClass = changeLogClass;
     this.changeSetMethod = changeSetMethod;
     this.executionMillis = executionMillis;
+    this.executionHostname = executionHostname;
     this.metadata = metadata;
   }
 
@@ -106,6 +111,10 @@ public class ChangeEntry {
 
   public long getExecutionMillis() {
     return executionMillis;
+  }
+
+  public String getExecutionHostname() {
+    return executionHostname;
   }
 
   public Object getMetadata() {

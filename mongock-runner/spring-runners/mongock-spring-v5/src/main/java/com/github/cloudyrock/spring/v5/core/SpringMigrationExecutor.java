@@ -39,8 +39,8 @@ public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends M
 
   @Override
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
-    super.executeAndLogChangeSet(executionId, changelogInstance, changeSetItem);
+  public void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+    super.executeAndLogChangeSet(executionId, executionHostname, changelogInstance, changeSetItem);
   }
 
 

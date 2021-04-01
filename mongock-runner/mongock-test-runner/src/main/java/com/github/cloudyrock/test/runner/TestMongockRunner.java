@@ -47,7 +47,7 @@ public class TestMongockRunner extends MongockRunnerBase {
           executionId,
           driver,
           buildDependencyManager(),
-          new MigrationExecutorConfiguration(trackIgnored),
+          new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier),
           metadata
       );
     }

@@ -82,6 +82,16 @@ public interface RunnerBuilderConfigurable<BUILDER_TYPE extends RunnerBuilderCon
   BUILDER_TYPE setEndSystemVersion(String endSystemVersion);
 
   /**
+   * Set up the name of the service running mongock.
+   * This will be used as a suffix to the hostname when saving changelogs history in database.
+   * <b>Optional</b> Default value null
+   *
+   * @param serviceIdentifier Identifier of the service running mongock
+   * @return builder for fluent interface
+   */
+  BUILDER_TYPE setServiceIdentifier(String serviceIdentifier);
+
+  /**
    * Set the metadata for the Mongock process. This metadata will be added to each document in the MongockChangeLog
    * collection. This is useful when the system needs to add some extra info to the changeLog.
    * <b>Optional</b> Default value empty Map
