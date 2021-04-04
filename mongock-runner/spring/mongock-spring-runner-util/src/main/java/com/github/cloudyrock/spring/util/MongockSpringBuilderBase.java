@@ -10,6 +10,10 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
+
+import java.lang.reflect.Parameter;
+import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
@@ -36,6 +40,10 @@ public abstract class MongockSpringBuilderBase<BUILDER_TYPE extends MongockSprin
   protected BUILDER_TYPE setEventPublisher(EventPublisher eventPublisher) {
     this.applicationEventPublisher = eventPublisher;
     return getInstance();
+  }
+
+  protected SpringMigrationExecutor getSpringMigrationExecutor(Function<Parameter, String> paramNameExtractor, TransactionExecutor transactionExecutor) {
+    return new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor, transactionExecutor);
   }
 
 

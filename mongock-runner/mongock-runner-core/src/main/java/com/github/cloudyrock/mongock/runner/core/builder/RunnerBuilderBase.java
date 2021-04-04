@@ -121,7 +121,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setServiceIdentifier(String serviceIdentifier) {
     this.serviceIdentifier = serviceIdentifier;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override

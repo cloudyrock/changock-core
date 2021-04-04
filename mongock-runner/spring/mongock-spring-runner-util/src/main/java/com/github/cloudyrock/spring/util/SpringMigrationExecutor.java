@@ -29,10 +29,10 @@ public class SpringMigrationExecutor<CHANGE_ENTRY extends ChangeEntry> extends S
   }
 
   @Override
-  public void executeAndLogChangeSet(String executionId, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  public void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     transactionExecutor.executionInTransaction(() ->     {
       try {
-        super.executeAndLogChangeSet(executionId, changelogInstance, changeSetItem);
+        super.executeAndLogChangeSet(executionId, executionHostname, changelogInstance, changeSetItem);
       } catch (Exception e) {
         throw e instanceof MongockException ? (MongockException) e : new MongockException(e);
       }

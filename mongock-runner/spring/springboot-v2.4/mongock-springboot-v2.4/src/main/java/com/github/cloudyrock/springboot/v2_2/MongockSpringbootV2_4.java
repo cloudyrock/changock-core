@@ -87,7 +87,8 @@ public final class MongockSpringbootV2_4 {
       setActiveProfilesFromContext(springContext);
       injectLegacyMigration();
       Function<Parameter, String> paramNameExtractor = Builder::getParameterName;
-      MigrationExecutor executor = new SpringMigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored), metadata, paramNameExtractor, new TransactionExecutorImpl());
+      TransactionExecutorImpl transactionExecutor = new TransactionExecutorImpl();
+      MigrationExecutor executor = getSpringMigrationExecutor(paramNameExtractor, transactionExecutor);
       return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
 
