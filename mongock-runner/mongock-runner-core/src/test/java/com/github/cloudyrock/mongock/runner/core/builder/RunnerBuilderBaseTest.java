@@ -1,11 +1,9 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.ChangeLog;
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
@@ -241,7 +239,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
   }
 
   @Override
-  protected DummyRunnerBuilder returnInstance() {
+  protected DummyRunnerBuilder getInstance() {
     return this;
   }
 
@@ -251,9 +249,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
   }
 
   public MongockRunnerBase build() {
-    return new DummyRunner(
+    return new MongockRunnerBase(
         executor != null ? executor : buildExecutorDefault(),
-        buildChangeLogServiceDefault(),
+        getChangeLogService(),
         throwExceptionIfCannotObtainLock,
         enabled,
         mock(EventPublisher.class));
@@ -266,9 +264,4 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
   }
 }
 
-class DummyRunner extends MongockRunnerBase<MigrationExecutor> {
-  DummyRunner(MigrationExecutor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-  }
-}
 

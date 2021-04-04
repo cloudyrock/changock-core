@@ -1,6 +1,8 @@
 package com.github.cloudyrock.mongock.driver.api.common;
 
-public class DependencyInjectionException extends RuntimeException {
+import com.github.cloudyrock.mongock.exception.MongockException;
+
+public class DependencyInjectionException extends MongockException {
 
   private final Class wrongParameter;
   private final String name;
@@ -10,6 +12,7 @@ public class DependencyInjectionException extends RuntimeException {
   }
 
   public DependencyInjectionException(Class wrongParameter, String name) {
+    super();
     this.wrongParameter = wrongParameter;
     this.name = name;
   }

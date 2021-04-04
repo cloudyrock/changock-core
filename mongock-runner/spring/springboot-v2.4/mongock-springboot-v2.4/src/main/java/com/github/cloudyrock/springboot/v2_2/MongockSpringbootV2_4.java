@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public final class MongockSpringbootV2_2 {
+public final class MongockSpringbootV2_4 {
 
 
   public static DriverBuilderConfigurable<Builder, ConnectionDriver, MongockSpringConfiguration> builder() {

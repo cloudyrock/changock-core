@@ -14,6 +14,7 @@ import com.github.cloudyrock.mongock.config.LegacyMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +53,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setDriver(DRIVER driver) {
     this.driver = driver;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
@@ -60,7 +61,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (changeLogsScanPackageList != null) {
       changeLogsScanPackage.addAll(changeLogsScanPackageList);
     }
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
@@ -68,7 +69,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (classes != null) {
       changeLogsScanClasses.addAll(classes);
     }
-    return returnInstance();
+    return getInstance();
   }
 
 
@@ -78,43 +79,43 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (legacyMigration != null) {
       changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     }
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setChangeLogInstantiator(Function<Class, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setEnabled(boolean enabled) {
     this.enabled = enabled;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setTrackIgnored(boolean trackIgnored) {
     this.trackIgnored = trackIgnored;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE dontFailIfCannotAcquireLock() {
     this.throwExceptionIfCannotObtainLock = false;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setStartSystemVersion(String startSystemVersion) {
     this.startSystemVersion = startSystemVersion;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setEndSystemVersion(String endSystemVersion) {
     this.endSystemVersion = endSystemVersion;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
@@ -126,13 +127,13 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
   public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
     dependencies.add(new ChangeSetDependency(name, type, instance));
-    return returnInstance();
+    return getInstance();
   }
 
   @Override
@@ -149,7 +150,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         .setServiceIdentifier(config.getServiceIdentifier())
         .withMetadata(config.getMetadata())
         .setLegacyMigration(config.getLegacyMigration());
-    return returnInstance();
+    return getInstance();
   }
 
   private void addScanItemsFromConfig(List<String> changeLogsScanPackage) {
@@ -164,7 +165,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
-    return returnInstance();
+    return getInstance();
   }
 
 
@@ -189,15 +190,20 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return dependencyManager;
   }
 
-  protected ChangeLogService buildChangeLogServiceDefault() {
+  protected ChangeLogService getChangeLogService() {
     return new ChangeLogService(
         changeLogsScanPackage,
         changeLogsScanClasses,
         startSystemVersion,
         endSystemVersion,
+        getAnnotationFilter(),
         annotationProcessor, // if null, it will take default MongockAnnotationManager
         changeLogInstantiator
     );
+  }
+
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    return annotatedElement -> true;
   }
 
   @Override
@@ -221,7 +227,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     }
   }
 
-  protected abstract BUILDER_TYPE returnInstance();
+  protected abstract BUILDER_TYPE getInstance();
 
 
 }

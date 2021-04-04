@@ -27,25 +27,7 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- SPRING -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${spring.v5.version}</version>
-    </dependency>
-    <!-- TEST -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>3.2.4</version>
-      <scope>test</scope>
-    </dependency>
+
   </dependencies>
 
 </project>

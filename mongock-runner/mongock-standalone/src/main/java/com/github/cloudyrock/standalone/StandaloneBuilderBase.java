@@ -22,17 +22,17 @@ public abstract class StandaloneBuilderBase<BUILDER extends StandaloneBuilderBas
 
   public BUILDER setMigrationStartedListener(Runnable migrationStartedListener) {
     this.migrationStartedListener = migrationStartedListener;
-    return returnInstance();
+    return getInstance();
   }
 
   public BUILDER setMigrationSuccessListener(Consumer<StandaloneMigrationSuccessEvent> listener) {
     this.migrationSuccessListener = listener;
-    return returnInstance();
+    return getInstance();
   }
 
   public BUILDER setMigrationFailureListener(Consumer<StandaloneMigrationFailureEvent> migrationFailureListener) {
     this.migrationFailureListener = migrationFailureListener;
-    return returnInstance();
+    return getInstance();
   }
 
   protected StandaloneEventPublisher getEventPublisher() {
@@ -40,7 +40,7 @@ public abstract class StandaloneBuilderBase<BUILDER extends StandaloneBuilderBas
   }
 
   public StandaloneRunner buildRunner() {
-    return new StandaloneRunner(buildExecutorDefault(), buildChangeLogServiceDefault(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
+    return new StandaloneRunner(buildExecutorDefault(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
   }
 
 }

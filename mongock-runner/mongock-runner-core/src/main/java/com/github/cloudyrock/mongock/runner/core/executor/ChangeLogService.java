@@ -1,10 +1,10 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
+import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.mongock.utils.StringUtils;
@@ -13,6 +13,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.reflections.Reflections;
 
 import java.io.Serializable;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class ChangeLogService implements Validable {
 
   private static final Function<Class, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
-      return  type.getConstructor().newInstance();
+      return type.getConstructor().newInstance();
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
       throw new MongockException(e);
     }
@@ -50,8 +51,7 @@ public class ChangeLogService implements Validable {
   private final List<Class<?>> changeLogsBaseClassList;
   private final ArtifactVersion startSystemVersion;
   private final ArtifactVersion endSystemVersion;
-  private final Function<Class, Boolean> changeLogFilter;
-  private final Function<Method, Boolean> changeSetFilter;
+  private final Function<AnnotatedElement, Boolean> profileFilter;
   private final AnnotationProcessor annotationManager;
   private final Function<Class, Object> changeLogInstantiator;
 
@@ -61,7 +61,7 @@ public class ChangeLogService implements Validable {
    * @param endSystemVersionInclusive   inclusive ending systemVersion
    */
   public ChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
-    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, new MongockAnnotationProcessor(), null);
+    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, new MongockAnnotationProcessor(), null);
   }
 
   /**
@@ -76,23 +76,21 @@ public class ChangeLogService implements Validable {
                           String endSystemVersionInclusive,
                           AnnotationProcessor annotationProcessor,
                           Function<Class, Object> changeLogInstantiator) {
-    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, null, annotationProcessor, changeLogInstantiator);
+    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, annotationProcessor, changeLogInstantiator);
   }
 
-  protected ChangeLogService(List<String> changeLogsBasePackageList,
-                             List<Class<?>> changeLogsBaseClassList,
-                             String startSystemVersionInclusive,
-                             String endSystemVersionInclusive,
-                             Function<Class, Boolean> changeLogFilter,
-                             Function<Method, Boolean> changeSetFilter,
-                             AnnotationProcessor annotationProcessor,
-                             Function<Class, Object> changeLogInstantiator) {
+  public ChangeLogService(List<String> changeLogsBasePackageList,
+                          List<Class<?>> changeLogsBaseClassList,
+                          String startSystemVersionInclusive,
+                          String endSystemVersionInclusive,
+                          Function<AnnotatedElement, Boolean> profileFilter,
+                          AnnotationProcessor annotationProcessor,
+                          Function<Class, Object> changeLogInstantiator) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
-    this.changeLogFilter = changeLogFilter;
-    this.changeSetFilter = changeSetFilter;
+    this.profileFilter = profileFilter;
     this.annotationManager = annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor();
     this.changeLogInstantiator = changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR;
   }
@@ -109,7 +107,7 @@ public class ChangeLogService implements Validable {
   public SortedSet<ChangeLogItem> fetchChangeLogs() {
     return mergeChangeLogClassesAndPackages()
         .stream()
-        .filter(changeLogClass -> this.changeLogFilter != null ? this.changeLogFilter.apply(changeLogClass) : true)
+        .filter(changeLogClass -> this.profileFilter != null ? this.profileFilter.apply(changeLogClass) : true)
         .map(this::buildChangeLogObject)
         .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator(annotationManager))));
   }
@@ -138,7 +136,7 @@ public class ChangeLogService implements Validable {
   private List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
     return fetchChangeSetMethodsSorted(type)
         .stream()
-        .filter(changeSetMethod -> this.changeSetFilter != null ? this.changeSetFilter.apply(changeSetMethod) : true)
+        .filter(changeSetMethod -> this.profileFilter != null ? this.profileFilter.apply(changeSetMethod) : true)
         .map(annotationManager::getChangeSet)
         .collect(Collectors.toList());
   }

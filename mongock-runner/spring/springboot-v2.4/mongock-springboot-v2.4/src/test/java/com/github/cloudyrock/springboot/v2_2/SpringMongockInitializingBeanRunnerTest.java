@@ -78,7 +78,7 @@ public class SpringMongockInitializingBeanRunnerTest {
 
     // when
 //        Spring5Runner.builder()
-    MongockSpringbootV2_2.builder()
+    MongockSpringbootV2_4.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .setSpringContext(springContext)
@@ -104,7 +104,7 @@ public class SpringMongockInitializingBeanRunnerTest {
         .thenReturn(false);
 
     // when
-    MongockSpringbootV2_2.builder()
+    MongockSpringbootV2_4.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .setSpringContext(springContext)
@@ -132,7 +132,7 @@ public class SpringMongockInitializingBeanRunnerTest {
     when(springContext.getBean(TemplateForTestImpl.class)).thenReturn(new TemplateForTestImpl());
 
     // when
-    MongockSpringbootV2_2.builder()
+    MongockSpringbootV2_4.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(EnsureDecoratorChangerLog.class.getPackage().getName())
         .setSpringContext(springContext)
@@ -149,7 +149,7 @@ public class SpringMongockInitializingBeanRunnerTest {
     exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("ApplicationContext from Spring must be injected to Builder");
 
-    MongockSpringbootV2_2.builder()
+    MongockSpringbootV2_4.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .buildInitializingBeanRunner()
@@ -167,7 +167,7 @@ public class SpringMongockInitializingBeanRunnerTest {
     // Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]
     // Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException: Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]
     // when
-      MongockSpringbootV2_2.builder()
+      MongockSpringbootV2_4.builder()
           .setDriver(driver)
           .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
           .setSpringContext(springContext)
