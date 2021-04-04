@@ -18,7 +18,7 @@
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-utils</artifactId>
-        <version>4.3.8-SNAPSHOT</version>
+        <version>4.3.9-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
@@ -72,7 +72,7 @@
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-springboot-v2.2</artifactId>
-        <version>4.3.8-SNAPSHOT</version>
+        <version>4.3.9-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
