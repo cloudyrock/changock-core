@@ -1,19 +1,12 @@
-package com.github.cloudyrock.springboot.v2_2.config;
+package com.github.cloudyrock.spring.util.importers;
 
 import com.github.cloudyrock.mongock.exception.MongockException;
-import com.github.cloudyrock.springboot.v2_2.config.importers.ContextImporter;
-import com.github.cloudyrock.springboot.v2_2.config.importers.MongoSpringDataImporter;
-import org.springframework.context.annotation.ImportSelector;
-import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotationMetadata;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class MongockDriverContextSelector implements ImportSelector {
-
-
+public class MongockDriverContextSelectorUtil {
 
   private final static String DRIVER_NOT_FOUND_ERROR_TEMPLATE = "MONGOCK DRIVER HAS NOT BEEN IMPORTED" +
       "\n====================================" +
@@ -34,17 +27,10 @@ public class MongockDriverContextSelector implements ImportSelector {
     DRIVER_NOT_FOUND_ERROR =  sb.toString();
   }
 
-  private final Environment environment;
 
-
-  public MongockDriverContextSelector(Environment environment) {
-    this.environment = environment;
-  }
-
-  @Override
-  public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+  public static  String[] selectImports() {
     return contextImporters.stream()
-        .map(contextImporter -> contextImporter.getPaths(environment))
+        .map(contextImporter -> contextImporter.getPaths())
         .filter(Objects::nonNull)
         .findFirst()
         .orElseThrow(() ->  new MongockException(String.format("\n\n%s\n\n", DRIVER_NOT_FOUND_ERROR)));

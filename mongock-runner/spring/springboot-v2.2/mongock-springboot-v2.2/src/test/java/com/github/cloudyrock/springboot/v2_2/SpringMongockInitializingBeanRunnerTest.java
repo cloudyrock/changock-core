@@ -74,7 +74,7 @@ public class SpringMongockInitializingBeanRunnerTest {
   }
 
   @Test
-  public void shouldRunOnlyProfiledChangeSets() {
+  public void shouldRunOnlyProfiledChangeSets() throws Exception {
 
     // when
 //        Spring5Runner.builder()
@@ -98,7 +98,7 @@ public class SpringMongockInitializingBeanRunnerTest {
   }
 
   @Test
-  public void shouldInjectEnvironmentToChangeSet() {
+  public void shouldInjectEnvironmentToChangeSet() throws Exception {
     // given
     when(changeEntryService.isAlreadyExecuted("testWithProfileIncluded1OrProfileINotIncluded", "testuser"))
         .thenReturn(false);
@@ -116,7 +116,7 @@ public class SpringMongockInitializingBeanRunnerTest {
   }
 
   @Test
-  public void shouldPrioritizeConnectorDependenciesOverContext() {
+  public void shouldPrioritizeConnectorDependenciesOverContext() throws Exception {
     // given
     when(changeEntryService.isAlreadyExecuted("ensureDecoratorChangeSet", "testuser")).thenReturn(false);
     callVerifier = new CallVerifier();
@@ -144,7 +144,7 @@ public class SpringMongockInitializingBeanRunnerTest {
   }
 
   @Test
-  public void shouldFail_IfSpringContextNotInjected() {
+  public void shouldFail_IfSpringContextNotInjected() throws Exception {
 
     exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("ApplicationContext from Spring must be injected to Builder");
@@ -157,21 +157,22 @@ public class SpringMongockInitializingBeanRunnerTest {
   }
 
   @Test
-  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
+  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() throws Exception {
 
     when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
 
     // then
-    exceptionExpected.expect(MongockException.class);
+//    exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
-
+    // Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]
+    // Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException: Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]
     // when
-    MongockSpringbootV2_2.builder()
-        .setDriver(driver)
-        .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
-        .setSpringContext(springContext)
-        .buildApplicationRunner()
-        .run(null);
+      MongockSpringbootV2_2.builder()
+          .setDriver(driver)
+          .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
+          .setSpringContext(springContext)
+          .buildApplicationRunner()
+          .run(null);
   }
 
 }

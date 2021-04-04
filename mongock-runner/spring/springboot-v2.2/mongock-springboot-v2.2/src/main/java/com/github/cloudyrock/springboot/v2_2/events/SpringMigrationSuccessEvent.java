@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring.util.events;
+package com.github.cloudyrock.springboot.v2_2.events;
 
 import com.github.cloudyrock.mongock.runner.core.event.MongockEvent;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;

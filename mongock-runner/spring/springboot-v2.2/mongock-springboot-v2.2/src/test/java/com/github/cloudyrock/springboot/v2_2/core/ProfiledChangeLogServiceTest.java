@@ -4,6 +4,8 @@ package com.github.cloudyrock.springboot.v2_2.core;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
+import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
+import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.v2_2.profiles.defaultProfiled.DefaultProfiledChangerLog;
 import com.github.cloudyrock.springboot.v2_2.profiles.dev.DevProfiledChangerLog;
 import com.github.cloudyrock.springboot.v2_2.profiles.pro.ProProfiledChangeLog;
@@ -11,10 +13,12 @@ import com.github.cloudyrock.springboot.v2_2.profiles.unprofiled.UnprofiledChang
 import org.junit.Test;
 import org.springframework.context.annotation.Profile;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,17 +26,24 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ProfiledChangeLogServiceTest {
+  private static final Function<List<String>, Function<AnnotatedElement, Boolean>> profileFilter =
+      activeProfiles -> annotated -> ProfileUtil.matchesActiveSpringProfile(
+          activeProfiles,
+          Profile.class,
+          annotated,
+          (AnnotatedElement element) ->element.getAnnotation(Profile.class).value());
 
 
   @Test
   public void shouldRunDevProfileAndNonAnnotated() throws NoSuchMethodException {
-    ProfiledChangeLogService changeLogService = new ProfiledChangeLogService(
+    ChangeLogService changeLogService = new ChangeLogService(
         Collections.singletonList(DevProfiledChangerLog.class.getPackage().getName()),
         Collections.emptyList(),
         "0",
         String.valueOf(Integer.MAX_VALUE),
-        Collections.singletonList("dev"),
-        new MongockAnnotationProcessor()
+        profileFilter.apply(Collections.singletonList("dev")),
+        new MongockAnnotationProcessor(),
+        null
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
@@ -61,13 +72,14 @@ public class ProfiledChangeLogServiceTest {
 
   @Test
   public void shouldRunUnProfiledChangeLog_ifMethodsProfiled_WhenDefaultProfile() throws NoSuchMethodException {
-    ProfiledChangeLogService changeLogService = new ProfiledChangeLogService(
+    ChangeLogService changeLogService = new ChangeLogService(
         Collections.singletonList(ProProfiledChangeLog.class.getPackage().getName()),
         Collections.emptyList(),
         "0",
         String.valueOf(Integer.MAX_VALUE),
-        Collections.singletonList("default"),
-        new MongockAnnotationProcessor()
+        profileFilter.apply(Collections.singletonList("default")),
+        new MongockAnnotationProcessor(),
+        null
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
@@ -95,13 +107,14 @@ public class ProfiledChangeLogServiceTest {
 
   @Test
   public void shouldNotRunAnyChangeSet_whenAnotherProfile() {
-    ProfiledChangeLogService changeLogService = new ProfiledChangeLogService(
+    ChangeLogService changeLogService = new ChangeLogService(
         Collections.singletonList(DevProfiledChangerLog.class.getPackage().getName()),
         Collections.emptyList(),
         "0",
         String.valueOf(Integer.MAX_VALUE),
-        Collections.singletonList("anotherProfile"),
-        new MongockAnnotationProcessor()
+        profileFilter.apply(Collections.singletonList("anotherProfile")),
+        new MongockAnnotationProcessor(),
+        null
     );
     assertEquals(0, changeLogService.fetchChangeLogs().size());
   }
@@ -110,13 +123,14 @@ public class ProfiledChangeLogServiceTest {
   @Test
   public void shouldRunAllChangeSets_WhenNoProfileInvolved() throws NoSuchMethodException {
 
-    ProfiledChangeLogService changeLogService = new ProfiledChangeLogService(
+    ChangeLogService changeLogService = new ChangeLogService(
         Collections.singletonList(UnprofiledChangerLog.class.getPackage().getName()),
         Collections.emptyList(),
         "0",
         String.valueOf(Integer.MAX_VALUE),
-        Collections.singletonList("anotherProfile"),
-        new MongockAnnotationProcessor()
+        profileFilter.apply(Collections.singletonList("anotherProfile")),
+        new MongockAnnotationProcessor(),
+        null
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
@@ -135,13 +149,14 @@ public class ProfiledChangeLogServiceTest {
 
   @Test
   public void shouldRunAllChangeSet_whenDefaultProfile_IfDefaultAndEmptyProfile() throws NoSuchMethodException {
-    ProfiledChangeLogService changeLogService = new ProfiledChangeLogService(
+    ChangeLogService changeLogService = new ChangeLogService(
         Collections.singletonList(DefaultProfiledChangerLog.class.getPackage().getName()),
         Collections.emptyList(),
         "0",
         String.valueOf(Integer.MAX_VALUE),
-        Collections.singletonList("default"),
-        new MongockAnnotationProcessor()
+        profileFilter.apply(Collections.singletonList("default")),
+        new MongockAnnotationProcessor(),
+        null
     );
 
     ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
