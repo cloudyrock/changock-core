@@ -1,7 +1,5 @@
-package com.github.cloudyrock.springboot.v2_2;
+package com.github.cloudyrock.springboot.v2_2.config.test;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import com.github.cloudyrock.springboot.v2_2.config.MongockContext;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -13,6 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({MongockContext.class, MongockSpringConfiguration.class})
-public @interface EnableMongock {
+@Import({MongockTestContext.class})
+@Deprecated//since=4.3.6, forRemoval=true
+public @interface MongockTestConfiguration {
 }

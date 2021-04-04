@@ -1,10 +1,10 @@
-package com.github.cloudyrock.springboot.v2_2.events;
+package com.github.cloudyrock.spring.util;
 
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
-import com.github.cloudyrock.springboot.v2_2.events.SpringMigrationFailureEvent;
-import com.github.cloudyrock.springboot.v2_2.events.SpringMigrationStartedEvent;
-import com.github.cloudyrock.springboot.v2_2.events.SpringMigrationSuccessEvent;
+import com.github.cloudyrock.spring.util.events.SpringMigrationFailureEvent;
+import com.github.cloudyrock.spring.util.events.SpringMigrationStartedEvent;
+import com.github.cloudyrock.spring.util.events.SpringMigrationSuccessEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class SpringEventPublisher implements EventPublisher {

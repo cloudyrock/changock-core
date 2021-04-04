@@ -82,7 +82,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldRunOnlyProfiledChangeSets() throws Exception {
+  public void shouldRunOnlyProfiledChangeSets() {
 
     // when
     buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
@@ -100,7 +100,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldInjectEnvironmentToChangeSet() throws Exception {
+  public void shouldInjectEnvironmentToChangeSet() {
 
     // when
     buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
@@ -110,7 +110,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldPrioritizeConnectorDependenciesOverContext() throws Exception {
+  public void shouldPrioritizeConnectorDependenciesOverContext() {
     // given
     when(changeEntryService.isAlreadyExecuted("ensureDecoratorChangeSet", "testuser")).thenReturn(false);
     callVerifier = new CallVerifier();
@@ -133,7 +133,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldFail_IfSpringContextNotInjected() throws Exception {
+  public void shouldFail_IfSpringContextNotInjected() {
 
     exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("ApplicationContext from Spring must be injected to Builder");
@@ -146,7 +146,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() throws Exception {
+  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
 
     when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
 
@@ -158,8 +158,12 @@ public class SpringMongockApplicationRunnerTest {
     buildAndRun(ChangeLogWithForbiddenParameter.class.getPackage().getName());
   }
 
+
+
+
+
   @Test
-  public void shouldThrowException_IfChangeSetParameterfNotInterface() throws Exception {
+  public void shouldThrowException_IfChangeSetParameterfNotInterface() {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
@@ -174,7 +178,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldReturnProxy_IfStandardDependency() throws Exception {
+  public void shouldReturnProxy_IfStandardDependency() {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
@@ -189,7 +193,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() throws Exception {
+  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
@@ -204,7 +208,7 @@ public class SpringMongockApplicationRunnerTest {
 
 
   @Test
-  public void shouldNotReturnProxy_IfClassAnnotatedWithNonLockGuarded() throws Exception {
+  public void shouldNotReturnProxy_IfClassAnnotatedWithNonLockGuarded() {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
@@ -220,7 +224,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   @Test
-  public void shouldNotReturnProxy_IfParameterAnnotatedWithNonLockGuarded() throws Exception {
+  public void shouldNotReturnProxy_IfParameterAnnotatedWithNonLockGuarded() {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
@@ -235,13 +239,12 @@ public class SpringMongockApplicationRunnerTest {
     verify(lockManager, new Times(0)).ensureLockDefault();
   }
 
-  private void buildAndRun(String packageName) throws Exception {
-      MongockSpringbootV2_2.builder()
-          .setDriver(driver)
-          .addChangeLogsScanPackage(packageName)
-          .setSpringContext(springContext)
-          .buildApplicationRunner()
-          .run(null);
-
+  private void buildAndRun(String packageName) {
+    MongockSpringbootV2_2.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(packageName)
+        .setSpringContext(springContext)
+        .buildApplicationRunner()
+        .run(null);
   }
 }

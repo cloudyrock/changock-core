@@ -1,4 +1,7 @@
-package com.github.cloudyrock.spring.util.importers;
+package com.github.cloudyrock.springboot.v2_2.config.importers;
+
+import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
+import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,10 +10,10 @@ public class MongoSpringDataImporter implements ContextImporter {
 
   private final static String PACKAGE_TEMPLATE = "com.github.cloudyrock.mongock.driver.mongodb.springdata.v%s.";
   private final static String DRIVER_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sDriver";
-  private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "config.SpringDataMongoV%sContext";
+  private final static String CONTEXT_TEMPLATE = PACKAGE_TEMPLATE + "SpringDataMongoV%sContext";
 
   @Override
-  public String[] getPaths() {
+  public String[] getPaths(Environment environment) {
     try {
       return loadSpringDataContextByVersion("3");
     } catch (ClassNotFoundException e) {
@@ -37,6 +40,7 @@ public class MongoSpringDataImporter implements ContextImporter {
   private String[] loadSpringDataContextByVersion(String v) throws ClassNotFoundException {
     Class.forName(String.format(DRIVER_TEMPLATE, v, v));
     return new String[]{
+        MongockSpringConfiguration.class.getCanonicalName(),
         String.format(CONTEXT_TEMPLATE, v, v)};
   }
 
