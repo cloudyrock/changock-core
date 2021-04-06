@@ -16,6 +16,9 @@ import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
+import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test5_with_changelognonfailfast.ExecutorWithChangeLogNonFailFastChangeLog1;
+import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test5_with_changelognonfailfast.ExecutorWithChangeLogNonFailFastChangeLog2;
+import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test6_with_changelogfailfast.ExecutorWithChangeLogFailFastChangeLog1;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.withInterfaceParameter.ChangeLogWithInterfaceParameter;
 import com.github.cloudyrock.mongock.runner.core.changelogs.legacymigration.LegacyMigrationChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.alreadyexecuted.ChangeLogAlreadyExecuted;
@@ -257,7 +260,7 @@ public class MigrationExecutorTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void shouldContinueMigration_whenAChangeSetFails_ifItIsNonFailFast() throws InterruptedException {
+  public void shouldContinueMigration_whenAChangeSetFails_ifChangeSetIsNonFailFast() throws InterruptedException {
     // given
     injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
     when(changeEntryService.isAlreadyExecuted("newChangeSet1", "executor")).thenReturn(false);
@@ -299,6 +302,111 @@ public class MigrationExecutorTest {
     assertEquals(ExecutorWithNonFailFastChangeLog.class.getName(), entry.getChangeLogClass());
     assertEquals("newChangeSet2", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
+  }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldContinueMigration_whenAChangeSetFails_ifChangeLogIsNonFailFast() throws InterruptedException {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
+    when(changeEntryService.isAlreadyExecuted("newChangeSet11", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet12", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet13", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet21", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet22", "executor")).thenReturn(false);
+
+    // when
+    try {
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
+    } catch (Exception ex) {
+    }
+
+    assertTrue("Changelog's (1) methods have not been fully executed", ExecutorWithChangeLogNonFailFastChangeLog1.latch.await(1, TimeUnit.NANOSECONDS));
+    assertTrue("Changelog's (2) methods have not been fully executed", ExecutorWithChangeLogNonFailFastChangeLog2.latch.await(1, TimeUnit.NANOSECONDS));
+    
+    // then
+    ArgumentCaptor<ChangeEntry> captor = ArgumentCaptor.forClass(ChangeEntry.class);
+    verify(changeEntryService, new Times(4)).save(captor.capture());
+
+    List<ChangeEntry> entries = captor.getAllValues();
+    assertEquals(4, entries.size());
+
+    ChangeEntry entry = entries.get(0);
+    assertEquals("newChangeSet11", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithChangeLogNonFailFastChangeLog1.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet11", entry.getChangeSetMethod());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
+
+    entry = entries.get(1);
+    assertEquals("newChangeSet12", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithChangeLogNonFailFastChangeLog1.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet12", entry.getChangeSetMethod());
+    assertEquals(ChangeState.FAILED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
+    
+    entry = entries.get(2);
+    assertEquals("newChangeSet21", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithChangeLogNonFailFastChangeLog2.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet21", entry.getChangeSetMethod());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
+    
+    entry = entries.get(3);
+    assertEquals("newChangeSet22", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithChangeLogNonFailFastChangeLog2.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet22", entry.getChangeSetMethod());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
+  }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldAbortMigration_whenAChangeSetFails_ifChangeLogIsFailFast() throws InterruptedException {
+    // given
+    injectDummyDependency(DummyDependencyClass.class, new DummyDependencyClass());
+    when(changeEntryService.isAlreadyExecuted("newChangeSet11", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet12", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet13", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet21", "executor")).thenReturn(false);
+    when(changeEntryService.isAlreadyExecuted("newChangeSet22", "executor")).thenReturn(false);
+
+    // when
+    try {
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
+    } catch (Exception ex) {
+    }
+
+    assertTrue("Changelog's methods have not been fully executed", ExecutorWithChangeLogFailFastChangeLog1.latch.await(1, TimeUnit.NANOSECONDS));
+    
+    // then
+    ArgumentCaptor<ChangeEntry> captor = ArgumentCaptor.forClass(ChangeEntry.class);
+    verify(changeEntryService, new Times(2)).save(captor.capture());
+
+    List<ChangeEntry> entries = captor.getAllValues();
+    assertEquals(2, entries.size());
+
+    ChangeEntry entry = entries.get(0);
+    assertEquals("newChangeSet11", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithChangeLogFailFastChangeLog1.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet11", entry.getChangeSetMethod());
+    assertEquals(ChangeState.EXECUTED, entry.getState());
+    assertTrue(entry.getExecutionHostname().endsWith("-myService"));
+
+    entry = entries.get(1);
+    assertEquals("newChangeSet12", entry.getChangeId());
+    assertEquals("executor", entry.getAuthor());
+    assertEquals(ExecutorWithChangeLogFailFastChangeLog1.class.getName(), entry.getChangeLogClass());
+    assertEquals("newChangeSet12", entry.getChangeSetMethod());
+    assertEquals(ChangeState.FAILED, entry.getState());
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 

@@ -92,8 +92,14 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   }
 
   protected void processSingleChangeLog(String executionId, String executionHostname, ChangeLogItem changeLog) {
-    for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
-      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, executionHostname, changeLog, changeSet));
+    try {
+      for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
+        executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, executionHostname, changeLog, changeSet));
+      }
+    } catch (Exception e) {
+      if (changeLog.isFailFast()) {
+        throw e;
+      }
     }
   }
 

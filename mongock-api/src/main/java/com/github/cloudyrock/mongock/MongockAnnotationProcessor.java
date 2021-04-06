@@ -20,6 +20,11 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   public String getChangeLogOrder(Class<?> type) {
     return type.getAnnotation(ChangeLog.class).order();
   }
+  
+  @Override
+  public boolean getChangeLogFailFast(Class<?> type) {
+    return type.getAnnotation(ChangeLog.class).failFast();
+  }
 
   public ChangeSetItem getChangeSet(Method method) {
     ChangeSet ann = method.getAnnotation(ChangeSet.class);

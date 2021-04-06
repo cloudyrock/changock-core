@@ -5,18 +5,21 @@ import java.util.Objects;
 
 public class ChangeLogItem {
 
-  private Class<?> type;
+  private final Class<?> type;
 
-  private Object instance;
+  private final Object instance;
 
-  private String order;
+  private final String order;
+  
+  private final boolean failFast;
 
-  private List<ChangeSetItem> changeSetElements;
+  private final List<ChangeSetItem> changeSetElements;
 
-  public ChangeLogItem(Class<?> type, Object instance, String order, List<ChangeSetItem> changeSetElements) {
+  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, List<ChangeSetItem> changeSetElements) {
     this.type = type;
     this.instance = instance;
     this.order = order;
+    this.failFast = failFast;
     this.changeSetElements = changeSetElements;
   }
 
@@ -31,6 +34,10 @@ public class ChangeLogItem {
 
   public String getOrder() {
     return order;
+  }
+  
+  public boolean isFailFast() {
+    return failFast;
   }
 
   public List<ChangeSetItem> getChangeSetElements() {
