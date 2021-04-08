@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>Mongock core</name>
@@ -30,6 +31,8 @@
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     <spring.v5.version>5.2.12.RELEASE</spring.v5.version>
     <springboot.v2.version>2.3.7.RELEASE</springboot.v2.version>
+    <project.scm.id>ossrh</project.scm.id>
+
   </properties>
 
   <dependencyManagement>
@@ -59,7 +62,7 @@
 
   <scm>
     <connection>scm:git:git@github.com:cloudyrock/mongock-core.git</connection>
-    <developerConnection>scm:git:git@github.com:cloudyrock/mongock-core.git</developerConnection>
+    <developerConnection>scm:git:https://github.com/cloudyrock/mongock-core.git</developerConnection>
     <url>https://github.com/cloudyrock/mongock-core</url>
     <tag>mongock-core-4.3.5-SNAPSHOT</tag>
   </scm>
@@ -68,6 +71,10 @@
     <developer>
       <id>dieppa</id>
       <name>Antonio Perez Dieppa</name>
+    </developer>
+    <developer>
+      <id>osantana85</id>
+      <name>Oliver Santana Martín</name>
     </developer>
   </developers>
 
@@ -121,9 +128,9 @@
         <version>2.5.3</version>
         <configuration>
           <localCheckout>true</localCheckout>
-          <pushChanges>false</pushChanges>
+          <pushChanges>true</pushChanges>
           <mavenExecutorId>forked-path</mavenExecutorId>
-          <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+          <arguments>-Dgpg.passphrase=${env.MAVEN_CENTRAL_TOKEN}</arguments>
         </configuration>
         <dependencies>
           <dependency>
@@ -169,7 +176,6 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
-
 
 
     </plugins>
@@ -286,6 +292,13 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--batch</arg>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
               </execution>
             </executions>
           </plugin>
