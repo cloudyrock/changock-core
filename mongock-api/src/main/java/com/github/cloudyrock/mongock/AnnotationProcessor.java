@@ -11,6 +11,8 @@ public interface AnnotationProcessor {
   boolean isChangeSetAnnotated(Method method);
 
   String getChangeLogOrder(Class<?> type);
+  
+  boolean getChangeLogFailFast(Class<?> type);
 
   ChangeSetItem getChangeSet(Method method);
 }
