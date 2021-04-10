@@ -64,7 +64,7 @@
     <connection>scm:git:git@github.com:cloudyrock/mongock-core.git</connection>
     <developerConnection>scm:git:https://github.com/cloudyrock/mongock-core.git</developerConnection>
     <url>https://github.com/cloudyrock/mongock-core</url>
-    <tag>mongock-core-4.3.5-SNAPSHOT</tag>
+    <tag>mongock-core-5.0.0-SNAPSHOT</tag>
   </scm>
 
   <developers>
@@ -89,6 +89,9 @@
     </repository>
   </distributionManagement>
 
+
+
+
   <build>
     <plugins>
       <plugin>
@@ -104,7 +107,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -121,7 +123,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -140,7 +141,6 @@
           </dependency>
         </dependencies>
       </plugin>
-
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -152,7 +152,6 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -166,7 +165,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -176,50 +174,16 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
-
-
     </plugins>
   </build>
 
   <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M4</version>
-            <configuration>
-              <skipTests>false</skipTests>
-              <excludes>
-                <exclude>**/*ITest.java</exclude>
-              </excludes>
-            </configuration>
-            <executions>
-              <execution>
-                <id>integration-test</id>
-                <goals>
-                  <goal>test</goal>
-                </goals>
-                <phase>integration-test</phase>
-                <configuration>
-                  <excludes>
-                    <exclude>**/*ITest.java</exclude>
-                  </excludes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
 
     <profile>
       <id>it</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -246,6 +210,39 @@
                   <includes>
                     <include>**/*ITest.java</include>
                   </includes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>only-unit</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M4</version>
+            <configuration>
+              <skipTests>false</skipTests>
+              <excludes>
+                <exclude>**/*ITest.java</exclude>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-test</id>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <phase>integration-test</phase>
+                <configuration>
+                  <excludes>
+                    <exclude>**/*ITest.java</exclude>
+                  </excludes>
                 </configuration>
               </execution>
             </executions>
@@ -305,7 +302,6 @@
         </plugins>
       </build>
     </profile>
-
   </profiles>
 
 </project>
