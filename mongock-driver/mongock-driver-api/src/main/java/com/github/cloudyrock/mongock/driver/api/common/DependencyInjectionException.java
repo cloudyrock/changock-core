@@ -34,6 +34,7 @@ public class DependencyInjectionException extends MongockException {
       sb.append(" with name: ")
           .append(name);
     }
+    sb.append(". Dependency not found.");
     return sb.toString();
   }
 }
