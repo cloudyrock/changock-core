@@ -10,6 +10,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.MongockSpringBuilderBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
+import com.github.cloudyrock.spring.util.SpringDependencyContext;
 import com.github.cloudyrock.spring.util.SpringMigrationExecutor;
 import com.github.cloudyrock.spring.util.TransactionExecutor;
 import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
@@ -50,7 +51,7 @@ public final class MongockSpringbootV2_4 {
 
     public Builder setSpringContext(ApplicationContext springContext) {
       this.springContext = springContext;
-      addDependencyManager(new DefaultDependencyContext(springContext::getBean, springContext::getBean));
+      addDependencyManager(new SpringDependencyContext(springContext));
       return getInstance();
     }
 
