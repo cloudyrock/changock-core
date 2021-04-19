@@ -1,7 +1,7 @@
 package com.github.cloudyrock.spring.util;
 
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
-import com.github.cloudyrock.mongock.runner.core.executor.DependencyNotFound;
+import java.util.Optional;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -14,20 +14,20 @@ public class SpringDependencyContext implements DependencyContext {
   }
 
   @Override
-  public <T> T getBean(Class<T> type) {
+  public <T> Optional<T> getBean(Class<T> type) {
     try {
-      return springContext.getBean(type);
+      return Optional.ofNullable(springContext.getBean(type));
     } catch (BeansException ex) {
-      throw new DependencyNotFound(ex);
+      return Optional.empty();
     }
   }
 
   @Override
-  public Object getBean(String name) {
+  public Optional<Object> getBean(String name) {
     try {
-      return springContext.getBean(name);
+      return Optional.ofNullable(springContext.getBean(name));
     } catch (BeansException ex) {
-      throw new DependencyNotFound(ex);
+      return Optional.empty();
     }
   }
 }

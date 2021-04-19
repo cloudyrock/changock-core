@@ -38,9 +38,9 @@ public class DependencyManager {
     return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, name, lockGuarded);
   }
 
-  private Optional<Object> getStandardDependency(Class type, String name, boolean lockProxy) {
+  private Optional<Object> getStandardDependency(Class type, String name, boolean lockGuarded) {
     Optional<Object> dependencyOpt = getDependencyFromStore(standardDependencies, type, name);
-    if (dependencyOpt.isPresent() && lockProxy) {
+    if (dependencyOpt.isPresent() && lockGuarded) {
       if (!type.isInterface()) {
         throw new MongockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
       }
