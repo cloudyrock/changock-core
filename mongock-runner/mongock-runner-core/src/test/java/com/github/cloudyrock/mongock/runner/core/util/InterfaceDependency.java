@@ -1,7 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.util;
 
 
-import io.changock.migration.api.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.NonLockGuarded;
 
 public interface InterfaceDependency {
 

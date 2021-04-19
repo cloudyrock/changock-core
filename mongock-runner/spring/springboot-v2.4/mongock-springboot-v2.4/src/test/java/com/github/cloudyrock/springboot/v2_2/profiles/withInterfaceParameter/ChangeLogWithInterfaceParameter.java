@@ -2,7 +2,7 @@ package com.github.cloudyrock.springboot.v2_2.profiles.withInterfaceParameter;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import io.changock.migration.api.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.springboot.v2_2.util.ClassNotInterfaced;
 import com.github.cloudyrock.springboot.v2_2.util.InterfaceDependency;
 

@@ -2,7 +2,7 @@ package com.github.cloudyrock.mongock.runner.core.changelogs.executor.withInterf
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import io.changock.migration.api.annotations.NonLockGuarded;
+import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependency;
 
 @ChangeLog(order = "0")
