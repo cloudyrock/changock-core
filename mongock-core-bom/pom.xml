@@ -88,6 +88,27 @@
           </exclusion>
         </exclusions>
       </dependency>
+
+      <dependency>
+        <groupId>com.github.cloudyrock.mongock</groupId>
+        <artifactId>mongock-springboot-v2.4</artifactId>
+        <version>5.0.0.BETA-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-test-runner</artifactId>
