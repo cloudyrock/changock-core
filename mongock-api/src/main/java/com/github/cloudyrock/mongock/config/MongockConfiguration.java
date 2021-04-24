@@ -39,14 +39,14 @@ public class MongockConfiguration {
   private int maxTries = 3;
 
   /**
-   * If true, will track ignored changeSets in history. Default false
-   */
-  private boolean trackIgnored = false;
-
-  /**
    * Mongock will throw MongockException if lock can not be obtained. Default true
    */
   private boolean throwExceptionIfCannotObtainLock = true;
+
+  /**
+   * If true, will track ignored changeSets in history. Default false
+   */
+  private boolean trackIgnored = false;
 
   /**
    * If false, will disable Mongock. Default true

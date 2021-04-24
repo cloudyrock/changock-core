@@ -22,11 +22,17 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   Class getLegacyMigrationChangeLogClass(boolean runAlways);
 
-  void setLockAcquiredForMinutes(long lockAcquiredForMinutes);
+  void setLockAcquiredForSeconds(int seconds);
 
-  void setMaxWaitingForLockMinutes(long maxWaitingForLockMinutes);
+  void setLockQuitTryingAfterSeconds(int seconds);
 
-  void setMaxTries(int maxTries);
+  void setLockTryFrequencySeconds(int seconds);
+
+//  void setLockAcquiredForMinutes(long lockAcquiredForMinutes);
+//
+//  void setMaxWaitingForLockMinutes(long maxWaitingForLockMinutes);
+//
+//  void setMaxTries(int maxTries);
 
   void setChangeLogRepositoryName(String changeLogRepositoryName);
 
@@ -36,11 +42,17 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   boolean isInitialized();
 
-  long getLockAcquiredForMinutes();
+  int getLockAcquiredForSeconds();
 
-  long getMaxWaitingForLockMinutes();
+  int getLockQuitTryingAfterSeconds();
 
-  int getMaxTries();
+  int getLockTryFrequencySeconds();
+
+//  long getLockAcquiredForMinutes();
+//
+//  long getMaxWaitingForLockMinutes();
+//
+//  int getMaxTries();
 
   String getChangeLogRepositoryName();
 

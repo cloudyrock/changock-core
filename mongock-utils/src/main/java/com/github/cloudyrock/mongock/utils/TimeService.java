@@ -1,6 +1,10 @@
 package com.github.cloudyrock.mongock.utils;
 
 //TODO move to util module
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
@@ -15,7 +19,7 @@ public class TimeService {
    * @param millis milliseconds to add to the Date
    * @return current date plus milliseconds passed as parameter
    */
-  public Date currentTimePlusMillis(long millis) {
+  public Date currentDatePlusMillis(long millis) {
     return new Date(System.currentTimeMillis() + millis);
   }
 
@@ -25,6 +29,8 @@ public class TimeService {
   public Date currentTime() {
     return new Date(System.currentTimeMillis());
   }
+
+
 
   /**
    * Converts minutes to milliseconds
@@ -44,6 +50,26 @@ public class TimeService {
    */
   public long millisToMinutes(long minutes) {
     return minutes / (60 * 1000);
+  }
+
+  public long secondsToMillis(long seconds) {
+    return seconds * 1000;
+  }
+
+  private Instant nowInstant() {
+    return Instant.now();
+  }
+
+  public Instant nowPlusMillis(long millis) {
+    return nowInstant().plusMillis(millis);
+  }
+
+  public boolean isPast(Instant moment) {
+    return nowInstant().isAfter(moment);
+  }
+
+  public int minutesLongToSecondsInt(long minutes) {
+    return Integer.parseInt(Long.toString(minutes)) * 60;
   }
 
 }

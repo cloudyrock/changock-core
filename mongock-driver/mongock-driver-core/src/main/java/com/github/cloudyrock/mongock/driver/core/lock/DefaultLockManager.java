@@ -7,6 +7,11 @@ import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,18 +27,16 @@ public class DefaultLockManager implements LockManager {
 
   //static constants
   private static final Logger logger = LoggerFactory.getLogger(DefaultLockManager.class);
-  private static final long MIN_LOCK_ACQUIRED_FOR_MILLIS = 2L * 60L * 1000L; // 2 minutes
-  private static final long LOCK_REFRESH_MARGIN = 60L * 1000L;// 1 minute
+  private static final long MIN_LOCK_ACQUIRED_FOR_MILLIS = 3L * 1000L;// 3 seconds
+  private static final long MIN_LOCK_REFRESH_MARGIN_MILLIS = 1000L;// 1 second
+  private static final double LOCK_REFRESH_MARGIN_PERCENTAGE = 0.33;// 30%
   private static final long MINIMUM_SLEEP_THREAD = 500L;
 
-  //long debug/info/error messages
-  private static final String MAX_WAIT_EXCEEDED_ERROR_MSG =
-      "Waiting time required(%d ms) to take the lock is longer than maxWaitingTime(%d ms)";
   private static final String GOING_TO_SLEEP_MSG =
       "Mongock is going to sleep to wait for the lock:  {} ms({} minutes)";
   private static final String EXPIRATION_ARG_ERROR_MSG = "Lock expiration period must be greater than %d ms";
-  private static final String MAX_TRIES_ERROR_TEMPLATE = "MaxTries(%d) reached due to LockPersistenceException: \n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
-  private static final String LOCK_HELD_BY_OTHER_PROCESS = "Lock held by other process. Cannot ensure lock.\n\tCurrent try: %d\n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
+  private static final String MAX_TRIES_ERROR_TEMPLATE = "Quit trying lock after %s millis due to LockPersistenceException: \n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
+  private static final String LOCK_HELD_BY_OTHER_PROCESS = "Lock held by other process. Cannot ensure lock.\n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
 
 
   //injections
@@ -44,28 +47,37 @@ public class DefaultLockManager implements LockManager {
    */
   private final String owner;
   /**
-   * <p>Maximum time it will wait for the lock in each try.</p>
-   * <p>Default 3 minutes</p>
+   * <p>Maximum time it will wait for the lock in total.</p>
+   * <p>Default 3 times the the amount the the lock is acquired for</p>
    */
-  private long lockMaxWaitMillis = MIN_LOCK_ACQUIRED_FOR_MILLIS + (60 * 1000);
-  /**
-   * Maximum number of times it will try to take the lock if it's owned by some one else
-   */
-  private int lockMaxTries = 1;
+  private long lockQuitTryingAfterMillis = MIN_LOCK_ACQUIRED_FOR_MILLIS * 3L;
+
   /**
    * <p>The period of time for which the lock will be owned.</p>
    * <p>Default 2 minutes</p>
    */
   private long lockAcquiredForMillis = MIN_LOCK_ACQUIRED_FOR_MILLIS;
+
+  /**
+   * <p>The margin in which the lock should be refresh to avoid losing it</p>
+   * <p>Default 21 second</p>
+   */
+  private long lockRefreshMarginMillis = MIN_LOCK_REFRESH_MARGIN_MILLIS;
+
+  /**
+   * <p>Milliseconds after which it will try to acquire the lock again<p/>
+   */
+  private long lockTryFrequencyMillis = 1000L;//every second
+
   /**
    * Moment when will mandatory to acquire the lock again.
    */
   private Date lockExpiresAt = null;
 
   /**
-   * Number of tries
+   * The instant the acquisition has shouldStopTryingAt
    */
-  private int tries = 0;
+  private Instant shouldStopTryingAt;
 
   /**
    * Constructor takes some bean injections
@@ -92,11 +104,12 @@ public class DefaultLockManager implements LockManager {
   }
 
   private void acquireLock(String lockKey) {
+    startAcquisitionTimer();
     boolean keepLooping = true;
     do {
       try {
         logger.info("Mongock trying to acquire the lock");
-        Date newLockExpiresAt = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
+        Date newLockExpiresAt = timeUtils.currentDatePlusMillis(lockAcquiredForMillis);
         repository.insertUpdate(new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, newLockExpiresAt));
         logger.info("Mongock acquired the lock until: {}", newLockExpiresAt);
         updateStatus(newLockExpiresAt);
@@ -119,12 +132,13 @@ public class DefaultLockManager implements LockManager {
   }
 
   private void ensureLock(String lockKey) {
+    startAcquisitionTimer();
     boolean keepLooping = true;
     do {
       if (needsRefreshLock()) {
         try {
           logger.info("Mongock trying to refresh the lock");
-          Date lockExpiresAtTemp = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
+          Date lockExpiresAtTemp = timeUtils.currentDatePlusMillis(lockAcquiredForMillis);
           LockEntry lockEntry = new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, lockExpiresAtTemp);
           repository.updateIfSameOwner(lockEntry);
           updateStatus(lockExpiresAtTemp);
@@ -160,7 +174,7 @@ public class DefaultLockManager implements LockManager {
   private void releaseLock(String lockKey) {
     logger.info("Mongock releasing the lock");
     repository.removeByKeyAndOwner(lockKey, this.getOwner());
-    this.lockExpiresAt = null;
+    lockExpiresAt = null;
     logger.info("Mongock released the lock");
 
   }
@@ -169,36 +183,27 @@ public class DefaultLockManager implements LockManager {
    * <p>If the flag 'waitForLog' is set, indicates the maximum time it will wait for the lock in each try.</p>
    * <p>Default 3 minutes</p>
    *
-   * @param lockMaxWaitMillis max waiting time for lock. Must be greater than 0
+   * @param millis max waiting time for lock. Must be greater than 0
    * @return LockChecker object for fluent interface
    */
-  public DefaultLockManager setLockMaxWaitMillis(long lockMaxWaitMillis) {
-    if (lockMaxWaitMillis <= 0) {
-      throw new IllegalArgumentException("Lock max wait must be grater than 0 ");
+  public DefaultLockManager setLockQuitTryingAfterMillis(long millis) {
+    if (millis <= 0) {
+      throw new IllegalArgumentException("Lock-quit-trying-after must be grater than 0 ");
     }
-    this.lockMaxWaitMillis = lockMaxWaitMillis;
+    lockQuitTryingAfterMillis = millis;
     return this;
   }
 
-  /**
-   * @return max tries
-   */
-  public int getLockMaxTries() {
-    return lockMaxTries;
+  @Override
+  public long getLockTryFrequency() {
+    return lockTryFrequencyMillis;
   }
 
-  /**
-   * <p>Updates the maximum number of tries to acquire the lock, if the flag 'waitForLog' is set </p>
-   * <p>Default 1</p>
-   *
-   * @param lockMaxTries number of tries
-   * @return LockChecker object for fluent interface
-   */
-  public DefaultLockManager setLockMaxTries(int lockMaxTries) {
-    if (lockMaxTries <= 0) {
-      throw new IllegalArgumentException("Lock max tries must be grater than 0 ");
+  public DefaultLockManager setLockTryFrequencyMillis(long millis) {
+    if (millis <= 0) {
+      throw new IllegalArgumentException("Lock-try-frequency must be grater than 0 ");
     }
-    this.lockMaxTries = lockMaxTries;
+    lockTryFrequencyMillis = millis;
     return this;
   }
 
@@ -206,59 +211,66 @@ public class DefaultLockManager implements LockManager {
    * <p>Indicates the number of milliseconds the lock will be acquired for</p>
    * <p>Default 3 minutes</p>
    *
-   * @param lockAcquiredForMillis milliseconds the lock will be acquired for
+   * @param millis milliseconds the lock will be acquired for
    * @return LockChecker object for fluent interface
    */
-  public DefaultLockManager setLockAcquiredForMillis(long lockAcquiredForMillis) {
-    if (lockAcquiredForMillis < MIN_LOCK_ACQUIRED_FOR_MILLIS) {
+  public DefaultLockManager setLockAcquiredForMillis(long millis) {
+    if (millis < MIN_LOCK_ACQUIRED_FOR_MILLIS) {
       throw new IllegalArgumentException(String.format(EXPIRATION_ARG_ERROR_MSG, MIN_LOCK_ACQUIRED_FOR_MILLIS));
     }
-    this.lockAcquiredForMillis = lockAcquiredForMillis;
+    lockAcquiredForMillis = millis;
+    long marginTemp = (long) (lockAcquiredForMillis * LOCK_REFRESH_MARGIN_PERCENTAGE);
+    lockRefreshMarginMillis = marginTemp > MIN_LOCK_REFRESH_MARGIN_MILLIS ? marginTemp : MIN_LOCK_REFRESH_MARGIN_MILLIS;
     return this;
   }
 
   private void handleLockException(boolean acquiringLock, LockPersistenceException ex) {
 
-    this.tries++;
-
     LockEntry currentLock = repository.findByKey(getDefaultKey());
 
-    if (this.tries >= lockMaxTries) {
+    if (isAcquisitionTimerOver()) {
       updateStatus(null);
       throw new LockCheckException(String.format(
           MAX_TRIES_ERROR_TEMPLATE,
-          lockMaxTries,
+          lockQuitTryingAfterMillis,
           currentLock != null ? currentLock.toString() : "none",
           ex.getNewLockEntity(),
           ex.getAcquireLockQuery(),
           ex.getDbErrorDetail()));
     }
 
-
-    if (currentLock != null && !currentLock.isOwner(owner)) {
+    if (isLockOwnedByOtherProcess(currentLock)) {
       Date currentLockExpiresAt = currentLock.getExpiresAt();
       logger.warn("Lock is taken by other process until: {}", currentLockExpiresAt);
       if (!acquiringLock) {
         throw new LockCheckException(String.format(
             LOCK_HELD_BY_OTHER_PROCESS,
-            this.tries,
             currentLock.toString(),
             ex.getNewLockEntity(),
             ex.getAcquireLockQuery(),
             ex.getDbErrorDetail()));
       }
+
       waitForLock(currentLockExpiresAt);
     }
 
   }
 
+  private boolean isLockOwnedByOtherProcess(LockEntry currentLock) {
+    return currentLock != null && !currentLock.isOwner(owner);
+  }
+
   private void waitForLock(Date expiresAtMillis) {
-    long diffMillis = expiresAtMillis.getTime() - timeUtils.currentTime().getTime();
-    long sleepingMillis = (diffMillis > 0 ? diffMillis : 0) + MINIMUM_SLEEP_THREAD;
+    long currentLockWillExpireInMillis = expiresAtMillis.getTime() - timeUtils.currentTime().getTime();
+    long sleepingMillis = lockTryFrequencyMillis;
+    if (lockTryFrequencyMillis > currentLockWillExpireInMillis) {
+      logger.info("The configured time frequency[{} millis] is higher than the current lock's expiration", lockTryFrequencyMillis);
+      sleepingMillis = (currentLockWillExpireInMillis > 0 ? currentLockWillExpireInMillis : 0) + MINIMUM_SLEEP_THREAD;
+    }
+    logger.info("Mongock will try to acquire the lock in {} mills", sleepingMillis);
+
+
     try {
-      if (sleepingMillis > lockMaxWaitMillis) {
-        throw new LockCheckException(String.format(MAX_WAIT_EXCEEDED_ERROR_MSG, sleepingMillis, lockMaxWaitMillis));
-      }
       logger.info(GOING_TO_SLEEP_MSG, sleepingMillis, timeUtils.millisToMinutes(sleepingMillis));
       Thread.sleep(sleepingMillis);
     } catch (InterruptedException ex) {
@@ -273,7 +285,7 @@ public class DefaultLockManager implements LockManager {
   }
 
   public boolean isLockHeld() {
-    return this.lockExpiresAt != null && timeUtils.currentTime().compareTo(lockExpiresAt) < 1;
+    return lockExpiresAt != null && timeUtils.currentTime().compareTo(lockExpiresAt) < 1;
   }
 
   @Override
@@ -282,13 +294,34 @@ public class DefaultLockManager implements LockManager {
   }
 
   private boolean needsRefreshLock() {
-    return this.lockExpiresAt == null
-        || timeUtils.currentTime().compareTo(new Date(this.lockExpiresAt.getTime() - LOCK_REFRESH_MARGIN)) >= 0;
+
+    if (this.lockExpiresAt == null) {
+      return true;
+    }
+    Date currentTime = timeUtils.currentTime();
+    Date expirationWithMargin = new Date(this.lockExpiresAt.getTime() - lockRefreshMarginMillis);
+    return currentTime.compareTo(expirationWithMargin) >= 0;
+
   }
+
 
   private void updateStatus(Date lockExpiresAt) {
     this.lockExpiresAt = lockExpiresAt;
-    this.tries = 0;
+  }
+
+  /**
+   * idempotent operation to start the acquisition timer
+   */
+  private synchronized void startAcquisitionTimer() {
+    if (shouldStopTryingAt == null) {
+      shouldStopTryingAt = timeUtils.nowPlusMillis(lockQuitTryingAfterMillis);
+    }
+  }
+
+
+
+  private boolean isAcquisitionTimerOver() {
+    return timeUtils.isPast(shouldStopTryingAt);
   }
 
 }

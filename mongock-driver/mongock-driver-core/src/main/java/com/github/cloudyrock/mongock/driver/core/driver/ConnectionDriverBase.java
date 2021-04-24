@@ -1,22 +1,26 @@
 package com.github.cloudyrock.mongock.driver.core.driver;
 
-import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.DefaultLockManager;
+import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.TimeService;
 import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 
 @NotThreadSafe
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
+  private static final int DEFAULT_LOCK_TRY_FREQUENCY = 1;
+  private static final TimeService TIME_SERVICE = new TimeService();
+
+
   private boolean initialized = false;
   private LockManager lockManager = null;
-  private long lockAcquiredForMinutes;
-  private long maxWaitingForLockMinutes;
-  private int maxTries;
+  private int lockAcquiredForSeconds;
+  private int lockQuitTryingAfterSeconds;
+  private int lockTryFrequencySeconds;
   private String changeLogRepositoryName;
   private String lockRepositoryName;
   private boolean indexCreation = true;
@@ -24,24 +28,34 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   public ConnectionDriverBase() {
   }
 
-  public ConnectionDriverBase(long lockAcquiredForMinutes, long maxWaitingForLockMinutes, int maxTries) {
-    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
-    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
-    this.maxTries = maxTries;
+  @Deprecated
+  public ConnectionDriverBase(long lockAcquiredForMinutes, long maxWaitingForLockMinutesEachTry, int maxTries) {
+    this(
+        TIME_SERVICE.minutesLongToSecondsInt(lockAcquiredForMinutes),
+        TIME_SERVICE.minutesLongToSecondsInt(maxWaitingForLockMinutesEachTry * maxTries),
+        DEFAULT_LOCK_TRY_FREQUENCY
+    );
   }
+  public ConnectionDriverBase(int lockAcquiredForSeconds, int lockQuitTryingAfterSeconds, int lockTryFrequencySeconds) {
+    this.lockAcquiredForSeconds = lockAcquiredForSeconds;
+    this.lockQuitTryingAfterSeconds = lockQuitTryingAfterSeconds;
+    this.lockTryFrequencySeconds = lockTryFrequencySeconds;
+  }
+
+
+
 
 
   @Override
   public final void initialize() {
     if (!initialized) {
       initialized = true;
-      TimeService timeService = new TimeService();
       LockRepository lockRepository = this.getLockRepository();
       lockRepository.initialize();
-      lockManager = new DefaultLockManager(lockRepository, timeService)
-          .setLockAcquiredForMillis(timeService.minutesToMillis(lockAcquiredForMinutes))
-          .setLockMaxTries(maxTries)
-          .setLockMaxWaitMillis(timeService.minutesToMillis(maxWaitingForLockMinutes));
+      lockManager = new DefaultLockManager(lockRepository, TIME_SERVICE)
+          .setLockAcquiredForMillis(TIME_SERVICE.secondsToMillis(lockAcquiredForSeconds))
+          .setLockQuitTryingAfterMillis(TIME_SERVICE.secondsToMillis(lockQuitTryingAfterSeconds))
+          .setLockTryFrequencyMillis(TIME_SERVICE.secondsToMillis(lockTryFrequencySeconds));
       getChangeEntryService().initialize();
       specificInitialization();
     }
@@ -49,7 +63,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
 
   @Override
   public LockManager getLockManager() {
-    if(lockManager == null) {
+    if (lockManager == null) {
       throw new MongockException("Internal error: Driver needs to be initialized by the runner");
     }
     return lockManager;
@@ -68,18 +82,18 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public long getLockAcquiredForMinutes() {
-    return lockAcquiredForMinutes;
+  public int getLockAcquiredForSeconds() {
+    return lockAcquiredForSeconds;
   }
 
   @Override
-  public long getMaxWaitingForLockMinutes() {
-    return maxWaitingForLockMinutes;
+  public int getLockQuitTryingAfterSeconds() {
+    return lockQuitTryingAfterSeconds;
   }
 
   @Override
-  public int getMaxTries() {
-    return maxTries;
+  public int getLockTryFrequencySeconds() {
+    return lockTryFrequencySeconds;
   }
 
   @Override
@@ -98,18 +112,18 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public void setLockAcquiredForMinutes(long lockAcquiredForMinutes) {
-    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
+  public void setLockAcquiredForSeconds(int lockAcquiredForSeconds) {
+    this.lockAcquiredForSeconds = lockAcquiredForSeconds;
   }
 
   @Override
-  public void setMaxWaitingForLockMinutes(long maxWaitingForLockMinutes) {
-    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
+  public void setLockQuitTryingAfterSeconds(int lockQuitTryingAfterSeconds) {
+    this.lockQuitTryingAfterSeconds = lockQuitTryingAfterSeconds;
   }
 
   @Override
-  public void setMaxTries(int maxTries) {
-    this.maxTries = maxTries;
+  public void setLockTryFrequencySeconds(int lockTryFrequencySeconds) {
+    this.lockTryFrequencySeconds = lockTryFrequencySeconds;
   }
 
   @Override

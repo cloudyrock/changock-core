@@ -41,27 +41,26 @@ public interface LockManager extends Closeable {
   void releaseLockDefault();
 
   /**
-   * <p>If the flag 'waitForLog' is set, indicates the maximum time it will wait for the lock in each try.</p>
-   * <p>Default 3 minutes</p>
+   * <p>If the flag 'waitForLog' is set, indicates the maximum time it will wait for the lock in total.</p>
    *
-   * @param lockMaxWaitMillis max waiting time for lock. Must be greater than 0
+   * @param millis max waiting time for lock. Must be greater than 0
    * @return LockChecker object for fluent interface
    */
-  LockManager setLockMaxWaitMillis(long lockMaxWaitMillis);
+  LockManager setLockQuitTryingAfterMillis(long millis);
 
   /**
-   * @return max tries
+   * @return lock try frequency
    */
-  int getLockMaxTries();
+  long getLockTryFrequency();
 
   /**
    * <p>Updates the maximum number of tries to acquire the lock, if the flag 'waitForLog' is set </p>
    * <p>Default 1</p>
    *
-   * @param lockMaxTries number of tries
+   * @param millis number of tries
    * @return LockChecker object for fluent interface
    */
-  LockManager setLockMaxTries(int lockMaxTries);
+  LockManager setLockTryFrequencyMillis(long millis);
 
   /**
    * <p>Indicates the number of milliseconds the lock will be acquired for</p>
