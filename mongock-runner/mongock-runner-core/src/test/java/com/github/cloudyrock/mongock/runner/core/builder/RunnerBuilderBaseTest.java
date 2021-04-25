@@ -7,7 +7,6 @@ import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
@@ -38,9 +37,10 @@ public class RunnerBuilderBaseTest {
   private static final String PACKAGE_PATH = "package";
   private static final String START_SYSTEM_VERSION = "start_system_version";
   private static final String END_SYSTEM_VERSION = "end_system_versions";
-  private static final int LOCK_ACQ_MIN = 100;
-  private static final int MAX_WAIT_LOCK = 200;
-  private static final int MAX_TRIES = 300;
+  private static final long LOCK_ACQ_MILLIS = 100 * 60 * 1000L;
+  private static final long LOCK_TRY_FREQ_MILLIS = 1000L;
+  private static final long LOCK_QUIT_TRY_MILLIS = 3 * 60 * 1000L;
+
   private static final Map<String, Object> METADATA = new HashMap<>();
   ConnectionDriver driver = mock(ConnectionDriver.class);
   Map<String, Object> metadata = new HashMap<>();
@@ -193,10 +193,12 @@ public class RunnerBuilderBaseTest {
     config.setEnabled(false);
     config.setStartSystemVersion(START_SYSTEM_VERSION);
     config.setEndSystemVersion(END_SYSTEM_VERSION);
-    config.setLockAcquiredForMinutes(LOCK_ACQ_MIN);
-    config.setMaxWaitingForLockMinutes(MAX_WAIT_LOCK);
-    config.setMaxTries(MAX_TRIES);
     config.setMetadata(METADATA);
+
+    config.setLockAcquiredForMillis(LOCK_ACQ_MILLIS);
+    config.setLockTryFrequencyMillis(LOCK_TRY_FREQ_MILLIS);
+    config.setLockQuitTryingAfterMillis(LOCK_QUIT_TRY_MILLIS);
+
     if (throwEx != null) {
       config.setThrowExceptionIfCannotObtainLock(throwEx);
     }

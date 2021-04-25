@@ -30,13 +30,13 @@ public class DefaultLockManager implements LockManager {
   private static final String LOCK_HELD_BY_OTHER_PROCESS = "Lock held by other process. Cannot ensure lock.\n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
 
   private static final long MIN_LOCK_ACQUIRED_FOR_MILLIS = 3 * 1000L;// 3 seconds
-  private static final long DEFAULT_LOCK_ACQUIRED_FOR_MILLIS = MIN_LOCK_ACQUIRED_FOR_MILLIS;
+  private static final long DEFAULT_LOCK_ACQUIRED_FOR_MILLIS = 60 * 1000L;// 1 minute
 
-  public static final long DEFAULT_QUIT_TRY_AFTER_MILLIS = MIN_LOCK_ACQUIRED_FOR_MILLIS * 3L;// 9 seconds, 3 times default min acquired
+  private static final long DEFAULT_QUIT_TRY_AFTER_MILLIS = 3 * DEFAULT_LOCK_ACQUIRED_FOR_MILLIS;//3 times default min acquired
 
   private static final double LOCK_REFRESH_MARGIN_PERCENTAGE = 0.33;// 30%
   private static final long MIN_LOCK_REFRESH_MARGIN_MILLIS = 1000L;// 1 second
-  private static final long DEFAULT_LOCK_REFRESH_MARGIN_MILLIS = MIN_LOCK_REFRESH_MARGIN_MILLIS;// 1 second
+  private static final long DEFAULT_LOCK_REFRESH_MARGIN_MILLIS = (long)(DEFAULT_LOCK_ACQUIRED_FOR_MILLIS * LOCK_REFRESH_MARGIN_PERCENTAGE);
 
   private static final long MINIMUM_WAITING_TO_TRY_AGAIN = 500L;//Half a second
   private static final long DEFAULT_TRY_FREQUENCY_MILLIS = 1000L;// ! second
@@ -51,10 +51,6 @@ public class DefaultLockManager implements LockManager {
    * Owner of the lock
    */
   private final String owner;
-  /**
-   * <p>Maximum time it will wait for the lock in total.</p>
-   */
-  private long lockQuitTryingAfterMillis = DEFAULT_QUIT_TRY_AFTER_MILLIS;
 
   /**
    * <p>The period of time for which the lock will be owned.</p>
@@ -65,6 +61,11 @@ public class DefaultLockManager implements LockManager {
    * <p>Milliseconds after which it will try to acquire the lock again<p/>
    */
   private long lockTryFrequencyMillis = DEFAULT_TRY_FREQUENCY_MILLIS;
+
+  /**
+   * <p>Maximum time it will wait for the lock in total.</p>
+   */
+  private long lockQuitTryingAfterMillis = DEFAULT_QUIT_TRY_AFTER_MILLIS;
 
   /**
    * <p>The margin in which the lock should be refresh to avoid losing it</p>
@@ -88,6 +89,7 @@ public class DefaultLockManager implements LockManager {
    * @param repository lock repository
    * @param timeUtils  time utils service
    */
+  //TODO add lock configuration to constructor, make fields finals and move DEFAULTS away
   public DefaultLockManager(LockRepository repository, TimeService timeUtils) {
     this.repository = repository;
     this.timeUtils = timeUtils;

@@ -1,11 +1,14 @@
 package com.github.cloudyrock.mongock.config;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
+
 import java.util.List;
 import java.util.Map;
 
 public class MongockConfiguration {
   private final static String LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME = "mongockChangeLog";
   private final static String LEGACY_DEFAULT_LOCK_REPOSITORY_NAME = "mongockLock";
+  private static final String PROPERTY_ERROR_TEMPLATE = "Property %s has been removed. Uses properties lockAcquiredForMillis, lockQuitTryingAfterMillis and lockTryFrequencyMillis instead";
 
   /**
    * Repository name for changeLogs history
@@ -26,17 +29,17 @@ public class MongockConfiguration {
   /**
    * How long the lock will be hold once acquired in minutes. Default 3
    */
-  private int lockAcquiredForMinutes = 3;
+  private long lockAcquiredForMillis = 3000L;
 
   /**
    * Max time in minutes to wait for the lock in each try. Default 4
    */
-  private int maxWaitingForLockMinutes = 4;
+  private long lockQuitTryingAfterMillis = 4;
 
   /**
    * Max number of times Mongock will try to acquire the lock. Default 3
    */
-  private int maxTries = 3;
+  private long lockTryFrequencyMillis = 3;
 
   /**
    * Mongock will throw MongockException if lock can not be obtained. Default true
@@ -92,6 +95,30 @@ public class MongockConfiguration {
   }
 
 
+  public long getLockAcquiredForMillis() {
+    return lockAcquiredForMillis;
+  }
+
+  public void setLockAcquiredForMillis(long lockAcquiredForMillis) {
+    this.lockAcquiredForMillis = lockAcquiredForMillis;
+  }
+
+  public long getLockQuitTryingAfterMillis() {
+    return lockQuitTryingAfterMillis;
+  }
+
+  public void setLockQuitTryingAfterMillis(long lockQuitTryingAfterMillis) {
+    this.lockQuitTryingAfterMillis = lockQuitTryingAfterMillis;
+  }
+
+  public long getLockTryFrequencyMillis() {
+    return lockTryFrequencyMillis;
+  }
+
+  public void setLockTryFrequencyMillis(long lockTryFrequencyMillis) {
+    this.lockTryFrequencyMillis = lockTryFrequencyMillis;
+  }
+
   public String getChangeLogRepositoryName() {
     return changeLogRepositoryName;
   }
@@ -116,29 +143,6 @@ public class MongockConfiguration {
     this.indexCreation = indexCreation;
   }
 
-  public int getLockAcquiredForMinutes() {
-    return lockAcquiredForMinutes;
-  }
-
-  public void setLockAcquiredForMinutes(int lockAcquiredForMinutes) {
-    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
-  }
-
-  public int getMaxWaitingForLockMinutes() {
-    return maxWaitingForLockMinutes;
-  }
-
-  public void setMaxWaitingForLockMinutes(int maxWaitingForLockMinutes) {
-    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
-  }
-
-  public int getMaxTries() {
-    return maxTries;
-  }
-
-  public void setMaxTries(int maxTries) {
-    this.maxTries = maxTries;
-  }
 
   public boolean isTrackIgnored() {
     return trackIgnored;
@@ -245,21 +249,35 @@ public class MongockConfiguration {
   @Deprecated
   public void setChangeLogCollectionName(String changeLogRepositoryName) {
     setChangeLogRepositoryName(changeLogRepositoryName);
+}
+
+  @Deprecated
+  public int getLockAcquiredForMinutes() {
+    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "lockAcquiredForMinutes"));
   }
 
-  /**
-   * @see MongockConfiguration#getLockRepositoryName()
-   */
   @Deprecated
-  public String getLockCollectionName() {
-    return lockRepositoryName;
+  public void setLockAcquiredForMinutes(int lockAcquiredForMinutes) {
+    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "lockAcquiredForMinutes"));
   }
 
-  /**
-   * @see MongockConfiguration#setLockRepositoryName(String)
-   */
   @Deprecated
-  public void setLockCollectionName(String lockRepositoryName) {
-    setLockRepositoryName(lockRepositoryName);
+  public int getMaxWaitingForLockMinutes() {
+    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxWaitingForLockMinutes"));
+  }
+
+  @Deprecated
+  public void setMaxWaitingForLockMinutes(int maxWaitingForLockMinutes) {
+    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxWaitingForLockMinutes"));
+  }
+
+  @Deprecated
+  public int getMaxTries() {
+    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxTries"));
+  }
+
+  @Deprecated
+  public void setMaxTries(int maxTries) {
+    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxTries"));
   }
 }
