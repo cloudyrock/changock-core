@@ -7,6 +7,7 @@ import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
+import com.github.cloudyrock.mongock.utils.TimeService;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
@@ -43,17 +44,24 @@ public class ConnectionDriverBaseTest {
 
   static class ConnectionDriverBaseTestImpl extends ConnectionDriverBase {
 
+    private static final TimeService TIME_SERVICE = new TimeService();
+
     private final LockRepository lockRepository;
     private final ChangeEntryService changeEntryService;
     private final LockManager lockManager;
 
+
     ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
-                                 long maxWaitingForLockMinutes,
+                                 long maxWaitingForLockMinutesEachTry,
                                  int maxTries,
                                  LockRepository lockRepository,
                                  ChangeEntryService changeEntryService,
                                  LockManager lockManager) {
-      super(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
+      super(
+          TIME_SERVICE.minutesLongToSecondsInt(lockAcquiredForMinutes),
+          TIME_SERVICE.minutesLongToSecondsInt(maxWaitingForLockMinutesEachTry * maxTries),
+          1
+      );
       this.lockRepository = lockRepository;
       this.changeEntryService = changeEntryService;
       this.lockManager = lockManager;

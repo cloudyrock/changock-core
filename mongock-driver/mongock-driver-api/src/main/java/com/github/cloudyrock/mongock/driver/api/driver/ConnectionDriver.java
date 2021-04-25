@@ -12,7 +12,7 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   LockManager getLockManager();
 
-  LockManager getAndAcquireLockManager();
+  LockManager getManagerAndAcquireLock();
 
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
 
@@ -21,18 +21,6 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   ForbiddenParametersMap getForbiddenParameters();
 
   Class getLegacyMigrationChangeLogClass(boolean runAlways);
-
-  void setLockAcquiredForSeconds(int seconds);
-
-  void setLockQuitTryingAfterSeconds(int seconds);
-
-  void setLockTryFrequencySeconds(int seconds);
-
-//  void setLockAcquiredForMinutes(long lockAcquiredForMinutes);
-//
-//  void setMaxWaitingForLockMinutes(long maxWaitingForLockMinutes);
-//
-//  void setMaxTries(int maxTries);
 
   void setChangeLogRepositoryName(String changeLogRepositoryName);
 
@@ -47,12 +35,6 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   int getLockQuitTryingAfterSeconds();
 
   int getLockTryFrequencySeconds();
-
-//  long getLockAcquiredForMinutes();
-//
-//  long getMaxWaitingForLockMinutes();
-//
-//  int getMaxTries();
 
   String getChangeLogRepositoryName();
 

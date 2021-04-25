@@ -23,16 +23,25 @@ public class DefaultLockManager implements LockManager {
 
   //static constants
   private static final Logger logger = LoggerFactory.getLogger(DefaultLockManager.class);
-  private static final long MIN_LOCK_ACQUIRED_FOR_MILLIS = 3L * 1000L;// 3 seconds
-  private static final long MIN_LOCK_REFRESH_MARGIN_MILLIS = 1000L;// 1 second
-  private static final double LOCK_REFRESH_MARGIN_PERCENTAGE = 0.33;// 30%
-  private static final long MINIMUM_WAITING_TO_TRY_AGAIN = 500L;
 
-  private static final String GOING_TO_SLEEP_MSG =
-      "Mongock is going to sleep to wait for the lock:  {} ms({} minutes)";
+  private static final String GOING_TO_SLEEP_MSG = "Mongock is going to sleep to wait for the lock:  {} ms({} minutes)";
   private static final String EXPIRATION_ARG_ERROR_MSG = "Lock expiration period must be greater than %d ms";
   private static final String MAX_TRIES_ERROR_TEMPLATE = "Quit trying lock after %s millis due to LockPersistenceException: \n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
   private static final String LOCK_HELD_BY_OTHER_PROCESS = "Lock held by other process. Cannot ensure lock.\n\tcurrent lock:  %s\n\tnew lock: %s\n\tacquireLockQuery: %s\n\tdb error detail: %s";
+
+  private static final long MIN_LOCK_ACQUIRED_FOR_MILLIS = 3 * 1000L;// 3 seconds
+  private static final long DEFAULT_LOCK_ACQUIRED_FOR_MILLIS = MIN_LOCK_ACQUIRED_FOR_MILLIS;
+
+  public static final long DEFAULT_QUIT_TRY_AFTER_MILLIS = MIN_LOCK_ACQUIRED_FOR_MILLIS * 3L;// 9 seconds, 3 times default min acquired
+
+  private static final double LOCK_REFRESH_MARGIN_PERCENTAGE = 0.33;// 30%
+  private static final long MIN_LOCK_REFRESH_MARGIN_MILLIS = 1000L;// 1 second
+  private static final long DEFAULT_LOCK_REFRESH_MARGIN_MILLIS = MIN_LOCK_REFRESH_MARGIN_MILLIS;// 1 second
+
+  private static final long MINIMUM_WAITING_TO_TRY_AGAIN = 500L;//Half a second
+  private static final long DEFAULT_TRY_FREQUENCY_MILLIS = 1000L;// ! second
+
+
 
 
   //injections
@@ -44,26 +53,24 @@ public class DefaultLockManager implements LockManager {
   private final String owner;
   /**
    * <p>Maximum time it will wait for the lock in total.</p>
-   * <p>Default 3 times the the amount the the lock is acquired for</p>
    */
-  private long lockQuitTryingAfterMillis = MIN_LOCK_ACQUIRED_FOR_MILLIS * 3L;
+  private long lockQuitTryingAfterMillis = DEFAULT_QUIT_TRY_AFTER_MILLIS;
 
   /**
    * <p>The period of time for which the lock will be owned.</p>
-   * <p>Default 2 minutes</p>
    */
-  private long lockAcquiredForMillis = MIN_LOCK_ACQUIRED_FOR_MILLIS;
-
-  /**
-   * <p>The margin in which the lock should be refresh to avoid losing it</p>
-   * <p>Default 21 second</p>
-   */
-  private long lockRefreshMarginMillis = MIN_LOCK_REFRESH_MARGIN_MILLIS;
+  private long lockAcquiredForMillis = DEFAULT_LOCK_ACQUIRED_FOR_MILLIS;
 
   /**
    * <p>Milliseconds after which it will try to acquire the lock again<p/>
    */
-  private long lockTryFrequencyMillis = 1000L;//every second
+  private long lockTryFrequencyMillis = DEFAULT_TRY_FREQUENCY_MILLIS;
+
+  /**
+   * <p>The margin in which the lock should be refresh to avoid losing it</p>
+   */
+  private long lockRefreshMarginMillis = DEFAULT_LOCK_REFRESH_MARGIN_MILLIS;
+
 
   /**
    * Moment when will mandatory to acquire the lock again.
@@ -205,7 +212,7 @@ public class DefaultLockManager implements LockManager {
 
   /**
    * <p>Indicates the number of milliseconds the lock will be acquired for</p>
-   * <p>Default 3 minutes</p>
+   * <p>Minimum 3 seconds</p>
    *
    * @param millis milliseconds the lock will be acquired for
    * @return LockChecker object for fluent interface

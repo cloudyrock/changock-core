@@ -16,9 +16,9 @@ public class MongockContext {
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
   public MongockSpringbootV2_2.MongockApplicationRunner applicationRunner(ConnectionDriver connectionDriver,
-                                                     MongockSpringConfiguration springConfiguration,
-                                                     ApplicationContext springContext,
-                                                     ApplicationEventPublisher applicationEventPublisher) {
+                                                                          MongockSpringConfiguration springConfiguration,
+                                                                          ApplicationContext springContext,
+                                                                          ApplicationEventPublisher applicationEventPublisher) {
     return getBuilder(connectionDriver, springConfiguration, springContext, applicationEventPublisher)
         .buildApplicationRunner();
   }
@@ -26,9 +26,9 @@ public class MongockContext {
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean')")
   public MongockSpringbootV2_2.MongockInitializingBeanRunner initializingBeanRunner(ConnectionDriver connectionDriver,
-                                                                                            MongockSpringConfiguration springConfiguration,
-                                                                                            ApplicationContext springContext,
-                                                                                            ApplicationEventPublisher applicationEventPublisher) {
+                                                                                    MongockSpringConfiguration springConfiguration,
+                                                                                    ApplicationContext springContext,
+                                                                                    ApplicationEventPublisher applicationEventPublisher) {
     return getBuilder(connectionDriver, springConfiguration, springContext, applicationEventPublisher)
         .buildInitializingBeanRunner();
   }

@@ -12,39 +12,25 @@ import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
 @NotThreadSafe
 public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> implements ConnectionDriver<CHANGE_ENTRY> {
 
-  private static final int DEFAULT_LOCK_TRY_FREQUENCY = 1;
   private static final TimeService TIME_SERVICE = new TimeService();
 
+  //Lock
+  private final int lockAcquiredForSeconds;
+  private final int lockQuitTryingAfterSeconds;
+  private final int lockTryFrequencySeconds;
 
   private boolean initialized = false;
   private LockManager lockManager = null;
-  private int lockAcquiredForSeconds;
-  private int lockQuitTryingAfterSeconds;
-  private int lockTryFrequencySeconds;
   private String changeLogRepositoryName;
   private String lockRepositoryName;
   private boolean indexCreation = true;
 
-  public ConnectionDriverBase() {
-  }
 
-  @Deprecated
-  public ConnectionDriverBase(long lockAcquiredForMinutes, long maxWaitingForLockMinutesEachTry, int maxTries) {
-    this(
-        TIME_SERVICE.minutesLongToSecondsInt(lockAcquiredForMinutes),
-        TIME_SERVICE.minutesLongToSecondsInt(maxWaitingForLockMinutesEachTry * maxTries),
-        DEFAULT_LOCK_TRY_FREQUENCY
-    );
-  }
-  public ConnectionDriverBase(int lockAcquiredForSeconds, int lockQuitTryingAfterSeconds, int lockTryFrequencySeconds) {
+  protected ConnectionDriverBase(int lockAcquiredForSeconds, int lockQuitTryingAfterSeconds, int lockTryFrequencySeconds) {
     this.lockAcquiredForSeconds = lockAcquiredForSeconds;
     this.lockQuitTryingAfterSeconds = lockQuitTryingAfterSeconds;
     this.lockTryFrequencySeconds = lockTryFrequencySeconds;
   }
-
-
-
-
 
   @Override
   public final void initialize() {
@@ -70,7 +56,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public LockManager getAndAcquireLockManager() {
+  public LockManager getManagerAndAcquireLock() {
     LockManager lockManager = getLockManager();
     lockManager.acquireLockDefault();
     return lockManager;
@@ -109,21 +95,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   @Override
   public boolean isIndexCreation() {
     return indexCreation;
-  }
-
-  @Override
-  public void setLockAcquiredForSeconds(int lockAcquiredForSeconds) {
-    this.lockAcquiredForSeconds = lockAcquiredForSeconds;
-  }
-
-  @Override
-  public void setLockQuitTryingAfterSeconds(int lockQuitTryingAfterSeconds) {
-    this.lockQuitTryingAfterSeconds = lockQuitTryingAfterSeconds;
-  }
-
-  @Override
-  public void setLockTryFrequencySeconds(int lockTryFrequencySeconds) {
-    this.lockTryFrequencySeconds = lockTryFrequencySeconds;
   }
 
   @Override

@@ -13,15 +13,15 @@ public class MongockConfiguration {
   private String changeLogRepositoryName;
 
   /**
-   * Repository name for locking mechanism
-   */
-  private String lockRepositoryName;
-
-  /**
    * If false, Mongock won't create the necessary index. However it will check that they are already
    * created, failing otherwise. Default true
    */
   private boolean indexCreation = true;
+
+  /**
+   * Repository name for locking mechanism
+   */
+  private String lockRepositoryName;
 
   /**
    * How long the lock will be hold once acquired in minutes. Default 3
