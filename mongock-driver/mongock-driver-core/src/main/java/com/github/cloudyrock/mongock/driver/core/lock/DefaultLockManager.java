@@ -8,10 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,7 +26,7 @@ public class DefaultLockManager implements LockManager {
   private static final long MIN_LOCK_ACQUIRED_FOR_MILLIS = 3L * 1000L;// 3 seconds
   private static final long MIN_LOCK_REFRESH_MARGIN_MILLIS = 1000L;// 1 second
   private static final double LOCK_REFRESH_MARGIN_PERCENTAGE = 0.33;// 30%
-  private static final long MINIMUM_SLEEP_THREAD = 500L;
+  private static final long MINIMUM_WAITING_TO_TRY_AGAIN = 500L;
 
   private static final String GOING_TO_SLEEP_MSG =
       "Mongock is going to sleep to wait for the lock:  {} ms({} minutes)";
@@ -200,8 +196,8 @@ public class DefaultLockManager implements LockManager {
   }
 
   public DefaultLockManager setLockTryFrequencyMillis(long millis) {
-    if (millis <= 0) {
-      throw new IllegalArgumentException("Lock-try-frequency must be grater than 0 ");
+    if (millis < MINIMUM_WAITING_TO_TRY_AGAIN) {
+      throw new IllegalArgumentException(String.format("Lock-try-frequency must be grater than %d", MINIMUM_WAITING_TO_TRY_AGAIN));
     }
     lockTryFrequencyMillis = millis;
     return this;
@@ -261,11 +257,12 @@ public class DefaultLockManager implements LockManager {
   }
 
   private void waitForLock(Date expiresAtMillis) {
-    long currentLockWillExpireInMillis = expiresAtMillis.getTime() - timeUtils.currentTime().getTime();
+    Date current = timeUtils.currentTime();
+    long currentLockWillExpireInMillis = expiresAtMillis.getTime() - current.getTime();
     long sleepingMillis = lockTryFrequencyMillis;
     if (lockTryFrequencyMillis > currentLockWillExpireInMillis) {
       logger.info("The configured time frequency[{} millis] is higher than the current lock's expiration", lockTryFrequencyMillis);
-      sleepingMillis = (currentLockWillExpireInMillis > 0 ? currentLockWillExpireInMillis : 0) + MINIMUM_SLEEP_THREAD;
+      sleepingMillis = currentLockWillExpireInMillis > MINIMUM_WAITING_TO_TRY_AGAIN ? currentLockWillExpireInMillis : MINIMUM_WAITING_TO_TRY_AGAIN;
     }
     logger.info("Mongock will try to acquire the lock in {} mills", sleepingMillis);
 
@@ -301,12 +298,11 @@ public class DefaultLockManager implements LockManager {
     Date currentTime = timeUtils.currentTime();
     Date expirationWithMargin = new Date(this.lockExpiresAt.getTime() - lockRefreshMarginMillis);
     return currentTime.compareTo(expirationWithMargin) >= 0;
-
   }
-
 
   private void updateStatus(Date lockExpiresAt) {
     this.lockExpiresAt = lockExpiresAt;
+    finishAcquisitionTimer();
   }
 
   /**
@@ -316,6 +312,13 @@ public class DefaultLockManager implements LockManager {
     if (shouldStopTryingAt == null) {
       shouldStopTryingAt = timeUtils.nowPlusMillis(lockQuitTryingAfterMillis);
     }
+  }
+
+  /**
+   * idempotent operation to start the acquisition timer
+   */
+  private synchronized void finishAcquisitionTimer() {
+    shouldStopTryingAt = null;
   }
 
 

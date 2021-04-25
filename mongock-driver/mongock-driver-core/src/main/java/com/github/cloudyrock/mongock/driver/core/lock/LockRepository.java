@@ -14,7 +14,7 @@ public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTI
    * common scenario is to extend the lock's expiry date.
    *
    * b) If there is a existing lock in the database for the same key and different owner, but expired(existingLock.key==newLock.key &&
-   * existingLoc.owner!=newLock.owner && expiresAt > now), the lock is replaced with the newLock, so the owner of the lock for
+   * existingLock.owner!=newLock.owner && now > expiredAt), the lock is replaced with the newLock, so the owner of the lock for
    * that key is newLock.owner
    *
    * c) If scenario b, but lock is not expired yet, should throw an LockPersistenceException.

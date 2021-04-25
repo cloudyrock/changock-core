@@ -28,9 +28,10 @@ public class DefaultLockManagerTest {
   private static final long lockActiveMillis = 5 * 60 * 1000L;
   private static final long quitTryingAfterMillis = 3 * 60 * 1000L;
   private static final long tryFrequency = 5 * 1000L;
-  public static final int DONT_CARE_LONG = 1;
-  public static final Instant DONT_CARE_INSTANT = Instant.now();
-  public static final Date FAR_DATE = new Date(100000L);
+  private static final int DONT_CARE_LONG = 1;
+  private static final Instant DONT_CARE_INSTANT = Instant.now();
+  private static final Date DONT_CARE_DATE = new Date(0L);
+  private static final Date FAR_FUTURE_DATE = new Date(100000L);
 
   private LockRepository lockRepository;
   private TimeService timeUtils;
@@ -45,7 +46,7 @@ public class DefaultLockManagerTest {
   }
 
   @Test
-  public void acquireLockShouldCallDaoFirstTime() throws LockPersistenceException, LockCheckException {
+  public void shouldRetrieveLock_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
     //given
     Date expirationAt = new Date(1000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(expirationAt);
@@ -54,26 +55,27 @@ public class DefaultLockManagerTest {
     lockManager.acquireLockDefault();
 
     //then
-    assertDaoInsertUpdateCalledWithRightParameters(expirationAt, 1);
+    assertInsertUpdateCall(expirationAt, 1);
   }
 
   @Test
-  public void acquireLockShouldCallDaoSecondTimeWhenTimeHasAlreadyExpired() throws LockPersistenceException, LockCheckException {
+  public void shouldAlwaysAskForLock_WhenAcquireLock_RegardlessIfItIsAlreadyAcquired() throws LockPersistenceException, LockCheckException {
     //given
     Date expirationAt = new Date(1000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(expirationAt);
     when(timeUtils.currentTime()).thenReturn(new Date(40000L));// Exactly the expiration time(minus margin)
+    when(timeUtils.nowPlusMillis(anyLong())).thenReturn(DONT_CARE_INSTANT);
     lockManager.acquireLockDefault();
 
     //when
     lockManager.acquireLockDefault();
 
     //then
-    assertDaoInsertUpdateCalledWithRightParameters(expirationAt, 2);
+    assertInsertUpdateCall(expirationAt, 2);
   }
 
   @Test
-  public void acquireShouldCallDaoSecondTimeEvenWhenTimeHasNotExpiredYet() throws LockPersistenceException, LockCheckException {
+  public void shouldAlwaysAskForLock_WhenAcquireLock_RegardlessIfItIsExpired() throws LockPersistenceException, LockCheckException {
     //given
     Date expirationAt = new Date(1000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(expirationAt);
@@ -84,11 +86,11 @@ public class DefaultLockManagerTest {
     lockManager.acquireLockDefault();
 
     //then
-    assertDaoInsertUpdateCalledWithRightParameters(expirationAt, 2);
+    assertInsertUpdateCall(expirationAt, 2);
   }
 
   @Test
-  public void acquireLockShouldWaitUntilExpirationTimeWhenDaoThrowsExceptionAndLockHeldByOther() throws LockPersistenceException, LockCheckException {
+  public void shouldWaitMinimum_IfWaitingTimeIsLessThanMinimum_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
     //given
     long expiresAt = 3000L;
     long waitingTime = 0L;
@@ -99,8 +101,7 @@ public class DefaultLockManagerTest {
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
     Date newExpirationAt = new Date(1000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(newExpirationAt);
-    when(timeUtils.currentTime())
-        .thenReturn(new Date(expiresAt - waitingTime));
+    when(timeUtils.currentTime()).thenReturn(new Date(expiresAt - waitingTime));
 
     //when
     long timeBeforeCall = System.currentTimeMillis();
@@ -109,11 +110,61 @@ public class DefaultLockManagerTest {
 
     //then
     assertTrue("Checker should wait at least " + waitingTime + "ms", timeSpent >= waitingTime);
-    assertDaoInsertUpdateCalledWithRightParameters(newExpirationAt, 2);
+    assertInsertUpdateCall(newExpirationAt, 2);
   }
 
   @Test
-  public void acquireLockShouldNotWaitWhenWaitForLockIsFalse() throws LockPersistenceException, LockCheckException {
+  public void shouldWaitUntilExpiration_IfFrequencyIsHigherThanExpiration_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
+    //given
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail"))
+        .doNothing()
+        .when(lockRepository).insertUpdate(any(LockEntry.class));
+
+    long expiresAt = 3000L;
+    long currentMoment = 2000L;
+    long waitingTime = expiresAt - currentMoment;
+    when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
+    when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(DONT_CARE_DATE);
+    when(timeUtils.currentTime()).thenReturn(new Date(currentMoment));
+
+    //when
+    long instantBefore = System.currentTimeMillis();
+    lockManager.setLockTryFrequencyMillis(3000L);
+    lockManager.acquireLockDefault();
+    long spentMillis = System.currentTimeMillis() - instantBefore;
+
+    //then
+    assertTrue("Checker should wait at least " + waitingTime + "ms", spentMillis >= waitingTime);
+    assertInsertUpdateCall(DONT_CARE_DATE, 2);
+  }
+
+  @Test
+  public void shouldWaitFrequency_IfFrequencyIsLowerThanExpiration_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
+    //given
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail"))
+        .doNothing()
+        .when(lockRepository).insertUpdate(any(LockEntry.class));
+
+    long expiresAt = 3000L;
+    long currentMoment = 2000L;
+    long waitingTime = 750L;
+    when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
+    when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(DONT_CARE_DATE);
+    when(timeUtils.currentTime()).thenReturn(new Date(currentMoment));
+
+    //when
+    long instantBefore = System.currentTimeMillis();
+    lockManager.setLockTryFrequencyMillis(waitingTime);
+    lockManager.acquireLockDefault();
+    long spentMillis = System.currentTimeMillis() - instantBefore;
+
+    //then
+    assertTrue("Checker should wait at least " + waitingTime + "ms", spentMillis >= waitingTime);
+    assertInsertUpdateCall(DONT_CARE_DATE, 2);
+  }
+
+  @Test
+  public void shouldNotWaitAndThrowException_IfWaitingTimeIsOver_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
     //given
     lockManager.setLockQuitTryingAfterMillis(1000L);
 
@@ -122,7 +173,7 @@ public class DefaultLockManagerTest {
         .when(lockRepository).insertUpdate(any(LockEntry.class));
 
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(DONT_CARE_LONG));
-    when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(FAR_DATE);
+    when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(FAR_FUTURE_DATE);
     when(timeUtils.currentTime()).thenReturn(new Date(2000L));
     when(timeUtils.nowPlusMillis(anyLong())).thenReturn(DONT_CARE_INSTANT);
     when(timeUtils.isPast(any(Instant.class))).thenReturn(true);
@@ -130,22 +181,21 @@ public class DefaultLockManagerTest {
 
     //when
     long timeBeforeCall = System.currentTimeMillis();
-    boolean exceptionThrown = false;
     try {
       lockManager.acquireLockDefault();
     } catch (LockCheckException ex) {
-      exceptionThrown = true;
+      long timeSpent = System.currentTimeMillis() - timeBeforeCall;
+      assertTrue("Should abort straight away, a couple of millis", timeSpent <= 50L);
+      assertInsertUpdateCall(FAR_FUTURE_DATE, 1);
+      return;
     }
-    assertTrue(exceptionThrown);
-    long timeSpent = System.currentTimeMillis() - timeBeforeCall;
+    fail();
 
     //then
-    assertTrue("Checker should not wait at all waiting time", timeSpent <= quitTryingAfterMillis);
-    assertDaoInsertUpdateCalledWithRightParameters(FAR_DATE, 1);
   }
 
   @Test
-  public void acquireLockShouldNotWaitWhenDaoThrowsExceptionButLockHeldByTheSameOwner() throws LockPersistenceException, LockCheckException {
+  public void shouldNotWaiAndTryAgainStraightAway_IfWriteLockThrowsExceptionButItIsSameOwner_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1000L;
@@ -172,11 +222,11 @@ public class DefaultLockManagerTest {
 
     //then
     assertTrue("Checker should wait that long", timeSpent < waitingTime);
-    assertDaoInsertUpdateCalledWithRightParameters(newExpirationAt, 2);
+    assertInsertUpdateCall(newExpirationAt, 2);
   }
 
   @Test
-  public void shouldThrowException_WhenAcquire_IfQuitTryingAfterReached()
+  public void shouldThrowException_IfQuitTryingAfterReached_WhenAcquire()
       throws LockPersistenceException {
     //given
     long expiresAt = 3000L;
@@ -197,7 +247,7 @@ public class DefaultLockManagerTest {
     } catch (LockCheckException ex) {
       //then
       assertTrue((System.currentTimeMillis() - timeBeforeCall) < waitingTime);
-      assertDaoInsertUpdateCalledWithRightParameters(newExpirationAt, 1);
+      assertInsertUpdateCall(newExpirationAt, 1);
       assertExceptionMessage(ex);
       return;
     }
@@ -206,7 +256,7 @@ public class DefaultLockManagerTest {
 
   //
   @Test
-  public void shouldKeepTryingToAcquireLock_whenAcquire_WhileQuitTryingAfterNotReached() throws LockPersistenceException {
+  public void shouldKeepTryingToAcquireLock_WhileQuitTryingAfterNotReached_WhenAcquireLock() throws LockPersistenceException {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1;
@@ -224,7 +274,7 @@ public class DefaultLockManagerTest {
       lockManager.acquireLockDefault();
     } catch (LockCheckException ex) {
       //then
-      assertDaoInsertUpdateCalledWithRightParameters(newExpirationAt, 3);
+      assertInsertUpdateCall(newExpirationAt, 3);
       assertExceptionMessage(ex);
       return;
     }
@@ -233,7 +283,7 @@ public class DefaultLockManagerTest {
 
 
   @Test
-  public void ensureLockShouldCallDaoFirstTime() throws LockPersistenceException, LockCheckException {
+  public void shouldCallRepository_WhenEnsureLock() throws LockPersistenceException, LockCheckException {
     //given
     Date expirationAt = new Date(1000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(expirationAt);
@@ -242,7 +292,7 @@ public class DefaultLockManagerTest {
     lockManager.ensureLockDefault();
 
     //then
-    assertDaoUpdateIfSameOwnerCalledWithRightParameters(expirationAt, 1);
+    assertUpdateCallIfSameOwner(expirationAt, 1);
   }
 
   @Test
@@ -259,12 +309,12 @@ public class DefaultLockManagerTest {
     lockManager.ensureLockDefault();
 
     //then
-    assertDaoUpdateIfSameOwnerCalledWithRightParameters(expirationAt, 1);
+    assertUpdateCallIfSameOwner(expirationAt, 1);
   }
 
   //
   @Test
-  public void shouldNotRefreshLock_IfAlreadyAcquired_whenEnsureLock() throws LockPersistenceException, LockCheckException {
+  public void shouldNotRefreshLock_IfAlreadyAcquired_WhenEnsureLock() throws LockPersistenceException, LockCheckException {
     //given
     Date expirationAt = new Date(42 * 1000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(expirationAt);
@@ -277,11 +327,11 @@ public class DefaultLockManagerTest {
     lockManager.ensureLockDefault();
 
     //then
-    assertDaoUpdateIfSameOwnerCalledWithRightParameters(expirationAt, 0);
+    assertUpdateCallIfSameOwner(expirationAt, 0);
   }
 
   @Test(expected = LockCheckException.class)
-  public void ensureLockShouldThrowExceptionWhenDaoThrowsExceptionAndLockHeldByOther() throws LockPersistenceException, LockCheckException {
+  public void shouldNotWaitAndThrowException_IfLockHeldByOtherProcess_IfEnsureLock() throws LockPersistenceException, LockCheckException {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1000L;
@@ -292,12 +342,10 @@ public class DefaultLockManagerTest {
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
     Date newExpirationAt = new Date(100000L);
     when(timeUtils.currentDatePlusMillis(anyLong()))
-        .thenReturn(newExpirationAt)
         .thenReturn(newExpirationAt);
     when(timeUtils.currentTime())
         .thenReturn(new Date(40001L))
         .thenReturn(new Date(expiresAt - waitingTime));
-    lockManager.acquireLockDefault();
 
     // when
     lockManager.ensureLockDefault();
@@ -332,7 +380,7 @@ public class DefaultLockManagerTest {
 
     //then
     assertTrue("Checker should wait that long", timeSpent < waitingTime);
-    assertDaoUpdateIfSameOwnerCalledWithRightParameters(newExpirationAt, 1);
+    assertUpdateCallIfSameOwner(newExpirationAt, 1);
   }
 
   @Test
@@ -354,7 +402,7 @@ public class DefaultLockManagerTest {
     try {
       lockManager.ensureLockDefault();
     } catch (LockCheckException ex) {
-      assertDaoUpdateIfSameOwnerCalledWithRightParameters(newExpirationAt, 3);
+      assertUpdateCallIfSameOwner(newExpirationAt, 3);
       return;
     }
     fail();
@@ -362,7 +410,7 @@ public class DefaultLockManagerTest {
   }
 
   @Test
-  public void releaseLockCallDaoAlways() {
+  public void shouldCallRepository_WhenReleaseLock() {
     //when
     lockManager.releaseLockDefault();
 
@@ -371,7 +419,7 @@ public class DefaultLockManagerTest {
   }
 
   @Test
-  public void shouldHitTheDBAfterReleaseWhenAcquiringLock() throws LockPersistenceException, LockCheckException {
+  public void shouldWriteTheLockInDB_IfLockIsReleased_WhenAcquireLock() throws LockPersistenceException, LockCheckException {
     //given
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(new Date(1000000L));
     when(timeUtils.currentTime()).thenReturn(new Date(0L));
@@ -387,7 +435,7 @@ public class DefaultLockManagerTest {
   }
 
   @Test
-  public void shouldHitTheDBAfterReleaseWhenEnsuringLock() throws LockPersistenceException, LockCheckException {
+  public void shouldWriteTheLockInDB_IfLockIsReleased_WhenEnsureLock() throws LockPersistenceException, LockCheckException {
     //given
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(new Date(1000000L));
     when(timeUtils.currentTime()).thenReturn(new Date(0L));
@@ -403,7 +451,7 @@ public class DefaultLockManagerTest {
   }
 
   @Test
-  public void getLockMaxTriesShouldReturnRight() {
+  public void shouldReturnSameValue_IfSetValue_WhenGetFrequency() {
     //given
     lockManager.setLockTryFrequencyMillis(3000L);
 
@@ -412,22 +460,22 @@ public class DefaultLockManagerTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void shouldThrowIllegalExceptionWhenLockMaxWaitMillisLtOne() {
+  public void shouldThrowIllegalException_WhenFrequencyIsLessOrEqualMinimum() {
+    lockManager.setLockTryFrequencyMillis(499L);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldThrowIllegalException_WhenQuitTryingIsLessOrEqualZero() {
     lockManager.setLockQuitTryingAfterMillis(0);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void shouldThrowIllegalException_WhenFrequencyIsLessOrEqualZero() {
-    lockManager.setLockTryFrequencyMillis(0);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void shouldThrowIllegalException_WhenAcquiredForLessThan3Seconds() {
+  public void shouldThrowIllegalException_WhenAcquiredForLessThanMinimum() {
     lockManager.setLockAcquiredForMillis(2999L);
   }
 
   @Test
-  public void isLockHeldShouldReturnFalseWhenIsNotStarted() {
+  public void shouldReturnFalse_IfNotStarted_WhenIsLockHeld() {
     //when
     boolean lockHeld = lockManager.isLockHeld();
 
@@ -436,7 +484,7 @@ public class DefaultLockManagerTest {
   }
 
   @Test
-  public void isLockHeldShouldReturnTrueWhenIsStarted() throws LockCheckException {
+  public void shouldReturnTrue_IfStarted_WhenIsLockHeld() throws LockCheckException {
     //given
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(new Date(1000000L));
     when(timeUtils.currentTime()).thenReturn(new Date(0L));
@@ -460,12 +508,12 @@ public class DefaultLockManagerTest {
         ex.getMessage()
     );
   }
-  private void assertDaoInsertUpdateCalledWithRightParameters(Date expirationAt, int invocationTimes)
+  private void assertInsertUpdateCall(Date expirationAt, int invocationTimes)
       throws LockPersistenceException {
     assertDao(expirationAt, invocationTimes, false);
   }
 
-  private void assertDaoUpdateIfSameOwnerCalledWithRightParameters(Date expirationAt, int invocationTimes)
+  private void assertUpdateCallIfSameOwner(Date expirationAt, int invocationTimes)
       throws LockPersistenceException {
     assertDao(expirationAt, invocationTimes, true);
   }
