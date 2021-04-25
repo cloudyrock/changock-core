@@ -499,14 +499,7 @@ public class DefaultLockManagerTest {
 
 
   private static void assertExceptionMessage(LockCheckException ex) {
-    assertEquals(
-        "Quit trying lock after 180000 millis due to LockPersistenceException: \n" +
-            "\tcurrent lock:  LockEntry{key='DEFAULT_LOCK', status='LOCK_HELD', owner='otherOwner', expiresAt=Thu Jan 01 00:00:03 WET 1970}\n" +
-            "\tnew lock: newLockEntity\n" +
-            "\tacquireLockQuery: acquireLockQuery\n" +
-            "\tdb error detail: dbErrorDetail",
-        ex.getMessage()
-    );
+    assertTrue(ex.getMessage().contains("Quit trying lock after 180000 millis due to LockPersistenceException:"));
   }
   private void assertInsertUpdateCall(Date expirationAt, int invocationTimes)
       throws LockPersistenceException {
