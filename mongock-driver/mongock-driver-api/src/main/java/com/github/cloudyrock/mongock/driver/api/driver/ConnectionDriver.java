@@ -30,11 +30,11 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   boolean isInitialized();
 
-  int getLockAcquiredForSeconds();
+  long getLockAcquiredForMillis();
 
-  int getLockQuitTryingAfterSeconds();
+  long getLockQuitTryingAfterMillis();
 
-  int getLockTryFrequencySeconds();
+  long getLockTryFrequencyMillis();
 
   String getChangeLogRepositoryName();
 

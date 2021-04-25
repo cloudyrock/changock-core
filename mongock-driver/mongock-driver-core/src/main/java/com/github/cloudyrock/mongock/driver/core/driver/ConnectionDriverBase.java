@@ -15,9 +15,9 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private static final TimeService TIME_SERVICE = new TimeService();
 
   //Lock
-  private final int lockAcquiredForSeconds;
-  private final int lockQuitTryingAfterSeconds;
-  private final int lockTryFrequencySeconds;
+  private final long lockAcquiredForMillis;
+  private final long lockQuitTryingAfterMillis;
+  private final long lockTryFrequencyMillis;
 
   private boolean initialized = false;
   private LockManager lockManager = null;
@@ -26,10 +26,10 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private boolean indexCreation = true;
 
 
-  protected ConnectionDriverBase(int lockAcquiredForSeconds, int lockQuitTryingAfterSeconds, int lockTryFrequencySeconds) {
-    this.lockAcquiredForSeconds = lockAcquiredForSeconds;
-    this.lockQuitTryingAfterSeconds = lockQuitTryingAfterSeconds;
-    this.lockTryFrequencySeconds = lockTryFrequencySeconds;
+  protected ConnectionDriverBase(long lockAcquiredForMillis, long lockQuitTryingAfterMillis, long lockTryFrequencyMillis) {
+    this.lockAcquiredForMillis = lockAcquiredForMillis;
+    this.lockQuitTryingAfterMillis = lockQuitTryingAfterMillis;
+    this.lockTryFrequencyMillis = lockTryFrequencyMillis;
   }
 
   @Override
@@ -39,9 +39,9 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
       LockRepository lockRepository = this.getLockRepository();
       lockRepository.initialize();
       lockManager = new DefaultLockManager(lockRepository, TIME_SERVICE)
-          .setLockAcquiredForMillis(TIME_SERVICE.secondsToMillis(lockAcquiredForSeconds))
-          .setLockQuitTryingAfterMillis(TIME_SERVICE.secondsToMillis(lockQuitTryingAfterSeconds))
-          .setLockTryFrequencyMillis(TIME_SERVICE.secondsToMillis(lockTryFrequencySeconds));
+          .setLockAcquiredForMillis(lockAcquiredForMillis)
+          .setLockQuitTryingAfterMillis(lockQuitTryingAfterMillis)
+          .setLockTryFrequencyMillis(lockTryFrequencyMillis);
       getChangeEntryService().initialize();
       specificInitialization();
     }
@@ -68,18 +68,18 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public int getLockAcquiredForSeconds() {
-    return lockAcquiredForSeconds;
+  public long getLockAcquiredForMillis() {
+    return lockAcquiredForMillis;
   }
 
   @Override
-  public int getLockQuitTryingAfterSeconds() {
-    return lockQuitTryingAfterSeconds;
+  public long getLockQuitTryingAfterMillis() {
+    return lockQuitTryingAfterMillis;
   }
 
   @Override
-  public int getLockTryFrequencySeconds() {
-    return lockTryFrequencySeconds;
+  public long getLockTryFrequencyMillis() {
+    return lockTryFrequencyMillis;
   }
 
   @Override

@@ -51,6 +51,10 @@ public class ConnectionDriverBaseTest {
     private final LockManager lockManager;
 
 
+    private static long minutesToMillis(long minutes) {
+      return minutes * 60 * 1000;
+    }
+
     ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
                                  long maxWaitingForLockMinutesEachTry,
                                  int maxTries,
@@ -58,9 +62,9 @@ public class ConnectionDriverBaseTest {
                                  ChangeEntryService changeEntryService,
                                  LockManager lockManager) {
       super(
-          TIME_SERVICE.minutesLongToSecondsInt(lockAcquiredForMinutes),
-          TIME_SERVICE.minutesLongToSecondsInt(maxWaitingForLockMinutesEachTry * maxTries),
-          1
+          minutesToMillis(lockAcquiredForMinutes),
+          minutesToMillis(maxWaitingForLockMinutesEachTry * maxTries),
+          1000L
       );
       this.lockRepository = lockRepository;
       this.changeEntryService = changeEntryService;

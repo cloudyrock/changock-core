@@ -68,8 +68,5 @@ public class TimeService {
     return nowInstant().isAfter(moment);
   }
 
-  public int minutesLongToSecondsInt(long minutes) {
-    return Integer.parseInt(Long.toString(minutes)) * 60;
-  }
 
 }
