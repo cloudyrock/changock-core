@@ -233,10 +233,10 @@ public class MongockConfiguration {
   }
 
 
-
   //TODO remove this legacy methods
+
   /**
-//   * @see MongockConfiguration#getChangeLogRepositoryName()
+   * //   * @see MongockConfiguration#getChangeLogRepositoryName()
    */
   @Deprecated
   public String getChangeLogCollectionName() {
@@ -249,7 +249,7 @@ public class MongockConfiguration {
   @Deprecated
   public void setChangeLogCollectionName(String changeLogRepositoryName) {
     setChangeLogRepositoryName(changeLogRepositoryName);
-}
+  }
 
   @Deprecated
   public int getLockAcquiredForMinutes() {

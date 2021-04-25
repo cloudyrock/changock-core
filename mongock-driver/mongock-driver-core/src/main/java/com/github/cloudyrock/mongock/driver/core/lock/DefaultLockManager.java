@@ -36,12 +36,10 @@ public class DefaultLockManager implements LockManager {
 
   private static final double LOCK_REFRESH_MARGIN_PERCENTAGE = 0.33;// 30%
   private static final long MIN_LOCK_REFRESH_MARGIN_MILLIS = 1000L;// 1 second
-  private static final long DEFAULT_LOCK_REFRESH_MARGIN_MILLIS = (long)(DEFAULT_LOCK_ACQUIRED_FOR_MILLIS * LOCK_REFRESH_MARGIN_PERCENTAGE);
+  private static final long DEFAULT_LOCK_REFRESH_MARGIN_MILLIS = (long) (DEFAULT_LOCK_ACQUIRED_FOR_MILLIS * LOCK_REFRESH_MARGIN_PERCENTAGE);
 
   private static final long MINIMUM_WAITING_TO_TRY_AGAIN = 500L;//Half a second
   private static final long DEFAULT_TRY_FREQUENCY_MILLIS = 1000L;// ! second
-
-
 
 
   //injections
@@ -329,7 +327,6 @@ public class DefaultLockManager implements LockManager {
   private synchronized void finishAcquisitionTimer() {
     shouldStopTryingAt = null;
   }
-
 
 
   private boolean isAcquisitionTimerOver() {

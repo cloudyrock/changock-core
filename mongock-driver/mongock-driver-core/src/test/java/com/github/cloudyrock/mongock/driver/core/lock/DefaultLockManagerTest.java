@@ -506,6 +506,7 @@ public class DefaultLockManagerTest {
   private static void assertExceptionMessage(LockCheckException ex) {
     assertTrue(ex.getMessage().contains("Quit trying lock after 180000 millis due to LockPersistenceException:"));
   }
+
   private void assertInsertUpdateCall(Date expirationAt, int invocationTimes)
       throws LockPersistenceException {
     assertDao(expirationAt, invocationTimes, false);

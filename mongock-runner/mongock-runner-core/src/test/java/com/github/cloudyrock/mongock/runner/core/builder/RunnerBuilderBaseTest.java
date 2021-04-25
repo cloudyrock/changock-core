@@ -1,17 +1,17 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
-import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.config.LegacyMigration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -110,7 +110,7 @@ public class RunnerBuilderBaseTest {
     ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
     verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
 
-    ChangeLogItem  changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
+    ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
     assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
     assertEquals("1", changeLogItem.getOrder());
 
@@ -162,11 +162,11 @@ public class RunnerBuilderBaseTest {
     ArrayList<ChangeLogItem> changeLogItemsList = new ArrayList<>(new ArrayList<>(packageCaptors.getValue()));
     assertEquals(2, changeLogItemsList.size());
 
-    ChangeLogItem  changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
+    ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
     assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
     assertEquals("1", changeLogItem.getOrder());
 
-    ChangeLogItem  changeLogItem2 = new ArrayList<>(packageCaptors.getValue()).get(1);
+    ChangeLogItem changeLogItem2 = new ArrayList<>(packageCaptors.getValue()).get(1);
     assertEquals(ChangeLogSuccess12.class, changeLogItem2.getType());
     assertEquals("2", changeLogItem2.getOrder());
   }
@@ -206,7 +206,7 @@ public class RunnerBuilderBaseTest {
   }
 }
 
-class DummyMongockConfiguration extends MongockConfiguration{
+class DummyMongockConfiguration extends MongockConfiguration {
 
   @Override
   public LegacyMigration getLegacyMigration() {

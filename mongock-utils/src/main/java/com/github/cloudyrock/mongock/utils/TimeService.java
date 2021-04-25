@@ -6,7 +6,6 @@ import java.util.Date;
 /**
  * Class to manage time operation
  *
- *
  * @since 04/04/2018
  */
 public class TimeService {
@@ -25,7 +24,6 @@ public class TimeService {
   public Date currentTime() {
     return new Date(System.currentTimeMillis());
   }
-
 
 
   /**

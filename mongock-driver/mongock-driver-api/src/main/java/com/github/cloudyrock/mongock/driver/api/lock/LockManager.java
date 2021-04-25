@@ -77,7 +77,6 @@ public interface LockManager extends Closeable {
   String getOwner();
 
   /**
-   *
    * @return if lock is held
    */
   boolean isLockHeld();
