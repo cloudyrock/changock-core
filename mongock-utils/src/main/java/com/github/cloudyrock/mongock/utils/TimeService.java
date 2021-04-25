@@ -1,10 +1,6 @@
 package com.github.cloudyrock.mongock.utils;
 
-//TODO move to util module
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**

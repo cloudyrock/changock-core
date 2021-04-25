@@ -44,8 +44,6 @@ public class ConnectionDriverBaseTest {
 
   static class ConnectionDriverBaseTestImpl extends ConnectionDriverBase {
 
-    private static final TimeService TIME_SERVICE = new TimeService();
-
     private final LockRepository lockRepository;
     private final ChangeEntryService changeEntryService;
     private final LockManager lockManager;

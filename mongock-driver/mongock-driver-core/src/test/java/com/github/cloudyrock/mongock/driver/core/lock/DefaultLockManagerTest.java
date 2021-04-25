@@ -12,14 +12,16 @@ import org.mockito.internal.verification.Times;
 import java.time.Instant;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -231,8 +233,9 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = quitTryingAfterMillis + 1;
-    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).when(lockRepository).insertUpdate(any(LockEntry.class));
+    int invocationTimes = 1;
 
+    doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).when(lockRepository).insertUpdate(any(LockEntry.class));
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
     Date newExpirationAt = new Date(100000L);
     when(timeUtils.currentDatePlusMillis(anyLong())).thenReturn(newExpirationAt);
@@ -247,7 +250,7 @@ public class DefaultLockManagerTest {
     } catch (LockCheckException ex) {
       //then
       assertTrue((System.currentTimeMillis() - timeBeforeCall) < waitingTime);
-      assertInsertUpdateCall(newExpirationAt, 1);
+      assertInsertUpdateCall(newExpirationAt, invocationTimes);
       assertExceptionMessage(ex);
       return;
     }
@@ -260,6 +263,8 @@ public class DefaultLockManagerTest {
     //given
     long expiresAt = 3000L;
     long waitingTime = 1;
+    int invocationTimes = 3;
+
     doThrow(new LockPersistenceException("acquireLockQuery", "newLockEntity", "dbErrorDetail")).when(lockRepository).insertUpdate(any(LockEntry.class));
 
     when(lockRepository.findByKey(anyString())).thenReturn(createFakeLockWithOtherOwner(expiresAt));
@@ -274,7 +279,7 @@ public class DefaultLockManagerTest {
       lockManager.acquireLockDefault();
     } catch (LockCheckException ex) {
       //then
-      assertInsertUpdateCall(newExpirationAt, 3);
+      assertInsertUpdateCall(newExpirationAt, invocationTimes);
       assertExceptionMessage(ex);
       return;
     }

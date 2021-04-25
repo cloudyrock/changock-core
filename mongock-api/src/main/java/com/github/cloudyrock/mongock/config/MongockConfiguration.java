@@ -29,17 +29,17 @@ public class MongockConfiguration {
   /**
    * How long the lock will be hold once acquired in minutes. Default 3
    */
-  private long lockAcquiredForMillis = 3000L;
+  private long lockAcquiredForMillis = 60 * 1000L;
 
   /**
    * Max time in minutes to wait for the lock in each try. Default 4
    */
-  private long lockQuitTryingAfterMillis = 4;
+  private long lockQuitTryingAfterMillis = 3 * 60 * 1000L;
 
   /**
    * Max number of times Mongock will try to acquire the lock. Default 3
    */
-  private long lockTryFrequencyMillis = 3;
+  private long lockTryFrequencyMillis = 1000L;
 
   /**
    * Mongock will throw MongockException if lock can not be obtained. Default true
