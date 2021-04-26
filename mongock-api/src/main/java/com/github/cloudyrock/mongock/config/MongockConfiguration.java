@@ -1,14 +1,23 @@
 package com.github.cloudyrock.mongock.config;
 
-import com.github.cloudyrock.mongock.exception.MongockException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class MongockConfiguration {
+
+  private static final Logger logger = LoggerFactory.getLogger(MongockConfiguration.class);
+
   private final static String LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME = "mongockChangeLog";
   private final static String LEGACY_DEFAULT_LOCK_REPOSITORY_NAME = "mongockLock";
-  private static final String PROPERTY_ERROR_TEMPLATE = "Property %s has been removed. Uses properties lockAcquiredForMillis, lockQuitTryingAfterMillis and lockTryFrequencyMillis instead";
+  private static final String DEPRECATED_PROPERTY_TEMPLATE =
+      "\n\n\n*****************************************************************" +
+          "\nPROPERTY [{}] DEPRECATED. IT WILL BE REMOVED IN NEXT VERSIONS" +
+          "\nPlease use the following properties instead: [{}]" +
+          "\n\n\n*****************************************************************";
+  public static final long DEFAULT_QUIT_TRYING_AFTER_MILLIS = 3 * 60 * 1000L;
 
   /**
    * Repository name for changeLogs history
@@ -34,7 +43,7 @@ public class MongockConfiguration {
   /**
    * Max time in minutes to wait for the lock in each try. Default 4
    */
-  private long lockQuitTryingAfterMillis = 3 * 60 * 1000L;
+  private Long lockQuitTryingAfterMillis;
 
   /**
    * Max number of times Mongock will try to acquire the lock. Default 3
@@ -88,6 +97,12 @@ public class MongockConfiguration {
 
   private LegacyMigration legacyMigration = null;
 
+  @Deprecated
+  private Integer maxTries;
+
+  @Deprecated
+  private Long maxWaitingForLockMillis;
+
 
   public MongockConfiguration() {
     setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
@@ -103,8 +118,22 @@ public class MongockConfiguration {
     this.lockAcquiredForMillis = lockAcquiredForMillis;
   }
 
+  /**
+   * temporal due to legacy Lock configuration deprecated.
+   * TODO It should be removed as soon as the legacy properties, maxWaitingForLockMillis and maxTries, are removed
+   * @return
+   */
   public long getLockQuitTryingAfterMillis() {
-    return lockQuitTryingAfterMillis;
+    if (lockQuitTryingAfterMillis == null) {
+      if(maxWaitingForLockMillis != null) {
+        return maxWaitingForLockMillis * (this.maxTries != null ? this.maxTries : 3);
+      } else {
+        return DEFAULT_QUIT_TRYING_AFTER_MILLIS;
+      }
+    } else {
+      return lockQuitTryingAfterMillis;
+
+    }
   }
 
   public void setLockQuitTryingAfterMillis(long lockQuitTryingAfterMillis) {
@@ -232,52 +261,28 @@ public class MongockConfiguration {
     return LEGACY_DEFAULT_LOCK_REPOSITORY_NAME;
   }
 
-
-  //TODO remove this legacy methods
-
-  /**
-   * //   * @see MongockConfiguration#getChangeLogRepositoryName()
-   */
-  @Deprecated
-  public String getChangeLogCollectionName() {
-    return changeLogRepositoryName;
-  }
-
-  /**
-   * @see MongockConfiguration#setChangeLogRepositoryName(String)
-   */
-  @Deprecated
-  public void setChangeLogCollectionName(String changeLogRepositoryName) {
-    setChangeLogRepositoryName(changeLogRepositoryName);
-  }
-
-  @Deprecated
-  public int getLockAcquiredForMinutes() {
-    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "lockAcquiredForMinutes"));
-  }
-
   @Deprecated
   public void setLockAcquiredForMinutes(int lockAcquiredForMinutes) {
-    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "lockAcquiredForMinutes"));
-  }
-
-  @Deprecated
-  public int getMaxWaitingForLockMinutes() {
-    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxWaitingForLockMinutes"));
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "lockAcquiredForMinutes", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.lockAcquiredForMillis = minutesToMillis(lockAcquiredForMinutes);
   }
 
   @Deprecated
   public void setMaxWaitingForLockMinutes(int maxWaitingForLockMinutes) {
-    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxWaitingForLockMinutes"));
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxWaitingForLockMinutes", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.maxWaitingForLockMillis = minutesToMillis(maxWaitingForLockMinutes);
   }
 
-  @Deprecated
-  public int getMaxTries() {
-    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxTries"));
-  }
 
   @Deprecated
   public void setMaxTries(int maxTries) {
-    throw new MongockException(String.format(PROPERTY_ERROR_TEMPLATE, "maxTries"));
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxTries", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.maxTries = maxTries;
   }
+
+  private static long minutesToMillis(int minutes) {
+    return minutes * 60 * 1000L;
+  }
+
+
 }
