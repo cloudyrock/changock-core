@@ -1,18 +1,17 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
-import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.config.LegacyMigration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,9 +37,10 @@ public class RunnerBuilderBaseTest {
   private static final String PACKAGE_PATH = "package";
   private static final String START_SYSTEM_VERSION = "start_system_version";
   private static final String END_SYSTEM_VERSION = "end_system_versions";
-  private static final int LOCK_ACQ_MIN = 100;
-  private static final int MAX_WAIT_LOCK = 200;
-  private static final int MAX_TRIES = 300;
+  private static final long LOCK_ACQ_MILLIS = 100 * 60 * 1000L;
+  private static final long LOCK_TRY_FREQ_MILLIS = 1000L;
+  private static final long LOCK_QUIT_TRY_MILLIS = 3 * 60 * 1000L;
+
   private static final Map<String, Object> METADATA = new HashMap<>();
   ConnectionDriver driver = mock(ConnectionDriver.class);
   Map<String, Object> metadata = new HashMap<>();
@@ -110,7 +110,7 @@ public class RunnerBuilderBaseTest {
     ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
     verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
 
-    ChangeLogItem  changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
+    ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
     assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
     assertEquals("1", changeLogItem.getOrder());
 
@@ -162,11 +162,11 @@ public class RunnerBuilderBaseTest {
     ArrayList<ChangeLogItem> changeLogItemsList = new ArrayList<>(new ArrayList<>(packageCaptors.getValue()));
     assertEquals(2, changeLogItemsList.size());
 
-    ChangeLogItem  changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
+    ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
     assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
     assertEquals("1", changeLogItem.getOrder());
 
-    ChangeLogItem  changeLogItem2 = new ArrayList<>(packageCaptors.getValue()).get(1);
+    ChangeLogItem changeLogItem2 = new ArrayList<>(packageCaptors.getValue()).get(1);
     assertEquals(ChangeLogSuccess12.class, changeLogItem2.getType());
     assertEquals("2", changeLogItem2.getOrder());
   }
@@ -193,10 +193,12 @@ public class RunnerBuilderBaseTest {
     config.setEnabled(false);
     config.setStartSystemVersion(START_SYSTEM_VERSION);
     config.setEndSystemVersion(END_SYSTEM_VERSION);
-    config.setLockAcquiredForMinutes(LOCK_ACQ_MIN);
-    config.setMaxWaitingForLockMinutes(MAX_WAIT_LOCK);
-    config.setMaxTries(MAX_TRIES);
     config.setMetadata(METADATA);
+
+    config.setLockAcquiredForMillis(LOCK_ACQ_MILLIS);
+    config.setLockTryFrequencyMillis(LOCK_TRY_FREQ_MILLIS);
+    config.setLockQuitTryingAfterMillis(LOCK_QUIT_TRY_MILLIS);
+
     if (throwEx != null) {
       config.setThrowExceptionIfCannotObtainLock(throwEx);
     }
@@ -204,7 +206,7 @@ public class RunnerBuilderBaseTest {
   }
 }
 
-class DummyMongockConfiguration extends MongockConfiguration{
+class DummyMongockConfiguration extends MongockConfiguration {
 
   @Override
   public LegacyMigration getLegacyMigration() {

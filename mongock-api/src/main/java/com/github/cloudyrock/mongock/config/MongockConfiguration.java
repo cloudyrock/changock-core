@@ -1,21 +1,28 @@
 package com.github.cloudyrock.mongock.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Map;
 
 public class MongockConfiguration {
+
+  private static final Logger logger = LoggerFactory.getLogger(MongockConfiguration.class);
+
   private final static String LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME = "mongockChangeLog";
   private final static String LEGACY_DEFAULT_LOCK_REPOSITORY_NAME = "mongockLock";
+  private static final String DEPRECATED_PROPERTY_TEMPLATE =
+      "\n\n\n*****************************************************************" +
+          "\nPROPERTY [{}] DEPRECATED. IT WILL BE REMOVED IN NEXT VERSIONS" +
+          "\nPlease use the following properties instead: [{}]" +
+          "\n\n\n*****************************************************************";
+  public static final long DEFAULT_QUIT_TRYING_AFTER_MILLIS = 3 * 60 * 1000L;
 
   /**
    * Repository name for changeLogs history
    */
   private String changeLogRepositoryName;
-
-  /**
-   * Repository name for locking mechanism
-   */
-  private String lockRepositoryName;
 
   /**
    * If false, Mongock won't create the necessary index. However it will check that they are already
@@ -24,29 +31,44 @@ public class MongockConfiguration {
   private boolean indexCreation = true;
 
   /**
-   * How long the lock will be hold once acquired in minutes. Default 3
+   * Repository name for locking mechanism
    */
-  private int lockAcquiredForMinutes = 3;
+  private String lockRepositoryName;
 
   /**
-   * Max time in minutes to wait for the lock in each try. Default 4
+   * The period the lock will be reserved once acquired.
+   * If it finishes before, it will release it earlier.
+   * If the process takes longer thant this period, it will automatically extended.
+   * Default 1 minute.
+   * Minimum 3 seconds.
    */
-  private int maxWaitingForLockMinutes = 4;
+  private long lockAcquiredForMillis = 60 * 1000L;
 
   /**
-   * Max number of times Mongock will try to acquire the lock. Default 3
+   * The time after what Mongock will quit trying to acquire the lock, in case it's acquired
+   * by another process.
+   * Default 3 minutes.
+   * Minimum 0, which means won't wait whatsoever.
    */
-  private int maxTries = 3;
+  private Long lockQuitTryingAfterMillis;
 
   /**
-   * If true, will track ignored changeSets in history. Default false
+   * In case the lock is held by another process, it indicates the frequency to try to acquire it.
+   * Regardless of this value, the longest Mongock will wait if until the current lock's expiration.
+   * Default 1 second.
+   * Minimum 500 millis.
    */
-  private boolean trackIgnored = false;
+  private long lockTryFrequencyMillis = 1000L;
 
   /**
    * Mongock will throw MongockException if lock can not be obtained. Default true
    */
   private boolean throwExceptionIfCannotObtainLock = true;
+
+  /**
+   * If true, will track ignored changeSets in history. Default false
+   */
+  private boolean trackIgnored = false;
 
   /**
    * If false, will disable Mongock. Default true
@@ -85,12 +107,56 @@ public class MongockConfiguration {
 
   private LegacyMigration legacyMigration = null;
 
+  @Deprecated
+  private Integer maxTries;
+
+  @Deprecated
+  private Long maxWaitingForLockMillis;
+
 
   public MongockConfiguration() {
     setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
     setLockRepositoryName(getLockRepositoryNameDefault());
   }
 
+
+  public long getLockAcquiredForMillis() {
+    return lockAcquiredForMillis;
+  }
+
+  public void setLockAcquiredForMillis(long lockAcquiredForMillis) {
+    this.lockAcquiredForMillis = lockAcquiredForMillis;
+  }
+
+  /**
+   * temporal due to legacy Lock configuration deprecated.
+   * TODO It should be removed as soon as the legacy properties, maxWaitingForLockMillis and maxTries, are removed
+   * @return
+   */
+  public long getLockQuitTryingAfterMillis() {
+    if (lockQuitTryingAfterMillis == null) {
+      if(maxWaitingForLockMillis != null) {
+        return maxWaitingForLockMillis * (this.maxTries != null ? this.maxTries : 3);
+      } else {
+        return DEFAULT_QUIT_TRYING_AFTER_MILLIS;
+      }
+    } else {
+      return lockQuitTryingAfterMillis;
+
+    }
+  }
+
+  public void setLockQuitTryingAfterMillis(long lockQuitTryingAfterMillis) {
+    this.lockQuitTryingAfterMillis = lockQuitTryingAfterMillis;
+  }
+
+  public long getLockTryFrequencyMillis() {
+    return lockTryFrequencyMillis;
+  }
+
+  public void setLockTryFrequencyMillis(long lockTryFrequencyMillis) {
+    this.lockTryFrequencyMillis = lockTryFrequencyMillis;
+  }
 
   public String getChangeLogRepositoryName() {
     return changeLogRepositoryName;
@@ -116,29 +182,6 @@ public class MongockConfiguration {
     this.indexCreation = indexCreation;
   }
 
-  public int getLockAcquiredForMinutes() {
-    return lockAcquiredForMinutes;
-  }
-
-  public void setLockAcquiredForMinutes(int lockAcquiredForMinutes) {
-    this.lockAcquiredForMinutes = lockAcquiredForMinutes;
-  }
-
-  public int getMaxWaitingForLockMinutes() {
-    return maxWaitingForLockMinutes;
-  }
-
-  public void setMaxWaitingForLockMinutes(int maxWaitingForLockMinutes) {
-    this.maxWaitingForLockMinutes = maxWaitingForLockMinutes;
-  }
-
-  public int getMaxTries() {
-    return maxTries;
-  }
-
-  public void setMaxTries(int maxTries) {
-    this.maxTries = maxTries;
-  }
 
   public boolean isTrackIgnored() {
     return trackIgnored;
@@ -228,38 +271,28 @@ public class MongockConfiguration {
     return LEGACY_DEFAULT_LOCK_REPOSITORY_NAME;
   }
 
-
-
-  //TODO remove this legacy methods
-  /**
-//   * @see MongockConfiguration#getChangeLogRepositoryName()
-   */
   @Deprecated
-  public String getChangeLogCollectionName() {
-    return changeLogRepositoryName;
+  public void setLockAcquiredForMinutes(int lockAcquiredForMinutes) {
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "lockAcquiredForMinutes", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.lockAcquiredForMillis = minutesToMillis(lockAcquiredForMinutes);
   }
 
-  /**
-   * @see MongockConfiguration#setChangeLogRepositoryName(String)
-   */
   @Deprecated
-  public void setChangeLogCollectionName(String changeLogRepositoryName) {
-    setChangeLogRepositoryName(changeLogRepositoryName);
+  public void setMaxWaitingForLockMinutes(int maxWaitingForLockMinutes) {
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxWaitingForLockMinutes", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.maxWaitingForLockMillis = minutesToMillis(maxWaitingForLockMinutes);
   }
 
-  /**
-   * @see MongockConfiguration#getLockRepositoryName()
-   */
+
   @Deprecated
-  public String getLockCollectionName() {
-    return lockRepositoryName;
+  public void setMaxTries(int maxTries) {
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxTries", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.maxTries = maxTries;
   }
 
-  /**
-   * @see MongockConfiguration#setLockRepositoryName(String)
-   */
-  @Deprecated
-  public void setLockCollectionName(String lockRepositoryName) {
-    setLockRepositoryName(lockRepositoryName);
+  private static long minutesToMillis(int minutes) {
+    return minutes * 60 * 1000L;
   }
+
+
 }

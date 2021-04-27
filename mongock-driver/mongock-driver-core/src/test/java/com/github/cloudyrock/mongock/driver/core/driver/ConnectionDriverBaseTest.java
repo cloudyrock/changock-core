@@ -1,12 +1,12 @@
 package com.github.cloudyrock.mongock.driver.core.driver;
 
 
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
@@ -47,13 +47,22 @@ public class ConnectionDriverBaseTest {
     private final ChangeEntryService changeEntryService;
     private final LockManager lockManager;
 
+
+    private static long minutesToMillis(long minutes) {
+      return minutes * 60 * 1000;
+    }
+
     ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
-                                 long maxWaitingForLockMinutes,
+                                 long maxWaitingForLockMinutesEachTry,
                                  int maxTries,
                                  LockRepository lockRepository,
                                  ChangeEntryService changeEntryService,
                                  LockManager lockManager) {
-      super(lockAcquiredForMinutes, maxWaitingForLockMinutes, maxTries);
+      super(
+          minutesToMillis(lockAcquiredForMinutes),
+          minutesToMillis(maxWaitingForLockMinutesEachTry * maxTries),
+          1000L
+      );
       this.lockRepository = lockRepository;
       this.changeEntryService = changeEntryService;
       this.lockManager = lockManager;
@@ -99,7 +108,6 @@ public class ConnectionDriverBaseTest {
 
     }
   }
-
 
 
 }
