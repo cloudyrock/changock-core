@@ -13,6 +13,8 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
+import com.github.cloudyrock.mongock.driver.api.driver.TransactionStrategy;
+import com.github.cloudyrock.mongock.driver.api.driver.Transactionable;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test4_with_failfast.ExecutorWithFailFastChangeLog;
@@ -21,6 +23,8 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test5_with_
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test6_with_changelogfailfast.ExecutorWithChangeLogFailFastChangeLog1;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.withInterfaceParameter.ChangeLogWithInterfaceParameter;
 import com.github.cloudyrock.mongock.runner.core.changelogs.legacymigration.LegacyMigrationChangeLog;
+import com.github.cloudyrock.mongock.runner.core.changelogs.posttransaction.ChangeLogPostTransaction;
+import com.github.cloudyrock.mongock.runner.core.changelogs.pretransaction.ChangeLogPreTransaction;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.alreadyexecuted.ChangeLogAlreadyExecuted;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlreadyExecutedRunAlways;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
@@ -47,16 +51,22 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MigrationExecutorTest {
+  
+  private abstract class TransactionableConnectionDriver implements ConnectionDriver, Transactionable {
+  }
 
   private ChangeEntryService changeEntryService;
   private LockManager lockManager;
   private ConnectionDriver driver;
+  private TransactionableConnectionDriver transactionableDriver;
 
   @Rule
   public ExpectedException exceptionExpected = ExpectedException.none();
@@ -65,14 +75,23 @@ public class MigrationExecutorTest {
   public void setUp() {
     lockManager = mock(LockManager.class);
     changeEntryService = mock(ChangeEntryService.class);
-    driver = mock(ConnectionDriver.class);
-    when(driver.getLockManager()).thenReturn(lockManager);
-    when(driver.getLockManager()).thenReturn(lockManager);
-    when(driver.getChangeEntryService()).thenReturn(changeEntryService);
+    
     ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
     forbiddenParameters.put(ForbiddenParameter.class, String.class);
+    
+    driver = mock(ConnectionDriver.class);
+    when(driver.getLockManager()).thenReturn(lockManager);
+    when(driver.getChangeEntryService()).thenReturn(changeEntryService);
     when(driver.getForbiddenParameters()).thenReturn(forbiddenParameters);
-
+    
+    transactionableDriver = mock(TransactionableConnectionDriver.class);
+    when(transactionableDriver.getLockManager()).thenReturn(lockManager);
+    when(transactionableDriver.getChangeEntryService()).thenReturn(changeEntryService);
+    when(transactionableDriver.getForbiddenParameters()).thenReturn(forbiddenParameters);
+    doAnswer(invocation -> {
+      ((Runnable)invocation.getArgument(0)).run();
+      return null;
+    }).when(transactionableDriver).executeInTransaction(any(Runnable.class));
   }
 
   @Test
@@ -625,7 +644,107 @@ public class MigrationExecutorTest {
     // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should not be stored
     verify(changeEntryService, new Times(0)).save(changeEntryCaptor.capture());
   }
-
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldExecuteChangeLogBefore_whenPreTransaction_ifTransactionPerMigrationEnabled() {
+    // given
+    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.MIGRATION);
+    
+    // when
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogPreTransaction.class));
+    
+    // then
+    verify(lockManager, new Times(1)).acquireLockDefault();   
+    
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for all ChangeSets should be stored (4)
+    verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
+    List<ChangeEntry> changeEntries = changeEntryCaptor.getAllValues();
+    assertEquals(changeEntries.size(), 4);
+    // Check invocations order
+    assertEquals(changeEntries.get(0).getChangeId(), "preTransaction1");
+    assertEquals(changeEntries.get(1).getChangeId(), "preTransaction2");
+    assertEquals(changeEntries.get(2).getChangeId(), "inTransaction1");
+    assertEquals(changeEntries.get(3).getChangeId(), "inTransaction2");
+  }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldExecuteChangeLogInUsualOrder_whenPreTransaction_ifNotTransactionPerMigrationEnabled() {
+    // given
+    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.NONE);
+    
+    // when
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogPreTransaction.class));
+    
+    // then
+    verify(lockManager, new Times(1)).acquireLockDefault();   
+    
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for all ChangeSets should be stored (4)
+    verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
+    List<ChangeEntry> changeEntries = changeEntryCaptor.getAllValues();
+    assertEquals(changeEntries.size(), 4);
+    // Check invocations order
+    assertEquals(changeEntries.get(0).getChangeId(), "inTransaction1");
+    assertEquals(changeEntries.get(1).getChangeId(), "inTransaction2");
+    assertEquals(changeEntries.get(2).getChangeId(), "preTransaction1");
+    assertEquals(changeEntries.get(3).getChangeId(), "preTransaction2");
+  }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldExecuteChangeLogAfter_whenPostTransaction_ifTransactionPerMigrationEnabled() {
+    // given
+    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.MIGRATION);
+    
+    // when
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogPostTransaction.class));
+    
+    // then
+    verify(lockManager, new Times(1)).acquireLockDefault();   
+    
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for all ChangeSets should be stored (4)
+    verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
+    List<ChangeEntry> changeEntries = changeEntryCaptor.getAllValues();
+    assertEquals(changeEntries.size(), 4);
+    // Check invocations order
+    assertEquals(changeEntries.get(0).getChangeId(), "inTransaction1");
+    assertEquals(changeEntries.get(1).getChangeId(), "inTransaction2");
+    assertEquals(changeEntries.get(2).getChangeId(), "postTransaction1");
+    assertEquals(changeEntries.get(3).getChangeId(), "postTransaction2");
+  }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldExecuteChangeLogInUsualOrder_whenPostTransaction_ifNotTransactionPerMigrationEnabled() {
+    // given
+    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.NONE);
+    
+    // when
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+        .executeMigration(createInitialChangeLogs(ChangeLogPostTransaction.class));
+    
+    // then
+    verify(lockManager, new Times(1)).acquireLockDefault();   
+    
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    // ChangeEntry for all ChangeSets should be stored (4)
+    verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
+    List<ChangeEntry> changeEntries = changeEntryCaptor.getAllValues();
+    assertEquals(changeEntries.size(), 4);
+    // Check invocations order
+    assertEquals(changeEntries.get(0).getChangeId(), "postTransaction1");
+    assertEquals(changeEntries.get(1).getChangeId(), "postTransaction2");
+    assertEquals(changeEntries.get(2).getChangeId(), "inTransaction1");
+    assertEquals(changeEntries.get(3).getChangeId(), "inTransaction2");
+  }
+  
   private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
     return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), Collections.emptyList(),  "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();

@@ -13,6 +13,10 @@ public interface AnnotationProcessor {
   String getChangeLogOrder(Class<?> type);
   
   boolean getChangeLogFailFast(Class<?> type);
+  
+  boolean getChangeLogPreTransaction(Class<?> type);
+  
+  boolean getChangeLogPostTransaction(Class<?> type);
 
   ChangeSetItem getChangeSet(Method method);
 }

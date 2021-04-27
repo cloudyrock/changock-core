@@ -33,6 +33,8 @@ import java.util.SortedSet;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @NotThreadSafe
 public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
@@ -67,13 +69,35 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
         return;
       }
       lockManager.acquireLockDefault();
-      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processAllChangeLogs(changeLogs));
+      processMigration(changeLogs);
     } finally {
       this.executionInProgress = false;
       logger.info("Mongock has finished");
     }
   }
-
+  
+  protected void processMigration(SortedSet<ChangeLogItem> changeLogs) {
+    String executionId = generateExecutionId();
+    String executionHostname = generateExecutionHostname(executionId);
+    logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
+    if (isCurrentTransactionStrategy(TransactionStrategy.MIGRATION)) {
+      // PRE-Transaction ChangeLogs
+      processAllChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPreTransaction()).collect(Collectors.toList()));
+      // IN-Transaction ChangeLogs
+      ((Transactionable)driver).executeInTransaction(() -> processAllChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> !changeLog.isPreTransaction() && !changeLog.isPostTransaction()).collect(Collectors.toList())));
+      // POST-Transaction ChangeLogs
+      processAllChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPostTransaction()).collect(Collectors.toList()));
+    }
+    else {
+      // NO-Transaction per migration
+      processAllChangeLogs(executionId, executionHostname, changeLogs);
+    }
+  }
+  
+  protected boolean isCurrentTransactionStrategy(TransactionStrategy strategy) {
+    return driver instanceof Transactionable && ((Transactionable)driver).getTransactionStrategy() == strategy;
+  }
+  
   protected void executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy strategy, Runnable operation) {
     if (driver instanceof Transactionable && ((Transactionable)driver).getTransactionStrategy() == strategy) {
       ((Transactionable)driver).executeInTransaction(operation);
@@ -82,10 +106,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  protected void processAllChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
-    String executionId = generateExecutionId();
-    String executionHostname = generateExecutionHostname(executionId);
-    logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
+  protected void processAllChangeLogs(String executionId, String executionHostname, Collection<ChangeLogItem> changeLogs) {
     for (ChangeLogItem changeLog : changeLogs) {
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, executionHostname, changeLog));
     }

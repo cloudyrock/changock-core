@@ -25,6 +25,16 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   public boolean getChangeLogFailFast(Class<?> type) {
     return type.getAnnotation(ChangeLog.class).failFast();
   }
+  
+  @Override
+  public boolean getChangeLogPreTransaction(Class<?> type) {
+    return type.isAnnotationPresent(PreTransaction.class);
+  }
+  
+  @Override
+  public boolean getChangeLogPostTransaction(Class<?> type) {
+    return type.isAnnotationPresent(PostTransaction.class);
+  }
 
   public ChangeSetItem getChangeSet(Method method) {
     ChangeSet ann = method.getAnnotation(ChangeSet.class);
