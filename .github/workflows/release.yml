@@ -40,20 +40,14 @@ jobs:
         env:
           GPG_SIGNING_PRIVATE_KEY: ${{ secrets.GPG_SIGNING_PRIVATE_KEY }}
 
-#      - name: Publish to Maven Central
-#        run: ./release-github.sh
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          MAVEN_USERNAME: ${{ secrets.NEXUS_USER }}
-#          MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
-#          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-#          GPG_SIGNING_PRIVATE_KEY: ${{ secrets.GPG_SIGNING_PRIVATE_KEY }}
-      - name: Configure Git User
-        run: |
-          git config user.email "antonio@cloudyrock.io"
-          git config user.name "dieppa"
+      - name: Publish to Maven Central
+        run: ./release-github.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.PIPELINE_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.NEXUS_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_SIGNING_PRIVATE_KEY: ${{ secrets.GPG_SIGNING_PRIVATE_KEY }}
 
 
       - name: synchronizing develop branch
