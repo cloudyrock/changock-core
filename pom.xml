@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>Mongock core</name>
@@ -19,7 +18,7 @@
 
   <groupId>com.github.cloudyrock.mongock</groupId>
   <artifactId>mongock-core</artifactId>
-  <version>5.0.0.BETA-SNAPSHOT</version>
+  <version>5.0.0.BETA</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -64,7 +63,7 @@
     <connection>scm:git:git@github.com:cloudyrock/mongock-core.git</connection>
     <developerConnection>scm:git:https://github.com/cloudyrock/mongock-core.git</developerConnection>
     <url>https://github.com/cloudyrock/mongock-core</url>
-    <tag>mongock-core-5.0.0-SNAPSHOT</tag>
+    <tag>mongock-core-5.0.0.BETA</tag>
   </scm>
 
   <developers>
