@@ -50,8 +50,8 @@ jobs:
 #          GPG_SIGNING_PRIVATE_KEY: ${{ secrets.GPG_SIGNING_PRIVATE_KEY }}
       - name: Configure Git User
         run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
+          git config user.email "antonio@cloudyrock.io"
+          git config user.name "dieppa"
         env:
           GITHUB_TOKEN: ${{ secrets.PIPELINE_GITHUB_TOKEN }}
 
