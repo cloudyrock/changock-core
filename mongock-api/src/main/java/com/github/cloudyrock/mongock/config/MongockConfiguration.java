@@ -36,17 +36,27 @@ public class MongockConfiguration {
   private String lockRepositoryName;
 
   /**
-   * How long the lock will be hold once acquired in minutes. Default 3
+   * The period the lock will be reserved once acquired.
+   * If it finishes before, it will release it earlier.
+   * If the process takes longer thant this period, it will automatically extended.
+   * Default 1 minute.
+   * Minimum 3 seconds.
    */
   private long lockAcquiredForMillis = 60 * 1000L;
 
   /**
-   * Max time in minutes to wait for the lock in each try. Default 4
+   * The time after what Mongock will quit trying to acquire the lock, in case it's acquired
+   * by another process.
+   * Default 3 minutes.
+   * Minimum 0, which means won't wait whatsoever.
    */
   private Long lockQuitTryingAfterMillis;
 
   /**
-   * Max number of times Mongock will try to acquire the lock. Default 3
+   * In case the lock is held by another process, it indicates the frequency to try to acquire it.
+   * Regardless of this value, the longest Mongock will wait if until the current lock's expiration.
+   * Default 1 second.
+   * Minimum 500 millis.
    */
   private long lockTryFrequencyMillis = 1000L;
 
