@@ -48,6 +48,13 @@ jobs:
 #          MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
 #          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 #          GPG_SIGNING_PRIVATE_KEY: ${{ secrets.GPG_SIGNING_PRIVATE_KEY }}
+      - name: Configure Git User
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PIPELINE_GITHUB_TOKEN }}
+
 
       - name: synchronizing develop branch
         run: |
