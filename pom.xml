@@ -18,7 +18,7 @@
 
   <groupId>com.github.cloudyrock.mongock</groupId>
   <artifactId>mongock-core</artifactId>
-  <version>5.0.1.BETA-SNAPSHOT</version>
+  <version>5.0.2.BETA-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
