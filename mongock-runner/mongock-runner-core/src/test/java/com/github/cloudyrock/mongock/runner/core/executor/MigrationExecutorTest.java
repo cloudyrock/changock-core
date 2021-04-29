@@ -66,9 +66,6 @@ public class MigrationExecutorTest {
   private ConnectionDriver driver;
   private TransactionableConnectionDriver transactionableDriver;
   
-  private abstract class TransactionableConnectionDriver implements ConnectionDriver, Transactionable {
-  }
-
   @Rule
   public ExpectedException exceptionExpected = ExpectedException.none();
 
@@ -784,5 +781,7 @@ public class MigrationExecutorTest {
   private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored, String serviceIdentifier) {
     return new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier);
   }
-
+  
+  private abstract class TransactionableConnectionDriver implements ConnectionDriver, Transactionable {
+  }
 }
