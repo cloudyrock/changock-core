@@ -80,22 +80,12 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     String executionId = generateExecutionId();
     String executionHostname = generateExecutionHostname(executionId);
     logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
-    if (isCurrentTransactionStrategy(TransactionStrategy.MIGRATION)) {
-      // PRE-Transaction ChangeLogs
-      processAllChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPreTransaction()).collect(Collectors.toList()));
-      // IN-Transaction ChangeLogs
-      ((Transactionable)driver).executeInTransaction(() -> processAllChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> !changeLog.isPreTransaction() && !changeLog.isPostTransaction()).collect(Collectors.toList())));
-      // POST-Transaction ChangeLogs
-      processAllChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPostTransaction()).collect(Collectors.toList()));
-    }
-    else {
-      // NO-Transaction per migration
-      processAllChangeLogs(executionId, executionHostname, changeLogs);
-    }
-  }
-  
-  protected boolean isCurrentTransactionStrategy(TransactionStrategy strategy) {
-    return driver instanceof Transactionable && ((Transactionable)driver).getTransactionStrategy() == strategy;
+    // PRE-Migration ChangeLogs (NO-Transaction)
+    processChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPreMigration()).collect(Collectors.toList()));
+    // Standard ChangeLogs
+    executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> !changeLog.isPreMigration() && !changeLog.isPostMigration()).collect(Collectors.toList())));
+    // POST-Migration ChangeLogs (NO-Transaction)
+    processChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPostMigration()).collect(Collectors.toList()));
   }
   
   protected void executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy strategy, Runnable operation) {
@@ -106,7 +96,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  protected void processAllChangeLogs(String executionId, String executionHostname, Collection<ChangeLogItem> changeLogs) {
+  protected void processChangeLogs(String executionId, String executionHostname, Collection<ChangeLogItem> changeLogs) {
     for (ChangeLogItem changeLog : changeLogs) {
       executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, executionHostname, changeLog));
     }

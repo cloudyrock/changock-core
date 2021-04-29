@@ -125,7 +125,7 @@ public class ChangeLogService implements Validable {
 
   private ChangeLogItem buildChangeLogObject(Class<?> type) {
     try {
-      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationManager.getChangeLogOrder(type), annotationManager.getChangeLogFailFast(type), annotationManager.getChangeLogPreTransaction(type), annotationManager.getChangeLogPostTransaction(type), fetchChangeSetFromClass(type));
+      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationManager.getChangeLogOrder(type), annotationManager.getChangeLogFailFast(type), annotationManager.getChangeLogPreMigration(type), annotationManager.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
     } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {

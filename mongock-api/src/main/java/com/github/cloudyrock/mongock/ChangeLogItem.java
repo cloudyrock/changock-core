@@ -13,19 +13,22 @@ public class ChangeLogItem {
   
   private final boolean failFast;
   
-  private final boolean preTransaction;
+  private final boolean preMigration;
   
-  private final boolean postTransaction;
+  private final boolean postMigration;
 
   private final List<ChangeSetItem> changeSetElements;
 
-  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preTransaction, boolean postTransaction, List<ChangeSetItem> changeSetElements) {
+  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<ChangeSetItem> changeSetElements) {
     this.type = type;
     this.instance = instance;
     this.order = order;
     this.failFast = failFast;
-    this.preTransaction = preTransaction;
-    this.postTransaction = postTransaction;
+    if (preMigration && postMigration) {
+      throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
+    }
+    this.preMigration = preMigration;
+    this.postMigration = postMigration;
     this.changeSetElements = changeSetElements;
   }
 
@@ -46,12 +49,12 @@ public class ChangeLogItem {
     return failFast;
   }
   
-  public boolean isPreTransaction() {
-    return preTransaction;
+  public boolean isPreMigration() {
+    return preMigration;
   }
   
-  public boolean isPostTransaction() {
-    return postTransaction;
+  public boolean isPostMigration() {
+    return postMigration;
   }
 
   public List<ChangeSetItem> getChangeSetElements() {

@@ -14,9 +14,9 @@ public interface AnnotationProcessor {
   
   boolean getChangeLogFailFast(Class<?> type);
   
-  boolean getChangeLogPreTransaction(Class<?> type);
+  boolean getChangeLogPreMigration(Class<?> type);
   
-  boolean getChangeLogPostTransaction(Class<?> type);
+  boolean getChangeLogPostMigration(Class<?> type);
 
   ChangeSetItem getChangeSet(Method method);
 }
