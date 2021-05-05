@@ -1,5 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
+import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
@@ -42,7 +43,7 @@ public class DependencyManager {
     Optional<Object> dependencyOpt = getDependencyFromStore(standardDependencies, type, name);
     if (dependencyOpt.isPresent() && lockGuarded) {
       if (!type.isInterface()) {
-        throw new MongockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
+        throw new MongockException(String.format("Parameter of type [%s] must be an interface or be annotated with @%s", type.getSimpleName(), NonLockGuarded.class.getSimpleName()));
       }
       return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
     } else {
