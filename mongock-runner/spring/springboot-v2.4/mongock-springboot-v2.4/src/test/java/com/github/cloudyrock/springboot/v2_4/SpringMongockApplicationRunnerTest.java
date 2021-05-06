@@ -1,22 +1,23 @@
-package com.github.cloudyrock.springboot.v2_2;
+package com.github.cloudyrock.springboot.v2_4;
 
 
+import com.github.cloudyrock.springboot.v2_4.MongockSpringbootV2_4;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
-import com.github.cloudyrock.springboot.v2_2.util.CallVerifier;
-import com.github.cloudyrock.springboot.v2_2.util.ClassNotInterfaced;
-import com.github.cloudyrock.springboot.v2_2.util.InterfaceDependency;
-import com.github.cloudyrock.springboot.v2_2.util.InterfaceDependencyImpl;
-import com.github.cloudyrock.springboot.v2_2.util.InterfaceDependencyImplNoLockGarded;
-import com.github.cloudyrock.springboot.v2_2.util.TemplateForTest;
-import com.github.cloudyrock.springboot.v2_2.util.TemplateForTestImpl;
-import com.github.cloudyrock.springboot.v2_2.util.TemplateForTestImplChild;
-import com.github.cloudyrock.springboot.v2_2.profiles.enseuredecorators.EnsureDecoratorChangerLog;
-import com.github.cloudyrock.springboot.v2_2.profiles.integration.IntegrationProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_2.profiles.withinterfaceparameter.ChangeLogWithInterfaceParameter;
+import com.github.cloudyrock.springboot.v2_4.util.CallVerifier;
+import com.github.cloudyrock.springboot.v2_4.util.ClassNotInterfaced;
+import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependency;
+import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependencyImpl;
+import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependencyImplNoLockGarded;
+import com.github.cloudyrock.springboot.v2_4.util.TemplateForTest;
+import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImpl;
+import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImplChild;
+import com.github.cloudyrock.springboot.v2_4.profiles.enseuredecorators.EnsureDecoratorChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.integration.IntegrationProfiledChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.withinterfaceparameter.ChangeLogWithInterfaceParameter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -132,7 +133,7 @@ public class SpringMongockApplicationRunnerTest {
     exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("ApplicationContext from Spring must be injected to Builder");
 
-    MongockSpringbootV2_2.builder()
+    MongockSpringbootV2_4.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .buildApplicationRunner()
@@ -217,7 +218,7 @@ public class SpringMongockApplicationRunnerTest {
   }
 
   private void buildAndRun(String packageName) throws Exception {
-      MongockSpringbootV2_2.builder()
+      MongockSpringbootV2_4.builder()
           .setDriver(driver)
           .addChangeLogsScanPackage(packageName)
           .setSpringContext(springContext)

@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2.core;
+package com.github.cloudyrock.springboot.v2_4.core;
 
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
@@ -6,10 +6,10 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.spring.util.ProfileUtil;
-import com.github.cloudyrock.springboot.v2_2.profiles.defaultprofiled.DefaultProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_2.profiles.dev.DevProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_2.profiles.pro.ProProfiledChangeLog;
-import com.github.cloudyrock.springboot.v2_2.profiles.unprofiled.UnprofiledChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.defaultprofiled.DefaultProfiledChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.dev.DevProfiledChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.pro.ProProfiledChangeLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.unprofiled.UnprofiledChangerLog;
 import org.junit.Test;
 import org.springframework.context.annotation.Profile;
 
