@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
-import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
@@ -19,13 +18,11 @@ public class DependencyManager {
 
   private final LinkedHashSet<ChangeSetDependency> connectorDependencies;
   private final LinkedHashSet<ChangeSetDependency> standardDependencies;
-  private final ForbiddenParametersMap forbiddenParametersMap;
   protected LockGuardProxyFactory lockGuardProxyFactory;
 
   public DependencyManager() {
     standardDependencies = new LinkedHashSet<>();
     connectorDependencies = new LinkedHashSet<>();
-    forbiddenParametersMap = new ForbiddenParametersMap();
   }
 
   public Optional<Object> getDependency(Class type, boolean lockGuarded) throws ForbiddenParameterException {
@@ -33,9 +30,7 @@ public class DependencyManager {
   }
 
   public Optional<Object> getDependency(Class type, String name, boolean lockGuarded) throws ForbiddenParameterException {
-    Optional<Object> dependencyOpt = forbiddenParametersMap
-        .throwExceptionIfPresent(type)
-        .or(() -> getDependencyFromStore(connectorDependencies, type, name));
+    Optional<Object> dependencyOpt = getDependencyFromStore(connectorDependencies, type, name);
     return dependencyOpt.isPresent() ? dependencyOpt : getStandardDependency(type, name, lockGuarded);
   }
 
@@ -90,11 +85,6 @@ public class DependencyManager {
 
   public DependencyManager addStandardDependency(ChangeSetDependency dependency) {
     return addDependency(standardDependencies, dependency);
-  }
-
-  public DependencyManager addForbiddenParameters(ForbiddenParametersMap forbiddenParametersMap) {
-    this.forbiddenParametersMap.putAll(forbiddenParametersMap);
-    return this;
   }
 
   private <T extends ChangeSetDependency> DependencyManager addDependency(Collection<T> dependencyStore, T dependency) {

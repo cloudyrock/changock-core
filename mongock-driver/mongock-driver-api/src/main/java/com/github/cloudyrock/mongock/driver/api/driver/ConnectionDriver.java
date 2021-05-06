@@ -18,8 +18,6 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   Set<ChangeSetDependency> getDependencies();
 
-  ForbiddenParametersMap getForbiddenParameters();
-
   Class getLegacyMigrationChangeLogClass(boolean runAlways);
 
   void setChangeLogRepositoryName(String changeLogRepositoryName);
