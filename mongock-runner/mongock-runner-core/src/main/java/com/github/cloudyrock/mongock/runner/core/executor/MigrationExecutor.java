@@ -243,8 +243,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     driver.runValidation();
     this.dependencyManager
         .setLockGuardProxyFactory(new LockGuardProxyFactory(driver.getLockManager()))
-        .addDriverDependencies(driver.getDependencies())
-        .addForbiddenParameters(driver.getForbiddenParameters());
+        .addDriverDependencies(driver.getDependencies());
   }
 
 }

@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
@@ -29,8 +28,6 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.prepostmigration.Cha
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.alreadyexecuted.ChangeLogAlreadyExecuted;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlreadyExecutedRunAlways;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
-import com.github.cloudyrock.mongock.runner.core.changelogs.withForbiddenParameter.ChangeLogWithForbiddenParameter;
-import com.github.cloudyrock.mongock.runner.core.changelogs.withForbiddenParameter.ForbiddenParameter;
 import com.github.cloudyrock.mongock.runner.core.util.DummyDependencyClass;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImpl;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImplNoLockGarded;
@@ -74,18 +71,13 @@ public class MigrationExecutorTest {
     lockManager = mock(LockManager.class);
     changeEntryService = mock(ChangeEntryService.class);
     
-    ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
-    forbiddenParameters.put(ForbiddenParameter.class, String.class);
-    
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
-    when(driver.getForbiddenParameters()).thenReturn(forbiddenParameters);
     
     transactionableDriver = mock(TransactionableConnectionDriver.class);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     when(transactionableDriver.getChangeEntryService()).thenReturn(changeEntryService);
-    when(transactionableDriver.getForbiddenParameters()).thenReturn(forbiddenParameters);
     doAnswer(invocation -> {
       ((Runnable)invocation.getArgument(0)).run();
       return null;
@@ -427,22 +419,6 @@ public class MigrationExecutorTest {
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
-
-    when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
-
-    // then
-    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
-
-    // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
-        .executeMigration(createInitialChangeLogs(ChangeLogWithForbiddenParameter.class));
-  }
-
   @Test
   @SuppressWarnings("unchecked")
   public void shouldThrowException_IfChangeSetParameterfNotInterface() {
@@ -452,7 +428,7 @@ public class MigrationExecutorTest {
 
     // then
     exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Parameter of type [DummyDependencyClass] must be an interface");
+    exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Parameter of type [DummyDependencyClass] must be an interface or be annotated with @NonLockGuarded");
 
     // when
     DependencyManager dependencyManager = new DependencyManager()

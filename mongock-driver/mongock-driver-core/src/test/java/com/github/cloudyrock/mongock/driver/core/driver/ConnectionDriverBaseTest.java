@@ -2,7 +2,6 @@ package com.github.cloudyrock.mongock.driver.core.driver;
 
 
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
-import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
@@ -90,11 +89,6 @@ public class ConnectionDriverBaseTest {
 
     @Override
     public Set<ChangeSetDependency> getDependencies() {
-      return null;
-    }
-
-    @Override
-    public ForbiddenParametersMap getForbiddenParameters() {
       return null;
     }
 

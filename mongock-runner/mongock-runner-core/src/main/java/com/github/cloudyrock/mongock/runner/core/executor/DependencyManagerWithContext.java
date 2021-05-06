@@ -1,5 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
+import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
@@ -38,7 +39,7 @@ public class DependencyManagerWithContext extends DependencyManager implements V
         if (dependencyFromContext.isPresent()) {
           if (lockGuarded) {
             if (!type.isInterface()) {
-              throw new MongockException(String.format("Parameter of type [%s] must be an interface", type.getSimpleName()));
+              throw new MongockException(String.format("Parameter of type [%s] must be an interface or be annotated with @%s", type.getSimpleName(), NonLockGuarded.class.getSimpleName()));
             }
             return dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
           } else {

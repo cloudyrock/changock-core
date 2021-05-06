@@ -4,15 +4,12 @@ package com.github.cloudyrock.springboot.v2_2;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.driver.api.driver.ForbiddenParametersMap;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.springboot.v2_2.util.CallVerifier;
 import com.github.cloudyrock.springboot.v2_2.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.v2_2.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import com.github.cloudyrock.springboot.v2_2.profiles.integration.IntegrationProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_2.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
-import com.github.cloudyrock.springboot.v2_2.profiles.withForbiddenParameter.ForbiddenParameter;
 import com.github.cloudyrock.springboot.v2_2.util.TemplateForTest;
 import com.github.cloudyrock.springboot.v2_2.util.TemplateForTestImplChild;
 import org.junit.Before;
@@ -55,9 +52,6 @@ public class SpringMongockInitializingBeanRunnerTest {
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
-    ForbiddenParametersMap forbiddenParameters = new ForbiddenParametersMap();
-    forbiddenParameters.put(ForbiddenParameter.class, String.class);
-    when(driver.getForbiddenParameters()).thenReturn(forbiddenParameters);
 
     callVerifier = new CallVerifier();
     Set<ChangeSetDependency> dependencySet = new HashSet<>();
@@ -154,25 +148,6 @@ public class SpringMongockInitializingBeanRunnerTest {
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
         .buildInitializingBeanRunner()
         .afterPropertiesSet();
-  }
-
-  @Test
-  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() throws Exception {
-
-    when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
-
-    // then
-//    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
-    // Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]
-    // Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException: Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]
-    // when
-      MongockSpringbootV2_4.builder()
-          .setDriver(driver)
-          .addChangeLogsScanPackage(ChangeLogWithForbiddenParameter.class.getPackage().getName())
-          .setSpringContext(springContext)
-          .buildApplicationRunner()
-          .run(null);
   }
 
 }
