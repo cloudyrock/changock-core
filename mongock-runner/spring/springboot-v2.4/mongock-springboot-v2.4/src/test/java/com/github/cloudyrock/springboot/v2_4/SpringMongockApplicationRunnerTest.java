@@ -17,7 +17,7 @@ import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImplChild;
 import com.github.cloudyrock.springboot.v2_4.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import com.github.cloudyrock.springboot.v2_4.profiles.integration.IntegrationProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_4.profiles.withInterfaceParameter.ChangeLogWithInterfaceParameter;
+import com.github.cloudyrock.springboot.v2_4.profiles.withinterfaceparameter.ChangeLogWithInterfaceParameter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

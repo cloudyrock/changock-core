@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2.profiles.defaultProfiled;
+package com.github.cloudyrock.springboot.v2_4.profiles.defaultprofiled;
 
 
 import com.github.cloudyrock.mongock.ChangeLog;

@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2.profiles.withInterfaceParameter;
+package com.github.cloudyrock.springboot.v2_2.profiles.withinterfaceparameter;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;

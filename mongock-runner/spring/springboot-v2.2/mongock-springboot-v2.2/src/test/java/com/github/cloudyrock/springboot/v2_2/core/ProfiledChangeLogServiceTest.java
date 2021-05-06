@@ -6,7 +6,7 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.spring.util.ProfileUtil;
-import com.github.cloudyrock.springboot.v2_2.profiles.defaultProfiled.DefaultProfiledChangerLog;
+import com.github.cloudyrock.springboot.v2_2.profiles.defaultprofiled.DefaultProfiledChangerLog;
 import com.github.cloudyrock.springboot.v2_2.profiles.dev.DevProfiledChangerLog;
 import com.github.cloudyrock.springboot.v2_2.profiles.pro.ProProfiledChangeLog;
 import com.github.cloudyrock.springboot.v2_2.profiles.unprofiled.UnprofiledChangerLog;
