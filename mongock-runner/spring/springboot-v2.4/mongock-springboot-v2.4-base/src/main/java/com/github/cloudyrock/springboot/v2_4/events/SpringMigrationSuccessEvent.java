@@ -1,7 +1,7 @@
 package com.github.cloudyrock.springboot.v2_4.events;
 
-import com.github.cloudyrock.mongock.runner.core.event.MongockEvent;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.MongockEvent;
 import org.springframework.context.ApplicationEvent;
 
 public class SpringMigrationSuccessEvent extends ApplicationEvent implements MongockEvent {

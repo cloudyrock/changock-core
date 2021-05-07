@@ -13,6 +13,7 @@
   <modules>
     <module>mongock-springboot-v2.4</module>
     <module>mongock-springboot-v2.4-dependencies</module>
+    <module>mongock-springboot-v2.4-base</module>
   </modules>
 
 

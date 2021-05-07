@@ -1,6 +1,5 @@
 package com.github.cloudyrock.springboot.v2_2;
 
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
@@ -8,8 +7,6 @@ import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.spring.util.RunnerSpringBuilderBase;
 import com.github.cloudyrock.spring.util.SpringDependencyContext;
 import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;

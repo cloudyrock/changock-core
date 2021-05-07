@@ -82,6 +82,11 @@
 
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
+        <artifactId>mongock-springboot-v2.4-base</artifactId>
+        <version>5.0.3.BETA-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.cloudyrock.mongock</groupId>
         <artifactId>mongock-springboot-v2.4</artifactId>
         <version>5.0.3.BETA-SNAPSHOT</version>
         <exclusions>
