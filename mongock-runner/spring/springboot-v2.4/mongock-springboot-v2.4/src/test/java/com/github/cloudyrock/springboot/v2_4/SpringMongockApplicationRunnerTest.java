@@ -1,12 +1,14 @@
 package com.github.cloudyrock.springboot.v2_4;
 
 
-import com.github.cloudyrock.springboot.v2_4.MongockSpringbootV2_4;
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.springboot.v2_4.profiles.enseuredecorators.EnsureDecoratorChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.integration.IntegrationProfiledChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.withinterfaceparameter.ChangeLogWithInterfaceParameter;
 import com.github.cloudyrock.springboot.v2_4.util.CallVerifier;
 import com.github.cloudyrock.springboot.v2_4.util.ClassNotInterfaced;
 import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependency;
@@ -15,11 +17,6 @@ import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependencyImplNoLockG
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTest;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImplChild;
-import com.github.cloudyrock.springboot.v2_4.profiles.enseuredecorators.EnsureDecoratorChangerLog;
-import com.github.cloudyrock.springboot.v2_4.profiles.integration.IntegrationProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_4.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
-import com.github.cloudyrock.springboot.v2_4.profiles.withForbiddenParameter.ForbiddenParameter;
-import com.github.cloudyrock.springboot.v2_4.profiles.withInterfaceParameter.ChangeLogWithInterfaceParameter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

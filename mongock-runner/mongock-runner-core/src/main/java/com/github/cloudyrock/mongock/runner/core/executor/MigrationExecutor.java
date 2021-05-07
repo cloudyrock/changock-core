@@ -245,8 +245,7 @@ public class MigrationExecutor {
     driver.runValidation();
     this.dependencyManager
         .setLockGuardProxyFactory(new LockGuardProxyFactory(driver.getLockManager()))
-        .addDriverDependencies(driver.getDependencies())
-        .addForbiddenParameters(driver.getForbiddenParameters());
+        .addDriverDependencies(driver.getDependencies());
     this.dependencyManager.runValidation();
   }
 
