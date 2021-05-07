@@ -72,7 +72,7 @@ class Listener {
     this.exception = failureEvent.getException();
   }
 
-  public boolean isStartedCalled() {
+  boolean isStartedCalled() {
     return startedCalled;
   }
 

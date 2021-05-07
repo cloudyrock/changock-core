@@ -109,6 +109,7 @@ public class ConnectionDriverBaseTest {
 
     @Override
     public void disableTransaction() {
+      //Empty method
     }
   }
 
