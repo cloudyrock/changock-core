@@ -12,7 +12,7 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
-import com.github.cloudyrock.mongock.driver.api.driver.TransactionStrategy;
+import com.github.cloudyrock.mongock.TransactionStrategy;
 import com.github.cloudyrock.mongock.driver.api.driver.Transactionable;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test1.ExecutorChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.executor.test3_with_nonFailFast.ExecutorWithNonFailFastChangeLog;
@@ -39,6 +39,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
+import javax.inject.Named;
+import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +48,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,7 +60,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MigrationExecutorTest {
-  
+  private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+
   private ChangeEntryService changeEntryService;
   private LockManager lockManager;
   private ConnectionDriver driver;
@@ -107,7 +111,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored, "myService"), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(trackingIgnored, "myService"), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -166,7 +170,7 @@ public class MigrationExecutorTest {
 
     // when
     try {
-      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
           .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
     } catch (Exception ex) {
       //ignored
@@ -215,7 +219,7 @@ public class MigrationExecutorTest {
     exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Wrong parameter[DummyDependencyClass]");
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -231,7 +235,7 @@ public class MigrationExecutorTest {
     exceptionExpected.expectMessage("argument type mismatch");
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -244,7 +248,7 @@ public class MigrationExecutorTest {
 
     // when
     try {
-      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
           .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
     } catch (Exception ex) {
     }
@@ -263,7 +267,7 @@ public class MigrationExecutorTest {
     doThrow(MongockException.class).when(driver).runValidation();
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -277,7 +281,7 @@ public class MigrationExecutorTest {
     when(changeEntryService.isAlreadyExecuted("newChangeSet2", "executor")).thenReturn(false);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorWithNonFailFastChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -327,7 +331,7 @@ public class MigrationExecutorTest {
 
     // when
     try {
-      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
@@ -388,7 +392,7 @@ public class MigrationExecutorTest {
 
     // when
     try {
-      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+      new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
@@ -419,6 +423,22 @@ public class MigrationExecutorTest {
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
+
+    when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
+
+    // then
+    exceptionExpected.expect(MongockException.class);
+    exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
+
+    // when
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+        .executeMigration(createInitialChangeLogs(ChangeLogWithForbiddenParameter.class));
+  }
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldThrowException_IfChangeSetParameterfNotInterface() {
@@ -434,7 +454,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
         .addStandardDependency(new ChangeSetDependency(new DummyDependencyClass()));
-    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -451,7 +471,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -471,7 +491,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -491,7 +511,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImplNoLockGarded()));
 
-    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -511,7 +531,7 @@ public class MigrationExecutorTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -536,7 +556,7 @@ public class MigrationExecutorTest {
         .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {})))
         .addStandardDependency(new ChangeSetDependency("legacyMigration3", List.class, Collections.singletonList(new LegacyMigration() {})));
 
-    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(LegacyMigrationChangeLog.class));
 
     // then
@@ -547,7 +567,7 @@ public class MigrationExecutorTest {
   public void shouldSkipMigration_whenChangeLogWithNoChangeSet() {
     when(driver.getLockManager()).thenReturn(lockManager);
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogWithNoChangeSet.class));
 
     //then
@@ -565,7 +585,7 @@ public class MigrationExecutorTest {
     when(driver.getLockManager()).thenReturn(lockManager);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecuted.class));
 
     //then
@@ -585,7 +605,7 @@ public class MigrationExecutorTest {
     when(driver.getLockManager()).thenReturn(lockManager);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
@@ -608,7 +628,7 @@ public class MigrationExecutorTest {
     when(driver.getLockManager()).thenReturn(lockManager);
 
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
@@ -627,7 +647,7 @@ public class MigrationExecutorTest {
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
-    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
     
     // then
@@ -653,7 +673,7 @@ public class MigrationExecutorTest {
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
-    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
     
     // then
@@ -679,7 +699,7 @@ public class MigrationExecutorTest {
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
-    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
     
     // then
@@ -705,7 +725,7 @@ public class MigrationExecutorTest {
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
-    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
     
     // then
@@ -734,7 +754,7 @@ public class MigrationExecutorTest {
     exceptionExpected.expectMessage("A ChangeLog can't be defined to be executed pre and post migration.");
     
     // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>())
+    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
         .executeMigration(createInitialChangeLogs(ChangeLogPrePostMigration.class));
   }
   
@@ -758,6 +778,6 @@ public class MigrationExecutorTest {
     return new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier);
   }
   
-  private abstract class TransactionableConnectionDriver implements ConnectionDriver, Transactionable {
+  private abstract class TransactionableConnectionDriver implements ConnectionDriver {
   }
 }

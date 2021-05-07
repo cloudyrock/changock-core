@@ -6,7 +6,9 @@ import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.lang.reflect.Parameter;
 import java.util.Map;
+import java.util.function.Function;
 
 @NotThreadSafe
 public class TestMigrationExecutor extends MigrationExecutor {
@@ -17,8 +19,9 @@ public class TestMigrationExecutor extends MigrationExecutor {
                                ConnectionDriver driver,
                                DependencyManager dependencyManager,
                                MigrationExecutorConfiguration migrationExecutorConfiguration,
-                               Map<String, Object> metadata) {
-    super(driver, dependencyManager, migrationExecutorConfiguration, metadata);
+                               Map<String, Object> metadata,
+                               Function<Parameter, String> paramNameExtractor) {
+    super(driver, dependencyManager, migrationExecutorConfiguration, metadata, paramNameExtractor);
     this.executionId = executionId;
   }
 

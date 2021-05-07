@@ -1,19 +1,15 @@
 package com.github.cloudyrock.springboot.v2_4;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
-import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.runner.core.builder.DriverBuilderConfigurable;
-import com.github.cloudyrock.mongock.runner.core.executor.DefaultDependencyContext;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
-import com.github.cloudyrock.spring.util.MongockSpringBuilderBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
+import com.github.cloudyrock.spring.util.RunnerSpringBuilderBase;
 import com.github.cloudyrock.spring.util.SpringDependencyContext;
-import com.github.cloudyrock.spring.util.SpringMigrationExecutor;
-import com.github.cloudyrock.spring.util.TransactionExecutor;
 import com.github.cloudyrock.springboot.v2_4.events.SpringEventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
@@ -21,8 +17,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
@@ -34,30 +28,68 @@ import java.util.function.Function;
 
 public final class MongockSpringbootV2_4 {
 
+  private static final Logger logger = LoggerFactory.getLogger(MongockSpringbootV2_4.class);
+  private static final String PROFESSIONAL_BUILDER_CLASS = "io.mongock.professional.springboot.v2_4.ProfessionalBuilder";
 
-  public static DriverBuilderConfigurable<Builder, ConnectionDriver, MongockSpringConfiguration> builder() {
-    return new Builder();
+  /**
+   * Factory method returning the standalone builder implementation
+   *
+   * @return the standalone builder implementation
+   */
+  public static Builder builder() {
+    try {
+      Builder proBuilderInstance = (Builder) Class.forName(PROFESSIONAL_BUILDER_CLASS).newInstance();
+      logger.info("using MONGOCK PROFESSIONAL distribution");
+      return proBuilderInstance;
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      try {
+        Builder communityBuilderInstance = Builder.class.newInstance();
+        logger.info("using MONGOCK COMMUNITY distribution");
+        return communityBuilderInstance;
+      } catch (InstantiationException | IllegalAccessException ex) {
+        throw new MongockException(ex);
+      }
+    }
   }
 
-  public static class Builder extends MongockSpringBuilderBase<Builder> {
+  public static class Builder extends RunnerSpringBuilderBase<Builder> {
 
     private ApplicationContext springContext;
     private List<String> activeProfiles;
+    private MongockRunner runner;
 
     private static final String DEFAULT_PROFILE = "default";
 
-    private Builder() {
+    protected Builder() {
     }
 
+    //TODO javadoc
     public Builder setSpringContext(ApplicationContext springContext) {
       this.springContext = springContext;
       addDependencyManager(new SpringDependencyContext(springContext));
       return getInstance();
     }
 
+    //TODO javadoc
     public Builder setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
       return setEventPublisher(new SpringEventPublisher(applicationEventPublisher));
     }
+
+    //TODO javadoc
+    public MongockApplicationRunner buildApplicationRunner() {
+      this.runner = getRunner();
+      return args -> runner.execute();
+    }
+
+    //TODO javadoc
+    public MongockInitializingBeanRunner buildInitializingBeanRunner() {
+      this.runner = getRunner();
+      return () -> runner.execute();
+    }
+
+    ///////////////////////////////////////////////////
+    // PRIVATE METHODS
+    ///////////////////////////////////////////////////
 
     private void setActiveProfilesFromContext(ApplicationContext springContext) {
       Environment springEnvironment = springContext.getEnvironment();
@@ -75,27 +107,20 @@ public final class MongockSpringbootV2_4 {
           (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
     }
 
-    public MongockApplicationRunner buildApplicationRunner() {
-      return args -> getRunner().execute();
-    }
 
-    public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      return () -> getRunner().execute();
-    }
-
-    private MongockRunnerBase getRunner() {
+    private MongockRunner getRunner() {
       runValidation();
       setActiveProfilesFromContext(springContext);
       injectLegacyMigration();
       Function<Parameter, String> paramNameExtractor = Builder::getParameterName;
-      TransactionExecutorImpl transactionExecutor = new TransactionExecutorImpl();
-      MigrationExecutor executor = getSpringMigrationExecutor(paramNameExtractor, transactionExecutor);
-      return new MongockRunnerBase(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+      MigrationExecutor executor = buildMigrationExecutor(paramNameExtractor);
+      return new MongockRunner(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
     }
+
 
     private static String getParameterName(Parameter parameter) {
       String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-      if(name == null) {
+      if (name == null) {
         name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
       }
       return name;
@@ -108,16 +133,12 @@ public final class MongockSpringbootV2_4 {
   }
 
   @FunctionalInterface
-  public interface MongockApplicationRunner extends ApplicationRunner { }
+  public interface MongockApplicationRunner extends ApplicationRunner {
+  }
 
   @FunctionalInterface
-  public interface MongockInitializingBeanRunner extends InitializingBean { }
-
-  public static class TransactionExecutorImpl implements TransactionExecutor {
-    @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void executionInTransaction(Runnable operation) {
-      operation.run();
-    }
+  public interface MongockInitializingBeanRunner extends InitializingBean {
   }
+
 }
+

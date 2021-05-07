@@ -7,7 +7,7 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 
 import java.util.Set;
 
-public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable {
+public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Transactionable, Validable {
   void initialize();
 
   LockManager getLockManager();

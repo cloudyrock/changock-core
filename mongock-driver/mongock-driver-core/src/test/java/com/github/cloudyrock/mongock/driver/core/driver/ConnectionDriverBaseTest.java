@@ -101,6 +101,15 @@ public class ConnectionDriverBaseTest {
     public void runValidation() throws MongockException {
 
     }
+
+    @Override
+    public void executeInTransaction(Runnable operation) {
+      operation.run();
+    }
+
+    @Override
+    public void disableTransaction() {
+    }
   }
 
 

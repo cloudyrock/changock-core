@@ -20,16 +20,20 @@ public class ChangeLogItem {
   private final List<ChangeSetItem> changeSetElements;
 
   public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<ChangeSetItem> changeSetElements) {
+    checkParameters(preMigration, postMigration);
     this.type = type;
     this.instance = instance;
     this.order = order;
     this.failFast = failFast;
-    if (preMigration && postMigration) {
-      throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
-    }
     this.preMigration = preMigration;
     this.postMigration = postMigration;
     this.changeSetElements = changeSetElements;
+  }
+
+  private void checkParameters(boolean preMigration, boolean postMigration) {
+    if (preMigration && postMigration) {
+      throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
+    }
   }
 
 
@@ -73,5 +77,9 @@ public class ChangeLogItem {
   @Override
   public int hashCode() {
     return Objects.hash(type);
+  }
+
+  public boolean isMigration() {
+    return !isPreMigration() && !isPostMigration();
   }
 }

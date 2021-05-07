@@ -1,20 +1,22 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.AnnotationProcessor;
+import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.AnnotationProcessor;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
-import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.config.LegacyMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,12 +26,12 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, DRIVER extends ConnectionDriver, CONFIG extends MongockConfiguration>
-    implements
-    DriverBuilderConfigurable<BUILDER_TYPE, DRIVER, CONFIG>,
-    RunnerBuilderConfigurable<BUILDER_TYPE, CONFIG>, Validable {
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
+    implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
+  private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
   protected List<Class<?>> changeLogsScanClasses = new ArrayList<>();
@@ -40,7 +42,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
   protected String serviceIdentifier = null;
   protected Map<String, Object> metadata;
-  protected DRIVER driver;
+  protected ConnectionDriver driver;
   protected AnnotationProcessor annotationProcessor;
   protected LegacyMigration legacyMigration = null;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
@@ -51,7 +53,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setDriver(DRIVER driver) {
+  public BUILDER_TYPE setDriver(ConnectionDriver driver) {
     this.driver = driver;
     return getInstance();
   }
@@ -137,7 +139,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setConfig(CONFIG config) {
+  public BUILDER_TYPE  setConfig(CONFIG config) {
     this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
     if (!config.isThrowExceptionIfCannotObtainLock()) {
       this.dontFailIfCannotAcquireLock();
@@ -153,6 +155,10 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
+  ///////////////////////////////////////////////////
+  // PRIVATE METHODS
+  ///////////////////////////////////////////////////
+
   private void addScanItemsFromConfig(List<String> changeLogsScanPackage) {
     for (String itemPath : changeLogsScanPackage) {
       try {
@@ -163,19 +169,23 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     }
   }
 
+  @Deprecated
   public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
     return getInstance();
   }
 
+  protected MigrationExecutor buildMigrationExecutor() {
+    return buildMigrationExecutor(DEFAULT_PARAM_NAME_PROVIDER);
+  }
 
-  @SuppressWarnings("unchecked")
-  protected MigrationExecutor buildExecutorDefault() {
+  protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
     return new MigrationExecutor(
         driver,
         buildDependencyManager(),
         new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier),
-        metadata
+        metadata,
+        paramNameExtractor
     );
   }
 
@@ -205,6 +215,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
     return annotatedElement -> true;
   }
+
 
   @Override
   public void runValidation() throws MongockException {

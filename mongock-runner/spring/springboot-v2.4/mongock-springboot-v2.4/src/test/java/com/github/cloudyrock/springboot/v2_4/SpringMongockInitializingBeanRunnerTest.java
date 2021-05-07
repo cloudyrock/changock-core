@@ -11,6 +11,8 @@ import com.github.cloudyrock.springboot.v2_4.util.CallVerifier;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.v2_4.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import com.github.cloudyrock.springboot.v2_4.profiles.integration.IntegrationProfiledChangerLog;
+import com.github.cloudyrock.springboot.v2_4.profiles.withForbiddenParameter.ChangeLogWithForbiddenParameter;
+import com.github.cloudyrock.springboot.v2_4.profiles.withForbiddenParameter.ForbiddenParameter;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTest;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImplChild;
 import org.junit.Before;

@@ -1,5 +1,6 @@
 package com.github.cloudyrock.mongock.config;
 
+import com.github.cloudyrock.mongock.TransactionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,12 +101,10 @@ public class MongockConfiguration {
    */
   private Map<String, Object> metadata;
 
-  /**
-   * When transaction mechanism s possible, ff false, disable transactions. Default true.
-   */
-  private boolean transactionEnabled = true;
 
   private LegacyMigration legacyMigration = null;
+
+  private TransactionStrategy transactionStrategy;
 
   @Deprecated
   private Integer maxTries;
@@ -115,8 +114,13 @@ public class MongockConfiguration {
 
 
   public MongockConfiguration() {
+    this(TransactionStrategy.MIGRATION);
+  }
+
+  public MongockConfiguration(TransactionStrategy transactionStrategy) {
     setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
     setLockRepositoryName(getLockRepositoryNameDefault());
+    this.transactionStrategy = transactionStrategy;
   }
 
 
@@ -247,12 +251,32 @@ public class MongockConfiguration {
     this.metadata = metadata;
   }
 
+  @Deprecated
   public boolean isTransactionEnabled() {
-    return transactionEnabled;
+    return transactionStrategy != TransactionStrategy.NONE;
   }
 
+
+  /**
+   * When transaction mechanism is possible, ff false, disable transactions.
+   * Default true.
+   *
+   * Deprecated: Use transaction-strategy instead.
+   * This will set transaction-strategy to MIGRATION, in case of community version, or CHANGE_LOG, if professional
+   *
+   */
+  @Deprecated
   public void setTransactionEnabled(boolean transactionEnabled) {
-    this.transactionEnabled = transactionEnabled;
+    setTransactionStrategy(TransactionStrategy.MIGRATION);
+  }
+
+
+  public TransactionStrategy getTransactionStrategy() {
+    return transactionStrategy;
+  }
+
+  public void setTransactionStrategy(TransactionStrategy transactionStrategy) {
+    this.transactionStrategy = transactionStrategy;
   }
 
   public LegacyMigration getLegacyMigration() {
