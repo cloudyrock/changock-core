@@ -423,22 +423,6 @@ public class MigrationExecutorTest {
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void shouldFail_whenRunningChangeSet_ifForbiddenParameterFromDriver() {
-
-    when(changeEntryService.isAlreadyExecuted("withForbiddenParameter", "executor")).thenReturn(true);
-
-    // then
-    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ChangeLogWithForbiddenParameter.withForbiddenParameter] : Forbidden parameter[ForbiddenParameter]. Must be replaced with [String]");
-
-    // when
-    new MigrationExecutor(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
-        .executeMigration(createInitialChangeLogs(ChangeLogWithForbiddenParameter.class));
-  }
-
   @Test
   @SuppressWarnings("unchecked")
   public void shouldThrowException_IfChangeSetParameterfNotInterface() {

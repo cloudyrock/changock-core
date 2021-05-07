@@ -3,8 +3,8 @@ package com.github.cloudyrock.springboot.v2_4.profiles.integration;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import com.github.cloudyrock.springboot.v2_2.util.CallVerifier;
-import com.github.cloudyrock.springboot.v2_2.util.TemplateForTest;
+import com.github.cloudyrock.springboot.v2_4.util.CallVerifier;
+import com.github.cloudyrock.springboot.v2_4.util.TemplateForTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
