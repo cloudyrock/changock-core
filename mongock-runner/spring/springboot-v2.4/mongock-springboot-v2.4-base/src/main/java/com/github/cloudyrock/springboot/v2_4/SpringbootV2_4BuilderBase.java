@@ -25,9 +25,9 @@ import java.util.function.Function;
 
 public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV2_4BuilderBase> extends RunnerSpringBuilderBase<BUILDER_TYPE> {
 
-  private ApplicationContext springContext;
-  private List<String> activeProfiles;
-  private MongockRunner runner;
+  protected ApplicationContext springContext;
+  protected List<String> activeProfiles;
+  protected MongockRunner runner;
 
   private static final String DEFAULT_PROFILE = "default";
 
@@ -47,16 +47,10 @@ public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV
   }
 
   //TODO javadoc
-  public MongockApplicationRunner buildApplicationRunner() {
-    this.runner = getRunner();
-    return args -> runner.execute();
-  }
+  public abstract <T extends MongockApplicationRunnerBase> T buildApplicationRunner();
 
   //TODO javadoc
-  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-    this.runner = getRunner();
-    return () -> runner.execute();
-  }
+  public abstract <T extends MongockInitializingBeanRunnerBase> T buildInitializingBeanRunner();
 
   ///////////////////////////////////////////////////
   // PRIVATE METHODS
@@ -79,7 +73,7 @@ public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV
   }
 
 
-  private MongockRunner getRunner() {
+  protected MongockRunner getRunner() {
     runValidation();
     setActiveProfilesFromContext(springContext);
     injectLegacyMigration();
@@ -98,11 +92,11 @@ public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV
   }
 
   @FunctionalInterface
-  public interface MongockApplicationRunner extends ApplicationRunner {
+  public interface MongockApplicationRunnerBase extends ApplicationRunner {
   }
 
   @FunctionalInterface
-  public interface MongockInitializingBeanRunner extends InitializingBean {
+  public interface MongockInitializingBeanRunnerBase extends InitializingBean {
   }
 
 }

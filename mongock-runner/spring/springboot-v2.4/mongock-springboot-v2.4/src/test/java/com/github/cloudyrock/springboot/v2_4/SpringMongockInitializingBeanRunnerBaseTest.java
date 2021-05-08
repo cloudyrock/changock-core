@@ -8,12 +8,7 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.springboot.v2_4.profiles.enseuredecorators.EnsureDecoratorChangerLog;
 import com.github.cloudyrock.springboot.v2_4.profiles.integration.IntegrationProfiledChangerLog;
-import com.github.cloudyrock.springboot.v2_4.profiles.withinterfaceparameter.ChangeLogWithInterfaceParameter;
 import com.github.cloudyrock.springboot.v2_4.util.CallVerifier;
-import com.github.cloudyrock.springboot.v2_4.util.ClassNotInterfaced;
-import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependency;
-import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependencyImpl;
-import com.github.cloudyrock.springboot.v2_4.util.InterfaceDependencyImplNoLockGarded;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTest;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.v2_4.util.TemplateForTestImplChild;
@@ -38,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SpringMongockApplicationRunnerTest {
+public class SpringMongockInitializingBeanRunnerBaseTest {
 
   private ChangeEntryService changeEntryService;
   private LockManager lockManager;
@@ -56,7 +51,6 @@ public class SpringMongockApplicationRunnerTest {
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getLockManager()).thenReturn(lockManager);
-    when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
 
     callVerifier = new CallVerifier();
@@ -64,22 +58,26 @@ public class SpringMongockApplicationRunnerTest {
     dependencySet.add(new ChangeSetDependency(CallVerifier.class, callVerifier));
     when(driver.getDependencies()).thenReturn(dependencySet);
 
-
     Environment environment = mock(Environment.class);
     when(environment.getActiveProfiles()).thenReturn(new String[]{"profileIncluded1", "profileIncluded2"});
     springContext = mock(ApplicationContext.class);
     when(springContext.getEnvironment()).thenReturn(environment);
     when(springContext.getBean(Environment.class)).thenReturn(environment);
-    when(springContext.getBean(TemplateForTest.class)).thenReturn(new TemplateForTestImpl());
-    when(springContext.getBean(InterfaceDependency.class)).thenReturn(new InterfaceDependencyImpl());
-    when(springContext.getBean(ClassNotInterfaced.class)).thenReturn(new ClassNotInterfaced());
+    when(springContext.getBean(TemplateForTest.class))
+        .thenReturn(new TemplateForTestImpl());
   }
 
   @Test
   public void shouldRunOnlyProfiledChangeSets() throws Exception {
 
     // when
-    buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
+//        Spring5Runner.builder()
+    MongockSpringbootV2_4.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
 
     // then
     ArgumentCaptor<String> changeSetIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -95,9 +93,17 @@ public class SpringMongockApplicationRunnerTest {
 
   @Test
   public void shouldInjectEnvironmentToChangeSet() throws Exception {
+    // given
+    when(changeEntryService.isAlreadyExecuted("testWithProfileIncluded1OrProfileINotIncluded", "testuser"))
+        .thenReturn(false);
 
     // when
-    buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
+    MongockSpringbootV2_4.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
 
     // then
     assertEquals(1, callVerifier.counter);
@@ -120,7 +126,12 @@ public class SpringMongockApplicationRunnerTest {
     when(springContext.getBean(TemplateForTestImpl.class)).thenReturn(new TemplateForTestImpl());
 
     // when
-    buildAndRun(EnsureDecoratorChangerLog.class.getPackage().getName());
+    MongockSpringbootV2_4.builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(EnsureDecoratorChangerLog.class.getPackage().getName())
+        .setSpringContext(springContext)
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
 
     // then
     assertEquals(1, callVerifier.counter);
@@ -135,94 +146,8 @@ public class SpringMongockApplicationRunnerTest {
     MongockSpringbootV2_4.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())
-        .buildApplicationRunner()
-        .run(null);
+        .buildInitializingBeanRunner()
+        .afterPropertiesSet();
   }
 
-  @Test
-  public void shouldThrowException_IfChangeSetParameterfNotInterface() throws Exception {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(false);
-
-    // then
-    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ChangeLogWithInterfaceParameter.withClassNotInterfacedParameter] : Parameter of type [ClassNotInterfaced] must be an interface or be annotated with @NonLockGuarded");
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-  }
-
-  @Test
-  public void shouldReturnProxy_IfStandardDependency() throws Exception {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(1)).ensureLockDefault();
-  }
-
-  @Test
-  public void proxyReturnedShouldReturnAProxy_whenCallingAMethod_IfInterface() throws Exception {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(2)).ensureLockDefault();
-  }
-
-
-  @Test
-  public void shouldNotReturnProxy_IfClassAnnotatedWithNonLockGuarded() throws Exception {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-    when(springContext.getBean(InterfaceDependency.class)).thenReturn(new InterfaceDependencyImplNoLockGarded());
-
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(0)).ensureLockDefault();
-  }
-
-  @Test
-  public void shouldNotReturnProxy_IfParameterAnnotatedWithNonLockGuarded() throws Exception {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(false);
-
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-
-    // then
-    verify(lockManager, new Times(0)).ensureLockDefault();
-  }
-
-  private void buildAndRun(String packageName) throws Exception {
-      MongockSpringbootV2_4.builder()
-          .setDriver(driver)
-          .addChangeLogsScanPackage(packageName)
-          .setSpringContext(springContext)
-          .buildApplicationRunner()
-          .run(null);
-
-  }
 }

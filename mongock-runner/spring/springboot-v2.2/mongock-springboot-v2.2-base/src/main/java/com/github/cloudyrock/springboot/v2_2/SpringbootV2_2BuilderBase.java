@@ -25,84 +25,78 @@ import java.util.function.Function;
 
 public abstract class SpringbootV2_2BuilderBase<BUILDER_TYPE extends SpringbootV2_2BuilderBase> extends RunnerSpringBuilderBase<BUILDER_TYPE> {
 
-    private ApplicationContext springContext;
-    private List<String> activeProfiles;
-    private MongockRunner runner;
+  protected ApplicationContext springContext;
+  protected List<String> activeProfiles;
+  protected MongockRunner runner;
 
-    private static final String DEFAULT_PROFILE = "default";
+  private static final String DEFAULT_PROFILE = "default";
 
-    protected SpringbootV2_2BuilderBase() {
+  protected SpringbootV2_2BuilderBase() {
+  }
+
+  //TODO javadoc
+  public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
+    this.springContext = springContext;
+    addDependencyManager(new SpringDependencyContext(springContext));
+    return getInstance();
+  }
+
+  //TODO javadoc
+  public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    return setEventPublisher(new SpringEventPublisher(applicationEventPublisher));
+  }
+
+
+  //TODO javadoc
+  public abstract <T extends MongockApplicationRunnerBase> T buildApplicationRunner();
+
+  //TODO javadoc
+  public abstract <T extends MongockInitializingBeanRunnerBase> T buildInitializingBeanRunner();
+
+  ///////////////////////////////////////////////////
+  // PRIVATE METHODS
+  ///////////////////////////////////////////////////
+
+  private void setActiveProfilesFromContext(ApplicationContext springContext) {
+    Environment springEnvironment = springContext.getEnvironment();
+    this.activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
+        ? Arrays.asList(springEnvironment.getActiveProfiles())
+        : Collections.singletonList(DEFAULT_PROFILE);
+  }
+
+  @Override
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    return annotated -> ProfileUtil.matchesActiveSpringProfile(
+        activeProfiles,
+        Profile.class,
+        annotated,
+        (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
+  }
+
+
+  protected MongockRunner getRunner() {
+    runValidation();
+    setActiveProfilesFromContext(springContext);
+    injectLegacyMigration();
+    Function<Parameter, String> paramNameExtractor = SpringbootV2_2BuilderBase::getParameterName;
+    MigrationExecutor executor = buildMigrationExecutor(paramNameExtractor);
+    return new MongockRunner(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+  }
+
+
+  private static String getParameterName(Parameter parameter) {
+    String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+    if (name == null) {
+      name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
     }
-
-    //TODO javadoc
-    public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
-      this.springContext = springContext;
-      addDependencyManager(new SpringDependencyContext(springContext));
-      return getInstance();
-    }
-
-    //TODO javadoc
-    public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-      return setEventPublisher(new SpringEventPublisher(applicationEventPublisher));
-    }
-
-    //TODO javadoc
-    public MongockApplicationRunner buildApplicationRunner() {
-      this.runner = getRunner();
-      return args -> runner.execute();
-    }
-
-    //TODO javadoc
-    public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      this.runner = getRunner();
-      return () -> runner.execute();
-    }
-
-    ///////////////////////////////////////////////////
-    // PRIVATE METHODS
-    ///////////////////////////////////////////////////
-
-    private void setActiveProfilesFromContext(ApplicationContext springContext) {
-      Environment springEnvironment = springContext.getEnvironment();
-      this.activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
-          ? Arrays.asList(springEnvironment.getActiveProfiles())
-          : Collections.singletonList(DEFAULT_PROFILE);
-    }
-
-    @Override
-    protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
-      return annotated -> ProfileUtil.matchesActiveSpringProfile(
-          activeProfiles,
-          Profile.class,
-          annotated,
-          (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
-    }
-
-
-    private MongockRunner getRunner() {
-      runValidation();
-      setActiveProfilesFromContext(springContext);
-      injectLegacyMigration();
-      Function<Parameter, String> paramNameExtractor = SpringbootV2_2BuilderBase::getParameterName;
-      MigrationExecutor executor = buildMigrationExecutor(paramNameExtractor);
-      return new MongockRunner(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
-    }
-
-
-    private static String getParameterName(Parameter parameter) {
-      String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-      if (name == null) {
-        name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
-      }
-      return name;
-    }
-
-  @FunctionalInterface
-  public interface MongockApplicationRunner extends ApplicationRunner {
+    return name;
   }
 
   @FunctionalInterface
-  public interface MongockInitializingBeanRunner extends InitializingBean {
+  public interface MongockApplicationRunnerBase extends ApplicationRunner {
   }
 
+  @FunctionalInterface
+  public interface MongockInitializingBeanRunnerBase extends InitializingBean {
+  }
 }
