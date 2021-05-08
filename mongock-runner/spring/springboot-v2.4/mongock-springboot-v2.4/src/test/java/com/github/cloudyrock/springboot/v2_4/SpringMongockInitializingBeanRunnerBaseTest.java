@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 public class SpringMongockInitializingBeanRunnerBaseTest {
 
   private ChangeEntryService changeEntryService;
-  private LockManager lockManager;
   private ConnectionDriver driver;
   private CallVerifier callVerifier;
 
@@ -46,7 +45,7 @@ public class SpringMongockInitializingBeanRunnerBaseTest {
 
   @Before
   public void setUp() {
-    lockManager = mock(LockManager.class);
+    LockManager lockManager = mock(LockManager.class);
     changeEntryService = mock(ChangeEntryService.class);
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
