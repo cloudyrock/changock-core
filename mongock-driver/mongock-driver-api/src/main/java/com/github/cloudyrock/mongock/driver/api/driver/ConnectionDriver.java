@@ -51,4 +51,5 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
    * @return the Transactioner
    */
   Optional<Transactioner> getTransactioner();
+
 }

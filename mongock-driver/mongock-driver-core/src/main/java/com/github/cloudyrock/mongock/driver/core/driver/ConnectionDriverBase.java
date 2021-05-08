@@ -24,7 +24,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private String changeLogRepositoryName;
   private String lockRepositoryName;
   private boolean indexCreation = true;
-  private boolean transactionEnabled = true;
 
 
   protected ConnectionDriverBase(long lockAcquiredForMillis, long lockQuitTryingAfterMillis, long lockTryFrequencyMillis) {
@@ -47,12 +46,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
       specificInitialization();
     }
   }
-
-  @Override
-  public void disableTransaction() {
-    this.transactionEnabled = false;
-  }
-
 
   @Override
   public LockManager getLockManager() {
@@ -125,6 +118,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
 
   @Override
   public void runValidation() throws MongockException {
-
   }
+
+
 }

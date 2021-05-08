@@ -88,8 +88,9 @@ public class MigrationExecutor {
     processChangeLogs(executionId, executionHostname, getPreChangeLogs(changeLogs));
 
     // Standard ChangeLogs
+    //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
+    //type of the Optional
     ((Optional<Transactioner>)driver.getTransactioner())
-
         .orElse(Runnable::run)
         .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, getMigrationChangeLogs(changeLogs)));
 
