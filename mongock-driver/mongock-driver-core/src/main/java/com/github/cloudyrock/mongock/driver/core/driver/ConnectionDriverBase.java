@@ -53,6 +53,10 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     this.transactionStrategy = transactionStrategy;
   }
 
+  public TransactionStrategy getTransactionStrategy() {
+    return transactionStrategy;
+  }
+
   @Override
   public LockManager getLockManager() {
     if (lockManager == null) {

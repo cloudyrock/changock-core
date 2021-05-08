@@ -12,9 +12,7 @@ public interface Transactionable {
    * @see TransactionStrategy
    * @return transactionStrategy
    */
-  default TransactionStrategy getTransactionStrategy() {
-    return TransactionStrategy.NONE;
-  }
+  TransactionStrategy getTransactionStrategy();
 
   /**
    * Mechanism to disabled transactions in case they are available.
