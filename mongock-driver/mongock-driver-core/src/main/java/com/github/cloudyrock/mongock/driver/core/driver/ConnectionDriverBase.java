@@ -1,6 +1,5 @@
 package com.github.cloudyrock.mongock.driver.core.driver;
 
-import com.github.cloudyrock.mongock.TransactionStrategy;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
@@ -25,7 +24,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private String changeLogRepositoryName;
   private String lockRepositoryName;
   private boolean indexCreation = true;
-  private TransactionStrategy transactionStrategy;
+  private boolean transactionEnabled = true;
 
 
   protected ConnectionDriverBase(long lockAcquiredForMillis, long lockQuitTryingAfterMillis, long lockTryFrequencyMillis) {
@@ -49,13 +48,11 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     }
   }
 
-  protected void setTransactionStrategy(TransactionStrategy transactionStrategy) {
-    this.transactionStrategy = transactionStrategy;
+  @Override
+  public void disableTransaction() {
+    this.transactionEnabled = false;
   }
 
-  public TransactionStrategy getTransactionStrategy() {
-    return transactionStrategy;
-  }
 
   @Override
   public LockManager getLockManager() {

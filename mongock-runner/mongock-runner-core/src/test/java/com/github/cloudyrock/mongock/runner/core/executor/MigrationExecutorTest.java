@@ -2,11 +2,11 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
-import com.github.cloudyrock.mongock.TransactionStrategy;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
@@ -51,8 +52,6 @@ import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -81,10 +80,7 @@ public class MigrationExecutorTest {
     transactionableDriver = mock(TransactionableConnectionDriver.class);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     when(transactionableDriver.getChangeEntryService()).thenReturn(changeEntryService);
-    doAnswer(invocation -> {
-      ((Runnable)invocation.getArgument(0)).run();
-      return null;
-    }).when(transactionableDriver).executeInTransaction(any(Runnable.class));
+    when(transactionableDriver.getTransactioner()).thenReturn(Optional.of((Transactioner)Runnable::run));
   }
 
   @Test
@@ -626,7 +622,6 @@ public class MigrationExecutorTest {
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogBefore_whenPreMigration_ifTransactionPerMigration() {
     // given
-    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.MIGRATION);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
@@ -652,7 +647,6 @@ public class MigrationExecutorTest {
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogBefore_whenPreMigration_ifNoTransaction() {
     // given
-    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.NONE);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
@@ -678,7 +672,6 @@ public class MigrationExecutorTest {
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogAfter_whenPostMigration_ifTransactionPerMigration() {
     // given
-    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.MIGRATION);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when
@@ -704,7 +697,6 @@ public class MigrationExecutorTest {
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogAfter_whenPostMigration_ifNoTransaction() {
     // given
-    when(transactionableDriver.getTransactionStrategy()).thenReturn(TransactionStrategy.NONE);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     
     // when

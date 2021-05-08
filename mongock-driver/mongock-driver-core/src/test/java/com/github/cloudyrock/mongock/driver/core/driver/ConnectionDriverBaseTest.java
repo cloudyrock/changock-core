@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.driver.core.driver;
 
 
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class ConnectionDriverBaseTest {
@@ -102,14 +104,15 @@ public class ConnectionDriverBaseTest {
 
     }
 
-    @Override
-    public void executeInTransaction(Runnable operation) {
-      operation.run();
-    }
 
     @Override
     public void disableTransaction() {
       //Empty method
+    }
+
+    @Override
+    public Optional<Transactioner> getTransactioner() {
+      return Optional.empty();
     }
   }
 

@@ -5,9 +5,10 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 
+import java.util.Optional;
 import java.util.Set;
 
-public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Transactionable, Validable {
+public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable {
   void initialize();
 
   LockManager getLockManager();
@@ -39,4 +40,15 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Tran
   String getLockRepositoryName();
 
   boolean isIndexCreation();
+
+  /**
+   * Mechanism to disabled transactions in case they are available.
+   */
+  void disableTransaction();
+
+  /**
+   * If transaction available, returns the Transactioner
+   * @return the Transactioner
+   */
+  Optional<Transactioner> getTransactioner();
 }

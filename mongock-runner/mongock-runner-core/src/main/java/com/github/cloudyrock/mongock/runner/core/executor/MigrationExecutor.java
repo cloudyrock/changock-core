@@ -3,9 +3,9 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.NonLockGuarded;
-import com.github.cloudyrock.mongock.TransactionStrategy;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.function.Function;
@@ -85,12 +86,13 @@ public class MigrationExecutor {
     logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
     // PRE-Migration ChangeLogs (NO-Transaction)
     processChangeLogs(executionId, executionHostname, getPreChangeLogs(changeLogs));
+
     // Standard ChangeLogs
-    if (driver.getTransactionStrategy() == TransactionStrategy.MIGRATION) {
-      driver.executeInTransaction(() -> processChangeLogs(executionId, executionHostname, getMigrationChangeLogs(changeLogs)));
-    } else {
-      processChangeLogs(executionId, executionHostname, getMigrationChangeLogs(changeLogs));
-    }
+    ((Optional<Transactioner>)driver.getTransactioner())
+
+        .orElse(Runnable::run)
+        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, getMigrationChangeLogs(changeLogs)));
+
     // POST-Migration ChangeLogs (NO-Transaction)
     processChangeLogs(executionId, executionHostname, getPostChangeLogs(changeLogs));
   }
@@ -260,6 +262,5 @@ public class MigrationExecutor {
   private List<ChangeLogItem> getPostChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
     return changeLogs.stream().filter(ChangeLogItem::isPostMigration).collect(Collectors.toList());
   }
-
 
 }
