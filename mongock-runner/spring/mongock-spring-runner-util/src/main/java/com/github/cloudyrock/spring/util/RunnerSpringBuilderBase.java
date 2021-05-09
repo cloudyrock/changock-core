@@ -11,6 +11,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Function;
@@ -45,7 +46,7 @@ public abstract class RunnerSpringBuilderBase<BUILDER_TYPE extends RunnerSpringB
 
   @Override
   protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
-    return new MigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
+    return new MigrationExecutorImpl(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
   }
 
   @Override
