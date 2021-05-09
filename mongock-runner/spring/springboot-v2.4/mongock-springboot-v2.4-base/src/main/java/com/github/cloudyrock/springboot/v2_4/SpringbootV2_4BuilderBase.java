@@ -4,7 +4,8 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.spring.util.RunnerSpringBuilderBase;
-import com.github.cloudyrock.spring.util.SpringDependencyContext;
+import com.github.cloudyrock.springboot.v2_4.config.MongockSpringConfiguration;
+import com.github.cloudyrock.springboot.v2_4.context.SpringDependencyContext;
 import com.github.cloudyrock.springboot.v2_4.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV2_4BuilderBase> extends RunnerSpringBuilderBase<BUILDER_TYPE> {
+public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV2_4BuilderBase> extends RunnerSpringBuilderBase<BUILDER_TYPE, MongockSpringConfiguration> {
 
   protected ApplicationContext springContext;
   protected List<String> activeProfiles;

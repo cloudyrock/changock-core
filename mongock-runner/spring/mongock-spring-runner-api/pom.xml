@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>mongock-spring-runner-util</artifactId>
+  <artifactId>mongock-spring-runner-api</artifactId>
 
 
   <properties>

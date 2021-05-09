@@ -1,6 +1,5 @@
 package com.github.cloudyrock.springboot.v2_2.config;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.springboot.v2_2.MongockSpringbootV2_2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
