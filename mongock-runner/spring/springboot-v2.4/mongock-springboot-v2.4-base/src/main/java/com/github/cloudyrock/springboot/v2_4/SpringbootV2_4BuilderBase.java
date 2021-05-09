@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV2_4BuilderBase> extends RunnerSpringBuilderBase<BUILDER_TYPE, MongockSpringConfiguration> {
+public abstract class SpringbootV2_4BuilderBase<BUILDER_TYPE extends SpringbootV2_4BuilderBase, CONFIG extends MongockSpringConfiguration> extends RunnerSpringBuilderBase<BUILDER_TYPE, CONFIG> {
 
   protected ApplicationContext springContext;
   protected List<String> activeProfiles;
