@@ -1,6 +1,6 @@
 package com.github.cloudyrock.springboot.v2_2;
 
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
@@ -79,7 +79,7 @@ public abstract class SpringbootV2_2BuilderBase<BUILDER_TYPE extends SpringbootV
     setActiveProfilesFromContext(springContext);
     injectLegacyMigration();
     Function<Parameter, String> paramNameExtractor = SpringbootV2_2BuilderBase::getParameterName;
-    MigrationExecutor executor = buildMigrationExecutor(paramNameExtractor);
+    MigrationExecutorImpl executor = buildMigrationExecutor(paramNameExtractor);
     return new MongockRunner(executor, getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
   }
 

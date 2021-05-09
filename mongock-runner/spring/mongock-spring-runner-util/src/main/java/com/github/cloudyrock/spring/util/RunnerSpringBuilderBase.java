@@ -9,7 +9,7 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 
 import java.lang.reflect.Parameter;
@@ -44,8 +44,8 @@ public abstract class RunnerSpringBuilderBase<BUILDER_TYPE extends RunnerSpringB
   }
 
   @Override
-  protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
-    return new MigrationExecutor(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
+  protected MigrationExecutorImpl buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
+    return new MigrationExecutorImpl(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
   }
 
   @Override

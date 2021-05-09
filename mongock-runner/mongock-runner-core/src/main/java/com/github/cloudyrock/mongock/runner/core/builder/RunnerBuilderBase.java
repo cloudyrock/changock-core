@@ -10,6 +10,7 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,8 +180,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return buildMigrationExecutor(DEFAULT_PARAM_NAME_PROVIDER);
   }
 
-  protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
-    return new MigrationExecutor(
+  protected MigrationExecutorImpl buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
+    return new MigrationExecutorImpl(
         driver,
         buildDependencyManager(),
         new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier),

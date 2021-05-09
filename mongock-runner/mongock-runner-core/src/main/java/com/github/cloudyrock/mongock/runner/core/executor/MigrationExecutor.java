@@ -1,21 +1,10 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import java.lang.reflect.Parameter;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.SortedSet;
 
-@NotThreadSafe
-public class MigrationExecutor extends MigrationExecutorBase<MigrationExecutorConfiguration>{
-
-
-  public MigrationExecutor(ConnectionDriver driver,
-                           DependencyManager dependencyManager,
-                           MigrationExecutorConfiguration mongockConfiguration,
-                           Map<String, Object> metadata,
-                           Function<Parameter, String> parameterNameProvider) {
-    super(driver, dependencyManager, mongockConfiguration, metadata, parameterNameProvider);
-  }
+public interface MigrationExecutor {
+  void executeMigration(SortedSet<ChangeLogItem> changeLogs);
+  boolean isExecutionInProgress();
 }
