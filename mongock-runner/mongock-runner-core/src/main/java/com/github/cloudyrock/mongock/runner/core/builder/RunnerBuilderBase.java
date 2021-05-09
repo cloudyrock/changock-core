@@ -180,7 +180,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return buildMigrationExecutor(DEFAULT_PARAM_NAME_PROVIDER);
   }
 
-  protected MigrationExecutorImpl buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
+  protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
     return new MigrationExecutorImpl(
         driver,
         buildDependencyManager(),
