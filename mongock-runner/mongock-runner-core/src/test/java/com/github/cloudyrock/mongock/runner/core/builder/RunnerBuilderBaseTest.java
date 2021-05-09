@@ -9,6 +9,7 @@ import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
@@ -98,7 +99,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddSingleClass() {
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     new DummyRunnerBuilder()
         .setDriver(driver)
         .setExecutor(executor)
@@ -128,7 +129,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     new DummyRunnerBuilder()
         .setDriver(driver)
         .setExecutor(executor)
@@ -147,7 +148,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddClassAndPackage() {
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     new DummyRunnerBuilder()
         .setDriver(driver)
         .setExecutor(executor)
@@ -227,7 +228,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {
 
 
-  private MigrationExecutorImpl executor;
+  private MigrationExecutor executor;
 
   void validate() {
     assertEquals(driver, this.driver);
@@ -245,7 +246,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
     return this;
   }
 
-  public DummyRunnerBuilder setExecutor(MigrationExecutorImpl executor) {
+  public DummyRunnerBuilder setExecutor(MigrationExecutor executor) {
     this.executor = executor;
     return this;
   }

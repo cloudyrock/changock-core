@@ -4,7 +4,6 @@ import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 
 public class StandaloneRunner extends MongockRunner {
 

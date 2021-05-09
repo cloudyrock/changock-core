@@ -1,7 +1,5 @@
 package com.github.cloudyrock.springboot.v2_4;
 
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;

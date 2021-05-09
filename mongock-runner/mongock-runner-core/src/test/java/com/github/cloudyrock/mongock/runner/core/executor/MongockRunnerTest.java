@@ -25,7 +25,7 @@ public class MongockRunnerTest {
   @Test
   public void shouldExecuteAllTheChangeLogsAndPublishRightEvent_whenNoExceptionThrow() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
@@ -48,7 +48,7 @@ public class MongockRunnerTest {
   @Test
   public void shouldNotBeExecutedNorEventPublished_IfDisabled() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
 
@@ -63,7 +63,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateException_IfChangeLogServiceNotValidated() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(MongockException.class).when(changeLogService).runValidation();
@@ -78,7 +78,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateException_IfFetchingLogsFails() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(MongockException.class).when(changeLogService).fetchChangeLogs();
@@ -93,7 +93,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateException_IfFExecuteMigrationFails() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(MongockException.class).when(executor).executeMigration(any());
@@ -125,7 +125,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfChangelogServiceNotValidated() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(MongockException.class).when(changeLogService).runValidation();
@@ -137,7 +137,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfFetchFails() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(MongockException.class).when(changeLogService).fetchChangeLogs();
@@ -149,7 +149,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfMigrationExecutionFails() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(MongockException.class).when(executor).executeMigration(any());
@@ -161,7 +161,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldPropagateLockExceptionWrappedInMongockException_whenExecuteMigrationFails_IfThrowExceptionIfCannotObtainLockTrue() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
@@ -173,7 +173,7 @@ public class MongockRunnerTest {
   @Test
   public void shouldNotPropagateLockException_whenExecuteMigrationFails_IfThrowExceptionIfCannotObtainLockFalse() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
@@ -187,7 +187,7 @@ public class MongockRunnerTest {
   @Test(expected = MongockException.class)
   public void shouldWrapGenericExceptionInMongockException() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     doThrow(RuntimeException.class).when(executor).executeMigration(any());
@@ -203,7 +203,7 @@ public class MongockRunnerTest {
   @Test
   public void shouldPublishSuccessEvent_whenMigrationSucceed() {
 
-    MigrationExecutorImpl executor = mock(MigrationExecutorImpl.class);
+    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
     SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
