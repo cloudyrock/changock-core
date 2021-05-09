@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.config;
+package com.github.cloudyrock.spring.config;
 
 public enum SpringRunnerType {
     InitializingBean, ApplicationRunner

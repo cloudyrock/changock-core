@@ -1,6 +1,5 @@
 package com.github.cloudyrock.springboot.v2_4.config;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.springboot.v2_4.MongockSpringbootV2_4;
 import com.github.cloudyrock.springboot.v2_4.SpringbootV2_4BuilderBase;

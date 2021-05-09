@@ -1,7 +1,7 @@
 package com.github.cloudyrock.springboot.v2_2;
 
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.springboot.v2_2.config.MongockContext;
+import com.github.cloudyrock.springboot.v2_2.config.MongockSpringConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;

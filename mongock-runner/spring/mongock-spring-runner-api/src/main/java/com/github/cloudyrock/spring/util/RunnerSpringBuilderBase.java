@@ -1,7 +1,6 @@
 package com.github.cloudyrock.spring.util;
 
 import com.github.cloudyrock.mongock.config.LegacyMigration;
-import com.github.cloudyrock.mongock.config.MongockSpringConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
@@ -12,14 +11,15 @@ import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithC
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
+import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class RunnerSpringBuilderBase<BUILDER_TYPE extends RunnerSpringBuilderBase>
-    extends RunnerBuilderBase<BUILDER_TYPE, MongockSpringConfiguration> {
+public abstract class RunnerSpringBuilderBase<BUILDER_TYPE extends RunnerSpringBuilderBase, CONFIG extends MongockSpringConfigurationBase>
+    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG> {
 
   private DependencyManager dependencyManager;
   protected EventPublisher applicationEventPublisher = EventPublisher.empty();
@@ -57,7 +57,4 @@ public abstract class RunnerSpringBuilderBase<BUILDER_TYPE extends RunnerSpringB
     }
   }
 
-
 }
-
-
