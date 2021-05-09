@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.common.ForbiddenParameterException;
+import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.exception.MongockException;
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @NotThreadSafe
-public class DependencyManager {
+public class DependencyManager  implements Validable {
 
   private final LinkedHashSet<ChangeSetDependency> connectorDependencies;
   private final LinkedHashSet<ChangeSetDependency> standardDependencies;
@@ -97,4 +98,8 @@ public class DependencyManager {
   }
 
 
+  @Override
+  public void runValidation() throws MongockException {
+    //Not required
+  }
 }

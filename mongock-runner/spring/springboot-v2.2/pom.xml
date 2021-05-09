@@ -3,7 +3,7 @@
   <parent>
     <artifactId>spring</artifactId>
     <groupId>com.github.cloudyrock.mongock</groupId>
-    <version>5.0.2.BETA-SNAPSHOT</version>
+    <version>5.0.3.BETA-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +13,7 @@
   <modules>
     <module>mongock-springboot-v2.2</module>
     <module>mongock-springboot-v2.2-dependencies</module>
+    <module>mongock-springboot-v2.2-base</module>
   </modules>
 
 

@@ -10,7 +10,7 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSucce
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerBase;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -224,7 +224,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
   }
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, ConnectionDriver, MongockConfiguration> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {
 
 
   private MigrationExecutor executor;
@@ -250,9 +250,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Connectio
     return this;
   }
 
-  public MongockRunnerBase build() {
-    return new MongockRunnerBase(
-        executor != null ? executor : buildExecutorDefault(),
+  public MongockRunner build() {
+    return new MongockRunner(
+        executor != null ? executor : buildMigrationExecutor(),
         getChangeLogService(),
         throwExceptionIfCannotObtainLock,
         enabled,

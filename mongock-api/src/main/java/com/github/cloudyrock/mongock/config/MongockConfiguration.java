@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class MongockConfiguration {
 
@@ -100,12 +101,10 @@ public class MongockConfiguration {
    */
   private Map<String, Object> metadata;
 
-  /**
-   * When transaction mechanism s possible, ff false, disable transactions. Default true.
-   */
-  private boolean transactionEnabled = true;
 
   private LegacyMigration legacyMigration = null;
+
+  private Boolean transactionEnabled;
 
   @Deprecated
   private Integer maxTries;
@@ -247,8 +246,9 @@ public class MongockConfiguration {
     this.metadata = metadata;
   }
 
-  public boolean isTransactionEnabled() {
-    return transactionEnabled;
+
+  public Optional<Boolean> getTransactionEnabled() {
+    return Optional.ofNullable(transactionEnabled);
   }
 
   public void setTransactionEnabled(boolean transactionEnabled) {

@@ -1,16 +1,15 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.driver.api.driver.TransactionStrategy;
-import com.github.cloudyrock.mongock.driver.api.driver.Transactionable;
+import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import com.github.cloudyrock.mongock.ChangeLogItem;
-import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.LogUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,26 +17,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.inject.Named;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.SortedSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @NotThreadSafe
-public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
+public class MigrationExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutor.class);
 
@@ -45,16 +45,20 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   protected final Map<String, Object> metadata;
   protected final DependencyManager dependencyManager;
   private final MigrationExecutorConfiguration config;
+  private final Function<Parameter, String> parameterNameProvider;
   protected boolean executionInProgress = false;
 
-  public MigrationExecutor(ConnectionDriver<CHANGE_ENTRY> driver,
+
+  public MigrationExecutor(ConnectionDriver driver,
                            DependencyManager dependencyManager,
                            MigrationExecutorConfiguration config,
-                           Map<String, Object> metadata) {
+                           Map<String, Object> metadata,
+                           Function<Parameter, String> parameterNameProvider) {
     this.driver = driver;
     this.metadata = metadata;
     this.dependencyManager = dependencyManager;
     this.config = config;
+    this.parameterNameProvider = parameterNameProvider;
   }
 
   public boolean isExecutionInProgress() {
@@ -64,7 +68,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
   public void executeMigration(SortedSet<ChangeLogItem> changeLogs) {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
-      if(!this.isThereAnyChangeSetItemToBeExecuted(changeLogs)) {
+      if (!this.isThereAnyChangeSetItemToBeExecuted(changeLogs)) {
         logger.info("Mongock skipping the data migration. All change set items are already executed or there is no change set item.");
         return;
       }
@@ -75,37 +79,36 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       logger.info("Mongock has finished");
     }
   }
-  
+
   protected void processMigration(SortedSet<ChangeLogItem> changeLogs) {
     String executionId = generateExecutionId();
     String executionHostname = generateExecutionHostname(executionId);
     logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
     // PRE-Migration ChangeLogs (NO-Transaction)
-    processChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPreMigration()).collect(Collectors.toList()));
+    processChangeLogs(executionId, executionHostname, getPreChangeLogs(changeLogs));
+
     // Standard ChangeLogs
-    executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.MIGRATION, () -> processChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> !changeLog.isPreMigration() && !changeLog.isPostMigration()).collect(Collectors.toList())));
+    //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
+    //type of the Optional
+    ((Optional<Transactioner>)driver.getTransactioner())
+        .orElse(Runnable::run)
+        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, getMigrationChangeLogs(changeLogs)));
+
     // POST-Migration ChangeLogs (NO-Transaction)
-    processChangeLogs(executionId, executionHostname, changeLogs.stream().filter(changeLog -> changeLog.isPostMigration()).collect(Collectors.toList()));
+    processChangeLogs(executionId, executionHostname, getPostChangeLogs(changeLogs));
   }
-  
-  protected void executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy strategy, Runnable operation) {
-    if (driver instanceof Transactionable && ((Transactionable)driver).getTransactionStrategy() == strategy) {
-      ((Transactionable)driver).executeInTransaction(operation);
-    } else {
-      operation.run();
-    }
-  }
+
 
   protected void processChangeLogs(String executionId, String executionHostname, Collection<ChangeLogItem> changeLogs) {
     for (ChangeLogItem changeLog : changeLogs) {
-      executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_LOG, () -> processSingleChangeLog(executionId, executionHostname, changeLog));
+      processSingleChangeLog(executionId, executionHostname, changeLog);
     }
   }
 
   protected void processSingleChangeLog(String executionId, String executionHostname, ChangeLogItem changeLog) {
     try {
       for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
-        executeInTransactionIfStrategyOrUsualIfNot(TransactionStrategy.CHANGE_SET, () -> processSingleChangeSet(executionId, executionHostname, changeLog, changeSet));
+        processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
       }
     } catch (Exception e) {
       if (changeLog.isFailFast()) {
@@ -114,7 +117,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     }
   }
 
-  protected void processSingleChangeSet(String executionId, String executionHostname, ChangeLogItem changeLog, ChangeSetItem changeSet) {
+  private void processSingleChangeSet(String executionId, String executionHostname, ChangeLogItem changeLog, ChangeSetItem changeSet) {
     try {
       executeAndLogChangeSet(executionId, executionHostname, changeLog.getInstance(), changeSet);
     } catch (Exception e) {
@@ -126,7 +129,7 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
   }
 
-  protected String generateExecutionHostname(String executionId) {
+  private String generateExecutionHostname(String executionId) {
     String hostname;
     try {
       hostname = InetAddress.getLocalHost().getHostName();
@@ -134,21 +137,21 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
       hostname = "unknown-host." + executionId;
     }
 
-    if(StringUtils.isNotEmpty(this.config.getServiceIdentifier())) {
+    if (StringUtils.isNotEmpty(this.config.getServiceIdentifier())) {
       hostname += "-";
       hostname += this.config.getServiceIdentifier();
     }
     return hostname;
   }
 
-  protected boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<ChangeLogItem> changeLogs) {
+  private boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<ChangeLogItem> changeLogs) {
     return changeLogs.stream()
         .map(ChangeLogItem::getChangeSetElements)
         .flatMap(List::stream)
         .anyMatch(changeSetItem -> changeSetItem.isRunAlways() || !this.isAlreadyExecuted(changeSetItem));
   }
 
-  protected boolean isAlreadyExecuted(ChangeSetItem changeSetItem) {
+  private boolean isAlreadyExecuted(ChangeSetItem changeSetItem) {
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 
@@ -219,8 +222,9 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
         .orElseThrow(() -> new DependencyInjectionException(parameterType, name));
   }
 
+
   protected String getParameterName(Parameter parameter) {
-    return parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+    return parameterNameProvider.apply(parameter);
   }
 
   protected void processExceptionOnChangeSetExecution(Exception exception, Method method, boolean throwException) {
@@ -244,6 +248,20 @@ public class MigrationExecutor<CHANGE_ENTRY extends ChangeEntry> {
     this.dependencyManager
         .setLockGuardProxyFactory(new LockGuardProxyFactory(driver.getLockManager()))
         .addDriverDependencies(driver.getDependencies());
+    this.dependencyManager.runValidation();
+  }
+
+
+  private List<ChangeLogItem> getMigrationChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
+    return changeLogs.stream().filter(ChangeLogItem::isMigration).collect(Collectors.toList());
+  }
+
+  private List<ChangeLogItem> getPreChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
+    return changeLogs.stream().filter(ChangeLogItem::isPreMigration).collect(Collectors.toList());
+  }
+
+  private List<ChangeLogItem> getPostChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
+    return changeLogs.stream().filter(ChangeLogItem::isPostMigration).collect(Collectors.toList());
   }
 
 }

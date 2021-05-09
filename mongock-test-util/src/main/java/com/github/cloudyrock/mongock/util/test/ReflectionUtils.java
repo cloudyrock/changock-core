@@ -39,4 +39,21 @@ public final class ReflectionUtils {
       return !"not a proxy instance".equals(ex.getMessage());
     }
   }
+
+  public static Object getPrivateField(Object object, Class clazz, String fieldName) {
+
+    try {
+      Field field = clazz.getDeclaredField(fieldName);
+      field.setAccessible(true);
+      return field.get(object);
+    } catch (NoSuchFieldException e) {
+      if(Object.class.equals(object.getClass())) {
+        throw new RuntimeException(e);
+      }
+      return getPrivateField(object, object.getClass().getSuperclass(), fieldName);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
 }
