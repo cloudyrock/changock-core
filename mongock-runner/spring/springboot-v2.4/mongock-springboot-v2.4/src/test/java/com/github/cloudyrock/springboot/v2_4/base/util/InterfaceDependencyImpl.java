@@ -1,0 +1,5 @@
+package com.github.cloudyrock.springboot.v2_4.base.util;
+
+public class InterfaceDependencyImpl implements InterfaceDependency {
+
+}
