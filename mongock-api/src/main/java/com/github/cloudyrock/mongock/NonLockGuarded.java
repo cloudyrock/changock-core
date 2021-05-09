@@ -1,7 +1,5 @@
 package com.github.cloudyrock.mongock;
 
-import com.github.cloudyrock.mongock.ChangeLog;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
