@@ -25,6 +25,7 @@ public class TestMigrationExecutor extends MigrationExecutorImpl {
     this.executionId = executionId;
   }
 
+  @Override
   protected String generateExecutionId() {
     return executionId != null ? executionId : super.generateExecutionId();
   }
