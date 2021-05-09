@@ -73,31 +73,34 @@ public class MigrationExecutor {
         return;
       }
       lockManager.acquireLockDefault();
-      processMigration(changeLogs);
+      String executionId = generateExecutionId();
+      String executionHostname = generateExecutionHostname(executionId);
+      logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
+      processPreMigration(changeLogs, executionId, executionHostname);
+      processMigration(changeLogs, executionId, executionHostname);
+      processPostMigration(changeLogs, executionId, executionHostname);
     } finally {
       this.executionInProgress = false;
       logger.info("Mongock has finished");
     }
   }
 
-  protected void processMigration(SortedSet<ChangeLogItem> changeLogs) {
-    String executionId = generateExecutionId();
-    String executionHostname = generateExecutionHostname(executionId);
-    logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
-    // PRE-Migration ChangeLogs (NO-Transaction)
-    processChangeLogs(executionId, executionHostname, getPreChangeLogs(changeLogs));
-
-    // Standard ChangeLogs
-    //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
-    //type of the Optional
-    ((Optional<Transactioner>)driver.getTransactioner())
+  protected void processMigration(SortedSet<ChangeLogItem> changeLogs, String executionId, String executionHostname) {
+    List<ChangeLogItem> changeLogsMigration = changeLogs.stream().filter(ChangeLogItem::isMigration).collect(Collectors.toList());
+    getTransactioner()
         .orElse(Runnable::run)
-        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, getMigrationChangeLogs(changeLogs)));
-
-    // POST-Migration ChangeLogs (NO-Transaction)
-    processChangeLogs(executionId, executionHostname, getPostChangeLogs(changeLogs));
+        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
   }
 
+  protected void processPreMigration(SortedSet<ChangeLogItem> changeLogs, String executionId, String executionHostname) {
+    List<ChangeLogItem> changeLogPreMigration = changeLogs.stream().filter(ChangeLogItem::isPreMigration).collect(Collectors.toList());
+    processChangeLogs(executionId, executionHostname, changeLogPreMigration);
+  }
+
+  protected void processPostMigration(SortedSet<ChangeLogItem> changeLogs, String executionId, String executionHostname) {
+    List<ChangeLogItem> changeLogPostMigration = changeLogs.stream().filter(ChangeLogItem::isPostMigration).collect(Collectors.toList());
+    processChangeLogs(executionId, executionHostname, changeLogPostMigration);
+  }
 
   protected void processChangeLogs(String executionId, String executionHostname, Collection<ChangeLogItem> changeLogs) {
     for (ChangeLogItem changeLog : changeLogs) {
@@ -252,16 +255,11 @@ public class MigrationExecutor {
   }
 
 
-  private List<ChangeLogItem> getMigrationChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
-    return changeLogs.stream().filter(ChangeLogItem::isMigration).collect(Collectors.toList());
-  }
 
-  private List<ChangeLogItem> getPreChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
-    return changeLogs.stream().filter(ChangeLogItem::isPreMigration).collect(Collectors.toList());
-  }
-
-  private List<ChangeLogItem> getPostChangeLogs(SortedSet<ChangeLogItem> changeLogs) {
-    return changeLogs.stream().filter(ChangeLogItem::isPostMigration).collect(Collectors.toList());
+  protected Optional<Transactioner> getTransactioner() {
+    //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
+    //type of the Optional
+    return (Optional<Transactioner>)driver.getTransactioner();
   }
 
 }
