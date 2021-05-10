@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_4.config;
+package com.github.cloudyrock.springboot.base.config;
 
 import com.github.cloudyrock.spring.util.importers.MongockDriverContextSelectorUtil;
 import org.springframework.context.annotation.ImportSelector;

@@ -3,8 +3,8 @@ package com.github.cloudyrock.springboot.v2_2.profiles.withinterfaceparameter;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.NonLockGuarded;
-import com.github.cloudyrock.springboot.v2_2.util.ClassNotInterfaced;
 import com.github.cloudyrock.springboot.v2_2.util.InterfaceDependency;
+import com.github.cloudyrock.springboot.v2_2.util.ClassNotInterfaced;
 
 @ChangeLog(order = "0")
 public class ChangeLogWithInterfaceParameter {

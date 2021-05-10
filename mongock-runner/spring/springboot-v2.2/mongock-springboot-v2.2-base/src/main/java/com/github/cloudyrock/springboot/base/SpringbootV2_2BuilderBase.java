@@ -1,12 +1,12 @@
-package com.github.cloudyrock.springboot.v2_2;
+package com.github.cloudyrock.springboot.base;
 
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.spring.util.RunnerSpringBuilderBase;
-import com.github.cloudyrock.springboot.v2_2.config.MongockSpringConfiguration;
-import com.github.cloudyrock.springboot.v2_2.context.SpringDependencyContext;
-import com.github.cloudyrock.springboot.v2_2.events.SpringEventPublisher;
+import com.github.cloudyrock.springboot.base.config.MongockSpringConfiguration;
+import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
+import com.github.cloudyrock.springboot.base.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootV2_2BuilderBase<BUILDER_TYPE extends SpringbootV2_2BuilderBase> extends RunnerSpringBuilderBase<BUILDER_TYPE, MongockSpringConfiguration> {
+public abstract class SpringbootV2_2BuilderBase<BUILDER_TYPE extends SpringbootV2_2BuilderBase, CONFIG extends MongockSpringConfiguration> extends RunnerSpringBuilderBase<BUILDER_TYPE, CONFIG> {
 
   protected ApplicationContext springContext;
   protected List<String> activeProfiles;

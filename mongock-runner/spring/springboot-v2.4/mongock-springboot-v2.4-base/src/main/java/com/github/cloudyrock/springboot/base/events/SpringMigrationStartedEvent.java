@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.v2_2.events;
+package com.github.cloudyrock.springboot.base.events;
 
 import org.springframework.context.ApplicationEvent;
 

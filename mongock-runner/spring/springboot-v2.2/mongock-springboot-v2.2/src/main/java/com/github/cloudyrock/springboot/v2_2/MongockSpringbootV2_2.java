@@ -1,6 +1,9 @@
 package com.github.cloudyrock.springboot.v2_2;
 
 
+import com.github.cloudyrock.springboot.base.SpringbootV2_2BuilderBase;
+import com.github.cloudyrock.springboot.base.config.MongockSpringConfiguration;
+
 public final class MongockSpringbootV2_2 {
 
   //TODO javadoc
@@ -8,7 +11,7 @@ public final class MongockSpringbootV2_2 {
     return new Builder();
   }
 
-  public static class Builder extends SpringbootV2_2BuilderBase<Builder> {
+  public static class Builder extends SpringbootV2_2BuilderBase<Builder, MongockSpringConfiguration> {
 
 
     //TODO javadoc
