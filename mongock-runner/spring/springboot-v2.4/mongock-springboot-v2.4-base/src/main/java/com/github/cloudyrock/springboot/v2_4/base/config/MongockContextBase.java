@@ -1,6 +1,7 @@
 package com.github.cloudyrock.springboot.v2_4.base.config;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 import com.github.cloudyrock.springboot.v2_4.base.SpringbootV2_4BuilderBase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.ApplicationContext;
@@ -8,7 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 
 
-public abstract class MongockContextBase<CONFIG extends MongockSpringConfiguration> {
+public abstract class MongockContextBase<CONFIG extends MongockSpringConfigurationBase> {
 
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")

@@ -5,7 +5,6 @@ import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.spring.util.RunnerSpringBuilderBase;
-import com.github.cloudyrock.springboot.v2_4.base.config.MongockSpringConfiguration;
 import com.github.cloudyrock.springboot.v2_4.base.context.SpringDependencyContext;
 import com.github.cloudyrock.springboot.v2_4.base.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;

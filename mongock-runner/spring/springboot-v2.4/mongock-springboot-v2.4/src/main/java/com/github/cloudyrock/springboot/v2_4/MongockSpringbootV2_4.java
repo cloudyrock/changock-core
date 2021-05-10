@@ -2,7 +2,7 @@ package com.github.cloudyrock.springboot.v2_4;
 
 
 import com.github.cloudyrock.springboot.v2_4.base.SpringbootV2_4BuilderBase;
-import com.github.cloudyrock.springboot.v2_4.base.config.MongockSpringConfiguration;
+import com.github.cloudyrock.springboot.v2_4.config.MongockSpringConfiguration;
 
 public final class MongockSpringbootV2_4 {
 
