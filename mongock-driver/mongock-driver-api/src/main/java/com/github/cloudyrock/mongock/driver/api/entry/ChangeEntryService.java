@@ -7,7 +7,7 @@ import com.github.cloudyrock.mongock.utils.Process;
 public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Process {
 
   /**
-   * <p></p>Retrieves is a changeSet with given changeSetId and author hasn't been already executed. This means
+   * <p>Retrieves is a changeSet with given changeSetId and author hasn't been already executed. This means
    * there is no changeSet in the changeLog store for the given changeSetId and author, or its state is not</p>
    * EXECUTED.
    * @param changeSetId changeSet id

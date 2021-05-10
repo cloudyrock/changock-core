@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.base.config;
+package com.github.cloudyrock.springboot.v2_4.base.config;
 
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 import org.springframework.boot.context.properties.ConfigurationProperties;
