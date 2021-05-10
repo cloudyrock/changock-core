@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.base.context;
+package com.github.cloudyrock.springboot.v2_2.base.context;
 
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyContext;
 import java.util.Optional;
