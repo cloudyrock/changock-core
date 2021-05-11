@@ -30,14 +30,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
-      <dependency>
-        <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-springboot-v2.4-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -65,17 +57,20 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+      <version>(5.0.0, 6.0.0]</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
+      <version>(5.0.0, 6.0.0]</version>
       <optional>true</optional>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>(2.0.0, 3.0.0]</version>
     </dependency>
 
 
