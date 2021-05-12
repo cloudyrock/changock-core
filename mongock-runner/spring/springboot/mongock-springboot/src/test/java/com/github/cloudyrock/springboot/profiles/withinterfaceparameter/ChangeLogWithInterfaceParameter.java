@@ -23,6 +23,7 @@ public class ChangeLogWithInterfaceParameter {
 
   @ChangeSet(author = "executor", id = "withClassNotInterfacedParameter", order = "1")
   public void withClassNotInterfacedParameter(ClassNotInterfaced dependency) {
+    //empty method
   }
 
 

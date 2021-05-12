@@ -101,7 +101,7 @@ public class SpringMongockApplicationRunnerBaseTest {
     buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
 
     // then
-    Assert.assertEquals(1, callVerifier.counter);
+    assertEquals(1, callVerifier.counter);
   }
 
   @Test
