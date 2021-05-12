@@ -1,8 +1,8 @@
 package com.github.cloudyrock.springboot.config;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.springboot.v2_4.base.config.MongockContextBase;
-import com.github.cloudyrock.springboot.v2_4.base.config.MongockDriverContextSelector;
+import com.github.cloudyrock.springboot.base.config.MongockContextBase;
+import com.github.cloudyrock.springboot.base.config.MongockDriverContextSelector;
 import com.github.cloudyrock.springboot.MongockSpringboot;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.ApplicationContext;

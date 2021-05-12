@@ -2,9 +2,9 @@ package com.github.cloudyrock.springboot;
 
 
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
-import com.github.cloudyrock.springboot.v2_4.base.events.SpringEventPublisher;
-import com.github.cloudyrock.springboot.v2_4.base.events.SpringMigrationFailureEvent;
-import com.github.cloudyrock.springboot.v2_4.base.events.SpringMigrationSuccessEvent;
+import com.github.cloudyrock.springboot.base.events.SpringEventPublisher;
+import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
+import com.github.cloudyrock.springboot.base.events.SpringMigrationSuccessEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

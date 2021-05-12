@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbooBuilderBase<BUILDER_TYPE extends SpringbooBuilderBase, CONFIG extends MongockSpringConfigurationBase> extends RunnerSpringBuilderBase<BUILDER_TYPE, CONFIG> {
+public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase> extends RunnerSpringBuilderBase<BUILDER_TYPE, CONFIG> {
 
   protected ApplicationContext springContext;
   protected List<String> activeProfiles;
@@ -31,7 +31,7 @@ public abstract class SpringbooBuilderBase<BUILDER_TYPE extends SpringbooBuilder
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbooBuilderBase() {
+  protected SpringbootBuilderBase() {
   }
 
   //TODO javadoc
@@ -77,7 +77,7 @@ public abstract class SpringbooBuilderBase<BUILDER_TYPE extends SpringbooBuilder
     runValidation();
     setActiveProfilesFromContext(springContext);
     injectLegacyMigration();
-    return new MongockRunner(buildMigrationExecutor(SpringbooBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+    return new MongockRunner(buildMigrationExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
   }
 
 

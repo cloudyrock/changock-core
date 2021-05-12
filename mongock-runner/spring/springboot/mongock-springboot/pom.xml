@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>springboot-v2.4</artifactId>
+    <artifactId>springboot</artifactId>
     <groupId>com.github.cloudyrock.mongock</groupId>
     <version>5.0.3.BETA-SNAPSHOT</version>
   </parent>
@@ -34,7 +34,7 @@
   <dependencies>
     <dependency>
       <groupId>com.github.cloudyrock.mongock</groupId>
-      <artifactId>mongock-springboot-v2.4-base</artifactId>
+      <artifactId>mongock-springboot-base</artifactId>
     </dependency>
 
 
