@@ -1,7 +1,7 @@
 package com.github.cloudyrock.mongock.driver.api.lock.guard.proxy;
 
-import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.NonLockGuarded;
+import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.utils.Utils;
 
 import java.lang.reflect.Proxy;
