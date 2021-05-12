@@ -57,37 +57,12 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-springboot-v2.2-base</artifactId>
+        <artifactId>mongock-springboot-base</artifactId>
         <version>5.0.3.BETA-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-springboot-v2.2</artifactId>
-        <version>5.0.3.BETA-SNAPSHOT</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-springboot-v2.4-base</artifactId>
-        <version>5.0.3.BETA-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-springboot-v2.4</artifactId>
+        <artifactId>mongock-springboot</artifactId>
         <version>5.0.3.BETA-SNAPSHOT</version>
         <exclusions>
           <exclusion>

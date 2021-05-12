@@ -13,6 +13,7 @@ import org.mockito.internal.verification.Times;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -38,7 +39,7 @@ public class MongockRunnerTest {
     ArgumentCaptor<SortedSet> changeLogCaptor = ArgumentCaptor.forClass(SortedSet.class);
     verify(executor).executeMigration(changeLogCaptor.capture());
 
-    Assert.assertEquals(changeLogItemList, changeLogCaptor.getValue());
+    assertEquals(changeLogItemList, changeLogCaptor.getValue());
 
     verify(eventPublisher, new Times(1)).publishMigrationSuccessEvent(any(MigrationResult.class));
     verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
