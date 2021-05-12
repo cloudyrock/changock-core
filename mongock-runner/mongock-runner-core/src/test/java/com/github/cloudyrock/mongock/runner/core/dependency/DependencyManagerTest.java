@@ -7,7 +7,6 @@ import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyF
 import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependency;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImpl;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

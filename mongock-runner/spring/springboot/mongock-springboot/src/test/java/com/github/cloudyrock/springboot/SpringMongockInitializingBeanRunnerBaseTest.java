@@ -12,7 +12,6 @@ import com.github.cloudyrock.springboot.util.CallVerifier;
 import com.github.cloudyrock.springboot.util.TemplateForTest;
 import com.github.cloudyrock.springboot.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.util.TemplateForTestImplChild;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
