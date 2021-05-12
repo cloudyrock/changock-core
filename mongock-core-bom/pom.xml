@@ -62,7 +62,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>
-        <artifactId>mongock-springboot-v2.4</artifactId>
+        <artifactId>mongock-springboot</artifactId>
         <version>5.0.3.BETA-SNAPSHOT</version>
         <exclusions>
           <exclusion>
