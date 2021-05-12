@@ -96,7 +96,6 @@ public class SpringMongockApplicationRunnerBaseTest {
 
   @Test
   public void shouldInjectEnvironmentToChangeSet() throws Exception {
-
     // when
     buildAndRun(IntegrationProfiledChangerLog.class.getPackage().getName());
 
