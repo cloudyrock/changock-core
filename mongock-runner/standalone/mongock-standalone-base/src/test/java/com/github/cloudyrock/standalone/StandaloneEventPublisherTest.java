@@ -7,6 +7,8 @@ import com.github.cloudyrock.standalone.event.StandaloneMigrationFailureEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class StandaloneEventPublisherTest {
 
   @Test
@@ -36,7 +38,7 @@ public class StandaloneEventPublisherTest {
     Assert.assertFalse(listener.isStartedCalled());
     Assert.assertFalse(listener.isSuccessCalled());
     Assert.assertTrue(listener.isFailCalled());
-    Assert.assertEquals(ex, listener.getException());
+    assertEquals(ex, listener.getException());
   }
 
   @Test

@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertEquals;
+
 public class DependencyManagerTest {
 
 
@@ -23,7 +25,7 @@ public class DependencyManagerTest {
 
   @Test
   public void shouldRetrieveConnectorDependency_WhenAddSimpleDependency() {
-    Assert.assertEquals("dependency",
+    assertEquals("dependency",
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency("dependency"))
             .getDependency(String.class, true)
@@ -32,7 +34,7 @@ public class DependencyManagerTest {
 
   @Test
   public void shouldRetrieveLastConnectorDependency_WhenOverride() {
-    Assert.assertEquals("dependency",
+    assertEquals("dependency",
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency("dependencyNotReturned"))
             .addDriverDependency(new ChangeSetDependency("dependency"))
@@ -45,7 +47,7 @@ public class DependencyManagerTest {
     ArrayList<ChangeSetDependency> dependencies = new ArrayList();
     dependencies.add(new ChangeSetDependency(100L));
     dependencies.add(new ChangeSetDependency("dependency"));
-    Assert.assertEquals("dependency",
+    assertEquals("dependency",
         new DependencyManager()
             .addDriverDependencies(dependencies)
             .getDependency(String.class, true)
@@ -57,7 +59,7 @@ public class DependencyManagerTest {
     ArrayList<ChangeSetDependency> dependencies = new ArrayList();
     dependencies.add(new ChangeSetDependency(100L));
     dependencies.add(new ChangeSetDependency("dependencyNotReturned"));
-    Assert.assertEquals("dependency",
+    assertEquals("dependency",
         new DependencyManager()
             .addDriverDependencies(dependencies)
             .addDriverDependency(new ChangeSetDependency("dependency"))
@@ -71,7 +73,7 @@ public class DependencyManagerTest {
 
     InterfaceDependencyImpl dependency = new InterfaceDependencyImpl();
 
-    Assert.assertEquals(dependency,
+    assertEquals(dependency,
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency(InterfaceDependencyImpl.class, dependency))
             .getDependency(InterfaceDependency.class, true)
@@ -81,7 +83,7 @@ public class DependencyManagerTest {
   @Test
   public void shouldRetrieveFirstChildConnectorDependency_WhenAddTwoChild_IfRetrievedParent() {
     Child1 dependency = new Child1();
-    Assert.assertEquals(dependency,
+    assertEquals(dependency,
         new DependencyManager()
             .addDriverDependency(new ChangeSetDependency(Child1.class, dependency))
             .addDriverDependency(new ChangeSetDependency(Child2.class, new Child2()))
@@ -101,7 +103,7 @@ public class DependencyManagerTest {
 
   @Test
   public void shouldRetrieveLastStandardDependency_WhenOverride() {
-    Assert.assertEquals("value2",
+    assertEquals("value2",
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(new ChangeSetDependency(new Child2("value1")))
@@ -116,7 +118,7 @@ public class DependencyManagerTest {
     ArrayList<ChangeSetDependency> dependencies = new ArrayList();
     dependencies.add(new ChangeSetDependency(new Child2("value1")));
     dependencies.add(new ChangeSetDependency(new Child2("value2")));
-    Assert.assertEquals("value2",
+    assertEquals("value2",
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependencies(dependencies)
@@ -130,7 +132,7 @@ public class DependencyManagerTest {
     ArrayList<ChangeSetDependency> dependencies = new ArrayList<>();
     dependencies.add(new ChangeSetDependency(new Child2("value1")));
     dependencies.add(new ChangeSetDependency(new Child2("value2")));
-    Assert.assertEquals("value3",
+    assertEquals("value3",
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependencies(dependencies)
@@ -144,7 +146,7 @@ public class DependencyManagerTest {
   @Test
   public void shouldRetrieveFirstChildStandardDependency_WhenAddTwoDifferentChildrenOfTheSameTime_IfRetrievedParent() {
 
-    Assert.assertEquals("dependency1",
+    assertEquals("dependency1",
         ((InterfaceDependency) new DependencyManager()
             .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
             .addStandardDependency(new ChangeSetDependency(Child1.class, new Child1("dependency1")))
@@ -157,7 +159,7 @@ public class DependencyManagerTest {
 
   @Test
   public void shouldPrioritizeConnectorDependency() {
-    Assert.assertEquals("connectorDependency",
+    assertEquals("connectorDependency",
         new DependencyManager()
             .addStandardDependency(new ChangeSetDependency("standardDependency"))
             .addDriverDependency(new ChangeSetDependency("connectorDependency"))

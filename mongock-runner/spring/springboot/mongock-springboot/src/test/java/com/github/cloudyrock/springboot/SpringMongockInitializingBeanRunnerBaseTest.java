@@ -134,7 +134,7 @@ public class SpringMongockInitializingBeanRunnerBaseTest {
         .afterPropertiesSet();
 
     // then
-    Assert.assertEquals(1, callVerifier.counter);
+    assertEquals(1, callVerifier.counter);
   }
 
   @Test

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
+
 public class ChangeEntryTest {
 
   @Test
@@ -26,7 +28,7 @@ public class ChangeEntryTest {
         .map(field -> new FieldInstance(field, entry))
         .collect(Collectors.toList());
     // then
-    Assert.assertEquals(fieldExpectation.size(), instances.size());
+    assertEquals(fieldExpectation.size(), instances.size());
     Assert.assertTrue(instances.stream()
         .allMatch(field ->
             "timestamp".equals(field.getName()) || fieldExpectation.get(field.getName()).equals(field.getValue())));

@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 import org.springframework.context.ApplicationEventPublisher;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
 public class SpringEventPublisherTest {
@@ -34,7 +35,7 @@ public class SpringEventPublisherTest {
 
     ArgumentCaptor<SpringMigrationFailureEvent> eventCaptor = ArgumentCaptor.forClass(SpringMigrationFailureEvent.class);
     verify(applicationEventPublisher, new Times(1)).publishEvent(eventCaptor.capture());
-    Assert.assertEquals(ex, eventCaptor.getValue().getException());
+    assertEquals(ex, eventCaptor.getValue().getException());
   }
 
   @Test

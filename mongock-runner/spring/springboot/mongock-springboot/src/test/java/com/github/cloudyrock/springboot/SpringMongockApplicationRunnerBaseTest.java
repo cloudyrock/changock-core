@@ -17,7 +17,6 @@ import com.github.cloudyrock.springboot.util.InterfaceDependencyImplNoLockGarded
 import com.github.cloudyrock.springboot.util.TemplateForTest;
 import com.github.cloudyrock.springboot.util.TemplateForTestImpl;
 import com.github.cloudyrock.springboot.util.TemplateForTestImplChild;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -123,7 +122,7 @@ public class SpringMongockApplicationRunnerBaseTest {
     buildAndRun(EnsureDecoratorChangerLog.class.getPackage().getName());
 
     // then
-    Assert.assertEquals(1, callVerifier.counter);
+    assertEquals(1, callVerifier.counter);
   }
 
   @Test
