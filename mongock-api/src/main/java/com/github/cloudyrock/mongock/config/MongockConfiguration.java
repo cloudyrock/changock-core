@@ -154,7 +154,6 @@ public class MongockConfiguration implements ExecutorConfiguration {
   /**
    * temporal due to legacy Lock configuration deprecated.
    * TODO It should be removed as soon as the legacy properties, maxWaitingForLockMillis and maxTries, are removed
-   * @return
    */
   public long getLockQuitTryingAfterMillis() {
     if (lockQuitTryingAfterMillis == null) {
