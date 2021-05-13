@@ -138,7 +138,7 @@ public class ChangeEntry {
 
   public String toPrettyString() {
     return "ChangeEntry{" +
-        ", \"id\"=\"" + changeId + "\"" +
+        "\"id\"=\"" + changeId + "\"" +
         ", \"author\"=\"" + author + "\"" +
         ", \"class\"=\"" + StringUtils.getSimpleClassName(changeLogClass) + "\"" +
         ", \"method\"=\"" + changeSetMethod + "\"" +
