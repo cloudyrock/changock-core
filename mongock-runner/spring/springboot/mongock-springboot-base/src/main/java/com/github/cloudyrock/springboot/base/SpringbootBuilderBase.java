@@ -1,10 +1,19 @@
 package com.github.cloudyrock.springboot.base;
 
+import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
+import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
-import com.github.cloudyrock.spring.util.RunnerSpringBuilderBase;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
 import com.github.cloudyrock.springboot.base.events.SpringEventPublisher;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,11 +32,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase> extends RunnerSpringBuilderBase<BUILDER_TYPE, CONFIG> {
+import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-  protected ApplicationContext springContext;
-  protected List<String> activeProfiles;
+public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase>
+    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG> {
+
+  private ApplicationContext springContext;
+  private List<String> activeProfiles;
   protected MongockRunner runner;
+  private DependencyManager dependencyManager;
+  private EventPublisher applicationEventPublisher = EventPublisher.empty();
 
   private static final String DEFAULT_PROFILE = "default";
 
@@ -37,13 +51,14 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   //TODO javadoc
   public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
     this.springContext = springContext;
-    addDependencyManager(new SpringDependencyContext(springContext));
+    this.dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
     return getInstance();
   }
 
   //TODO javadoc
   public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    return setEventPublisher(new SpringEventPublisher(applicationEventPublisher));
+    this.applicationEventPublisher = new SpringEventPublisher(applicationEventPublisher);
+    return getInstance();
   }
 
   //TODO javadoc
@@ -80,6 +95,19 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     return new MongockRunner(buildMigrationExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
   }
 
+  @Override
+  protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
+    return new MigrationExecutorImpl(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
+  }
+
+  protected void injectLegacyMigration() {
+    if (legacyMigration != null) {
+      dependencyManager.addStandardDependency(
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
+      );
+    }
+    this.dependencyManager.addDriverDependencies(dependencies);
+  }
 
   private static String getParameterName(Parameter parameter) {
     String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
@@ -95,6 +123,14 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   @FunctionalInterface
   public interface MongockInitializingBeanRunnerBase extends InitializingBean {
+  }
+
+  @Override
+  public void runValidation() {
+    super.runValidation();
+    if (dependencyManager == null) {
+      throw new MongockException("ApplicationContext from Spring must be injected to Builder");
+    }
   }
 
 }
