@@ -2,6 +2,7 @@ package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationFailureEvent;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationSuccessEvent;
@@ -44,8 +45,8 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
     return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
   }
 
-  public StandaloneRunner buildRunner() {
-    return new StandaloneRunner(buildMigrationExecutor(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
+  public MongockRunner buildRunner() {
+    return new MongockRunner(buildMigrationExecutor(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
   }
 
 
