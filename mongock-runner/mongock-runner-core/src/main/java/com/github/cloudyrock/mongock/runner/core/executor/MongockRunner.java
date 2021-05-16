@@ -7,16 +7,19 @@ import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongockRunner {
+import static com.github.cloudyrock.mongock.runner.core.executor.RunnerResult.Status.ERROR;
+import static com.github.cloudyrock.mongock.runner.core.executor.RunnerResult.Status.DISABLED;
+
+public class MongockRunner<T> {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunner.class);
 
   private final boolean enabled;
-  private final MigrationExecutor executor;
+  private final MigrationExecutor<T> executor;
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
 
-  public MongockRunner(MigrationExecutor executor,
+  public MongockRunner(MigrationExecutor<T> executor,
                        ChangeLogService changeLogService,
                        boolean throwExceptionIfCannotObtainLock,
                        boolean enabled,
@@ -42,16 +45,17 @@ public class MongockRunner {
     return enabled;
   }
 
-  public void execute() throws MongockException {
+  public RunnerResult<T> execute() throws MongockException {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
+      return new RunnerResult<>(DISABLED);
     } else {
       try {
         this.validate();
         eventPublisher.publishMigrationStarted();
-        //todo create the migration result
-        executor.executeMigration(chanLogService.fetchChangeLogs());
+        T result = executor.executeMigration(chanLogService.fetchChangeLogs());
         eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
+        return new RunnerResult<>(result);
 
       } catch (LockCheckException lockEx) {
         MongockException mongockException = new MongockException(lockEx);
@@ -62,6 +66,7 @@ public class MongockRunner {
 
         } else {
           logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
+          return new RunnerResult<>(ERROR);
         }
 
       } catch (Exception ex) {
