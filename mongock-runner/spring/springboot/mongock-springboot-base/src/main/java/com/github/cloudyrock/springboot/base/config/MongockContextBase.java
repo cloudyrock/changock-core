@@ -31,7 +31,7 @@ public abstract class MongockContextBase<CONFIG extends MongockSpringConfigurati
         .buildInitializingBeanRunner();
   }
 
-  protected abstract SpringbootBuilderBase getBuilder(ConnectionDriver connectionDriver,
+  public abstract SpringbootBuilderBase getBuilder(ConnectionDriver connectionDriver,
                                                       CONFIG springConfiguration,
                                                       ApplicationContext springContext,
                                                       ApplicationEventPublisher applicationEventPublisher);
