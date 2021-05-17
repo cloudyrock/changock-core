@@ -67,16 +67,8 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   public abstract <T extends MongockInitializingBeanRunnerBase> T buildInitializingBeanRunner();
 
   ///////////////////////////////////////////////////
-  // PRIVATE METHODS
+  // Build methods
   ///////////////////////////////////////////////////
-
-  private void setActiveProfilesFromContext(ApplicationContext springContext) {
-    Environment springEnvironment = springContext.getEnvironment();
-    this.activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
-        ? Arrays.asList(springEnvironment.getActiveProfiles())
-        : Collections.singletonList(DEFAULT_PROFILE);
-  }
-
   @Override
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
     return annotated -> ProfileUtil.matchesActiveSpringProfile(
@@ -86,25 +78,9 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
         (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
   }
 
-
-
-  @Override
-  protected EventPublisher buildEventPublisher() {
-    return applicationEventPublisher;
-  }
-
   @Override
   protected void beforeBuildRunner() {
     setActiveProfilesFromContext(springContext);
-    injectLegacyMigration();
-  }
-
-  @Override
-  protected DependencyManager buildDependencyManager() {
-    return dependencyManager;
-  }
-
-  protected void injectLegacyMigration() {
     if (config.getLegacyMigration() != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
@@ -124,6 +100,16 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     };
   }
 
+  @Override
+  protected DependencyManager buildDependencyManager() {
+    return dependencyManager;
+  }
+
+  @Override
+  protected EventPublisher buildEventPublisher() {
+    return applicationEventPublisher;
+  }
+
   @FunctionalInterface
   public interface MongockApplicationRunnerBase extends ApplicationRunner {
   }
@@ -140,4 +126,10 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     }
   }
 
+  private void setActiveProfilesFromContext(ApplicationContext springContext) {
+    Environment springEnvironment = springContext.getEnvironment();
+    this.activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
+        ? Arrays.asList(springEnvironment.getActiveProfiles())
+        : Collections.singletonList(DEFAULT_PROFILE);
+  }
 }

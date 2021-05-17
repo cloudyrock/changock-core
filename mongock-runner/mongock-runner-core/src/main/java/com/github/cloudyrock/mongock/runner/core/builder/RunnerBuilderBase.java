@@ -166,7 +166,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         config.isEnabled(),
         buildEventPublisher());
   }
-  protected abstract void beforeBuildRunner();
+
+  protected void beforeBuildRunner() {
+  }
 
 
   protected final Executor buildExecutor() {

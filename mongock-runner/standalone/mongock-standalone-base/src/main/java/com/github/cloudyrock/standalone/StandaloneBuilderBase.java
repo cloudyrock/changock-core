@@ -41,11 +41,8 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   }
 
   ///////////////////////////////////////////////////
-  // Builder METHODS
+  // Build METHODS
   ///////////////////////////////////////////////////
-  @Override
-  protected void beforeBuildRunner() {
-  }
 
   @Override
   public MongockRunner buildRunner() {
