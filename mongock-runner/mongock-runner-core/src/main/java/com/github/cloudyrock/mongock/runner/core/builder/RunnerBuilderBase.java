@@ -10,6 +10,7 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
@@ -185,6 +186,16 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     }
   }
 
+  protected MongockRunner buildRunner() {
+    runValidation();
+    beforeBuildRunner();
+    return new MongockRunner(
+        buildExecutor(),
+        buildChangeLogService(),
+        config.isThrowExceptionIfCannotObtainLock(),
+        config.isEnabled(),
+        buildEventPublisher());
+  }
   protected abstract void beforeBuildRunner();
 
 
@@ -193,14 +204,14 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         operation,
         driver,
         buildDependencyManager(),
-        getParameterNameFunction(),
+        buildParameterNameFunction(),
         config
     );
   }
 
-  protected abstract  EventPublisher getEventPublisher();
+  protected abstract  EventPublisher buildEventPublisher();
 
-  protected Function<Parameter, String> getParameterNameFunction() {
+  protected Function<Parameter, String> buildParameterNameFunction() {
     return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
   }
 
@@ -215,7 +226,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return dependencyManager;
   }
 
-  protected ChangeLogService getChangeLogService() {
+  protected ChangeLogService buildChangeLogService() {
     return new ChangeLogService(
         changeLogsScanPackage,
         changeLogsScanClasses,

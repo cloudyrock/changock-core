@@ -47,17 +47,13 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   protected void beforeBuildRunner() {
   }
 
+  @Override
   public MongockRunner buildRunner() {
-    return new MongockRunner(
-        buildExecutor(),
-        getChangeLogService(),
-        config.isThrowExceptionIfCannotObtainLock(),
-        config.isEnabled(),
-        getEventPublisher());
+    return super.buildRunner();
   }
 
   @Override
-  protected EventPublisher getEventPublisher() {
+  protected EventPublisher buildEventPublisher() {
     return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
   }
 

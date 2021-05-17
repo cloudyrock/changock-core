@@ -44,7 +44,7 @@ public class TestMongockRunner extends MongockRunner {
     }
 
     public TestMongockRunner build() {
-      return build(buildExecutorForTest(), getChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), new DummyEventPublisher());
+      return build(buildExecutorForTest(), buildChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), new DummyEventPublisher());
     }
 
     protected Executor buildExecutorForTest() {
@@ -68,7 +68,7 @@ public class TestMongockRunner extends MongockRunner {
     }
 
     @Override
-    protected EventPublisher getEventPublisher() {
+    protected EventPublisher buildEventPublisher() {
       return null;
     }
 

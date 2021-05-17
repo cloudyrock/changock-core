@@ -253,7 +253,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
   }
 
   @Override
-  protected EventPublisher getEventPublisher() {
+  protected EventPublisher buildEventPublisher() {
     return EventPublisher.empty();
   }
 
@@ -270,7 +270,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
   public MongockRunner build() {
     return new MongockRunner(
         executor != null ? executor : buildExecutor(),
-        getChangeLogService(),
+        buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
         mock(EventPublisher.class));

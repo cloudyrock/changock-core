@@ -87,19 +87,9 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
 
-  protected MongockRunner buildRunner() {
-    runValidation();
-    beforeBuildRunner();
-    return new MongockRunner(
-        buildExecutor(),
-        getChangeLogService(),
-        config.isThrowExceptionIfCannotObtainLock(),
-        config.isEnabled(),
-        getEventPublisher());
-  }
 
   @Override
-  protected EventPublisher getEventPublisher() {
+  protected EventPublisher buildEventPublisher() {
     return applicationEventPublisher;
   }
 
@@ -124,7 +114,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @Override
-  protected Function<Parameter, String> getParameterNameFunction() {
+  protected Function<Parameter, String> buildParameterNameFunction() {
     return parameter -> {
       String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
       if (name == null) {
