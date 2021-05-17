@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class MongockConfiguration {
@@ -116,6 +117,11 @@ public class MongockConfiguration {
   public MongockConfiguration() {
     setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
     setLockRepositoryName(getLockRepositoryNameDefault());
+  }
+
+  //todo implement
+  public MongockConfiguration getCopy() {
+    return this;
   }
 
 
@@ -294,5 +300,33 @@ public class MongockConfiguration {
     return minutes * 60 * 1000L;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof MongockConfiguration)) return false;
+    MongockConfiguration that = (MongockConfiguration) o;
+    return indexCreation == that.indexCreation &&
+        lockAcquiredForMillis == that.lockAcquiredForMillis &&
+        lockTryFrequencyMillis == that.lockTryFrequencyMillis &&
+        throwExceptionIfCannotObtainLock == that.throwExceptionIfCannotObtainLock &&
+        trackIgnored == that.trackIgnored &&
+        enabled == that.enabled &&
+        Objects.equals(changeLogRepositoryName, that.changeLogRepositoryName) &&
+        Objects.equals(lockRepositoryName, that.lockRepositoryName) &&
+        Objects.equals(lockQuitTryingAfterMillis, that.lockQuitTryingAfterMillis) &&
+        Objects.equals(changeLogsScanPackage, that.changeLogsScanPackage) &&
+        Objects.equals(startSystemVersion, that.startSystemVersion) &&
+        Objects.equals(endSystemVersion, that.endSystemVersion) &&
+        Objects.equals(serviceIdentifier, that.serviceIdentifier) &&
+        Objects.equals(metadata, that.metadata) &&
+        Objects.equals(legacyMigration, that.legacyMigration) &&
+        Objects.equals(transactionEnabled, that.transactionEnabled) &&
+        Objects.equals(maxTries, that.maxTries) &&
+        Objects.equals(maxWaitingForLockMillis, that.maxWaitingForLockMillis);
+  }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(changeLogRepositoryName, indexCreation, lockRepositoryName, lockAcquiredForMillis, lockQuitTryingAfterMillis, lockTryFrequencyMillis, throwExceptionIfCannotObtainLock, trackIgnored, enabled, changeLogsScanPackage, startSystemVersion, endSystemVersion, serviceIdentifier, metadata, legacyMigration, transactionEnabled, maxTries, maxWaitingForLockMillis);
+  }
 }

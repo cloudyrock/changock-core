@@ -1,8 +1,8 @@
 package com.github.cloudyrock.springboot;
 
 
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
 import com.github.cloudyrock.springboot.base.SpringbootBuilderBase;
 import com.github.cloudyrock.springboot.config.MongockSpringConfiguration;
 
@@ -11,14 +11,14 @@ public final class MongockSpringboot {
 
   //TODO javadoc
   public static Builder builder() {
-    return new Builder(new ExecutorFactory<>());
+    return new Builder(new ExecutorFactory(), new MongockSpringConfiguration());
   }
 
-  public static class Builder extends SpringbootBuilderBase<Builder, MongockSpringConfiguration, ExecutorConfiguration> {
+  public static class Builder extends SpringbootBuilderBase<Builder, MongockSpringConfiguration> {
 
 
-    protected Builder(ExecutorFactory<ExecutorConfiguration> executorFactory) {
-      super(executorFactory);
+    protected Builder(ExecutorFactory executorFactory, MongockSpringConfiguration config) {
+      super(executorFactory, config);
     }
 
     //TODO javadoc
@@ -34,11 +34,6 @@ public final class MongockSpringboot {
     public MongockInitializingBeanRunner buildInitializingBeanRunner() {
       this.runner = getRunner();
       return () -> runner.execute();
-    }
-
-    @Override
-    protected ExecutorConfiguration getExecutorConfiguration() {
-      return new ExecutorConfiguration(trackIgnored, serviceIdentifier);
     }
 
     @Override

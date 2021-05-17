@@ -1,8 +1,9 @@
-package com.github.cloudyrock.mongock.runner.core.executor.migration;
+package com.github.cloudyrock.mongock.runner.core.executor.change;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.NonLockGuarded;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
@@ -39,27 +40,29 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class MigrationExecutorBase<CONFIG extends ExecutorConfiguration> implements Executor {
+public class ChangeExecutorBase<CONFIG extends MongockConfiguration> implements Executor {
 
-  private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
+  private static final Logger logger = LoggerFactory.getLogger(ChangeExecutorBase.class);
 
+  private final Map<String, Object> metadata;
+  private final DependencyManager dependencyManager;
+  private final Function<Parameter, String> parameterNameProvider;
+  private boolean executionInProgress = false;
   protected final ConnectionDriver driver;
-  protected final Map<String, Object> metadata;
-  protected final DependencyManager dependencyManager;
-  protected final CONFIG config;
-  protected final Function<Parameter, String> parameterNameProvider;
-  protected boolean executionInProgress = false;
+  protected final String serviceIdentifier;
+  protected final boolean trackIgnored;
 
 
-  public MigrationExecutorBase(ConnectionDriver driver,
+  protected ChangeExecutorBase(ConnectionDriver driver,
                                DependencyManager dependencyManager,
-                               CONFIG config,
                                Map<String, Object> metadata,
-                               Function<Parameter, String> parameterNameProvider) {
+                               Function<Parameter, String> parameterNameProvider,
+                               CONFIG config) {
     this.driver = driver;
     this.metadata = metadata;
     this.dependencyManager = dependencyManager;
-    this.config = config;
+    this.serviceIdentifier = config.getServiceIdentifier();
+    this.trackIgnored = config.isTrackIgnored();
     this.parameterNameProvider = parameterNameProvider;
   }
 
@@ -142,9 +145,9 @@ public class MigrationExecutorBase<CONFIG extends ExecutorConfiguration> impleme
       hostname = "unknown-host." + executionId;
     }
 
-    if (StringUtils.isNotEmpty(this.config.getServiceIdentifier())) {
+    if (StringUtils.isNotEmpty(serviceIdentifier)) {
       hostname += "-";
-      hostname += this.config.getServiceIdentifier();
+      hostname += serviceIdentifier;
     }
     return hostname;
   }
@@ -181,7 +184,7 @@ public class MigrationExecutorBase<CONFIG extends ExecutorConfiguration> impleme
         // if not runAlways or, being runAlways, it hasn't been executed before
         if (!changeSetItem.isRunAlways() || !alreadyExecuted) {
           //if not ignored or, being ignored, should be tracked anyway
-          if (changeEntry.getState() != IGNORED || config.isTrackIgnored()) {
+          if (changeEntry.getState() != IGNORED || trackIgnored) {
             driver.getChangeEntryService().save(changeEntry);
           }
         }

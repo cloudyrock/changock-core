@@ -7,13 +7,12 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.Operation;
+import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.Executor;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration, EXECUTOR_CONFIG extends ExecutorConfiguration>
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
     implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
@@ -38,31 +37,32 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
   protected List<Class<?>> changeLogsScanClasses = new ArrayList<>();
-  protected boolean trackIgnored = false;
-  protected boolean throwExceptionIfCannotObtainLock = true;
-  protected boolean enabled = true;
-  protected String startSystemVersion = "0";
-  protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
-  protected String serviceIdentifier = null;
-  protected Map<String, Object> metadata;
+  protected LegacyMigration legacyMigration = null;
+//  protected boolean trackIgnored = false;
+//  protected String startSystemVersion = "0";
+//  protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
+//  protected String serviceIdentifier = null;
+//  protected Map<String, Object> metadata;
+
+  protected CONFIG config;
+
+
   protected ConnectionDriver driver;
   protected AnnotationProcessor annotationProcessor;
-  protected LegacyMigration legacyMigration = null;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
   protected Operation operation = new MigrationOp();
-  protected ExecutorFactory<EXECUTOR_CONFIG> executorFactory;
+  protected ExecutorFactory executorFactory;
 
-  protected RunnerBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory) {
+
+  protected RunnerBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
+    this.config = config;
   }
 
-  @Override
-  public BUILDER_TYPE setDriver(ConnectionDriver driver) {
-    this.driver = driver;
-    return getInstance();
-  }
-
+  ///////////////////////////////////////////////////////////////////////////////////
+  //  Configuration setters
+  ///////////////////////////////////////////////////////////////////////////////////
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
     if (changeLogsScanPackageList != null) {
@@ -97,43 +97,62 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE setEnabled(boolean enabled) {
-    this.enabled = enabled;
+    this.config.setEnabled(enabled);
     return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setTrackIgnored(boolean trackIgnored) {
-    this.trackIgnored = trackIgnored;
+    config.setTrackIgnored(trackIgnored);
     return getInstance();
   }
 
   @Override
   public BUILDER_TYPE dontFailIfCannotAcquireLock() {
-    this.throwExceptionIfCannotObtainLock = false;
+    this.config.setThrowExceptionIfCannotObtainLock(false);
     return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setStartSystemVersion(String startSystemVersion) {
-    this.startSystemVersion = startSystemVersion;
+    config.setStartSystemVersion(startSystemVersion);
     return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setEndSystemVersion(String endSystemVersion) {
-    this.endSystemVersion = endSystemVersion;
+    config.setEndSystemVersion(endSystemVersion);
     return getInstance();
   }
 
   @Override
   public BUILDER_TYPE setServiceIdentifier(String serviceIdentifier) {
-    this.serviceIdentifier = serviceIdentifier;
+    config.setServiceIdentifier(serviceIdentifier);
     return getInstance();
   }
 
   @Override
   public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
-    this.metadata = metadata;
+    config.setMetadata(metadata);
+    return getInstance();
+  }
+
+  @Override
+  public BUILDER_TYPE setConfig(CONFIG config) {
+    this.config = (CONFIG) config.getCopy();
+    this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
+
+    this
+        .setLegacyMigration(config.getLegacyMigration());
+    return getInstance();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
+  //  Injections setters
+  ///////////////////////////////////////////////////////////////////////////////////
+  @Override
+  public BUILDER_TYPE setDriver(ConnectionDriver driver) {
+    this.driver = driver;
     return getInstance();
   }
 
@@ -149,26 +168,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
-  @Override
-  public BUILDER_TYPE  setConfig(CONFIG config) {
-    this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
-    if (!config.isThrowExceptionIfCannotObtainLock()) {
-      this.dontFailIfCannotAcquireLock();
-    }
-    this
-        .setTrackIgnored(config.isTrackIgnored())
-        .setEnabled(config.isEnabled())
-        .setStartSystemVersion(config.getStartSystemVersion())
-        .setEndSystemVersion(config.getEndSystemVersion())
-        .setServiceIdentifier(config.getServiceIdentifier())
-        .withMetadata(config.getMetadata())
-        .setLegacyMigration(config.getLegacyMigration());
-    return getInstance();
-  }
-
-  ///////////////////////////////////////////////////
-  // PRIVATE METHODS
-  ///////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////
+  //  Private methods
+  ///////////////////////////////////////////////////////////////////////////////////
 
   private void addScanItemsFromConfig(List<String> changeLogsScanPackage) {
     for (String itemPath : changeLogsScanPackage) {
@@ -195,13 +197,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         operation,
         driver,
         buildDependencyManager(),
-        getExecutorConfiguration(),
-        metadata,
-        paramNameExtractor
+        config.getMetadata(),
+        paramNameExtractor,
+        config
     );
   }
 
-  protected abstract EXECUTOR_CONFIG getExecutorConfiguration();
 
   protected DependencyManager buildDependencyManager() {
     DependencyManager dependencyManager = new DependencyManager();
@@ -218,8 +219,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return new ChangeLogService(
         changeLogsScanPackage,
         changeLogsScanClasses,
-        startSystemVersion,
-        endSystemVersion,
+        config.getStartSystemVersion(),
+        config.getEndSystemVersion(),
         getAnnotationFilter(),
         annotationProcessor, // if null, it will take default MongockAnnotationManager
         changeLogInstantiator
@@ -239,13 +240,13 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     if (changeLogsScanPackage == null || changeLogsScanPackage.isEmpty()) {
       throw new MongockException("changeLogsScanPackage must be injected to Mongock builder");
     }
-    if (!throwExceptionIfCannotObtainLock) {
+    if (!config.isThrowExceptionIfCannotObtainLock()) {
       logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Mongock will continue even if it's not able to acquire the lock");
     }
-    if (!"0".equals(startSystemVersion) || !String.valueOf(Integer.MAX_VALUE).equals(endSystemVersion)) {
-      logger.info("Running Mongock with startSystemVersion[{}] and endSystemVersion[{}]", startSystemVersion, endSystemVersion);
+    if (!"0".equals(config.getStartSystemVersion()) || !String.valueOf(Integer.MAX_VALUE).equals(config.getEndSystemVersion())) {
+      logger.info("Running Mongock with startSystemVersion[{}] and endSystemVersion[{}]", config.getStartSystemVersion(), config.getEndSystemVersion());
     }
-    if (metadata == null) {
+    if (config.getMetadata() == null) {
       logger.info("Running Mongock with NO metadata");
     } else {
       logger.info("Running Mongock with metadata");

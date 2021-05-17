@@ -4,6 +4,7 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
@@ -27,10 +28,9 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.prepostmigration.Cha
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.alreadyexecuted.ChangeLogAlreadyExecuted;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlreadyExecutedRunAlways;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
+import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.util.DummyDependencyClass;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImpl;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImplNoLockGarded;
@@ -68,7 +68,7 @@ public class MigrationExecutorImplTest {
   private LockManager lockManager;
   private ConnectionDriver driver;
   private TransactionableConnectionDriver transactionableDriver;
-  
+
   @Rule
   public ExpectedException exceptionExpected = ExpectedException.none();
 
@@ -76,15 +76,15 @@ public class MigrationExecutorImplTest {
   public void setUp() {
     lockManager = mock(LockManager.class);
     changeEntryService = mock(ChangeEntryService.class);
-    
+
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
-    
+
     transactionableDriver = mock(TransactionableConnectionDriver.class);
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
     when(transactionableDriver.getChangeEntryService()).thenReturn(changeEntryService);
-    when(transactionableDriver.getTransactioner()).thenReturn(Optional.of((Transactioner)Runnable::run));
+    when(transactionableDriver.getTransactioner()).thenReturn(Optional.of((Transactioner) Runnable::run));
   }
 
   @Test
@@ -110,7 +110,10 @@ public class MigrationExecutorImplTest {
     when(changeEntryService.isAlreadyExecuted("alreadyExecuted", "executor")).thenReturn(true);
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(trackingIgnored, "myService"), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(trackingIgnored);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -137,7 +140,7 @@ public class MigrationExecutorImplTest {
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
 
     int nextIndex = 2;
-    if(trackingIgnored) {
+    if (trackingIgnored) {
       entry = entries.get(nextIndex);
       assertEquals("alreadyExecuted", entry.getChangeId());
       assertEquals("executor", entry.getAuthor());
@@ -169,7 +172,11 @@ public class MigrationExecutorImplTest {
 
     // when
     try {
-      new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+      MongockConfiguration config = new MongockConfiguration();
+      config.setServiceIdentifier("myService");
+      config.setTrackIgnored(false);
+      MigrationExecutorImpl executor = new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config);
+      executor
           .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
     } catch (Exception ex) {
       //ignored
@@ -218,7 +225,10 @@ public class MigrationExecutorImplTest {
     exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Wrong parameter[DummyDependencyClass]");
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -234,7 +244,10 @@ public class MigrationExecutorImplTest {
     exceptionExpected.expectMessage("argument type mismatch");
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -247,7 +260,10 @@ public class MigrationExecutorImplTest {
 
     // when
     try {
-      new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+      MongockConfiguration config = new MongockConfiguration();
+      config.setServiceIdentifier("myService");
+      config.setTrackIgnored(false);
+      new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
           .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
     } catch (Exception ex) {
     }
@@ -266,7 +282,10 @@ public class MigrationExecutorImplTest {
     doThrow(MongockException.class).when(driver).runValidation();
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -280,7 +299,10 @@ public class MigrationExecutorImplTest {
     when(changeEntryService.isAlreadyExecuted("newChangeSet2", "executor")).thenReturn(false);
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorWithNonFailFastChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -316,7 +338,7 @@ public class MigrationExecutorImplTest {
     assertEquals(ChangeState.EXECUTED, entry.getState());
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldContinueMigration_whenAChangeSetFails_ifChangeLogIsNonFailFast() throws InterruptedException {
@@ -330,14 +352,17 @@ public class MigrationExecutorImplTest {
 
     // when
     try {
-      new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
-        .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
+      MongockConfiguration config = new MongockConfiguration();
+      config.setServiceIdentifier("myService");
+      config.setTrackIgnored(false);
+      new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+          .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
 
     assertTrue("Changelog's (1) methods have not been fully executed", ExecutorWithChangeLogNonFailFastChangeLog1.latch.await(1, TimeUnit.NANOSECONDS));
     assertTrue("Changelog's (2) methods have not been fully executed", ExecutorWithChangeLogNonFailFastChangeLog2.latch.await(1, TimeUnit.NANOSECONDS));
-    
+
     // then
     ArgumentCaptor<ChangeEntry> captor = ArgumentCaptor.forClass(ChangeEntry.class);
     verify(changeEntryService, new Times(4)).save(captor.capture());
@@ -360,7 +385,7 @@ public class MigrationExecutorImplTest {
     assertEquals("newChangeSet12", entry.getChangeSetMethod());
     assertEquals(ChangeState.FAILED, entry.getState());
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
-    
+
     entry = entries.get(2);
     assertEquals("newChangeSet21", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
@@ -368,7 +393,7 @@ public class MigrationExecutorImplTest {
     assertEquals("newChangeSet21", entry.getChangeSetMethod());
     assertEquals(ChangeState.EXECUTED, entry.getState());
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
-    
+
     entry = entries.get(3);
     assertEquals("newChangeSet22", entry.getChangeId());
     assertEquals("executor", entry.getAuthor());
@@ -377,7 +402,7 @@ public class MigrationExecutorImplTest {
     assertEquals(ChangeState.EXECUTED, entry.getState());
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldAbortMigration_whenAChangeSetFails_ifChangeLogIsFailFast() throws InterruptedException {
@@ -391,13 +416,16 @@ public class MigrationExecutorImplTest {
 
     // when
     try {
-      new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
-        .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
+      MongockConfiguration config = new MongockConfiguration();
+      config.setServiceIdentifier("myService");
+      config.setTrackIgnored(false);
+      new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+          .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorWithChangeLogFailFastChangeLog1.latch.await(1, TimeUnit.NANOSECONDS));
-    
+
     // then
     ArgumentCaptor<ChangeEntry> captor = ArgumentCaptor.forClass(ChangeEntry.class);
     verify(changeEntryService, new Times(2)).save(captor.capture());
@@ -437,7 +465,10 @@ public class MigrationExecutorImplTest {
     DependencyManager dependencyManager = new DependencyManager()
         .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
         .addStandardDependency(new ChangeSetDependency(new DummyDependencyClass()));
-    new MigrationExecutorImpl(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -454,7 +485,10 @@ public class MigrationExecutorImplTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutorImpl(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -474,7 +508,10 @@ public class MigrationExecutorImplTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutorImpl(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -494,7 +531,10 @@ public class MigrationExecutorImplTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImplNoLockGarded()));
 
-    new MigrationExecutorImpl(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -514,7 +554,10 @@ public class MigrationExecutorImplTest {
     DependencyManager dependencyManager = new DependencyManager()
         .addStandardDependency(new ChangeSetDependency(new InterfaceDependencyImpl()));
 
-    new MigrationExecutorImpl(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -530,16 +573,24 @@ public class MigrationExecutorImplTest {
     when(driver.getLockManager()).thenReturn(lockManager);
     LegacyMigrationMappingFields mappingFields = new LegacyMigrationMappingFields();
     mappingFields.setAuthor("AUTHOR");
-    LegacyMigration dependency = new LegacyMigration() {};
+    LegacyMigration dependency = new LegacyMigration() {
+    };
     dependency.setMappingFields(mappingFields);
     DependencyManager dependencyManager = new DependencyManager()
-        .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {})))
-        .addStandardDependency(new ChangeSetDependency("legacyMigration2", List.class, Collections.singletonList(new LegacyMigration() {})))
+        .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {
+        })))
+        .addStandardDependency(new ChangeSetDependency("legacyMigration2", List.class, Collections.singletonList(new LegacyMigration() {
+        })))
         .addStandardDependency(new ChangeSetDependency("legacyMigration", List.class, Collections.singletonList(dependency)))
-        .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {})))
-        .addStandardDependency(new ChangeSetDependency("legacyMigration3", List.class, Collections.singletonList(new LegacyMigration() {})));
+        .addStandardDependency(new ChangeSetDependency(List.class, Collections.singletonList(new LegacyMigration() {
+        })))
+        .addStandardDependency(new ChangeSetDependency("legacyMigration3", List.class, Collections.singletonList(new LegacyMigration() {
+        })));
 
-    new MigrationExecutorImpl(driver, dependencyManager, getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(LegacyMigrationChangeLog.class));
 
     // then
@@ -550,7 +601,10 @@ public class MigrationExecutorImplTest {
   public void shouldSkipMigration_whenChangeLogWithNoChangeSet() {
     when(driver.getLockManager()).thenReturn(lockManager);
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithNoChangeSet.class));
 
     //then
@@ -568,14 +622,17 @@ public class MigrationExecutorImplTest {
     when(driver.getLockManager()).thenReturn(lockManager);
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecuted.class));
 
     //then
     // Lock should not be acquired because all items are already executed.
     verify(lockManager, new Times(0)).acquireLockDefault();
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldStoreChangeLog_whenRunAlways_ifNotAlreadyExecuted() {
@@ -588,7 +645,10 @@ public class MigrationExecutorImplTest {
     when(driver.getLockManager()).thenReturn(lockManager);
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
@@ -611,7 +671,10 @@ public class MigrationExecutorImplTest {
     when(driver.getLockManager()).thenReturn(lockManager);
 
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
@@ -621,20 +684,23 @@ public class MigrationExecutorImplTest {
     // ChangeEntry for ChangeSet "alreadyExecutedRunAlways" should not be stored
     verify(changeEntryService, new Times(0)).save(changeEntryCaptor.capture());
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogBefore_whenPreMigration_ifTransactionPerMigration() {
     // given
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
-    
+
     // when
-    new MigrationExecutorImpl(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
-    
+
     // then
-    verify(lockManager, new Times(1)).acquireLockDefault();   
-    
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
     ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
     // ChangeEntry for all ChangeSets should be stored (4)
     verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
@@ -646,20 +712,23 @@ public class MigrationExecutorImplTest {
     assertEquals(changeEntries.get(2).getChangeId(), "standard1");
     assertEquals(changeEntries.get(3).getChangeId(), "standard2");
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogBefore_whenPreMigration_ifNoTransaction() {
     // given
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
-    
+
     // when
-    new MigrationExecutorImpl(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
-    
+
     // then
-    verify(lockManager, new Times(1)).acquireLockDefault();   
-    
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
     ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
     // ChangeEntry for all ChangeSets should be stored (4)
     verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
@@ -671,20 +740,23 @@ public class MigrationExecutorImplTest {
     assertEquals(changeEntries.get(2).getChangeId(), "standard1");
     assertEquals(changeEntries.get(3).getChangeId(), "standard2");
   }
-    
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogAfter_whenPostMigration_ifTransactionPerMigration() {
     // given
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
-    
+
     // when
-    new MigrationExecutorImpl(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
-    
+
     // then
-    verify(lockManager, new Times(1)).acquireLockDefault();   
-    
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
     ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
     // ChangeEntry for all ChangeSets should be stored (4)
     verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
@@ -696,20 +768,23 @@ public class MigrationExecutorImplTest {
     assertEquals(changeEntries.get(2).getChangeId(), "postMigration1");
     assertEquals(changeEntries.get(3).getChangeId(), "postMigration2");
   }
-     
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldExecuteChangeLogAfter_whenPostMigration_ifNoTransaction() {
     // given
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
-    
+
     // when
-    new MigrationExecutorImpl(transactionableDriver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
-    
+
     // then
-    verify(lockManager, new Times(1)).acquireLockDefault();   
-    
+    verify(lockManager, new Times(1)).acquireLockDefault();
+
     ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
     // ChangeEntry for all ChangeSets should be stored (4)
     verify(changeEntryService, new Times(4)).save(changeEntryCaptor.capture());
@@ -721,24 +796,27 @@ public class MigrationExecutorImplTest {
     assertEquals(changeEntries.get(2).getChangeId(), "postMigration1");
     assertEquals(changeEntries.get(3).getChangeId(), "postMigration2");
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void shouldThrowException_IfChangeLogIsAnnotatedWithPreAndPostMigration() {
     // given
     when(driver.getLockManager()).thenReturn(lockManager);
-    
+
     // then
     exceptionExpected.expect(MongockException.class);
     exceptionExpected.expectMessage("A ChangeLog can't be defined to be executed pre and post migration.");
-    
+
     // when
-    new MigrationExecutorImpl(driver, new DependencyManager(), getMigrationConfig(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER)
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPrePostMigration.class));
   }
-  
+
   private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {
-    return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), Collections.emptyList(),  "0", String.valueOf(Integer.MAX_VALUE))
+    return new ChangeLogService(Collections.singletonList(executorChangeLogClass.getPackage().getName()), Collections.emptyList(), "0", String.valueOf(Integer.MAX_VALUE))
         .fetchChangeLogs();
   }
 
@@ -748,15 +826,6 @@ public class MigrationExecutorImplTest {
     when(driver.getDependencies()).thenReturn(dependencies);
   }
 
-
-  private ExecutorConfiguration getMigrationConfig() {
-    return getMigrationConfig(false, "myService");
-  }
-
-  private ExecutorConfiguration getMigrationConfig(boolean trackIgnored, String serviceIdentifier) {
-    return new ExecutorConfiguration(trackIgnored, serviceIdentifier);
-  }
-  
   private abstract class TransactionableConnectionDriver implements ConnectionDriver {
   }
 }

@@ -6,10 +6,9 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
@@ -33,8 +32,8 @@ import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase, EXECUTOR_CONFIG extends ExecutorConfiguration>
-    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG, EXECUTOR_CONFIG> {
+public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase>
+    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG> {
 
   private ApplicationContext springContext;
   private List<String> activeProfiles;
@@ -44,8 +43,8 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory) {
-    super(executorFactory);
+  protected SpringbootBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+    super(executorFactory, config);
   }
 
   //TODO javadoc
@@ -92,7 +91,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     runValidation();
     setActiveProfilesFromContext(springContext);
     injectLegacyMigration();
-    return new MongockRunner(buildExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+    return new MongockRunner(buildExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), applicationEventPublisher);
   }
 
   @Override

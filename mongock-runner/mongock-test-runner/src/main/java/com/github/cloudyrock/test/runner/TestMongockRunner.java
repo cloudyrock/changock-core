@@ -9,7 +9,6 @@ import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
 
 import javax.inject.Named;
 import java.lang.reflect.Parameter;
@@ -19,24 +18,24 @@ public class TestMongockRunner extends MongockRunner {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
   public static RunnerBuilder<Builder, MongockConfiguration> builder() {
-    return new Builder(new ExecutorFactory<>());
+    return new Builder(new ExecutorFactory());
   }
 
   public static TestMongockRunner.Builder testBuilder() {
-    return new Builder(new ExecutorFactory<>());
+    return new Builder(new ExecutorFactory());
   }
 
   private TestMongockRunner(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, MongockConfiguration, ExecutorConfiguration> {
+  public static class Builder extends RunnerBuilderBase<Builder, MongockConfiguration> {
 
     private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;
 
-    private Builder(ExecutorFactory<ExecutorConfiguration> executorFactory) {
-      super(executorFactory);
+    private Builder(ExecutorFactory executorFactory) {
+      super(executorFactory, new MongockConfiguration());
     }
 
     public Builder setExecutionId(String executionId) {
@@ -45,7 +44,7 @@ public class TestMongockRunner extends MongockRunner {
     }
 
     public TestMongockRunner build() {
-      return build(buildExecutorForTest(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, new DummyEventPublisher());
+      return build(buildExecutorForTest(), getChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), new DummyEventPublisher());
     }
 
     protected Executor buildExecutorForTest() {
@@ -53,20 +52,15 @@ public class TestMongockRunner extends MongockRunner {
           executionId,
           driver,
           buildDependencyManager(),
-          new ExecutorConfiguration(trackIgnored, serviceIdentifier),
-          metadata,
-          DEFAULT_PARAM_NAME_PROVIDER
+          config.getMetadata(),
+          DEFAULT_PARAM_NAME_PROVIDER,
+          config
       );
     }
 
 
     public TestMongockRunner build(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
       return new TestMongockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-    }
-
-    @Override
-    protected ExecutorConfiguration getExecutorConfiguration() {
-      return new ExecutorConfiguration(trackIgnored, serviceIdentifier);
     }
 
     @Override
