@@ -144,6 +144,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
+  public BUILDER_TYPE setOperation(Operation operation) {
+    this.operation = operation;
+    return getInstance();
+  }
+
+  @Override
   public BUILDER_TYPE  setConfig(CONFIG config) {
     this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
     if (!config.isThrowExceptionIfCannotObtainLock()) {
