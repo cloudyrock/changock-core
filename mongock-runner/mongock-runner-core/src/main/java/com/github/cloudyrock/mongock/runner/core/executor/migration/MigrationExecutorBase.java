@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.executor;
+package com.github.cloudyrock.mongock.runner.core.executor.migration;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
@@ -11,6 +11,8 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.executor.Executor;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.utils.LogUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +39,7 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration> implements MigrationExecutor<Boolean> {
+public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration> implements Executor {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
 
@@ -65,12 +67,12 @@ public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration
     return this.executionInProgress;
   }
 
-  public Boolean executeMigration(SortedSet<ChangeLogItem> changeLogs) {
+  public void executeMigration(SortedSet<ChangeLogItem> changeLogs) {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       if (!this.isThereAnyChangeSetItemToBeExecuted(changeLogs)) {
         logger.info("Mongock skipping the data migration. All change set items are already executed or there is no change set item.");
-        return false;
+        return;
       }
       lockManager.acquireLockDefault();
       String executionId = generateExecutionId();
@@ -79,7 +81,6 @@ public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration
       processPreMigration(changeLogs, executionId, executionHostname);
       processMigration(changeLogs, executionId, executionHostname);
       processPostMigration(changeLogs, executionId, executionHostname);
-      return true;
     } finally {
       this.executionInProgress = false;
       logger.info("Mongock has finished");

@@ -14,7 +14,7 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package
 import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
-import com.github.cloudyrock.mongock.runner.core.executor.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;

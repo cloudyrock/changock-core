@@ -5,11 +5,11 @@ import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.DependencyManagerWithContext;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
+import com.github.cloudyrock.mongock.runner.core.executor.Executor;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
@@ -96,7 +96,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @Override
-  protected MigrationExecutor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
+  protected Executor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
     return new MigrationExecutorImpl(driver, dependencyManager, new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
   }
 

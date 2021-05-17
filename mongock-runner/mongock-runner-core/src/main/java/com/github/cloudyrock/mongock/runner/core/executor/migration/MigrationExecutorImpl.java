@@ -1,6 +1,7 @@
-package com.github.cloudyrock.mongock.runner.core.executor;
+package com.github.cloudyrock.mongock.runner.core.executor.migration;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.lang.reflect.Parameter;

@@ -9,8 +9,8 @@ import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.Executor;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
 import org.junit.Before;
@@ -99,7 +99,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddSingleClass() {
-    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
+    Executor executor = mock(MigrationExecutorImpl.class);
     new DummyRunnerBuilder()
         .setDriver(driver)
         .setExecutor(executor)
@@ -129,7 +129,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
-    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
+    Executor executor = mock(MigrationExecutorImpl.class);
     new DummyRunnerBuilder()
         .setDriver(driver)
         .setExecutor(executor)
@@ -148,7 +148,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddClassAndPackage() {
-    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
+    Executor executor = mock(MigrationExecutorImpl.class);
     new DummyRunnerBuilder()
         .setDriver(driver)
         .setExecutor(executor)
@@ -228,7 +228,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {
 
 
-  private MigrationExecutor executor;
+  private Executor executor;
 
   void validate() {
     assertEquals(driver, this.driver);
@@ -246,7 +246,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
     return this;
   }
 
-  public DummyRunnerBuilder setExecutor(MigrationExecutor executor) {
+  public DummyRunnerBuilder setExecutor(Executor executor) {
     this.executor = executor;
     return this;
   }

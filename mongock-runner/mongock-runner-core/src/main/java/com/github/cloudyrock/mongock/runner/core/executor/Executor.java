@@ -4,7 +4,7 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 
 import java.util.SortedSet;
 
-public interface MigrationExecutor<T> {
-  T executeMigration(SortedSet<ChangeLogItem> changeLogs);
+public interface Executor {
+  void executeMigration(SortedSet<ChangeLogItem> changeLogs);
   boolean isExecutionInProgress();
 }

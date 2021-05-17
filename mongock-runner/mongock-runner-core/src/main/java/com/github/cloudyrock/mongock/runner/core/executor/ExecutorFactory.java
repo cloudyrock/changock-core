@@ -1,34 +1,30 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationOp;
 
 import java.lang.reflect.Parameter;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.function.Function;
 
-public class ExecutorFactory {
+public class ExecutorFactory<CONFIG extends MigrationExecutorConfiguration> {
 
-  public <T> MigrationExecutor<T> getExecutor(Operation<T> op,
-                                              ConnectionDriver driver,
-                                              DependencyManager dependencyManager,
-                                              Map<String, Object> metadata,
-                                              Function<Parameter, String> parameterNameProvider) {
-    if(op instanceof MigrationOp) {
-      //return MigrationExecutor
+  public Executor getExecutor(Operation op,
+                              ConnectionDriver driver,
+                              DependencyManager dependencyManager,
+                              CONFIG configuration,
+                              Map<String, Object> metadata,
+                              Function<Parameter, String> parameterNameProvider) {
+    switch (op.getId()) {
+      case MigrationOp.ID:
+        return new MigrationExecutorImpl(driver, dependencyManager, configuration, metadata, parameterNameProvider);
+      default:
+        throw new MongockException(String.format("Operation [%s] not supported", op.getId()));
     }
-    return new MigrationExecutor<T>() {
-      @Override
-      public T executeMigration(SortedSet<ChangeLogItem> changeLogs) {
-        return null;
-      }
-
-      @Override
-      public boolean isExecutionInProgress() {
-        return false;
-      }
-    };
   }
 
 

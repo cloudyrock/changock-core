@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.executor;
+package com.github.cloudyrock.mongock.runner.core.executor.changelog;
 
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLogItem;

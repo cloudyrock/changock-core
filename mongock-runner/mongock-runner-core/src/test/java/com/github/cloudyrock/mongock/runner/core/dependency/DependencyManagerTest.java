@@ -4,7 +4,7 @@ package com.github.cloudyrock.mongock.runner.core.dependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
-import com.github.cloudyrock.mongock.runner.core.executor.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependency;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImpl;
 import org.junit.Rule;
