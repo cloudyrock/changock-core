@@ -171,7 +171,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Deprecated
-  public BUILDER_TYPE overrideAnnoatationProcessor(AnnotationProcessor annotationProcessor) {
+  public BUILDER_TYPE overrideAnnotationProcessor(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
     return getInstance();
   }
