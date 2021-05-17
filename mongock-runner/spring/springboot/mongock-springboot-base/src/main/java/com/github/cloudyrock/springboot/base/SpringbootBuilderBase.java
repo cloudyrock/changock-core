@@ -98,8 +98,8 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @Override
-  protected Executor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
-    return new MigrationExecutorImpl(driver, dependencyManager, new ExecutorConfiguration(trackIgnored, serviceIdentifier), metadata, paramNameExtractor);
+  protected DependencyManager buildDependencyManager() {
+    return dependencyManager;
   }
 
   protected void injectLegacyMigration() {
