@@ -35,17 +35,13 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
-
   protected CONFIG config;
-
-
   protected ConnectionDriver driver;
   protected AnnotationProcessor annotationProcessor;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
   protected Operation operation = new MigrationOp();
   protected ExecutorFactory executorFactory;
-
 
   protected RunnerBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
@@ -152,12 +148,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setOperation(Operation operation) {
     this.operation = operation;
-    return getInstance();
-  }
-
-  @Deprecated
-  public BUILDER_TYPE overrideAnnotationProcessor(AnnotationProcessor annotationProcessor) {
-    this.annotationProcessor = annotationProcessor;
     return getInstance();
   }
 
