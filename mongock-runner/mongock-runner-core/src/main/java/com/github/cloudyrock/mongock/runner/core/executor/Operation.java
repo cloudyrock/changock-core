@@ -8,7 +8,7 @@ public abstract class Operation {
     this.id = id;
   }
 
-  public final String getId() {
+  public String getId() {
     return id;
   }
 }
