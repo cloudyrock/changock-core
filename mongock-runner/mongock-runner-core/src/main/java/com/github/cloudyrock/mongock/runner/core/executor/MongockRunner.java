@@ -8,7 +8,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogSer
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongockRunner<T> {
+public class MongockRunner {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunner.class);
 
   private final boolean enabled;
@@ -16,6 +16,7 @@ public class MongockRunner<T> {
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
+
 
   public MongockRunner(Executor executor,
                        ChangeLogService changeLogService,
