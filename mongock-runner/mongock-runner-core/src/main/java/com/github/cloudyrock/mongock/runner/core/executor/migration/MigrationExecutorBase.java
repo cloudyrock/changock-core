@@ -39,7 +39,7 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration> implements Executor {
+public class MigrationExecutorBase<CONFIG extends ExecutorConfiguration> implements Executor {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
 

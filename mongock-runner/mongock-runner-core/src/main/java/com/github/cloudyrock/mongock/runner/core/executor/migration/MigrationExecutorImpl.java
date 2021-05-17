@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 @NotThreadSafe
-public class MigrationExecutorImpl extends MigrationExecutorBase<MigrationExecutorConfiguration>{
+public class MigrationExecutorImpl extends MigrationExecutorBase<ExecutorConfiguration>{
 
 
   public MigrationExecutorImpl(ConnectionDriver driver,
                                DependencyManager dependencyManager,
-                               MigrationExecutorConfiguration mongockConfiguration,
+                               ExecutorConfiguration mongockConfiguration,
                                Map<String, Object> metadata,
                                Function<Parameter, String> parameterNameProvider) {
     super(driver, dependencyManager, mongockConfiguration, metadata, parameterNameProvider);
