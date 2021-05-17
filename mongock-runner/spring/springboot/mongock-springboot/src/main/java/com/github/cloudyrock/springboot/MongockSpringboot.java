@@ -1,7 +1,6 @@
 package com.github.cloudyrock.springboot;
 
 
-import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.springboot.base.SpringbootBuilderBase;
 import com.github.cloudyrock.springboot.config.MongockSpringConfiguration;
@@ -24,7 +23,7 @@ public final class MongockSpringboot {
     //TODO javadoc
     @SuppressWarnings("unchecked")
     public MongockApplicationRunner buildApplicationRunner() {
-      this.runner = getRunner();
+      this.runner = buildRunner();
       return args -> runner.execute();
     }
 
@@ -32,7 +31,7 @@ public final class MongockSpringboot {
     //TODO javadoc
     @SuppressWarnings("unchecked")
     public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      this.runner = getRunner();
+      this.runner = buildRunner();
       return () -> runner.execute();
     }
 

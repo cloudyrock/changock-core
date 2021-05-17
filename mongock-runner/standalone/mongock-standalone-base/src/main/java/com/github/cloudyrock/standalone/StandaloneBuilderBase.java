@@ -2,6 +2,7 @@ package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
@@ -40,15 +41,24 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   }
 
   ///////////////////////////////////////////////////
-  // PRIVATE METHODS
+  // Builder METHODS
   ///////////////////////////////////////////////////
-
-  protected StandaloneEventPublisher getEventPublisher() {
-    return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
+  @Override
+  protected void beforeBuildRunner() {
   }
 
   public MongockRunner buildRunner() {
-    return new MongockRunner(buildExecutor(), getChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), getEventPublisher());
+    return new MongockRunner(
+        buildExecutor(),
+        getChangeLogService(),
+        config.isThrowExceptionIfCannotObtainLock(),
+        config.isEnabled(),
+        getEventPublisher());
+  }
+
+  @Override
+  protected EventPublisher getEventPublisher() {
+    return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
   }
 
 

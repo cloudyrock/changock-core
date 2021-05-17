@@ -249,6 +249,15 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
   }
 
   @Override
+  protected void beforeBuildRunner() {
+  }
+
+  @Override
+  protected EventPublisher getEventPublisher() {
+    return EventPublisher.empty();
+  }
+
+  @Override
   protected DummyRunnerBuilder getInstance() {
     return this;
   }

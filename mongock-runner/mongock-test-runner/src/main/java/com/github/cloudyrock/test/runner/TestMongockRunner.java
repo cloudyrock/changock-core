@@ -63,6 +63,16 @@ public class TestMongockRunner extends MongockRunner {
     }
 
     @Override
+    protected void beforeBuildRunner() {
+
+    }
+
+    @Override
+    protected EventPublisher getEventPublisher() {
+      return null;
+    }
+
+    @Override
     protected Builder getInstance() {
       return this;
     }

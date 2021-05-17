@@ -7,6 +7,7 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.Operation;
@@ -32,7 +33,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
-  private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
@@ -60,7 +60,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-  //  Configuration setters
+  //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
@@ -165,6 +165,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
+  @Deprecated
+  public BUILDER_TYPE overrideAnnotationProcessor(AnnotationProcessor annotationProcessor) {
+    this.annotationProcessor = annotationProcessor;
+    return getInstance();
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////
   //  Private methods
   ///////////////////////////////////////////////////////////////////////////////////
@@ -179,26 +185,24 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     }
   }
 
-  @Deprecated
-  public BUILDER_TYPE overrideAnnotationProcessor(AnnotationProcessor annotationProcessor) {
-    this.annotationProcessor = annotationProcessor;
-    return getInstance();
-  }
+  protected abstract void beforeBuildRunner();
+
 
   protected final Executor buildExecutor() {
-    return buildExecutor(DEFAULT_PARAM_NAME_PROVIDER);
-  }
-
-  protected final Executor buildExecutor(Function<Parameter, String> paramNameExtractor) {
     return executorFactory.getExecutor(
         operation,
         driver,
         buildDependencyManager(),
-        paramNameExtractor,
+        getParameterNameFunction(),
         config
     );
   }
 
+  protected abstract  EventPublisher getEventPublisher();
+
+  protected Function<Parameter, String> getParameterNameFunction() {
+    return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+  }
 
   protected DependencyManager buildDependencyManager() {
     DependencyManager dependencyManager = new DependencyManager();

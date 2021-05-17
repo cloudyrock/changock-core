@@ -87,11 +87,26 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
 
-  protected MongockRunner getRunner() {
+  protected MongockRunner buildRunner() {
     runValidation();
+    beforeBuildRunner();
+    return new MongockRunner(
+        buildExecutor(),
+        getChangeLogService(),
+        config.isThrowExceptionIfCannotObtainLock(),
+        config.isEnabled(),
+        getEventPublisher());
+  }
+
+  @Override
+  protected EventPublisher getEventPublisher() {
+    return applicationEventPublisher;
+  }
+
+  @Override
+  protected void beforeBuildRunner() {
     setActiveProfilesFromContext(springContext);
     injectLegacyMigration();
-    return new MongockRunner(buildExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), applicationEventPublisher);
   }
 
   @Override
@@ -108,12 +123,15 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     this.dependencyManager.addDriverDependencies(dependencies);
   }
 
-  private static String getParameterName(Parameter parameter) {
-    String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-    if (name == null) {
-      name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
-    }
-    return name;
+  @Override
+  protected Function<Parameter, String> getParameterNameFunction() {
+    return parameter -> {
+      String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+      if (name == null) {
+        name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
+      }
+      return name;
+    };
   }
 
   @FunctionalInterface
