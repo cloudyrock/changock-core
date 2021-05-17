@@ -186,11 +186,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
-  protected Executor buildMigrationExecutor() {
-    return buildMigrationExecutor(DEFAULT_PARAM_NAME_PROVIDER);
+  protected final Executor buildExecutor() {
+    return buildExecutor(DEFAULT_PARAM_NAME_PROVIDER);
   }
 
-  protected Executor buildMigrationExecutor(Function<Parameter, String> paramNameExtractor) {
+  protected final Executor buildExecutor(Function<Parameter, String> paramNameExtractor) {
     return executorFactory.getExecutor(
         operation,
         driver,

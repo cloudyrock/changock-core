@@ -49,7 +49,7 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   }
 
   public MongockRunner buildRunner() {
-    return new MongockRunner(buildMigrationExecutor(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
+    return new MongockRunner(buildExecutor(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
   }
 
 

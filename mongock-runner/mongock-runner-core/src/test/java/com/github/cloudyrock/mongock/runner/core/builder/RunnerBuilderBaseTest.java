@@ -264,7 +264,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
 
   public MongockRunner build() {
     return new MongockRunner(
-        executor != null ? executor : buildMigrationExecutor(),
+        executor != null ? executor : buildExecutor(),
         getChangeLogService(),
         throwExceptionIfCannotObtainLock,
         enabled,

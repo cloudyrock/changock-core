@@ -8,9 +8,7 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
-import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
@@ -94,7 +92,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     runValidation();
     setActiveProfilesFromContext(springContext);
     injectLegacyMigration();
-    return new MongockRunner(buildMigrationExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+    return new MongockRunner(buildExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
   }
 
   @Override
