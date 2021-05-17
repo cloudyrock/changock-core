@@ -52,7 +52,6 @@ public class TestMongockRunner extends MongockRunner {
           executionId,
           driver,
           buildDependencyManager(),
-          config.getMetadata(),
           DEFAULT_PARAM_NAME_PROVIDER,
           config
       );

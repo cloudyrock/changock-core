@@ -55,15 +55,14 @@ public class ChangeExecutorBase<CONFIG extends MongockConfiguration> implements 
 
   protected ChangeExecutorBase(ConnectionDriver driver,
                                DependencyManager dependencyManager,
-                               Map<String, Object> metadata,
                                Function<Parameter, String> parameterNameProvider,
                                CONFIG config) {
     this.driver = driver;
-    this.metadata = metadata;
     this.dependencyManager = dependencyManager;
+    this.parameterNameProvider = parameterNameProvider;
+    this.metadata = config.getMetadata();
     this.serviceIdentifier = config.getServiceIdentifier();
     this.trackIgnored = config.isTrackIgnored();
-    this.parameterNameProvider = parameterNameProvider;
   }
 
   public boolean isExecutionInProgress() {

@@ -113,7 +113,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(trackingIgnored);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -175,7 +175,7 @@ public class MigrationExecutorImplTest {
       MongockConfiguration config = new MongockConfiguration();
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
-      MigrationExecutorImpl executor = new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config);
+      MigrationExecutorImpl executor = new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config);
       executor
           .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
     } catch (Exception ex) {
@@ -228,7 +228,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -247,7 +247,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -263,7 +263,7 @@ public class MigrationExecutorImplTest {
       MongockConfiguration config = new MongockConfiguration();
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
-      new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+      new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
           .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
     } catch (Exception ex) {
     }
@@ -285,7 +285,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -302,7 +302,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorWithNonFailFastChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
@@ -355,7 +355,7 @@ public class MigrationExecutorImplTest {
       MongockConfiguration config = new MongockConfiguration();
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
-      new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+      new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
           .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
@@ -419,7 +419,7 @@ public class MigrationExecutorImplTest {
       MongockConfiguration config = new MongockConfiguration();
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
-      new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+      new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
           .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
@@ -468,7 +468,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
@@ -488,7 +488,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -511,7 +511,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -534,7 +534,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -557,7 +557,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
@@ -590,7 +590,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, dependencyManager, new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(LegacyMigrationChangeLog.class));
 
     // then
@@ -604,7 +604,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogWithNoChangeSet.class));
 
     //then
@@ -625,7 +625,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecuted.class));
 
     //then
@@ -648,7 +648,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
@@ -674,7 +674,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
@@ -695,7 +695,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
 
     // then
@@ -723,7 +723,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
 
     // then
@@ -751,7 +751,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
 
     // then
@@ -779,7 +779,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
 
     // then
@@ -811,7 +811,7 @@ public class MigrationExecutorImplTest {
     MongockConfiguration config = new MongockConfiguration();
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
-    new MigrationExecutorImpl(driver, new DependencyManager(), new HashMap<>(), DEFAULT_PARAM_NAME_PROVIDER, config)
+    new MigrationExecutorImpl(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
         .executeMigration(createInitialChangeLogs(ChangeLogPrePostMigration.class));
   }
 

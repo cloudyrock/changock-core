@@ -197,7 +197,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         operation,
         driver,
         buildDependencyManager(),
-        config.getMetadata(),
         paramNameExtractor,
         config
     );

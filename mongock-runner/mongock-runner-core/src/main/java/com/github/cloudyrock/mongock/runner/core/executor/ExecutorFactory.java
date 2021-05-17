@@ -16,12 +16,11 @@ public class ExecutorFactory {
   public Executor getExecutor(Operation op,
                               ConnectionDriver driver,
                               DependencyManager dependencyManager,
-                              Map<String, Object> metadata,
                               Function<Parameter, String> parameterNameProvider,
                               MongockConfiguration config) {
     switch (op.getId()) {
       case MigrationOp.ID:
-        return new MigrationExecutorImpl(driver, dependencyManager, metadata, parameterNameProvider, config);
+        return new MigrationExecutorImpl(driver, dependencyManager, parameterNameProvider, config);
       default:
         throw new MongockException(String.format("Operation [%s] not supported", op.getId()));
     }

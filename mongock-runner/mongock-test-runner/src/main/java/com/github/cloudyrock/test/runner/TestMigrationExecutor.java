@@ -18,10 +18,9 @@ public class TestMigrationExecutor extends MigrationExecutorImpl {
   public TestMigrationExecutor(String executionId,
                                ConnectionDriver driver,
                                DependencyManager dependencyManager,
-                               Map<String, Object> metadata,
                                Function<Parameter, String> paramNameExtractor,
                                MongockConfiguration config) {
-    super(driver, dependencyManager, metadata, paramNameExtractor, config);
+    super(driver, dependencyManager, paramNameExtractor, config);
     this.executionId = executionId;
   }
 
