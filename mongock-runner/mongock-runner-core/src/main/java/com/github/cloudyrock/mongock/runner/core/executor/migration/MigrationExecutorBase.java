@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.executor;
+package com.github.cloudyrock.mongock.runner.core.executor.migration;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
@@ -11,6 +11,8 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.proxy.LockGuardProxyFactory;
 import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.executor.Executor;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.utils.LogUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +39,7 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration>  implements MigrationExecutor{
+public class MigrationExecutorBase<CONFIG extends ExecutorConfiguration> implements Executor {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
 
@@ -255,11 +257,10 @@ public class MigrationExecutorBase<CONFIG extends MigrationExecutorConfiguration
   }
 
 
-
   protected Optional<Transactioner> getTransactioner() {
     //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
     //type of the Optional
-    return (Optional<Transactioner>)driver.getTransactioner();
+    return (Optional<Transactioner>) driver.getTransactioner();
   }
 
 }

@@ -9,9 +9,11 @@ import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.MigrationExecutorImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.Executor;
+import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +55,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAssignAllTheParameters() {
-    new DummyRunnerBuilder()
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setEnabled(false)
         .setStartSystemVersion("start")
@@ -67,7 +69,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldCallAllTheMethods_whenSetConfig() {
 
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.setConfig(getConfig(false, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
     verify(builder, new Times(1)).dontFailIfCannotAcquireLock();
@@ -76,7 +78,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldThrowExceptionTrueByDefault() {
 
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.setConfig(getConfig(null, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
     verify(builder, new Times(0)).dontFailIfCannotAcquireLock();
@@ -88,7 +90,7 @@ public class RunnerBuilderBaseTest {
    */
   @Test
   public void shouldAddMultiplePackages_whenAddingList() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.addChangeLogsScanPackage("package1");
     builder.addChangeLogsScanPackage("package2");
     builder.addChangeLogsScanPackage("package3");
@@ -99,8 +101,8 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddSingleClass() {
-    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
-    new DummyRunnerBuilder()
+    Executor executor = mock(MigrationExecutorImpl.class);
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setExecutor(executor)
         .addChangeLogClass(ChangeLogSuccess11.class)
@@ -129,8 +131,8 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
-    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
-    new DummyRunnerBuilder()
+    Executor executor = mock(MigrationExecutorImpl.class);
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setExecutor(executor)
         .addChangeLogClass(ChangeLogSuccess11.class)
@@ -148,8 +150,8 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddClassAndPackage() {
-    MigrationExecutor executor = mock(MigrationExecutorImpl.class);
-    new DummyRunnerBuilder()
+    Executor executor = mock(MigrationExecutorImpl.class);
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setExecutor(executor)
         .addChangeLogClass(ChangeLogSuccess11.class)
@@ -174,7 +176,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder().setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.setConfig(getConfig(null, "package1", "package2"));
     verify(builder, new Times(1)).addChangeLogsScanPackage("package1");
     verify(builder, new Times(1)).addChangeLogsScanPackage("package2");
@@ -225,10 +227,14 @@ class DummyMongockConfiguration extends MongockConfiguration {
   }
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration, ExecutorConfiguration> {
 
 
-  private MigrationExecutor executor;
+  private Executor executor;
+
+  protected DummyRunnerBuilder(ExecutorFactory<ExecutorConfiguration> executorFactory) {
+    super(executorFactory);
+  }
 
   void validate() {
     assertEquals(driver, this.driver);
@@ -242,18 +248,23 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
   }
 
   @Override
+  protected ExecutorConfiguration getExecutorConfiguration() {
+    return new ExecutorConfiguration(trackIgnored, serviceIdentifier);
+  }
+
+  @Override
   protected DummyRunnerBuilder getInstance() {
     return this;
   }
 
-  public DummyRunnerBuilder setExecutor(MigrationExecutor executor) {
+  public DummyRunnerBuilder setExecutor(Executor executor) {
     this.executor = executor;
     return this;
   }
 
   public MongockRunner build() {
     return new MongockRunner(
-        executor != null ? executor : buildMigrationExecutor(),
+        executor != null ? executor : buildExecutor(),
         getChangeLogService(),
         throwExceptionIfCannotObtainLock,
         enabled,

@@ -4,19 +4,20 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongockRunner {
+public class MongockRunner<T> {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunner.class);
 
   private final boolean enabled;
-  private final MigrationExecutor executor;
+  private final Executor executor;
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
 
-  public MongockRunner(MigrationExecutor executor,
+  public MongockRunner(Executor executor,
                        ChangeLogService changeLogService,
                        boolean throwExceptionIfCannotObtainLock,
                        boolean enabled,
@@ -45,11 +46,11 @@ public class MongockRunner {
   public void execute() throws MongockException {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
+      return;
     } else {
       try {
         this.validate();
         eventPublisher.publishMigrationStarted();
-        //todo create the migration result
         executor.executeMigration(chanLogService.fetchChangeLogs());
         eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
 

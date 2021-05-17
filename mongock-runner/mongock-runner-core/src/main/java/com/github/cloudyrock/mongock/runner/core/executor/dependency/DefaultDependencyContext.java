@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.executor;
+package com.github.cloudyrock.mongock.runner.core.executor.dependency;
 
 import java.util.Optional;
 import java.util.function.Function;

@@ -27,6 +27,10 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.prepostmigration.Cha
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.alreadyexecuted.ChangeLogAlreadyExecuted;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlreadyExecutedRunAlways;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.util.DummyDependencyClass;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImpl;
 import com.github.cloudyrock.mongock.runner.core.util.InterfaceDependencyImplNoLockGarded;
@@ -745,12 +749,12 @@ public class MigrationExecutorImplTest {
   }
 
 
-  private MigrationExecutorConfiguration getMigrationConfig() {
+  private ExecutorConfiguration getMigrationConfig() {
     return getMigrationConfig(false, "myService");
   }
 
-  private MigrationExecutorConfiguration getMigrationConfig(boolean trackIgnored, String serviceIdentifier) {
-    return new MigrationExecutorConfiguration(trackIgnored, serviceIdentifier);
+  private ExecutorConfiguration getMigrationConfig(boolean trackIgnored, String serviceIdentifier) {
+    return new ExecutorConfiguration(trackIgnored, serviceIdentifier);
   }
   
   private abstract class TransactionableConnectionDriver implements ConnectionDriver {
