@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
@@ -217,20 +216,12 @@ public class RunnerBuilderBaseTest {
 
 class DummyMongockConfiguration extends MongockConfiguration {
 
-  @Override
-  public LegacyMigration getLegacyMigration() {
-    return new LegacyMigrationDummyImpl();
+  public DummyMongockConfiguration() {
+    this.setLegacyMigration(new LegacyMigrationDummyImpl());
+    this.setLockRepositoryName("lockRepositoryName");
+    this.setChangeLogRepositoryName("changeLogRepositoryName");
   }
 
-  @Override
-  protected String getLockRepositoryNameDefault() {
-    return "lockRepositoryName";
-  }
-
-  @Override
-  protected String getChangeLogRepositoryNameDefault() {
-    return "changeLogRepositoryName";
-  }
 }
 
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {

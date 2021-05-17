@@ -130,8 +130,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setConfig(CONFIG config) {
-    this.config = (CONFIG) config.getCopy();
+  public BUILDER_TYPE setConfig(CONFIG newConfig) { config.updateFrom(newConfig);
     return getInstance();
   }
 

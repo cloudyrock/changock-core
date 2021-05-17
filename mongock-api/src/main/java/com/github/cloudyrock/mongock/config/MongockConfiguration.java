@@ -121,8 +121,25 @@ public class MongockConfiguration {
   }
 
   //todo implement
-  public MongockConfiguration getCopy() {
-    return this;
+  public <T extends MongockConfiguration> void updateFrom(T from) {
+    changeLogRepositoryName = from.getChangeLogRepositoryName();
+    indexCreation = from.isIndexCreation();
+    lockRepositoryName = from.getLockRepositoryName();
+    lockAcquiredForMillis = from.getLockAcquiredForMillis();
+    lockQuitTryingAfterMillis = from.getLockQuitTryingAfterMillis();
+    lockTryFrequencyMillis = from.getLockTryFrequencyMillis();
+    throwExceptionIfCannotObtainLock = from.isThrowExceptionIfCannotObtainLock();
+    trackIgnored = from.isTrackIgnored();
+    enabled = from.isEnabled();
+    changeLogsScanPackage = from.getChangeLogsScanPackage();
+    startSystemVersion = from.getStartSystemVersion();
+    endSystemVersion = from.getEndSystemVersion();
+    serviceIdentifier = from.getServiceIdentifier();
+    metadata = from.getMetadata();
+    legacyMigration = from.getLegacyMigration();
+    transactionEnabled = from.getTransactionEnabled().orElse(null);
+    maxTries = from.getMaxTries();
+    maxWaitingForLockMillis = from.getMaxWaitingForLockMillis();
   }
 
 
@@ -290,11 +307,20 @@ public class MongockConfiguration {
     this.maxWaitingForLockMillis = minutesToMillis(maxWaitingForLockMinutes);
   }
 
+  @Deprecated
+  protected Long getMaxWaitingForLockMillis() {
+    return maxWaitingForLockMillis;
+  }
 
   @Deprecated
   public void setMaxTries(int maxTries) {
     logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxTries", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
     this.maxTries = maxTries;
+  }
+
+  @Deprecated
+  protected Integer getMaxTries() {
+    return maxTries;
   }
 
   private static long minutesToMillis(int minutes) {
