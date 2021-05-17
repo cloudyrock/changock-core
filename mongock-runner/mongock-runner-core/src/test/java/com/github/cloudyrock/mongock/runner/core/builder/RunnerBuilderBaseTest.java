@@ -180,16 +180,20 @@ public class RunnerBuilderBaseTest {
   public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory()).setDriver(driver));
     builder.setConfig(getConfig(null, "package1", "package2"));
-    verify(builder, new Times(1)).addChangeLogsScanPackage("package1");
-    verify(builder, new Times(1)).addChangeLogsScanPackage("package2");
+    MongockConfiguration actualConfig = (MongockConfiguration)ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
+    assertTrue(actualConfig.getChangeLogsScanPackage().contains("package1"));
+    assertTrue(actualConfig.getChangeLogsScanPackage().contains("package2"));
   }
 
   private void checkStandardBuilderCalls(DummyRunnerBuilder builder) {
-    verify(builder, new Times(1)).addChangeLogsScanPackages(Collections.singletonList(PACKAGE_PATH));
-//    verify(builder, new Times(1)).setEnabled(false);
-//    verify(builder, new Times(1)).setStartSystemVersion(START_SYSTEM_VERSION);
-//    verify(builder, new Times(1)).setEndSystemVersion(END_SYSTEM_VERSION);
-//    verify(builder, new Times(1)).withMetadata(METADATA);
+
+    MongockConfiguration actualConfig = (MongockConfiguration)ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
+
+    assertTrue(actualConfig.getChangeLogsScanPackage().contains(PACKAGE_PATH) && actualConfig.getChangeLogsScanPackage().size() == 1);
+    assertFalse(actualConfig.isEnabled());
+    assertEquals(START_SYSTEM_VERSION, actualConfig.getStartSystemVersion());
+    assertEquals(END_SYSTEM_VERSION, actualConfig.getEndSystemVersion());
+    assertEquals(METADATA, actualConfig.getMetadata());
   }
 
   private MongockConfiguration getConfig(Boolean throwEx, String... packages) {
@@ -244,8 +248,8 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
     assertEquals("start", config.getStartSystemVersion());
     assertEquals("end", config.getEndSystemVersion());
     assertFalse(config.isThrowExceptionIfCannotObtainLock());
-    assertEquals(1, this.changeLogsScanPackage.size());
-    assertTrue(changeLogsScanPackage.contains("package"));
+    assertEquals(1, this.config.getChangeLogsScanPackage().size());
+    assertTrue(config.getChangeLogsScanPackage().contains("package"));
   }
 
   @Override

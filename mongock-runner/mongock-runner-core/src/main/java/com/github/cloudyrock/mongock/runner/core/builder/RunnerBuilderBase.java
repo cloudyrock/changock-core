@@ -36,14 +36,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
 
-  protected List<String> changeLogsScanPackage = new ArrayList<>();
-  protected List<Class<?>> changeLogsScanClasses = new ArrayList<>();
-//  protected boolean trackIgnored = false;
-//  protected String startSystemVersion = "0";
-//  protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
-//  protected String serviceIdentifier = null;
-//  protected Map<String, Object> metadata;
-
   protected CONFIG config;
 
 
@@ -66,7 +58,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
     if (changeLogsScanPackageList != null) {
-      changeLogsScanPackage.addAll(changeLogsScanPackageList);
+      config.getChangeLogsScanPackage().addAll(changeLogsScanPackageList);
     }
     return getInstance();
   }
@@ -74,7 +66,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes) {
     if (classes != null) {
-      changeLogsScanClasses.addAll(classes);
+      classes.stream().map(Class::getName).forEach(config.getChangeLogsScanPackage()::add);
     }
     return getInstance();
   }
@@ -84,7 +76,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     config.setLegacyMigration(legacyMigration);
     if (legacyMigration != null) {
-      changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
+      config.getChangeLogsScanPackage().add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     }
     return getInstance();
   }
@@ -140,8 +132,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   @Override
   public BUILDER_TYPE setConfig(CONFIG config) {
     this.config = (CONFIG) config.getCopy();
-    this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
-    this.setLegacyMigration(config.getLegacyMigration());
     return getInstance();
   }
 
@@ -173,18 +163,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-  //  Private methods
+  //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private void addScanItemsFromConfig(List<String> changeLogsScanPackage) {
-    for (String itemPath : changeLogsScanPackage) {
-      try {
-        addChangeLogClass(ClassLoader.getSystemClassLoader().loadClass(itemPath));
-      } catch (ClassNotFoundException e) {
-        addChangeLogsScanPackage(itemPath);
-      }
-    }
-  }
 
   protected MongockRunner buildRunner() {
     runValidation();
@@ -209,8 +190,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     );
   }
 
-  protected abstract  EventPublisher buildEventPublisher();
-
   protected Function<Parameter, String> buildParameterNameFunction() {
     return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
   }
@@ -227,6 +206,16 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   protected ChangeLogService buildChangeLogService() {
+
+    List<Class<?>> changeLogsScanClasses = new ArrayList<>();
+    List<String> changeLogsScanPackage = new ArrayList<>();
+    for (String itemPath : config.getChangeLogsScanPackage()) {
+      try {
+        changeLogsScanClasses.add(ClassLoader.getSystemClassLoader().loadClass(itemPath));
+      } catch (ClassNotFoundException e) {
+        changeLogsScanPackage.add(itemPath);
+      }
+    }
     return new ChangeLogService(
         changeLogsScanPackage,
         changeLogsScanClasses,
@@ -242,13 +231,12 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return annotatedElement -> true;
   }
 
-
   @Override
   public void runValidation() throws MongockException {
     if (driver == null) {
       throw new MongockException("Driver must be injected to Mongock builder");
     }
-    if (changeLogsScanPackage == null || changeLogsScanPackage.isEmpty()) {
+    if (config.getChangeLogsScanPackage() == null || config.getChangeLogsScanPackage().isEmpty()) {
       throw new MongockException("changeLogsScanPackage must be injected to Mongock builder");
     }
     if (!config.isThrowExceptionIfCannotObtainLock()) {
@@ -263,6 +251,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
       logger.info("Running Mongock with metadata");
     }
   }
+
+
+  protected abstract  EventPublisher buildEventPublisher();
 
   protected abstract BUILDER_TYPE getInstance();
 

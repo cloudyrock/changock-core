@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -80,7 +81,7 @@ public class MongockConfiguration {
   /**
    * Package paths where the changeLogs are located. mandatory
    */
-  private List<String> changeLogsScanPackage;
+  private List<String> changeLogsScanPackage = new ArrayList<>();
 
   /**
    * System version to start with. Default '0'
