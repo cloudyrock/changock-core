@@ -37,7 +37,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   protected List<String> changeLogsScanPackage = new ArrayList<>();
   protected List<Class<?>> changeLogsScanClasses = new ArrayList<>();
-  protected LegacyMigration legacyMigration = null;
 //  protected boolean trackIgnored = false;
 //  protected String startSystemVersion = "0";
 //  protected String endSystemVersion = String.valueOf(Integer.MAX_VALUE);
@@ -82,7 +81,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
-    this.legacyMigration = legacyMigration;
+    config.setLegacyMigration(legacyMigration);
     if (legacyMigration != null) {
       changeLogsScanPackage.add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
     }
@@ -141,9 +140,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   public BUILDER_TYPE setConfig(CONFIG config) {
     this.config = (CONFIG) config.getCopy();
     this.addScanItemsFromConfig(config.getChangeLogsScanPackage());
-
-    this
-        .setLegacyMigration(config.getLegacyMigration());
+    this.setLegacyMigration(config.getLegacyMigration());
     return getInstance();
   }
 
@@ -205,9 +202,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   protected DependencyManager buildDependencyManager() {
     DependencyManager dependencyManager = new DependencyManager();
-    if (legacyMigration != null) {
+    if (config.getLegacyMigration() != null) {
       dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
       );
     }
     dependencyManager.addStandardDependencies(dependencies);

@@ -100,9 +100,9 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   protected void injectLegacyMigration() {
-    if (legacyMigration != null) {
+    if (config.getLegacyMigration() != null) {
       dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
       );
     }
     this.dependencyManager.addDriverDependencies(dependencies);
