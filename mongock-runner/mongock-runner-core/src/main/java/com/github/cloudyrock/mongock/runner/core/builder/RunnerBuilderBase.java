@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
@@ -41,9 +42,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
   protected Operation operation = new MigrationOp();
-  protected ExecutorFactory executorFactory;
+  protected ExecutorFactory<ExecutorConfiguration> executorFactory;
 
-  protected RunnerBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+  protected RunnerBuilderBase(ExecutorFactory<ExecutorConfiguration> executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
     this.config = config;
   }

@@ -16,7 +16,7 @@ public class MigrationExecutorImpl extends ChangeExecutorBase<ChangeExecutorConf
   public MigrationExecutorImpl(ConnectionDriver driver,
                                DependencyManager dependencyManager,
                                Function<Parameter, String> parameterNameProvider,
-                               MongockConfiguration config) {
+                               ChangeExecutorConfiguration config) {
     super(driver, dependencyManager, parameterNameProvider, config);
   }
 }

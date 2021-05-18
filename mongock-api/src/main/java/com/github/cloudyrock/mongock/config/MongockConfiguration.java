@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.config;
 
-import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class MongockConfiguration implements ChangeExecutorConfiguration {
+public class MongockConfiguration implements ExecutorConfiguration {
 
   private static final Logger logger = LoggerFactory.getLogger(MongockConfiguration.class);
 
