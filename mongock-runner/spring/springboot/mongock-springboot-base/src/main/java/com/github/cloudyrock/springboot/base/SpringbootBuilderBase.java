@@ -38,7 +38,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private ApplicationContext springContext;
   private List<String> activeProfiles;
-  protected MongockRunner runner;
+  protected MongockRunner runner;//TODO needed?
   private DependencyManager dependencyManager;
   private EventPublisher applicationEventPublisher = EventPublisher.empty();
 

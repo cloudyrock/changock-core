@@ -12,6 +12,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationExecutorImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
 import com.github.cloudyrock.mongock.util.test.ReflectionUtils;
 import org.junit.Before;
@@ -267,9 +268,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
     return this;
   }
 
-  public MongockRunner build() {
-    return new MongockRunner(
-        executor != null ? executor : buildExecutor(),
+  public MongockRunner<Boolean> build() {
+    return new MongockRunner<>(
+        executor != null ? executor : buildExecutor(new MigrationOp()),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),

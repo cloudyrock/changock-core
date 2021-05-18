@@ -6,6 +6,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
+import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationFailureEvent;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationSuccessEvent;
@@ -45,9 +46,9 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   // Build METHODS
   ///////////////////////////////////////////////////
 
-  @Override
-  public MongockRunner buildRunner() {
-    return super.buildRunner();
+
+  public MongockRunner<Boolean> buildRunner() {
+    return super.buildRunner(new MigrationOp());
   }
 
   @Override

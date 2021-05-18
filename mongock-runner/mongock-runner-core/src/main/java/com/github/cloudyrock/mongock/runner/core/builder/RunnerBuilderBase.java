@@ -147,22 +147,15 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
-  @Override
-  public BUILDER_TYPE setOperation(Operation operation) {
-    this.operation = operation;
-    return getInstance();
-  }
-
   ///////////////////////////////////////////////////////////////////////////////////
   //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-
-  protected MongockRunner buildRunner() {
+  protected <T> MongockRunner<T> buildRunner(Operation<T> operation) {
     runValidation();
     beforeBuildRunner();
-    return new MongockRunner(
-        buildExecutor(),
+    return new MongockRunner<>(
+        buildExecutor(operation),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
@@ -173,7 +166,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
-  protected final Executor buildExecutor() {
+  protected final <T> Executor<T> buildExecutor(Operation<T> operation) {
     return executorFactory.getExecutor(
         operation,
         driver,
