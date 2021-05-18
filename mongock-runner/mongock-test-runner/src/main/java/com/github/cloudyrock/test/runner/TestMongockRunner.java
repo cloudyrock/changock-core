@@ -29,7 +29,7 @@ public class TestMongockRunner extends MongockRunner {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, MongockConfiguration, MongockConfiguration> {
+  public static class Builder extends RunnerBuilderBase<Builder, MongockConfiguration> {
 
     private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;
@@ -77,9 +77,5 @@ public class TestMongockRunner extends MongockRunner {
       return this;
     }
 
-    @Override
-    protected MongockConfiguration getExecutorConfig() {
-      return config;
-    }
   }
 }

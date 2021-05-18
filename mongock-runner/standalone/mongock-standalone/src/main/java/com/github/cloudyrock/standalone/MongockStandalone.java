@@ -7,11 +7,11 @@ public final class MongockStandalone {
 
   //TODO javadoc
   public static Builder builder() {
-    return new Builder(new ExecutorFactory<>(), new MongockConfiguration());
+    return new Builder(new ExecutorFactory(), new MongockConfiguration());
   }
 
-  public static class Builder extends StandaloneBuilderBase<Builder, MongockConfiguration, MongockConfiguration> {
-    private Builder(ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
+  public static class Builder extends StandaloneBuilderBase<Builder, MongockConfiguration> {
+    private Builder(ExecutorFactory executorFactory, MongockConfiguration config) {
       super(executorFactory, config);
     }
 
@@ -21,10 +21,6 @@ public final class MongockStandalone {
       return this;
     }
 
-    @Override
-    protected MongockConfiguration getExecutorConfig() {
-      return config;
-    }
 
   }
 

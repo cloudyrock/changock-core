@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
+public class ExecutorFactory {
 
   //todo getMappers at construction time
   @SuppressWarnings("unchecked")
@@ -22,7 +22,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
                                      ConnectionDriver driver,
                                      DependencyManager dependencyManager,
                                      Function<Parameter, String> parameterNameProvider,
-                                     CONFIG config) {
+                                     ExecutorConfiguration config) {
     return getExecutorMappers().get(op).getExecutor(driver, dependencyManager, parameterNameProvider, config);
   }
 
@@ -37,7 +37,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
   private ExecutorOperationMapper<Boolean> getMigrationExecutorMapper() {
     return new ExecutorOperationMapper<Boolean>(new MigrationOp()) {
       @Override
-      public Executor<Boolean> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, CONFIG config) {
+      public Executor<Boolean> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, ExecutorConfiguration config) {
         return new MigrationExecutorImpl(driver, dependencyManager, parameterNameProvider, config);
       }
     };
@@ -46,7 +46,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
   private ExecutorOperationMapper<List> getListExecutorMapper() {
     return new ExecutorOperationMapper<List>(new ListOp()) {
       @Override
-      public Executor<List> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, CONFIG config) {
+      public Executor<List> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, ExecutorConfiguration config) {
         return new ListExecutor();
       }
     };
@@ -60,7 +60,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
       this.operation = operation;
     }
 
-    public abstract Executor<T> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, CONFIG config);
+    public abstract Executor<T> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, ExecutorConfiguration config);
   }
 
 

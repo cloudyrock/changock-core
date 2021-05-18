@@ -225,7 +225,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
 
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration, MongockConfiguration> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {
 
 
   private Executor executor;
@@ -258,10 +258,6 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
     return this;
   }
 
-  @Override
-  protected MongockConfiguration getExecutorConfig() {
-    return config;
-  }
 
   public DummyRunnerBuilder setExecutor(Executor executor) {
     this.executor = executor;

@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
@@ -13,7 +12,6 @@ import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.Operation;
-import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import org.slf4j.Logger;
@@ -31,7 +29,7 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration, EXECUTOR_CONFIG extends ExecutorConfiguration>
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
     implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
@@ -41,10 +39,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected AnnotationProcessor annotationProcessor;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
-  protected Operation operation = new MigrationOp();
-  protected ExecutorFactory<EXECUTOR_CONFIG> executorFactory;
+  protected ExecutorFactory executorFactory;
 
-  protected RunnerBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory, CONFIG config) {
+  protected RunnerBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
     this.config = config;
   }
@@ -172,7 +169,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         driver,
         buildDependencyManager(),
         buildParameterNameFunction(),
-        getExecutorConfig()
+        config
     );
   }
 
@@ -243,8 +240,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected abstract EventPublisher buildEventPublisher();
 
   protected abstract BUILDER_TYPE getInstance();
-
-  protected abstract EXECUTOR_CONFIG getExecutorConfig();
 
 
 }
