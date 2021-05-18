@@ -3,7 +3,7 @@ package com.github.cloudyrock.mongock.runner.core.executor.change;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.NonLockGuarded;
-import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
@@ -40,7 +40,7 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class ChangeExecutorBase<CONFIG extends MongockConfiguration> implements Executor {
+public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> implements Executor {
 
   private static final Logger logger = LoggerFactory.getLogger(ChangeExecutorBase.class);
 

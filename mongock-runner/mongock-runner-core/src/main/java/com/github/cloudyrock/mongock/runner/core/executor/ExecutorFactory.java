@@ -8,7 +8,6 @@ import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 
 import java.lang.reflect.Parameter;
-import java.util.Map;
 import java.util.function.Function;
 
 public class ExecutorFactory {
