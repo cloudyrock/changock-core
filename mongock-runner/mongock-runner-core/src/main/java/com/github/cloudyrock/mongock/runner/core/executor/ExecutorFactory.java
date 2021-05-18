@@ -6,6 +6,8 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.list.ListExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.list.ListOp;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Function;
@@ -20,6 +22,8 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
     switch (op.getId()) {
       case MigrationOp.ID:
         return new MigrationExecutorImpl(driver, dependencyManager, parameterNameProvider, config);
+      case ListOp.ID:
+        return new ListExecutor();
       default:
         throw new MongockException(String.format("Operation [%s] not supported", op.getId()));
     }
