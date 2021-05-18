@@ -39,9 +39,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected AnnotationProcessor annotationProcessor;
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
-  protected ExecutorFactory executorFactory;
+  protected ExecutorFactory<CONFIG> executorFactory;
 
-  protected RunnerBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+  protected RunnerBuilderBase(ExecutorFactory<CONFIG>  executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
     this.config = config;
   }

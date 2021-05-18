@@ -20,7 +20,7 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   private Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
   private Consumer<StandaloneMigrationFailureEvent> migrationFailureListener;
 
-  protected StandaloneBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+  protected StandaloneBuilderBase(ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     super(executorFactory, config);
   }
 

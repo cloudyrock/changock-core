@@ -45,7 +45,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+  protected SpringbootBuilderBase(ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     super(executorFactory, config);
   }
 
