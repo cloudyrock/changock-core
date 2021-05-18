@@ -8,17 +8,19 @@ import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogSer
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongockRunner {
+import java.util.Optional;
+
+public class MongockRunner<T> {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunner.class);
 
   private final boolean enabled;
-  private final Executor executor;
+  private final Executor<T> executor;
   private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
 
 
-  public MongockRunner(Executor executor,
+  public MongockRunner(Executor<T> executor,
                        ChangeLogService changeLogService,
                        boolean throwExceptionIfCannotObtainLock,
                        boolean enabled,
@@ -44,16 +46,17 @@ public class MongockRunner {
     return enabled;
   }
 
-  public void execute() throws MongockException {
+  public Optional<T> execute() throws MongockException {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
-      return;
+      return Optional.empty();
     } else {
       try {
         this.validate();
         eventPublisher.publishMigrationStarted();
-        executor.executeMigration(chanLogService.fetchChangeLogs());
+        T result = executor.executeMigration(chanLogService.fetchChangeLogs());
         eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
+        return Optional.ofNullable(result);
 
       } catch (LockCheckException lockEx) {
         MongockException mongockException = new MongockException(lockEx);
@@ -64,6 +67,7 @@ public class MongockRunner {
 
         } else {
           logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
+          return Optional.empty();
         }
 
       } catch (Exception ex) {

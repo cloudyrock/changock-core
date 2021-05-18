@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
@@ -30,7 +31,7 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration, EXECUTOR_CONFIG extends ExecutorConfiguration>
     implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
@@ -41,9 +42,9 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
   protected Operation operation = new MigrationOp();
-  protected ExecutorFactory executorFactory;
+  protected ExecutorFactory<EXECUTOR_CONFIG> executorFactory;
 
-  protected RunnerBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+  protected RunnerBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
     this.config = config;
   }
@@ -126,7 +127,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setConfig(CONFIG newConfig) { config.updateFrom(newConfig);
+  public BUILDER_TYPE setConfig(CONFIG newConfig) {
+    config.updateFrom(newConfig);
     return getInstance();
   }
 
@@ -145,22 +147,15 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
-  @Override
-  public BUILDER_TYPE setOperation(Operation operation) {
-    this.operation = operation;
-    return getInstance();
-  }
-
   ///////////////////////////////////////////////////////////////////////////////////
   //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-
-  protected MongockRunner buildRunner() {
+  protected <T> MongockRunner<T> buildRunner(Operation<T> operation) {
     runValidation();
     beforeBuildRunner();
-    return new MongockRunner(
-        buildExecutor(),
+    return new MongockRunner<>(
+        buildExecutor(operation),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
@@ -171,15 +166,16 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
-  protected final Executor buildExecutor() {
+  protected final <T> Executor<T> buildExecutor(Operation<T> operation) {
     return executorFactory.getExecutor(
         operation,
         driver,
         buildDependencyManager(),
         buildParameterNameFunction(),
-        config
+        getExecutorConfig()
     );
   }
+
 
   protected Function<Parameter, String> buildParameterNameFunction() {
     return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
@@ -244,9 +240,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
 
-  protected abstract  EventPublisher buildEventPublisher();
+  protected abstract EventPublisher buildEventPublisher();
 
   protected abstract BUILDER_TYPE getInstance();
+
+  protected abstract EXECUTOR_CONFIG getExecutorConfig();
 
 
 }
