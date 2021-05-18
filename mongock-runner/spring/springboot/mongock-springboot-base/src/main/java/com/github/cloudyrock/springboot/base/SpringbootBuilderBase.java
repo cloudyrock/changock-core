@@ -1,6 +1,7 @@
 package com.github.cloudyrock.springboot.base;
 
 import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
@@ -32,8 +33,8 @@ import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase>
-    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG> {
+public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockSpringConfigurationBase, EXECUTOR_CONFIG extends ExecutorConfiguration>
+    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG, EXECUTOR_CONFIG> {
 
   private ApplicationContext springContext;
   private List<String> activeProfiles;
@@ -43,7 +44,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(ExecutorFactory executorFactory, CONFIG config) {
+  protected SpringbootBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory, CONFIG config) {
     super(executorFactory, config);
   }
 

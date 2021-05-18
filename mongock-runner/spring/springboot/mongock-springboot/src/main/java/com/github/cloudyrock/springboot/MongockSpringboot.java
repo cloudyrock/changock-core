@@ -10,13 +10,13 @@ public final class MongockSpringboot {
 
   //TODO javadoc
   public static Builder builder() {
-    return new Builder(new ExecutorFactory(), new MongockSpringConfiguration());
+    return new Builder(new ExecutorFactory<>(), new MongockSpringConfiguration());
   }
 
-  public static class Builder extends SpringbootBuilderBase<Builder, MongockSpringConfiguration> {
+  public static class Builder extends SpringbootBuilderBase<Builder, MongockSpringConfiguration, MongockSpringConfiguration> {
 
 
-    protected Builder(ExecutorFactory executorFactory, MongockSpringConfiguration config) {
+    private Builder(ExecutorFactory<MongockSpringConfiguration> executorFactory, MongockSpringConfiguration config) {
       super(executorFactory, config);
     }
 
@@ -38,6 +38,11 @@ public final class MongockSpringboot {
     @Override
     protected Builder getInstance() {
       return this;
+    }
+
+    @Override
+    protected MongockSpringConfiguration getExecutorConfig() {
+      return config;
     }
   }
 
