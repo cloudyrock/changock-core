@@ -1,13 +1,16 @@
 package com.github.cloudyrock.mongock.config;
 
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-public class MongockConfiguration {
+public class MongockConfiguration implements ExecutorConfiguration {
 
   private static final Logger logger = LoggerFactory.getLogger(MongockConfiguration.class);
 
@@ -79,7 +82,7 @@ public class MongockConfiguration {
   /**
    * Package paths where the changeLogs are located. mandatory
    */
-  private List<String> changeLogsScanPackage;
+  private List<String> changeLogsScanPackage = new ArrayList<>();
 
   /**
    * System version to start with. Default '0'
@@ -116,6 +119,27 @@ public class MongockConfiguration {
   public MongockConfiguration() {
     setChangeLogRepositoryName(getChangeLogRepositoryNameDefault());
     setLockRepositoryName(getLockRepositoryNameDefault());
+  }
+
+  public <T extends MongockConfiguration> void updateFrom(T from) {
+    changeLogRepositoryName = from.getChangeLogRepositoryName();
+    indexCreation = from.isIndexCreation();
+    lockRepositoryName = from.getLockRepositoryName();
+    lockAcquiredForMillis = from.getLockAcquiredForMillis();
+    lockQuitTryingAfterMillis = from.getLockQuitTryingAfterMillis();
+    lockTryFrequencyMillis = from.getLockTryFrequencyMillis();
+    throwExceptionIfCannotObtainLock = from.isThrowExceptionIfCannotObtainLock();
+    trackIgnored = from.isTrackIgnored();
+    enabled = from.isEnabled();
+    changeLogsScanPackage = from.getChangeLogsScanPackage();
+    startSystemVersion = from.getStartSystemVersion();
+    endSystemVersion = from.getEndSystemVersion();
+    serviceIdentifier = from.getServiceIdentifier();
+    metadata = from.getMetadata();
+    legacyMigration = from.getLegacyMigration();
+    transactionEnabled = from.getTransactionEnabled().orElse(null);
+    maxTries = from.getMaxTries();
+    maxWaitingForLockMillis = from.getMaxWaitingForLockMillis();
   }
 
 
@@ -283,6 +307,10 @@ public class MongockConfiguration {
     this.maxWaitingForLockMillis = minutesToMillis(maxWaitingForLockMinutes);
   }
 
+  @Deprecated
+  protected Long getMaxWaitingForLockMillis() {
+    return maxWaitingForLockMillis;
+  }
 
   @Deprecated
   public void setMaxTries(int maxTries) {
@@ -290,9 +318,42 @@ public class MongockConfiguration {
     this.maxTries = maxTries;
   }
 
+  @Deprecated
+  protected Integer getMaxTries() {
+    return maxTries;
+  }
+
   private static long minutesToMillis(int minutes) {
     return minutes * 60 * 1000L;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof MongockConfiguration)) return false;
+    MongockConfiguration that = (MongockConfiguration) o;
+    return indexCreation == that.indexCreation &&
+        lockAcquiredForMillis == that.lockAcquiredForMillis &&
+        lockTryFrequencyMillis == that.lockTryFrequencyMillis &&
+        throwExceptionIfCannotObtainLock == that.throwExceptionIfCannotObtainLock &&
+        trackIgnored == that.trackIgnored &&
+        enabled == that.enabled &&
+        Objects.equals(changeLogRepositoryName, that.changeLogRepositoryName) &&
+        Objects.equals(lockRepositoryName, that.lockRepositoryName) &&
+        Objects.equals(lockQuitTryingAfterMillis, that.lockQuitTryingAfterMillis) &&
+        Objects.equals(changeLogsScanPackage, that.changeLogsScanPackage) &&
+        Objects.equals(startSystemVersion, that.startSystemVersion) &&
+        Objects.equals(endSystemVersion, that.endSystemVersion) &&
+        Objects.equals(serviceIdentifier, that.serviceIdentifier) &&
+        Objects.equals(metadata, that.metadata) &&
+        Objects.equals(legacyMigration, that.legacyMigration) &&
+        Objects.equals(transactionEnabled, that.transactionEnabled) &&
+        Objects.equals(maxTries, that.maxTries) &&
+        Objects.equals(maxWaitingForLockMillis, that.maxWaitingForLockMillis);
+  }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(changeLogRepositoryName, indexCreation, lockRepositoryName, lockAcquiredForMillis, lockQuitTryingAfterMillis, lockTryFrequencyMillis, throwExceptionIfCannotObtainLock, trackIgnored, enabled, changeLogsScanPackage, startSystemVersion, endSystemVersion, serviceIdentifier, metadata, legacyMigration, transactionEnabled, maxTries, maxWaitingForLockMillis);
+  }
 }

@@ -1,9 +1,9 @@
 package com.github.cloudyrock.test.runner;
 
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationExecutorImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.MigrationExecutorImpl;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.lang.reflect.Parameter;
@@ -18,10 +18,9 @@ public class TestMigrationExecutor extends MigrationExecutorImpl {
   public TestMigrationExecutor(String executionId,
                                ConnectionDriver driver,
                                DependencyManager dependencyManager,
-                               ExecutorConfiguration executorConfiguration,
-                               Map<String, Object> metadata,
-                               Function<Parameter, String> paramNameExtractor) {
-    super(driver, dependencyManager, executorConfiguration, metadata, paramNameExtractor);
+                               Function<Parameter, String> paramNameExtractor,
+                               MongockConfiguration config) {
+    super(driver, dependencyManager, paramNameExtractor, config);
     this.executionId = executionId;
   }
 

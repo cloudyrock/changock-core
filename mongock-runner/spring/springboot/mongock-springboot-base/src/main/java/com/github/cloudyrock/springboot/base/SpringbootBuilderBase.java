@@ -1,15 +1,15 @@
 package com.github.cloudyrock.springboot.base;
 
 import com.github.cloudyrock.mongock.config.LegacyMigration;
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
 import com.github.cloudyrock.spring.util.ProfileUtil;
@@ -38,14 +38,14 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private ApplicationContext springContext;
   private List<String> activeProfiles;
-  protected MongockRunner runner;
+  protected MongockRunner runner;//TODO needed?
   private DependencyManager dependencyManager;
   private EventPublisher applicationEventPublisher = EventPublisher.empty();
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory) {
-    super(executorFactory);
+  protected SpringbootBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory, CONFIG config) {
+    super(executorFactory, config);
   }
 
   //TODO javadoc
@@ -68,16 +68,8 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   public abstract <T extends MongockInitializingBeanRunnerBase> T buildInitializingBeanRunner();
 
   ///////////////////////////////////////////////////
-  // PRIVATE METHODS
+  // Build methods
   ///////////////////////////////////////////////////
-
-  private void setActiveProfilesFromContext(ApplicationContext springContext) {
-    Environment springEnvironment = springContext.getEnvironment();
-    this.activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
-        ? Arrays.asList(springEnvironment.getActiveProfiles())
-        : Collections.singletonList(DEFAULT_PROFILE);
-  }
-
   @Override
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
     return annotated -> ProfileUtil.matchesActiveSpringProfile(
@@ -87,12 +79,26 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
         (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
   }
 
-
-  protected MongockRunner getRunner() {
-    runValidation();
+  @Override
+  protected void beforeBuildRunner() {
     setActiveProfilesFromContext(springContext);
-    injectLegacyMigration();
-    return new MongockRunner(buildExecutor(SpringbootBuilderBase::getParameterName), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, applicationEventPublisher);
+    if (config.getLegacyMigration() != null) {
+      dependencyManager.addStandardDependency(
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
+      );
+    }
+    this.dependencyManager.addDriverDependencies(dependencies);
+  }
+
+  @Override
+  protected Function<Parameter, String> buildParameterNameFunction() {
+    return parameter -> {
+      String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+      if (name == null) {
+        name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
+      }
+      return name;
+    };
   }
 
   @Override
@@ -100,21 +106,9 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     return dependencyManager;
   }
 
-  protected void injectLegacyMigration() {
-    if (legacyMigration != null) {
-      dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, legacyMigration)
-      );
-    }
-    this.dependencyManager.addDriverDependencies(dependencies);
-  }
-
-  private static String getParameterName(Parameter parameter) {
-    String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-    if (name == null) {
-      name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
-    }
-    return name;
+  @Override
+  protected EventPublisher buildEventPublisher() {
+    return applicationEventPublisher;
   }
 
   @FunctionalInterface
@@ -133,4 +127,10 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     }
   }
 
+  private void setActiveProfilesFromContext(ApplicationContext springContext) {
+    Environment springEnvironment = springContext.getEnvironment();
+    this.activeProfiles = springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
+        ? Arrays.asList(springEnvironment.getActiveProfiles())
+        : Collections.singletonList(DEFAULT_PROFILE);
+  }
 }

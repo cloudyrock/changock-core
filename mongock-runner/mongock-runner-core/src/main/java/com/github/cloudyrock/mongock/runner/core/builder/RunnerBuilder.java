@@ -195,5 +195,4 @@ public interface RunnerBuilder<BUILDER_TYPE extends RunnerBuilder, CONFIG extend
    */
   BUILDER_TYPE addDependency(String name, Class type, Object instance);
 
-  BUILDER_TYPE setOperation(Operation operation);
 }

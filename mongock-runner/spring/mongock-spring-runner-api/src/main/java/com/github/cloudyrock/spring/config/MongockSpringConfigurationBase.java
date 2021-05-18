@@ -30,4 +30,10 @@ public class MongockSpringConfigurationBase extends MongockConfiguration {
   public void setTestEnabled(boolean testEnabled) {
     this.testEnabled = testEnabled;
   }
+
+  public <T extends MongockSpringConfigurationBase> void updateFrom(T from) {
+    super.updateFrom(from);
+    testEnabled = from.isTestEnabled();
+    runnerType = from.getRunnerType();
+  }
 }

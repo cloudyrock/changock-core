@@ -1,10 +1,12 @@
 package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
-import com.github.cloudyrock.mongock.runner.core.executor.migration.ExecutorConfiguration;
+import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
 import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationFailureEvent;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationSuccessEvent;
@@ -18,8 +20,8 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   private Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
   private Consumer<StandaloneMigrationFailureEvent> migrationFailureListener;
 
-  protected StandaloneBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory) {
-    super(executorFactory);
+  protected StandaloneBuilderBase(ExecutorFactory<EXECUTOR_CONFIG> executorFactory, CONFIG config) {
+    super(executorFactory, config);
   }
 
   //TODO javadoc
@@ -41,15 +43,17 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   }
 
   ///////////////////////////////////////////////////
-  // PRIVATE METHODS
+  // Build METHODS
   ///////////////////////////////////////////////////
 
-  protected StandaloneEventPublisher getEventPublisher() {
-    return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
+
+  public MongockRunner<Boolean> buildRunner() {
+    return super.buildRunner(new MigrationOp());
   }
 
-  public MongockRunner buildRunner() {
-    return new MongockRunner(buildExecutor(), getChangeLogService(), throwExceptionIfCannotObtainLock, enabled, getEventPublisher());
+  @Override
+  protected EventPublisher buildEventPublisher() {
+    return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
   }
 
 
