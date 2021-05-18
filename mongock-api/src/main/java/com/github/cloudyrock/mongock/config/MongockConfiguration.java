@@ -120,7 +120,6 @@ public class MongockConfiguration {
     setLockRepositoryName(getLockRepositoryNameDefault());
   }
 
-  //todo implement
   public <T extends MongockConfiguration> void updateFrom(T from) {
     changeLogRepositoryName = from.getChangeLogRepositoryName();
     indexCreation = from.isIndexCreation();
