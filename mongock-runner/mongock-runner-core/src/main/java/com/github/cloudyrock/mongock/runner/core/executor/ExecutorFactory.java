@@ -16,8 +16,6 @@ import java.util.function.Function;
 
 public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
 
-
-  //todo yodo Operation equal/hash
   //todo getMappers at construction time
   @SuppressWarnings("unchecked")
   public <M> Executor<M> getExecutor(Operation<M> op,
@@ -26,17 +24,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
                                      Function<Parameter, String> parameterNameProvider,
                                      CONFIG config) {
     return getExecutorMappers().get(op).getExecutor(driver, dependencyManager, parameterNameProvider, config);
-//    return getExecutorMappers().get(op).executor;
-//    switch (op.getId()) {
-//      case MigrationOp.ID:
-//        return new MigrationExecutorImpl(driver, dependencyManager, parameterNameProvider, config);
-//      case ListOp.ID:
-//        return new ListExecutor();
-//      default:
-//        throw new MongockException(String.format("Operation [%s] not supported", op.getId()));
-//    }
   }
-
 
 
   private Map<Operation, ExecutorOperationMapper> getExecutorMappers() {
@@ -66,9 +54,9 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
 
 
   private abstract class ExecutorOperationMapper<T> {
-    public Operation<T> operation;
+    Operation<T> operation;
 
-    public ExecutorOperationMapper(Operation<T> operation) {
+    ExecutorOperationMapper(Operation<T> operation) {
       this.operation = operation;
     }
 
