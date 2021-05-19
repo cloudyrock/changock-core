@@ -10,7 +10,7 @@ public final class MongockStandalone {
     return new Builder(new ExecutorFactory<>(), new MongockConfiguration());
   }
 
-  public static class Builder extends StandaloneBuilderBase<Builder, MongockConfiguration, MongockConfiguration> {
+  public static class Builder extends StandaloneBuilderBase<Builder, MongockConfiguration> {
     private Builder(ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
       super(executorFactory, config);
     }
@@ -21,10 +21,6 @@ public final class MongockStandalone {
       return this;
     }
 
-    @Override
-    protected MongockConfiguration getExecutorConfig() {
-      return config;
-    }
 
   }
 
