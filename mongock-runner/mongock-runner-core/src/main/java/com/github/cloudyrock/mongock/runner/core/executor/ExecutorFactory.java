@@ -2,16 +2,16 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
-import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListOp;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesOp;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesResult;
 
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -31,7 +31,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
   private Map<Operation, ExecutorOperationMapper> getExecutorMappers() {
     Map<Operation, ExecutorOperationMapper> map = new HashMap<>();
     map.put(new MigrationOp(), getMigrationExecutorMapper());
-    map.put(new ListOp(), getListExecutorMapper());
+    map.put(new ListChangesOp(), getListExecutorMapper());
     return map;
   }
 
@@ -44,11 +44,11 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
     };
   }
 
-  private ExecutorOperationMapper<List> getListExecutorMapper() {
-    return new ExecutorOperationMapper<List>(new ListOp()) {
+  private ExecutorOperationMapper<ListChangesResult> getListExecutorMapper() {
+    return new ExecutorOperationMapper<ListChangesResult>(new ListChangesOp()) {
       @Override
-      public Executor<List> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, CONFIG config) {
-        return new ListExecutor();
+      public Executor<ListChangesResult> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, CONFIG config) {
+        return new ListChangesExecutor();
       }
     };
   }

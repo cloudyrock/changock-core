@@ -3,14 +3,12 @@ package com.github.cloudyrock.mongock.runner.core.executor.operation.list;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.SortedSet;
 
-public class ListExecutor implements Executor<List> {
+public class ListChangesExecutor implements Executor<ListChangesResult> {
   @Override
-  public List<String> executeMigration(SortedSet<ChangeLogItem> changeLogs) {
-    return Arrays.asList("Change-1", "Change-2", "Change-3", "Change-4");
+  public ListChangesResult executeMigration(SortedSet<ChangeLogItem> changeLogs) {
+    return new ListChangesResult();
   }
 
   @Override
