@@ -2,11 +2,11 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationExecutorImpl;
-import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.list.ListExecutor;
-import com.github.cloudyrock.mongock.runner.core.executor.list.ListOp;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListOp;
 
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
     return new ExecutorOperationMapper<Boolean>(new MigrationOp()) {
       @Override
       public Executor<Boolean> getExecutor(ConnectionDriver driver, DependencyManager dependencyManager, Function<Parameter, String> parameterNameProvider, CONFIG config) {
-        return new MigrationExecutorImpl(driver, dependencyManager, parameterNameProvider, config);
+        return new MigrationExecutor(driver, dependencyManager, parameterNameProvider, config);
       }
     };
   }

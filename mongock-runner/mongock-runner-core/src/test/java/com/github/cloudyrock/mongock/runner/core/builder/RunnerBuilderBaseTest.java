@@ -11,8 +11,8 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
-import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationExecutorImpl;
-import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
 import com.github.cloudyrock.mongock.util.test.ReflectionUtils;
 import org.junit.Before;
@@ -103,7 +103,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddSingleClass() {
-    Executor executor = mock(MigrationExecutorImpl.class);
+    Executor executor = mock(MigrationExecutor.class);
     new DummyRunnerBuilder(new ExecutorFactory())
         .setDriver(driver)
         .setExecutor(executor)
@@ -133,7 +133,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
-    Executor executor = mock(MigrationExecutorImpl.class);
+    Executor executor = mock(MigrationExecutor.class);
     new DummyRunnerBuilder(new ExecutorFactory())
         .setDriver(driver)
         .setExecutor(executor)
@@ -152,7 +152,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddClassAndPackage() {
-    Executor executor = mock(MigrationExecutorImpl.class);
+    Executor executor = mock(MigrationExecutor.class);
     new DummyRunnerBuilder(new ExecutorFactory())
         .setDriver(driver)
         .setExecutor(executor)

@@ -1,12 +1,11 @@
 package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
-import com.github.cloudyrock.mongock.runner.core.executor.change.MigrationOp;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationFailureEvent;
 import com.github.cloudyrock.standalone.event.StandaloneMigrationSuccessEvent;

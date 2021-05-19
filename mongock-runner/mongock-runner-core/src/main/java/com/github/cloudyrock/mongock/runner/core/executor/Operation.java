@@ -1,7 +1,5 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import com.github.cloudyrock.mongock.runner.core.executor.change.ChangeExecutorBase;
-
 import java.util.Objects;
 
 public abstract class Operation<T> {

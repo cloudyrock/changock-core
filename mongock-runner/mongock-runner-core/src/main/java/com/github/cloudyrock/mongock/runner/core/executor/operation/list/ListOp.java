@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.executor.list;
+package com.github.cloudyrock.mongock.runner.core.executor.operation.list;
 
 import com.github.cloudyrock.mongock.runner.core.executor.Operation;
 
