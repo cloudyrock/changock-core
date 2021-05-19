@@ -4,7 +4,6 @@ import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.runner.core.executor.Operation;
 
 import java.util.Collections;
 import java.util.List;
