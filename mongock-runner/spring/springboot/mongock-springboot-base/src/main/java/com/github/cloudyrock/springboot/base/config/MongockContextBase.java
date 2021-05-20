@@ -13,20 +13,20 @@ public abstract class MongockContextBase<CONFIG extends MongockConfiguration> {
 
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
-  public SpringbootBuilderBase.MongockApplicationRunnerBase applicationRunner(ConnectionDriver connectionDriver,
-                                                                              CONFIG springConfiguration,
-                                                                              ApplicationContext springContext,
-                                                                              ApplicationEventPublisher applicationEventPublisher) {
+  public SpringbootBuilderBase.MongockApplicationRunner applicationRunner(ConnectionDriver connectionDriver,
+                                                                          CONFIG springConfiguration,
+                                                                          ApplicationContext springContext,
+                                                                          ApplicationEventPublisher applicationEventPublisher) {
     return getBuilder(connectionDriver, springConfiguration, springContext, applicationEventPublisher)
         .buildApplicationRunner();
   }
 
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean')")
-  public SpringbootBuilderBase.MongockInitializingBeanRunnerBase initializingBeanRunner(ConnectionDriver connectionDriver,
-                                                                                        CONFIG springConfiguration,
-                                                                                        ApplicationContext springContext,
-                                                                                        ApplicationEventPublisher applicationEventPublisher) {
+  public SpringbootBuilderBase.MongockInitializingBeanRunner initializingBeanRunner(ConnectionDriver connectionDriver,
+                                                                                    CONFIG springConfiguration,
+                                                                                    ApplicationContext springContext,
+                                                                                    ApplicationEventPublisher applicationEventPublisher) {
     return getBuilder(connectionDriver, springConfiguration, springContext, applicationEventPublisher)
         .buildInitializingBeanRunner();
   }

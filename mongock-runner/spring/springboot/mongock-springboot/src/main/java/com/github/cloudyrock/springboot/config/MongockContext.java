@@ -17,11 +17,11 @@ public class MongockContext extends MongockContextBase<MongockConfiguration> {
 
 
   @Bean
-  public MongockSpringboot.Builder getBuilder(ConnectionDriver connectionDriver,
+  public MongockSpringboot.MigrationBuilderImpl getBuilder(ConnectionDriver connectionDriver,
                                               MongockConfiguration springConfiguration,
                                               ApplicationContext springContext,
                                               ApplicationEventPublisher applicationEventPublisher) {
-    return MongockSpringboot.builder()
+    return MongockSpringboot.migrationBuilder()
         .setDriver(connectionDriver)
         .setConfig(springConfiguration)
         .setSpringContext(springContext)

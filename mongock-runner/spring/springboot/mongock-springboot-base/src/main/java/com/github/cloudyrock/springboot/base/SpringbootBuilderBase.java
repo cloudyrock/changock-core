@@ -62,10 +62,17 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   //TODO javadoc
-  public abstract <T extends MongockApplicationRunnerBase> T buildApplicationRunner();
+  public MongockApplicationRunner buildApplicationRunner() {
+    this.runner = buildRunner();
+    return args -> runner.execute();
+  }
+
 
   //TODO javadoc
-  public abstract <T extends MongockInitializingBeanRunnerBase> T buildInitializingBeanRunner();
+  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
+    this.runner = buildRunner();
+    return () -> runner.execute();
+  }
 
   ///////////////////////////////////////////////////
   // Build methods
@@ -112,11 +119,11 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @FunctionalInterface
-  public interface MongockApplicationRunnerBase extends ApplicationRunner {
+  public interface MongockApplicationRunner extends ApplicationRunner {
   }
 
   @FunctionalInterface
-  public interface MongockInitializingBeanRunnerBase extends InitializingBean {
+  public interface MongockInitializingBeanRunner extends InitializingBean {
   }
 
   @Override

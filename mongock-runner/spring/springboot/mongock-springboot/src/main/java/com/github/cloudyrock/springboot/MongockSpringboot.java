@@ -10,15 +10,19 @@ import com.github.cloudyrock.springboot.base.SpringbootBuilderBase;
 
 public final class MongockSpringboot {
 
-
   //TODO javadoc
-  public static MigrationBuilder<MigrationBuilderImpl, MongockConfiguration> builder() {
+  public static MigrationBuilderImpl migrationBuilder() {
+    return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
+  }
+
+  @Deprecated
+  public static MigrationBuilderImpl builder() {
     return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
   }
 
 
 
-  public static class MigrationBuilderImpl extends Builder<MigrationBuilderImpl, Boolean> implements MigrationBuilder<MigrationBuilderImpl, MongockConfiguration> {
+  public static class MigrationBuilderImpl extends SpringbootBuilderBase<MigrationBuilderImpl, Boolean, MongockConfiguration> implements MigrationBuilder<MigrationBuilderImpl, MongockConfiguration> {
 
     private MigrationBuilderImpl(ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
       super(new MigrationOp(), executorFactory, config);
@@ -30,38 +34,6 @@ public final class MongockSpringboot {
     }
   }
 
-  public static abstract class Builder<BUILDER_TYPE extends Builder, RETURN_TYPE> extends SpringbootBuilderBase<BUILDER_TYPE, RETURN_TYPE, MongockConfiguration> {
 
-
-    private Builder(Operation<RETURN_TYPE> operation, ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
-      super(operation, executorFactory, config);
-    }
-
-    //TODO javadoc
-    @SuppressWarnings("unchecked")
-    public MongockApplicationRunner buildApplicationRunner() {
-      this.runner = buildRunner();
-      return args -> runner.execute();
-    }
-
-
-    //TODO javadoc
-    @SuppressWarnings("unchecked")
-    public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-      this.runner = buildRunner();
-      return () -> runner.execute();
-    }
-
-
-  }
-
-
-  @FunctionalInterface
-  public interface MongockApplicationRunner extends SpringbootBuilderBase.MongockApplicationRunnerBase {
-  }
-
-  @FunctionalInterface
-  public interface MongockInitializingBeanRunner extends SpringbootBuilderBase.MongockInitializingBeanRunnerBase {
-  }
 
 }
