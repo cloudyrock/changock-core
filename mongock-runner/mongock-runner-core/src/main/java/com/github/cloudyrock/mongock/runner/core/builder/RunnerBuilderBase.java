@@ -7,13 +7,23 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.exception.MongockException;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ChangeLogScanner;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ChangeLogWriter;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.Configurable;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.DependencyInjectable;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.DriverConnectable;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.LegacyMigrator;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.RunnerBuilder;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.SelfInstanstiator;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ServiceIdentificable;
+import com.github.cloudyrock.mongock.runner.core.builder.interfaces.SystemVersionable;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +39,23 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
-    implements MigrationBuilder<BUILDER_TYPE, CONFIG>, Validable {
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
+    implements
+    ChangeLogScanner<BUILDER_TYPE>,
+    ChangeLogWriter<BUILDER_TYPE>,
+    LegacyMigrator<BUILDER_TYPE>,
+    RunnerBuilder<BUILDER_TYPE, RETURN_TYPE>,
+    DriverConnectable<BUILDER_TYPE>,
+    Configurable<BUILDER_TYPE, CONFIG>,
+    SystemVersionable<BUILDER_TYPE>,
+    DependencyInjectable<BUILDER_TYPE>,
+    ServiceIdentificable<BUILDER_TYPE>,
+    SelfInstanstiator<BUILDER_TYPE>,
+    Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
+  protected Operation<RETURN_TYPE> operation;
   protected CONFIG config;
   protected ConnectionDriver driver;
   protected AnnotationProcessor annotationProcessor;
@@ -41,9 +63,10 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Function<Class, Object> changeLogInstantiator;
   protected ExecutorFactory<CONFIG> executorFactory;
 
-  protected RunnerBuilderBase(ExecutorFactory<CONFIG>  executorFactory, CONFIG config) {
+  protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
     this.config = config;
+    this.operation = operation;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -129,6 +152,32 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
+  @Override
+  public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
+    return null;
+  }
+
+  @Override
+  public BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
+    return null;
+  }
+
+  @Override
+  public BUILDER_TYPE addDependency(String name, Object instance) {
+    return null;
+  }
+
+  @Override
+  public BUILDER_TYPE addDependency(Class type, Object instance) {
+    return null;
+  }
+
+  @Override
+  public BUILDER_TYPE addDependency(Object instance) {
+    return null;
+  }
+
+
   ///////////////////////////////////////////////////////////////////////////////////
   //  Injections setters
   ///////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +197,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-  protected <T> MongockRunner<T> buildRunner(Operation<T> operation) {
+  public  MongockRunner<RETURN_TYPE> buildRunner() {
     runValidation();
     beforeBuildRunner();
     return new MongockRunner<>(
@@ -238,8 +287,5 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
 
   protected abstract EventPublisher buildEventPublisher();
-
-  protected abstract BUILDER_TYPE getInstance();
-
 
 }

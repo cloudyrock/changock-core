@@ -1,7 +1,6 @@
 package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilder;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
@@ -9,6 +8,8 @@ import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationBuilder;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 
 import javax.inject.Named;
 import java.lang.reflect.Parameter;
@@ -18,24 +19,24 @@ public class TestMongockRunner extends MongockRunner {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
   public static MigrationBuilder<Builder, MongockConfiguration> builder() {
-    return new Builder(new ExecutorFactory());
+    return new Builder(new ExecutorFactory<>());
   }
 
-  public static TestMongockRunner.Builder testBuilder() {
-    return new Builder(new ExecutorFactory());
+  public static Builder testBuilder() {
+    return new Builder(new ExecutorFactory<>());
   }
 
   private TestMongockRunner(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, MongockConfiguration> {
+  public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration>  implements MigrationBuilder<Builder, MongockConfiguration>{
 
     private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;
 
-    private Builder(ExecutorFactory executorFactory) {
-      super(executorFactory, new MongockConfiguration());
+    private Builder(ExecutorFactory<MongockConfiguration> executorFactory) {
+      super(new MigrationOp(), executorFactory, new MongockConfiguration());
     }
 
     public Builder setExecutionId(String executionId) {
@@ -73,7 +74,7 @@ public class TestMongockRunner extends MongockRunner {
     }
 
     @Override
-    protected Builder getInstance() {
+    public Builder getInstance() {
       return this;
     }
 

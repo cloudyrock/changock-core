@@ -10,6 +10,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
@@ -32,8 +33,8 @@ import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, CONFIG extends MongockConfiguration>
-    extends RunnerBuilderBase<BUILDER_TYPE, CONFIG> {
+public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
+    extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
   private ApplicationContext springContext;
   private List<String> activeProfiles;
@@ -43,8 +44,8 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
-    super(executorFactory, config);
+  protected SpringbootBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
+    super(operation, executorFactory, config);
   }
 
   //TODO javadoc
