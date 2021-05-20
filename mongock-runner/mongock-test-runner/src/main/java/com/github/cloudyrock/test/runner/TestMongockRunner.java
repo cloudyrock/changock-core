@@ -1,7 +1,7 @@
 package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilder;
+import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilder;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
@@ -17,7 +17,7 @@ import java.util.function.Function;
 public class TestMongockRunner extends MongockRunner {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
-  public static RunnerBuilder<Builder, MongockConfiguration> builder() {
+  public static MigrationBuilder<Builder, MongockConfiguration> builder() {
     return new Builder(new ExecutorFactory());
   }
 

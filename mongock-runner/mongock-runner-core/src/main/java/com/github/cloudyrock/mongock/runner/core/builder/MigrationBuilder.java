@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface RunnerBuilder<BUILDER_TYPE extends RunnerBuilder, CONFIG extends MongockConfiguration> {
+public interface MigrationBuilder<BUILDER_TYPE extends MigrationBuilder, CONFIG extends MongockConfiguration> {
   /**
    * Set the specific connection driver
    * <b>Mandatory</b>

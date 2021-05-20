@@ -30,7 +30,7 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 
 
 public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
-    implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
+    implements MigrationBuilder<BUILDER_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
