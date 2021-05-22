@@ -38,14 +38,6 @@ public class SpringEventPublisherTest {
     assertEquals(ex, eventCaptor.getValue().getException());
   }
 
-  @Test
-  public void shouldNotBreak_WhenSuccess_ifListenerIsNull() {
-    new SpringEventPublisher(null).publishMigrationSuccessEvent(new MigrationResult());
-  }
 
-  @Test
-  public void shouldNotBreak_WhenFail_ifListenerIsNull() {
-    new SpringEventPublisher(null).publishMigrationFailedEvent(new RuntimeException());
-  }
 
 }

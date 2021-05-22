@@ -54,6 +54,9 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   //TODO javadoc
   public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    if(applicationEventPublisher == null) {
+      throw new MongockException("EventPublisher cannot e null");
+    }
     this.eventPublisher = new SpringEventPublisher(applicationEventPublisher);
     return getInstance();
   }

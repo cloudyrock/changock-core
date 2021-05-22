@@ -4,33 +4,41 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.function.Consumer;
+
 public class SpringEventPublisher implements EventPublisher {
 
-  private final ApplicationEventPublisher applicationEventPublisher;
+
+  private final Runnable migrationStartedListener;
+  private final Consumer<SpringMigrationSuccessEvent> migrationSuccessListener;
+  private final Consumer<SpringMigrationFailureEvent> migrationFailedListener;
 
   public SpringEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    this.applicationEventPublisher = applicationEventPublisher;
+    migrationStartedListener = () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this));
+    migrationSuccessListener = applicationEventPublisher::publishEvent;
+    migrationFailedListener = applicationEventPublisher::publishEvent;
   }
 
   @Override
   public void publishMigrationStarted() {
-    runIfPublisherNotNull(() -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)));
-
+    if(migrationStartedListener != null) {
+      migrationStartedListener.run();
+    }
   }
 
   @Override
   public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
-    runIfPublisherNotNull(() -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, migrationResult)));
+    if(migrationSuccessListener != null) {
+      migrationSuccessListener.accept(new SpringMigrationSuccessEvent(this, migrationResult));
+    }
   }
 
   @Override
   public void publishMigrationFailedEvent(Exception ex) {
-    runIfPublisherNotNull(() -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, ex)));
-  }
-
-  private void runIfPublisherNotNull(Runnable op) {
-    if (applicationEventPublisher != null) {
-      op.run();
+    if(migrationFailedListener != null) {
+      migrationFailedListener.accept(new SpringMigrationFailureEvent(this, ex));
     }
   }
+
+
 }
