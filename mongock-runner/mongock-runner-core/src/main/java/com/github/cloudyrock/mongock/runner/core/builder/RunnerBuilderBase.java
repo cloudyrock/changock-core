@@ -60,6 +60,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected CONFIG config;
   protected ConnectionDriver driver;
   protected DependencyManager dependencyManager;
+  protected EventPublisher eventPublisher = EventPublisher.empty();
   protected AnnotationProcessor annotationProcessor;
   protected Function<Class, Object> changeLogInstantiator;
   protected ExecutorFactory<CONFIG> executorFactory;
@@ -209,7 +210,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
-        buildEventPublisher());
+        eventPublisher);
   }
 
   protected void beforeBuildRunner() {
@@ -284,7 +285,5 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     }
   }
 
-
-  protected abstract EventPublisher buildEventPublisher();
 
 }

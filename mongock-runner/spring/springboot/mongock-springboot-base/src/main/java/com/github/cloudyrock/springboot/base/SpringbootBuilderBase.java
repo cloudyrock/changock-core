@@ -8,7 +8,6 @@ import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
-import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
@@ -39,7 +38,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private List<String> activeProfiles;
   protected MongockRunner<RETURN_TYPE> runner;//TODO needed?
-  private EventPublisher applicationEventPublisher = EventPublisher.empty();
 
   private static final String DEFAULT_PROFILE = "default";
 
@@ -56,7 +54,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   //TODO javadoc
   public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    this.applicationEventPublisher = new SpringEventPublisher(applicationEventPublisher);
+    this.eventPublisher = new SpringEventPublisher(applicationEventPublisher);
     return getInstance();
   }
 
@@ -115,10 +113,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     };
   }
 
-  @Override
-  protected EventPublisher buildEventPublisher() {
-    return applicationEventPublisher;
-  }
+
 
   @FunctionalInterface
   public interface MongockApplicationRunner extends ApplicationRunner {

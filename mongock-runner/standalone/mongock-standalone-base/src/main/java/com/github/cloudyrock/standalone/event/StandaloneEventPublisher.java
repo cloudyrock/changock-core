@@ -39,4 +39,16 @@ public class StandaloneEventPublisher implements EventPublisher {
       migrationFailedListener.accept(new StandaloneMigrationFailureEvent(ex));
     }
   }
+
+  public Runnable getMigrationStartedListener() {
+    return migrationStartedListener;
+  }
+
+  public Consumer<StandaloneMigrationSuccessEvent> getMigrationSuccessListener() {
+    return migrationSuccessListener;
+  }
+
+  public Consumer<StandaloneMigrationFailureEvent> getMigrationFailedListener() {
+    return migrationFailedListener;
+  }
 }

@@ -248,10 +248,6 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
   protected void beforeBuildRunner() {
   }
 
-  @Override
-  protected EventPublisher buildEventPublisher() {
-    return EventPublisher.empty();
-  }
 
   @Override
   public DummyRunnerBuilder getInstance() {

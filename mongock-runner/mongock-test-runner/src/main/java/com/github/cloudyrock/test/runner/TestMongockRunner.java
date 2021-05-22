@@ -68,10 +68,6 @@ public class TestMongockRunner extends MongockRunner {
 
     }
 
-    @Override
-    protected EventPublisher buildEventPublisher() {
-      return null;
-    }
 
     @Override
     public Builder getInstance() {

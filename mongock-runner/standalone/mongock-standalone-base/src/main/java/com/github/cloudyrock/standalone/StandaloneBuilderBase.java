@@ -17,9 +17,6 @@ import java.util.function.Consumer;
 public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
-  private Runnable migrationStartedListener;
-  private Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
-  private Consumer<StandaloneMigrationFailureEvent> migrationFailureListener;
 
   protected StandaloneBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     super(operation, executorFactory, config);
@@ -28,19 +25,29 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
 
   //TODO javadoc
   public BUILDER_TYPE setMigrationStartedListener(Runnable migrationStartedListener) {
-    this.migrationStartedListener = migrationStartedListener;
+    this.eventPublisher = new StandaloneEventPublisher(migrationStartedListener,
+        ((StandaloneEventPublisher)eventPublisher).getMigrationSuccessListener(),
+        ((StandaloneEventPublisher)eventPublisher).getMigrationFailedListener());
     return getInstance();
   }
 
   //TODO javadoc
   public BUILDER_TYPE setMigrationSuccessListener(Consumer<StandaloneMigrationSuccessEvent> listener) {
-    this.migrationSuccessListener = listener;
+
+    this.eventPublisher = new StandaloneEventPublisher(
+        ((StandaloneEventPublisher)eventPublisher).getMigrationStartedListener(),
+        listener,
+        ((StandaloneEventPublisher)eventPublisher).getMigrationFailedListener());
     return getInstance();
   }
 
   //TODO javadoc
   public BUILDER_TYPE setMigrationFailureListener(Consumer<StandaloneMigrationFailureEvent> migrationFailureListener) {
-    this.migrationFailureListener = migrationFailureListener;
+
+    this.eventPublisher = new StandaloneEventPublisher(
+        ((StandaloneEventPublisher)eventPublisher).getMigrationStartedListener(),
+        ((StandaloneEventPublisher)eventPublisher).getMigrationSuccessListener(),
+        migrationFailureListener);
     return getInstance();
   }
 
@@ -48,11 +55,6 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
   // Build METHODS
   ///////////////////////////////////////////////////
 
-
-  @Override
-  protected EventPublisher buildEventPublisher() {
-    return new StandaloneEventPublisher(migrationStartedListener, migrationSuccessListener, migrationFailureListener);
-  }
 
 
 }
