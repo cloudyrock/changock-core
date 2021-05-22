@@ -3,7 +3,6 @@ package com.github.cloudyrock.springboot;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationBuilder;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.springboot.base.SpringbootBuilderBase;
@@ -14,12 +13,6 @@ public final class MongockSpringboot {
   public static MigrationBuilderImpl migrationBuilder() {
     return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
   }
-
-  @Deprecated
-  public static MigrationBuilderImpl builder() {
-    return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
-  }
-
 
 
   public static class MigrationBuilderImpl extends SpringbootBuilderBase<MigrationBuilderImpl, Boolean, MongockConfiguration> implements MigrationBuilder<MigrationBuilderImpl, MongockConfiguration> {
@@ -34,6 +27,11 @@ public final class MongockSpringboot {
     }
   }
 
+
+  @Deprecated
+  public static MigrationBuilderImpl builder() {
+    return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
+  }
 
 
 }

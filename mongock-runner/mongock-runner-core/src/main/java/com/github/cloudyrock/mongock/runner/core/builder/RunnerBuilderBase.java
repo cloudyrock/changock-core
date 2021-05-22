@@ -32,6 +32,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -72,6 +73,18 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   ///////////////////////////////////////////////////////////////////////////////////
   //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
+
+
+  @Override
+  public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
+    return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
+  }
+
+  @Override
+  public BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
+    return addChangeLogClasses(Collections.singletonList(clazz));
+  }
+
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
     if (changeLogsScanPackageList != null) {
@@ -152,15 +165,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
-  @Override
-  public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
-    return null;
-  }
-
-  @Override
-  public BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
-    return null;
-  }
 
   @Override
   public BUILDER_TYPE addDependency(String name, Object instance) {
@@ -197,7 +201,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-  public  MongockRunner<RETURN_TYPE> buildRunner() {
+  public MongockRunner<RETURN_TYPE> buildRunner() {
     runValidation();
     beforeBuildRunner();
     return new MongockRunner<>(

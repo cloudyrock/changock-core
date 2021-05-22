@@ -38,7 +38,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   private ApplicationContext springContext;
   private List<String> activeProfiles;
-  protected MongockRunner runner;//TODO needed?
+  protected MongockRunner<RETURN_TYPE> runner;//TODO needed?
   private DependencyManager dependencyManager;
   private EventPublisher applicationEventPublisher = EventPublisher.empty();
 
@@ -63,15 +63,20 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   //TODO javadoc
   public MongockApplicationRunner buildApplicationRunner() {
-    this.runner = buildRunner();
+    buildRunner();
     return args -> runner.execute();
   }
 
 
   //TODO javadoc
   public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-    this.runner = buildRunner();
+    buildRunner();
     return () -> runner.execute();
+  }
+
+
+  public MongockRunner<RETURN_TYPE> buildRunner() {
+    return this.runner = super.buildRunner();
   }
 
   ///////////////////////////////////////////////////
