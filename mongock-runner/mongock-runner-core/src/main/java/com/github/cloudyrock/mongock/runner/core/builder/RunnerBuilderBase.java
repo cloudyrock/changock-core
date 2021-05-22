@@ -165,21 +165,21 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
+  @Override
+  public BUILDER_TYPE addDependency(Object instance) {
+    return addDependency(instance.getClass(), instance);
+  }
 
   @Override
   public BUILDER_TYPE addDependency(String name, Object instance) {
-    return null;
+    return addDependency(name, instance.getClass(), instance);
   }
 
   @Override
   public BUILDER_TYPE addDependency(Class type, Object instance) {
-    return null;
+    return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
   }
 
-  @Override
-  public BUILDER_TYPE addDependency(Object instance) {
-    return null;
-  }
 
 
   ///////////////////////////////////////////////////////////////////////////////////
