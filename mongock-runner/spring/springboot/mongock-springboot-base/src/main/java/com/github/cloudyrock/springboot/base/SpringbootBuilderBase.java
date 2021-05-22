@@ -36,7 +36,6 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
-  private ApplicationContext springContext;
   private List<String> activeProfiles;
   protected MongockRunner<RETURN_TYPE> runner;//TODO needed?
   private DependencyManager dependencyManager;
@@ -50,7 +49,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   //TODO javadoc
   public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
-    this.springContext = springContext;
+    setActiveProfilesFromContext(springContext);
     this.dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
     return getInstance();
   }
@@ -93,7 +92,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   @Override
   protected void beforeBuildRunner() {
-    setActiveProfilesFromContext(springContext);
     if (config.getLegacyMigration() != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
