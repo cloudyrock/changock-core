@@ -1,13 +1,13 @@
-package com.github.cloudyrock.standalone.event;
+package com.github.cloudyrock.mongock.runner.core.event;
 
 import com.github.cloudyrock.mongock.runner.core.event.MongockEvent;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
 
-public class StandaloneMigrationSuccessEvent implements MongockEvent {
+public class MongockMigrationSuccessEvent implements MongockEvent {
 
   private final MigrationResult migrationResult;
 
-  StandaloneMigrationSuccessEvent(MigrationResult migrationResult) {
+  MongockMigrationSuccessEvent(MigrationResult migrationResult) {
     this.migrationResult = migrationResult;
   }
 

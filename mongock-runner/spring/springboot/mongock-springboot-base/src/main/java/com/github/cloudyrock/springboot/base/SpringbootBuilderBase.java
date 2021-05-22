@@ -14,6 +14,7 @@ import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
 import com.github.cloudyrock.springboot.base.events.SpringEventPublisher;
+import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
@@ -57,7 +58,11 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     if(applicationEventPublisher == null) {
       throw new MongockException("EventPublisher cannot e null");
     }
-    this.eventPublisher = new SpringEventPublisher(applicationEventPublisher);
+    this.eventPublisher = new SpringEventPublisher(
+        () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
+        applicationEventPublisher::publishEvent,
+        applicationEventPublisher::publishEvent
+    );
     return getInstance();
   }
 

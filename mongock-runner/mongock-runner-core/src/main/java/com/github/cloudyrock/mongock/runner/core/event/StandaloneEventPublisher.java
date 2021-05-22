@@ -1,19 +1,16 @@
-package com.github.cloudyrock.standalone.event;
-
-import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
+package com.github.cloudyrock.mongock.runner.core.event;
 
 import java.util.function.Consumer;
 
 public class StandaloneEventPublisher implements EventPublisher {
 
   private final Runnable migrationStartedListener;
-  private final Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener;
-  private final Consumer<StandaloneMigrationFailureEvent> migrationFailedListener;
+  private final Consumer<MongockMigrationSuccessEvent> migrationSuccessListener;
+  private final Consumer<MongockMigrationFailureEvent> migrationFailedListener;
 
   public StandaloneEventPublisher(Runnable migrationStartedListener,
-                                  Consumer<StandaloneMigrationSuccessEvent> migrationSuccessListener,
-                                  Consumer<StandaloneMigrationFailureEvent> migrationFailedListener) {
+                                  Consumer<MongockMigrationSuccessEvent> migrationSuccessListener,
+                                  Consumer<MongockMigrationFailureEvent> migrationFailedListener) {
     this.migrationSuccessListener = migrationSuccessListener;
     this.migrationFailedListener = migrationFailedListener;
     this.migrationStartedListener = migrationStartedListener;
@@ -29,14 +26,14 @@ public class StandaloneEventPublisher implements EventPublisher {
   @Override
   public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
     if(migrationSuccessListener != null) {
-      migrationSuccessListener.accept(new StandaloneMigrationSuccessEvent(migrationResult));
+      migrationSuccessListener.accept(new MongockMigrationSuccessEvent(migrationResult));
     }
   }
 
   @Override
   public void publishMigrationFailedEvent(Exception ex) {
     if(migrationFailedListener != null) {
-      migrationFailedListener.accept(new StandaloneMigrationFailureEvent(ex));
+      migrationFailedListener.accept(new MongockMigrationFailureEvent(ex));
     }
   }
 
@@ -44,11 +41,11 @@ public class StandaloneEventPublisher implements EventPublisher {
     return migrationStartedListener;
   }
 
-  public Consumer<StandaloneMigrationSuccessEvent> getMigrationSuccessListener() {
+  public Consumer<MongockMigrationSuccessEvent> getMigrationSuccessListener() {
     return migrationSuccessListener;
   }
 
-  public Consumer<StandaloneMigrationFailureEvent> getMigrationFailedListener() {
+  public Consumer<MongockMigrationFailureEvent> getMigrationFailedListener() {
     return migrationFailedListener;
   }
 }

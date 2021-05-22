@@ -1,9 +1,9 @@
 package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
-import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
-import com.github.cloudyrock.standalone.event.StandaloneMigrationSuccessEvent;
-import com.github.cloudyrock.standalone.event.StandaloneMigrationFailureEvent;
+import com.github.cloudyrock.mongock.runner.core.event.StandaloneEventPublisher;
+import com.github.cloudyrock.mongock.runner.core.event.MongockMigrationSuccessEvent;
+import com.github.cloudyrock.mongock.runner.core.event.MongockMigrationFailureEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,11 +65,11 @@ class Listener {
     startedCalled = true;
   }
 
-  void successListener(StandaloneMigrationSuccessEvent successEvent) {
+  void successListener(MongockMigrationSuccessEvent successEvent) {
     successCalled = true;
   }
 
-  void failListener(StandaloneMigrationFailureEvent failureEvent) {
+  void failListener(MongockMigrationFailureEvent failureEvent) {
     failCalled = true;
     this.exception = failureEvent.getException();
   }
