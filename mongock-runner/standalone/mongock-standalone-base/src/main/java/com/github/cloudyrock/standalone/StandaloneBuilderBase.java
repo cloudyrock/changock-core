@@ -5,6 +5,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.standalone.event.StandaloneEventPublisher;
@@ -22,6 +23,7 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
 
   protected StandaloneBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     super(operation, executorFactory, config);
+    dependencyManager = new DependencyManager();
   }
 
   //TODO javadoc

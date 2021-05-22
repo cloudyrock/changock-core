@@ -59,8 +59,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected Operation<RETURN_TYPE> operation;
   protected CONFIG config;
   protected ConnectionDriver driver;
+  protected DependencyManager dependencyManager;
   protected AnnotationProcessor annotationProcessor;
-  protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
   protected Function<Class, Object> changeLogInstantiator;
   protected ExecutorFactory<CONFIG> executorFactory;
 
@@ -193,7 +193,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
 
   @Override
   public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
-    dependencies.add(new ChangeSetDependency(name, type, instance));
+    dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }
 
@@ -213,6 +213,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   protected void beforeBuildRunner() {
+    if (config.getLegacyMigration() != null) {
+      dependencyManager.addStandardDependency(
+          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
+      );
+    }
   }
 
 
@@ -220,7 +225,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return executorFactory.getExecutor(
         operation,
         driver,
-        buildDependencyManager(),
+        dependencyManager,
         buildParameterNameFunction(),
         config
     );
@@ -231,16 +236,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
   }
 
-  protected DependencyManager buildDependencyManager() {
-    DependencyManager dependencyManager = new DependencyManager();
-    if (config.getLegacyMigration() != null) {
-      dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
-      );
-    }
-    dependencyManager.addStandardDependencies(dependencies);
-    return dependencyManager;
-  }
 
   protected ChangeLogService buildChangeLogService() {
 

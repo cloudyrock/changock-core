@@ -36,9 +36,9 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
+
   private List<String> activeProfiles;
   protected MongockRunner<RETURN_TYPE> runner;//TODO needed?
-  private DependencyManager dependencyManager;
   private EventPublisher applicationEventPublisher = EventPublisher.empty();
 
   private static final String DEFAULT_PROFILE = "default";
@@ -97,9 +97,13 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
       );
     }
-    this.dependencyManager.addDriverDependencies(dependencies);
   }
 
+  @Override
+  public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
+    dependencyManager.addDriverDependency(new ChangeSetDependency(name, type, instance));
+    return getInstance();
+  }
   @Override
   protected Function<Parameter, String> buildParameterNameFunction() {
     return parameter -> {
@@ -109,11 +113,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
       }
       return name;
     };
-  }
-
-  @Override
-  protected DependencyManager buildDependencyManager() {
-    return dependencyManager;
   }
 
   @Override

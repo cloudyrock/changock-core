@@ -52,7 +52,7 @@ public class TestMongockRunner extends MongockRunner {
       return new TestMigrationExecutor(
           executionId,
           driver,
-          buildDependencyManager(),
+          dependencyManager,
           DEFAULT_PARAM_NAME_PROVIDER,
           config
       );
