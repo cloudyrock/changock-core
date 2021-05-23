@@ -8,22 +8,19 @@ import com.github.cloudyrock.mongock.runner.core.executor.operation.change.Migra
 public final class MongockStandalone {
 
   //TODO javadoc
-  public static Builder<Boolean> builder() {
-    return new Builder<>(new MigrationOp(), new ExecutorFactory<>(), new MongockConfiguration());
+  public static CommunityStandaloneBuilder<Boolean> builder() {
+    return new CommunityStandaloneBuilder<>(new MigrationOp(), new ExecutorFactory<>(), new MongockConfiguration());
   }
 
-  public static class Builder<RETURN_TYPE> extends StandaloneBuilderBase<Builder<RETURN_TYPE>, RETURN_TYPE, MongockConfiguration> {
-    private Builder(Operation<RETURN_TYPE> operation, ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
+  public static class CommunityStandaloneBuilder<RETURN_TYPE> extends StandaloneBuilderBase<CommunityStandaloneBuilder<RETURN_TYPE>, RETURN_TYPE, MongockConfiguration> {
+    private CommunityStandaloneBuilder(Operation<RETURN_TYPE> operation, ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
       super(operation, executorFactory, config);
     }
 
-
     @Override
-    public Builder<RETURN_TYPE> getInstance() {
+    public CommunityStandaloneBuilder<RETURN_TYPE> getInstance() {
       return this;
     }
-
-
   }
 
 }

@@ -261,8 +261,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
   }
 
   public MongockRunner<Boolean> build() {
+    this.operation = new MigrationOp();
     return new MongockRunner<>(
-        executor != null ? executor : buildExecutor(new MigrationOp()),
+        executor != null ? executor : buildExecutor(),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),

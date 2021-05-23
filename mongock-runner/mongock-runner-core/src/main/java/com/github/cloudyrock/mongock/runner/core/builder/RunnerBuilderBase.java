@@ -56,6 +56,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   protected AnnotationProcessor annotationProcessor;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected ExecutorFactory<CONFIG> executorFactory;
+  protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+
 
   protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
@@ -66,7 +68,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   ///////////////////////////////////////////////////////////////////////////////////
   //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
-
 
   @Override
   public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
@@ -93,7 +94,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     }
     return getInstance();
   }
-
 
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
@@ -173,11 +173,10 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
   }
 
-
-
   ///////////////////////////////////////////////////////////////////////////////////
   //  Injections setters
   ///////////////////////////////////////////////////////////////////////////////////
+
   @Override
   public BUILDER_TYPE setDriver(ConnectionDriver driver) {
     this.driver = driver;
@@ -198,7 +197,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     runValidation();
     beforeBuildRunner();
     return new MongockRunner<>(
-        buildExecutor(operation),
+        buildExecutor(),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
@@ -214,21 +213,15 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   }
 
 
-  protected final <T> Executor<T> buildExecutor(Operation<T> operation) {
+  protected final  Executor<RETURN_TYPE> buildExecutor() {
     return executorFactory.getExecutor(
         operation,
         driver,
         dependencyManager,
-        buildParameterNameFunction(),
+        parameterNameFunction,
         config
     );
   }
-
-
-  protected Function<Parameter, String> buildParameterNameFunction() {
-    return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-  }
-
 
   protected ChangeLogService buildChangeLogService() {
 
