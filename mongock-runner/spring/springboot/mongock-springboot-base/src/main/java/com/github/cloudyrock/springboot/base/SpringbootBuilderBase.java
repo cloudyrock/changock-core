@@ -68,14 +68,14 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   //TODO javadoc
-  public MongockApplicationRunner buildApplicationRunner() {
-    return new MongockApplicationRunner(buildRunner());
+  public MongockApplicationRunner<RETURN_TYPE> buildApplicationRunner() {
+    return new MongockApplicationRunner<>(buildRunner());
   }
 
 
   //TODO javadoc
-  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-    return new MongockInitializingBeanRunner(buildRunner());
+  public MongockInitializingBeanRunner<RETURN_TYPE> buildInitializingBeanRunner() {
+    return new MongockInitializingBeanRunner<>(buildRunner());
   }
 
 
@@ -117,45 +117,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
 
-  @SuppressWarnings("all")
-  public class MongockApplicationRunner implements ApplicationRunner {
-
-    private final MongockRunner<RETURN_TYPE> runner;
-    protected Optional<RETURN_TYPE> result;
-
-    public MongockApplicationRunner(MongockRunner<RETURN_TYPE> runner) {
-      this.runner = runner;
-    }
-
-    public Optional<RETURN_TYPE> getResult() {
-      return result;
-    }
-
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-      result = runner.execute();
-    }
-  }
-
-  @SuppressWarnings("all")
-  public class MongockInitializingBeanRunner implements InitializingBean {
-
-    private final MongockRunner<RETURN_TYPE> runner;
-    protected Optional<RETURN_TYPE> result;
-
-    public MongockInitializingBeanRunner(MongockRunner<RETURN_TYPE> runner) {
-      this.runner = runner;
-    }
-
-    public Optional<RETURN_TYPE> getResult() {
-      return result;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-      result = runner.execute();
-    }
-  }
 
   @Override
   public void runValidation() {
