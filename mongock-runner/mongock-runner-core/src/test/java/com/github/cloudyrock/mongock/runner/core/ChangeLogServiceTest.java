@@ -43,7 +43,7 @@ public class ChangeLogServiceTest {
         .runValidation();
   }
 
-  private static Function<Class, Object> mockInjector() {
+  private static Function<Class<?>, Object> mockInjector() {
     return (type) -> {
       try {
         if (type == ChangeLogCustomConstructor.class) {

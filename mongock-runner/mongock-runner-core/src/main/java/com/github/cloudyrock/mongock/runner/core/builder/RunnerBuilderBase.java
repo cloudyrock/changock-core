@@ -62,7 +62,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   protected DependencyManager dependencyManager;
   protected EventPublisher eventPublisher = EventPublisher.empty();
   protected AnnotationProcessor annotationProcessor;
-  protected Function<Class, Object> changeLogInstantiator;
+  protected Function<Class<?>, Object> changeLogInstantiator;
   protected ExecutorFactory<CONFIG> executorFactory;
 
   protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
@@ -113,7 +113,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setChangeLogInstantiator(Function<Class, Object> changeLogInstantiator) {
+  public BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
     return getInstance();
   }
@@ -177,7 +177,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE addDependency(Class type, Object instance) {
+  public BUILDER_TYPE addDependency(Class<?> type, Object instance) {
     return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
   }
 
@@ -193,7 +193,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
+  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
     dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }

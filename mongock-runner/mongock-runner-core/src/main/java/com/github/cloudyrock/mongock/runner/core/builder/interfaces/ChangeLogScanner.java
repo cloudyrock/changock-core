@@ -49,5 +49,5 @@ public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
    * @param changeLogInstantiator the function that will create an instance of a class
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setChangeLogInstantiator(Function<Class, Object> changeLogInstantiator);
+  BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator);
 }
