@@ -1,9 +1,12 @@
 package com.github.cloudyrock.springboot.base.events;
 
+import com.github.cloudyrock.mongock.runner.core.event.MongockEvent;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationFailedResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import org.springframework.context.ApplicationEvent;
 
-public class SpringMigrationFailureEvent extends ApplicationEvent {
-  private final Exception exception;
+public class SpringMigrationFailureEvent extends ApplicationEvent implements MongockEvent {
+  private final MigrationFailedResult migrationResult;
 
   /**
    * Create a new {@code ApplicationEvent}.
@@ -13,17 +16,20 @@ public class SpringMigrationFailureEvent extends ApplicationEvent {
    */
   public SpringMigrationFailureEvent(Object source, Exception ex) {
     super(source);
-    this.exception = ex;
+    migrationResult = MigrationResult.failedResult(ex);
   }
 
-  public Exception getException() {
-    return exception;
+
+  @Override
+  public MigrationFailedResult getMigrationResult() {
+    return migrationResult;
   }
 
   @Override
   public String toString() {
     return "SpringMigrationFailureEvent{" +
-        "exception=" + exception +
+        "migrationResult=" + migrationResult +
+        ", source=" + source +
         "} " + super.toString();
   }
 }

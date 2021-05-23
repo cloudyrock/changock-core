@@ -1,7 +1,7 @@
 package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 
 public class DummyEventPublisher implements EventPublisher {
   @Override

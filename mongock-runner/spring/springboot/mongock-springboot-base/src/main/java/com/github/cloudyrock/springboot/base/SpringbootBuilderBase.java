@@ -5,7 +5,7 @@ import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
-import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
+import com.github.cloudyrock.mongock.runner.core.event.MongockEventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
@@ -13,8 +13,9 @@ import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
-import com.github.cloudyrock.springboot.base.events.SpringEventPublisher;
+import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
+import com.github.cloudyrock.springboot.base.events.SpringMigrationSuccessEvent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
@@ -58,10 +59,10 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     if(applicationEventPublisher == null) {
       throw new MongockException("EventPublisher cannot e null");
     }
-    this.eventPublisher = new SpringEventPublisher(
+    this.eventPublisher = new MongockEventPublisher(
         () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
-        applicationEventPublisher::publishEvent,
-        applicationEventPublisher::publishEvent
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
     );
     return getInstance();
   }

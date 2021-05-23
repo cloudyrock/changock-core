@@ -1,8 +1,8 @@
 package com.github.cloudyrock.springboot;
 
 
-import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
-import com.github.cloudyrock.springboot.base.events.SpringEventPublisher;
+import com.github.cloudyrock.mongock.runner.core.event.MongockEventPublisher;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationSuccessEvent;
@@ -21,30 +21,31 @@ public class SpringEventPublisherTest {
   @Test
   public void shouldCallSuccessListener() {
     ApplicationEventPublisher applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
-    new SpringEventPublisher(
+    new MongockEventPublisher(
         () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
-        applicationEventPublisher::publishEvent,
-        applicationEventPublisher::publishEvent
-    ).publishMigrationSuccessEvent(new MigrationResult());
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
+    ).publishMigrationSuccessEvent(MigrationResult.successResult());
 
     ArgumentCaptor<SpringMigrationSuccessEvent> eventCaptor = ArgumentCaptor.forClass(SpringMigrationSuccessEvent.class);
     verify(applicationEventPublisher, new Times(1)).publishEvent(eventCaptor.capture());
-    Assert.assertTrue(eventCaptor.getValue() instanceof SpringMigrationSuccessEvent);
+    Assert.assertTrue(eventCaptor.getValue().getMigrationResult().isSuccess());
+
   }
 
   @Test
   public void shouldCallFailListener() {
     RuntimeException ex = new RuntimeException();
     ApplicationEventPublisher applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
-    new SpringEventPublisher(
+    new MongockEventPublisher(
         () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
-        applicationEventPublisher::publishEvent,
-        applicationEventPublisher::publishEvent
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
     ).publishMigrationFailedEvent(ex);
 
     ArgumentCaptor<SpringMigrationFailureEvent> eventCaptor = ArgumentCaptor.forClass(SpringMigrationFailureEvent.class);
     verify(applicationEventPublisher, new Times(1)).publishEvent(eventCaptor.capture());
-    assertEquals(ex, eventCaptor.getValue().getException());
+    assertEquals(ex, eventCaptor.getValue().getMigrationResult().getException());
   }
 
 

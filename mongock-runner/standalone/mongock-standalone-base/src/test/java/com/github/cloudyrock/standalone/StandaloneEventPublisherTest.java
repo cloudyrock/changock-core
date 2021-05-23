@@ -1,9 +1,7 @@
 package com.github.cloudyrock.standalone;
 
-import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
-import com.github.cloudyrock.mongock.runner.core.event.StandaloneEventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.MongockMigrationSuccessEvent;
-import com.github.cloudyrock.mongock.runner.core.event.MongockMigrationFailureEvent;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.MongockEventPublisher;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +12,7 @@ public class StandaloneEventPublisherTest {
   @Test
   public void shouldCallStartedListener() {
     Listener listener = new Listener();
-    new StandaloneEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationStarted();
+    new MongockEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationStarted();
     Assert.assertTrue(listener.isStartedCalled());
     Assert.assertFalse(listener.isSuccessCalled());
     Assert.assertFalse(listener.isFailCalled());
@@ -23,7 +21,7 @@ public class StandaloneEventPublisherTest {
   @Test
   public void shouldCallSuccessListener() {
     Listener listener = new Listener();
-    new StandaloneEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationSuccessEvent(new MigrationResult());
+    new MongockEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationSuccessEvent(MigrationResult.successResult());
     Assert.assertFalse(listener.isStartedCalled());
     Assert.assertTrue(listener.isSuccessCalled());
     Assert.assertFalse(listener.isFailCalled());
@@ -34,7 +32,7 @@ public class StandaloneEventPublisherTest {
   public void shouldCallFailListener() {
     Listener listener = new Listener();
     RuntimeException ex = new RuntimeException();
-    new StandaloneEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationFailedEvent(ex);
+    new MongockEventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationFailedEvent(ex);
     Assert.assertFalse(listener.isStartedCalled());
     Assert.assertFalse(listener.isSuccessCalled());
     Assert.assertTrue(listener.isFailCalled());
@@ -43,12 +41,12 @@ public class StandaloneEventPublisherTest {
 
   @Test
   public void shouldNotBreak_WhenSuccess_ifListenerIsNull() {
-    new StandaloneEventPublisher(null, null,null).publishMigrationSuccessEvent(new MigrationResult());
+    new MongockEventPublisher(null, null,null).publishMigrationSuccessEvent(MigrationResult.successResult());
   }
 
   @Test
   public void shouldNotBreak_WhenFail_ifListenerIsNull() {
-    new StandaloneEventPublisher(null, null,null).publishMigrationFailedEvent(new Exception());
+    new MongockEventPublisher(null, null,null).publishMigrationFailedEvent(new Exception());
   }
 
 }
@@ -65,13 +63,13 @@ class Listener {
     startedCalled = true;
   }
 
-  void successListener(MongockMigrationSuccessEvent successEvent) {
+  void successListener(MigrationResult successEvent) {
     successCalled = true;
   }
 
-  void failListener(MongockMigrationFailureEvent failureEvent) {
+  void failListener(Exception exception) {
     failCalled = true;
-    this.exception = failureEvent.getException();
+    this.exception = exception;
   }
 
   boolean isStartedCalled() {
