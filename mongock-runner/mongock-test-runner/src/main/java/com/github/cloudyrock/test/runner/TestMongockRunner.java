@@ -8,7 +8,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationBuilder;
+import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilder;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 
 import javax.inject.Named;

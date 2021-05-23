@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.builder.interfaces;
+package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 

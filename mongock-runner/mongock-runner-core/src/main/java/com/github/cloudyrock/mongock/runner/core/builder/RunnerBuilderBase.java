@@ -7,16 +7,6 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.exception.MongockException;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ChangeLogScanner;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ChangeLogWriter;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.Configurable;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.DependencyInjectable;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.DriverConnectable;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.LegacyMigrator;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.RunnerBuilder;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.SelfInstanstiator;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ServiceIdentificable;
-import com.github.cloudyrock.mongock.runner.core.builder.interfaces.SystemVersionable;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
@@ -24,7 +14,6 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +21,6 @@ import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -213,7 +201,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   }
 
 
-  protected final  Executor<RETURN_TYPE> buildExecutor() {
+  protected final Executor<RETURN_TYPE> buildExecutor() {
     return executorFactory.getExecutor(
         operation,
         driver,
