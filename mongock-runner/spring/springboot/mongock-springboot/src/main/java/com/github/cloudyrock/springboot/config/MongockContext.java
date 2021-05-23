@@ -21,7 +21,7 @@ public class MongockContext extends MongockContextBase<MongockConfiguration> {
                                               MongockConfiguration springConfiguration,
                                               ApplicationContext springContext,
                                               ApplicationEventPublisher applicationEventPublisher) {
-    return MongockSpringboot.migrationBuilder()
+    return MongockSpringboot.builder()
         .setDriver(connectionDriver)
         .setConfig(springConfiguration)
         .setSpringContext(springContext)

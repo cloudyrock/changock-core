@@ -10,7 +10,7 @@ import com.github.cloudyrock.springboot.base.SpringbootBuilderBase;
 public final class MongockSpringboot {
 
   //TODO javadoc
-  public static MigrationBuilderImpl migrationBuilder() {
+  public static MigrationBuilderImpl builder() {
     return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
   }
 
@@ -25,12 +25,6 @@ public final class MongockSpringboot {
     public MigrationBuilderImpl getInstance() {
       return this;
     }
-  }
-
-
-  @Deprecated
-  public static MigrationBuilderImpl builder() {
-    return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
   }
 
 
