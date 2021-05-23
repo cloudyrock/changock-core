@@ -24,6 +24,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,18 +41,9 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
     implements
-    ChangeLogScanner<BUILDER_TYPE>,
-    ChangeLogWriter<BUILDER_TYPE>,
-    LegacyMigrator<BUILDER_TYPE>,
-    RunnerBuilder<BUILDER_TYPE, RETURN_TYPE>,
-    DriverConnectable<BUILDER_TYPE>,
-    Configurable<BUILDER_TYPE, CONFIG>,
-    SystemVersionable<BUILDER_TYPE>,
-    DependencyInjectable<BUILDER_TYPE>,
-    ServiceIdentificable<BUILDER_TYPE>,
-    SelfInstanstiator<BUILDER_TYPE>,
+    MigrationBuilder<BUILDER_TYPE, RETURN_TYPE, CONFIG>,
     Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);

@@ -12,14 +12,14 @@ public final class MongockStandalone {
     return new Builder<>(new MigrationOp(), new ExecutorFactory<>(), new MongockConfiguration());
   }
 
-  public static class Builder<RETURN_TYPE> extends StandaloneBuilderBase<Builder, RETURN_TYPE, MongockConfiguration> {
+  public static class Builder<RETURN_TYPE> extends StandaloneBuilderBase<Builder<RETURN_TYPE>, RETURN_TYPE, MongockConfiguration> {
     private Builder(Operation<RETURN_TYPE> operation, ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
       super(operation, executorFactory, config);
     }
 
 
     @Override
-    public Builder getInstance() {
+    public Builder<RETURN_TYPE> getInstance() {
       return this;
     }
 

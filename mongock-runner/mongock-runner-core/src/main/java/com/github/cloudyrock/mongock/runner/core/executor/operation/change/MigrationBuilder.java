@@ -12,7 +12,8 @@ import com.github.cloudyrock.mongock.runner.core.builder.interfaces.SelfInstanst
 import com.github.cloudyrock.mongock.runner.core.builder.interfaces.ServiceIdentificable;
 import com.github.cloudyrock.mongock.runner.core.builder.interfaces.SystemVersionable;
 
-public interface MigrationBuilder<BUILDER_TYPE extends MigrationBuilder, CONFIG extends MongockConfiguration>
+@SuppressWarnings("all")
+public interface MigrationBuilder<BUILDER_TYPE extends MigrationBuilder, RETUR_TYPE, CONFIG extends MongockConfiguration>
     extends
     ChangeLogScanner<BUILDER_TYPE>,
     ChangeLogWriter<BUILDER_TYPE>,
@@ -22,7 +23,7 @@ public interface MigrationBuilder<BUILDER_TYPE extends MigrationBuilder, CONFIG 
     SystemVersionable<BUILDER_TYPE>,
     DependencyInjectable<BUILDER_TYPE>,
     ServiceIdentificable<BUILDER_TYPE>,
-    RunnerBuilder<BUILDER_TYPE, Boolean>,
+    RunnerBuilder<BUILDER_TYPE, RETUR_TYPE>,
     SelfInstanstiator<BUILDER_TYPE> {
 
 

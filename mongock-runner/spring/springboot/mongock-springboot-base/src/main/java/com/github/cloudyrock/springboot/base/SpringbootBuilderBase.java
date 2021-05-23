@@ -36,7 +36,7 @@ import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
-public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
+public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
 
@@ -115,7 +115,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
       return name;
     };
   }
-
 
 
   @SuppressWarnings("all")

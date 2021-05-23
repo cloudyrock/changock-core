@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class TestMongockRunner extends MongockRunner {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
-  public static MigrationBuilder<Builder, MongockConfiguration> builder() {
+  public static MigrationBuilder<Builder, Boolean, MongockConfiguration> builder() {
     return new Builder(new ExecutorFactory<>());
   }
 
@@ -30,7 +30,7 @@ public class TestMongockRunner extends MongockRunner {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration>  implements MigrationBuilder<Builder, MongockConfiguration>{
+  public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration>  implements MigrationBuilder<Builder, Boolean, MongockConfiguration>{
 
     private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;

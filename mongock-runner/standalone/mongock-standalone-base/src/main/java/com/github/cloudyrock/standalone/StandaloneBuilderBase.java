@@ -10,7 +10,7 @@ import com.github.cloudyrock.mongock.runner.core.event.MongockEventPublisher;
 
 import java.util.function.Consumer;
 
-public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
+public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
 
