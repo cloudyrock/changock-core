@@ -18,6 +18,7 @@ import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationSuccessEvent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +31,7 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
@@ -39,8 +41,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
 
   private List<String> activeProfiles;
-  protected MongockRunner<RETURN_TYPE> runner;//TODO needed?
-
   private static final String DEFAULT_PROFILE = "default";
 
   protected SpringbootBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
@@ -69,21 +69,15 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   //TODO javadoc
   public MongockApplicationRunner buildApplicationRunner() {
-    buildRunner();
-    return args -> runner.execute();
+    return new MongockApplicationRunner(buildRunner());
   }
 
 
   //TODO javadoc
   public MongockInitializingBeanRunner buildInitializingBeanRunner() {
-    buildRunner();
-    return () -> runner.execute();
+    return new MongockInitializingBeanRunner(buildRunner());
   }
 
-
-  public MongockRunner<RETURN_TYPE> buildRunner() {
-    return this.runner = super.buildRunner();
-  }
 
   ///////////////////////////////////////////////////
   // Build methods
@@ -124,12 +118,44 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
 
 
-  @FunctionalInterface
-  public interface MongockApplicationRunner extends ApplicationRunner {
+  @SuppressWarnings("all")
+  public class MongockApplicationRunner implements ApplicationRunner {
+
+    private final MongockRunner<RETURN_TYPE> runner;
+    protected Optional<RETURN_TYPE> result;
+
+    public MongockApplicationRunner(MongockRunner<RETURN_TYPE> runner) {
+      this.runner = runner;
+    }
+
+    public Optional<RETURN_TYPE> getResult() {
+      return result;
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+      result = runner.execute();
+    }
   }
 
-  @FunctionalInterface
-  public interface MongockInitializingBeanRunner extends InitializingBean {
+  @SuppressWarnings("all")
+  public class MongockInitializingBeanRunner implements InitializingBean {
+
+    private final MongockRunner<RETURN_TYPE> runner;
+    protected Optional<RETURN_TYPE> result;
+
+    public MongockInitializingBeanRunner(MongockRunner<RETURN_TYPE> runner) {
+      this.runner = runner;
+    }
+
+    public Optional<RETURN_TYPE> getResult() {
+      return result;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+      result = runner.execute();
+    }
   }
 
   @Override
