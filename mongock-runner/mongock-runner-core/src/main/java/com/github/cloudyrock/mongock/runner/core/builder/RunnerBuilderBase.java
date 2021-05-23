@@ -11,9 +11,9 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -29,26 +29,42 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, CONFIG extends MongockConfiguration>
-    implements RunnerBuilder<BUILDER_TYPE, CONFIG>, Validable {
+public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
+    implements MigrationBuilder<BUILDER_TYPE, RETURN_TYPE, CONFIG>, Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
+  protected Operation<RETURN_TYPE> operation;
   protected CONFIG config;
   protected ConnectionDriver driver;
+  protected DependencyManager dependencyManager;
+  protected EventPublisher eventPublisher = EventPublisher.empty();
   protected AnnotationProcessor annotationProcessor;
-  protected Collection<ChangeSetDependency> dependencies = new ArrayList<>();
-  protected Function<Class, Object> changeLogInstantiator;
+  protected Function<Class<?>, Object> changeLogInstantiator;
   protected ExecutorFactory<CONFIG> executorFactory;
+  protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
-  protected RunnerBuilderBase(ExecutorFactory<CONFIG>  executorFactory, CONFIG config) {
+
+  protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     this.executorFactory = executorFactory;
     this.config = config;
+    this.operation = operation;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
   //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
+    return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
+  }
+
+  @Override
+  public BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
+    return addChangeLogClasses(Collections.singletonList(clazz));
+  }
+
   @Override
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
     if (changeLogsScanPackageList != null) {
@@ -65,7 +81,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
-
   @Override
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     config.setLegacyMigration(legacyMigration);
@@ -76,7 +91,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE setChangeLogInstantiator(Function<Class, Object> changeLogInstantiator) {
+  public BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
     return getInstance();
   }
@@ -129,9 +144,25 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
     return getInstance();
   }
 
+  @Override
+  public BUILDER_TYPE addDependency(Object instance) {
+    return addDependency(instance.getClass(), instance);
+  }
+
+  @Override
+  public BUILDER_TYPE addDependency(String name, Object instance) {
+    return addDependency(name, instance.getClass(), instance);
+  }
+
+  @Override
+  public BUILDER_TYPE addDependency(Class<?> type, Object instance) {
+    return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////
   //  Injections setters
   ///////////////////////////////////////////////////////////////////////////////////
+
   @Override
   public BUILDER_TYPE setDriver(ConnectionDriver driver) {
     this.driver = driver;
@@ -139,8 +170,8 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   }
 
   @Override
-  public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
-    dependencies.add(new ChangeSetDependency(name, type, instance));
+  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
+    dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }
 
@@ -148,45 +179,34 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
   //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-  protected <T> MongockRunner<T> buildRunner(Operation<T> operation) {
+  public MongockRunner<RETURN_TYPE> buildRunner() {
     runValidation();
     beforeBuildRunner();
     return new MongockRunner<>(
-        buildExecutor(operation),
+        buildExecutor(),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
-        buildEventPublisher());
+        eventPublisher);
   }
 
   protected void beforeBuildRunner() {
-  }
-
-
-  protected final <T> Executor<T> buildExecutor(Operation<T> operation) {
-    return executorFactory.getExecutor(
-        operation,
-        driver,
-        buildDependencyManager(),
-        buildParameterNameFunction(),
-        config
-    );
-  }
-
-
-  protected Function<Parameter, String> buildParameterNameFunction() {
-    return parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-  }
-
-  protected DependencyManager buildDependencyManager() {
-    DependencyManager dependencyManager = new DependencyManager();
     if (config.getLegacyMigration() != null) {
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
       );
     }
-    dependencyManager.addStandardDependencies(dependencies);
-    return dependencyManager;
+  }
+
+
+  protected final Executor<RETURN_TYPE> buildExecutor() {
+    return executorFactory.getExecutor(
+        operation,
+        driver,
+        dependencyManager,
+        parameterNameFunction,
+        config
+    );
   }
 
   protected ChangeLogService buildChangeLogService() {
@@ -235,11 +255,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase, 
       logger.info("Running Mongock with metadata");
     }
   }
-
-
-  protected abstract EventPublisher buildEventPublisher();
-
-  protected abstract BUILDER_TYPE getInstance();
 
 
 }

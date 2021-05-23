@@ -3,7 +3,7 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,7 @@ public class MongockRunner<T> {
         this.validate();
         eventPublisher.publishMigrationStarted();
         T result = executor.executeMigration(chanLogService.fetchChangeLogs());
-        eventPublisher.publishMigrationSuccessEvent(new MigrationResult());
+        eventPublisher.publishMigrationSuccessEvent(MigrationResult.successResult());
         return Optional.ofNullable(result);
 
       } catch (LockCheckException lockEx) {

@@ -70,7 +70,7 @@ public class SpringMongockInitializingBeanRunnerBaseTest {
   public void shouldRunOnlyProfiledChangeSets() throws Exception {
 
     // when
-//        Spring5Runner.builder()
+//        Spring5Runner.migrationBuilder()
     MongockSpringboot.builder()
         .setDriver(driver)
         .addChangeLogsScanPackage(IntegrationProfiledChangerLog.class.getPackage().getName())

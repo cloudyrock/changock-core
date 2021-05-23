@@ -1,5 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.event;
 
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+
 public interface EventPublisher {
 
   static EventPublisher empty() {
@@ -24,4 +26,6 @@ public interface EventPublisher {
   void publishMigrationSuccessEvent(MigrationResult migrationResult);
 
   void publishMigrationFailedEvent(Exception ex);
+
+
 }

@@ -55,7 +55,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAssignAllTheParameters() {
-    new DummyRunnerBuilder(new ExecutorFactory())
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setEnabled(false)
         .setStartSystemVersion("start")
@@ -69,7 +69,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldCallAllTheMethods_whenSetConfig() {
 
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     MongockConfiguration expectedConfig = getConfig(false, PACKAGE_PATH);
     builder.setConfig(expectedConfig);
     //todo check all the properties are set rightly
@@ -80,7 +80,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldThrowExceptionTrueByDefault() {
 
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.setConfig(getConfig(null, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
     verify(builder, new Times(0)).dontFailIfCannotAcquireLock();
@@ -92,7 +92,7 @@ public class RunnerBuilderBaseTest {
    */
   @Test
   public void shouldAddMultiplePackages_whenAddingList() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.addChangeLogsScanPackage("package1");
     builder.addChangeLogsScanPackage("package2");
     builder.addChangeLogsScanPackage("package3");
@@ -104,7 +104,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldAddSingleClass() {
     Executor executor = mock(MigrationExecutor.class);
-    new DummyRunnerBuilder(new ExecutorFactory())
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setExecutor(executor)
         .addChangeLogClass(ChangeLogSuccess11.class)
@@ -134,7 +134,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
     Executor executor = mock(MigrationExecutor.class);
-    new DummyRunnerBuilder(new ExecutorFactory())
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setExecutor(executor)
         .addChangeLogClass(ChangeLogSuccess11.class)
@@ -153,7 +153,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldAddClassAndPackage() {
     Executor executor = mock(MigrationExecutor.class);
-    new DummyRunnerBuilder(new ExecutorFactory())
+    new DummyRunnerBuilder(new ExecutorFactory<>())
         .setDriver(driver)
         .setExecutor(executor)
         .addChangeLogClass(ChangeLogSuccess11.class)
@@ -178,7 +178,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.setConfig(getConfig(null, "package1", "package2"));
     MongockConfiguration actualConfig = (MongockConfiguration)ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
     assertTrue(actualConfig.getChangeLogsScanPackage().contains("package1"));
@@ -225,13 +225,13 @@ class DummyMongockConfiguration extends MongockConfiguration {
 
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockConfiguration> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, MongockConfiguration> {
 
 
   private Executor executor;
 
-  protected DummyRunnerBuilder(ExecutorFactory executorFactory) {
-    super(executorFactory, new MongockConfiguration());
+  protected DummyRunnerBuilder(ExecutorFactory<MongockConfiguration> executorFactory) {
+    super(new MigrationOp(), executorFactory, new MongockConfiguration());
   }
 
   void validate() {
@@ -248,13 +248,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
   protected void beforeBuildRunner() {
   }
 
-  @Override
-  protected EventPublisher buildEventPublisher() {
-    return EventPublisher.empty();
-  }
 
   @Override
-  protected DummyRunnerBuilder getInstance() {
+  public DummyRunnerBuilder getInstance() {
     return this;
   }
 
@@ -265,8 +261,9 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, MongockCo
   }
 
   public MongockRunner<Boolean> build() {
+    this.operation = new MigrationOp();
     return new MongockRunner<>(
-        executor != null ? executor : buildExecutor(new MigrationOp()),
+        executor != null ? executor : buildExecutor(),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),

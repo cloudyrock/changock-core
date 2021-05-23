@@ -39,7 +39,7 @@ import static java.util.Arrays.asList;
  */
 public class ChangeLogService implements Validable {
 
-  private static final Function<Class, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
+  private static final Function<Class<?>, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
       return type.getConstructor().newInstance();
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -53,7 +53,7 @@ public class ChangeLogService implements Validable {
   private final ArtifactVersion endSystemVersion;
   private final Function<AnnotatedElement, Boolean> profileFilter;
   private final AnnotationProcessor annotationManager;
-  private final Function<Class, Object> changeLogInstantiator;
+  private final Function<Class<?>, Object> changeLogInstantiator;
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
@@ -75,7 +75,7 @@ public class ChangeLogService implements Validable {
                           String startSystemVersionInclusive,
                           String endSystemVersionInclusive,
                           AnnotationProcessor annotationProcessor,
-                          Function<Class, Object> changeLogInstantiator) {
+                          Function<Class<?>, Object> changeLogInstantiator) {
     this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, annotationProcessor, changeLogInstantiator);
   }
 
@@ -85,7 +85,7 @@ public class ChangeLogService implements Validable {
                           String endSystemVersionInclusive,
                           Function<AnnotatedElement, Boolean> profileFilter,
                           AnnotationProcessor annotationProcessor,
-                          Function<Class, Object> changeLogInstantiator) {
+                          Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
