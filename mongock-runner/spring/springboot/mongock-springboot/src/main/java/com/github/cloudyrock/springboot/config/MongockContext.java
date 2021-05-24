@@ -3,7 +3,7 @@ package com.github.cloudyrock.springboot.config;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.springboot.MongockSpringboot;
-import com.github.cloudyrock.springboot.base.SpringbootBuilderBase;
+import com.github.cloudyrock.springboot.base.builder.migration.MigrationSpringbootBuilder;
 import com.github.cloudyrock.springboot.base.config.MongockContextBase;
 import com.github.cloudyrock.springboot.base.config.MongockDriverContextSelector;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -18,10 +18,10 @@ public class MongockContext extends MongockContextBase<MongockConfiguration> {
 
 
   @Bean
-  public SpringbootBuilderBase getBuilder(ConnectionDriver connectionDriver,
-                                          MongockConfiguration springConfiguration,
-                                          ApplicationContext springContext,
-                                          ApplicationEventPublisher applicationEventPublisher) {
+  public MigrationSpringbootBuilder getBuilder(ConnectionDriver connectionDriver,
+                                               MongockConfiguration springConfiguration,
+                                               ApplicationContext springContext,
+                                               ApplicationEventPublisher applicationEventPublisher) {
     return MongockSpringboot.builder()
         .setDriver(connectionDriver)
         .setConfig(springConfiguration)
