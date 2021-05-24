@@ -1,4 +1,4 @@
-package com.github.cloudyrock.springboot.base;
+package com.github.cloudyrock.springboot.base.builder;
 
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
@@ -11,6 +11,8 @@ import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyM
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
 import com.github.cloudyrock.spring.util.ProfileUtil;
+import com.github.cloudyrock.springboot.base.MongockApplicationRunner;
+import com.github.cloudyrock.springboot.base.MongockInitializingBeanRunner;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
@@ -43,14 +45,12 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }
 
-  //TODO javadoc
   public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
     this.activeProfiles = getActiveProfilesFromContext(springContext);
     this.dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
     return getInstance();
   }
 
-  //TODO javadoc
   public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
     if(applicationEventPublisher == null) {
       throw new MongockException("EventPublisher cannot e null");
@@ -74,13 +74,13 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   // Build methods
   ///////////////////////////////////////////////////
 
-  //TODO javadoc
+
   public MongockApplicationRunner<RETURN_TYPE> buildApplicationRunner() {
     return new MongockApplicationRunner<>(buildRunner());
   }
 
 
-  //TODO javadoc
+
   public MongockInitializingBeanRunner<RETURN_TYPE> buildInitializingBeanRunner() {
     return new MongockInitializingBeanRunner<>(buildRunner());
   }

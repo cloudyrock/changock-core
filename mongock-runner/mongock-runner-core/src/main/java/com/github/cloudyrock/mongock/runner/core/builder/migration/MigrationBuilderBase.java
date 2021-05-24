@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.builder;
+package com.github.cloudyrock.mongock.runner.core.builder.migration;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogScanner;
@@ -13,7 +13,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentifica
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
 
 @SuppressWarnings("all")
-public interface MigrationBuilder<BUILDER_TYPE extends MigrationBuilder, RETUR_TYPE, CONFIG extends MongockConfiguration>
+public interface MigrationBuilderBase<BUILDER_TYPE extends MigrationBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends
     ChangeLogScanner<BUILDER_TYPE>,
     ChangeLogWriter<BUILDER_TYPE>,
@@ -23,8 +23,6 @@ public interface MigrationBuilder<BUILDER_TYPE extends MigrationBuilder, RETUR_T
     SystemVersionable<BUILDER_TYPE>,
     DependencyInjectable<BUILDER_TYPE>,
     ServiceIdentificable<BUILDER_TYPE>,
-    RunnerBuilder<BUILDER_TYPE, RETUR_TYPE>,
+    RunnerBuilder<BUILDER_TYPE, RETURN_TYPE>,
     SelfInstanstiator<BUILDER_TYPE> {
-
-
 }

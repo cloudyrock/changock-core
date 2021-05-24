@@ -30,7 +30,7 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 
 
 public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
-    implements MigrationBuilder<BUILDER_TYPE, RETURN_TYPE, CONFIG>, Validable {
+    implements Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
@@ -55,17 +55,17 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
 
-  @Override
+  
   public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
     return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
   }
 
-  @Override
+  
   public BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
     return addChangeLogClasses(Collections.singletonList(clazz));
   }
 
-  @Override
+  
   public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
     if (changeLogsScanPackageList != null) {
       config.getChangeLogsScanPackage().addAll(changeLogsScanPackageList);
@@ -73,7 +73,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes) {
     if (classes != null) {
       classes.stream().map(Class::getName).forEach(config.getChangeLogsScanPackage()::add);
@@ -81,7 +81,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     config.setLegacyMigration(legacyMigration);
     if (legacyMigration != null) {
@@ -90,71 +90,71 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setEnabled(boolean enabled) {
     this.config.setEnabled(enabled);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setTrackIgnored(boolean trackIgnored) {
     config.setTrackIgnored(trackIgnored);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE dontFailIfCannotAcquireLock() {
     this.config.setThrowExceptionIfCannotObtainLock(false);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setStartSystemVersion(String startSystemVersion) {
     config.setStartSystemVersion(startSystemVersion);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setEndSystemVersion(String endSystemVersion) {
     config.setEndSystemVersion(endSystemVersion);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setServiceIdentifier(String serviceIdentifier) {
     config.setServiceIdentifier(serviceIdentifier);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
     config.setMetadata(metadata);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE setConfig(CONFIG newConfig) {
     config.updateFrom(newConfig);
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE addDependency(Object instance) {
     return addDependency(instance.getClass(), instance);
   }
 
-  @Override
+  
   public BUILDER_TYPE addDependency(String name, Object instance) {
     return addDependency(name, instance.getClass(), instance);
   }
 
-  @Override
+  
   public BUILDER_TYPE addDependency(Class<?> type, Object instance) {
     return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
   }
@@ -163,13 +163,13 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   //  Injections setters
   ///////////////////////////////////////////////////////////////////////////////////
 
-  @Override
+  
   public BUILDER_TYPE setDriver(ConnectionDriver driver) {
     this.driver = driver;
     return getInstance();
   }
 
-  @Override
+  
   public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
     dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
@@ -235,7 +235,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     return annotatedElement -> true;
   }
 
-  @Override
+  
   public void runValidation() throws MongockException {
     if (driver == null) {
       throw new MongockException("Driver must be injected to Mongock builder");
@@ -256,5 +256,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     }
   }
 
+  public abstract BUILDER_TYPE getInstance();
 
 }
