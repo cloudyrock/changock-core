@@ -2,7 +2,7 @@ package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
-import com.github.cloudyrock.mongock.runner.core.builder.migration.MigrationBuilder;
+import com.github.cloudyrock.mongock.runner.core.builder.migration.MigrationBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class TestMongockRunner extends MongockRunner {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
-  public static MigrationBuilder builder() {
+  public static Builder builder() {
     return new Builder(new ExecutorFactory<>());
   }
 
@@ -30,7 +30,7 @@ public class TestMongockRunner extends MongockRunner {
     super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration> implements MigrationBuilder {
+  public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration> implements MigrationBuilderBase<Builder, Boolean, MongockConfiguration> {
 
     private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;

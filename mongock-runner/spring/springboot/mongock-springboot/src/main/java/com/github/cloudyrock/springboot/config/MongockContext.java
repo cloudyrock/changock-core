@@ -18,6 +18,7 @@ public class MongockContext extends MongockContextBase<MongockConfiguration> {
 
 
   @Bean
+  @SuppressWarnings("all")
   public MigrationSpringbootBuilder getBuilder(ConnectionDriver connectionDriver,
                                                MongockConfiguration springConfiguration,
                                                ApplicationContext springContext,
