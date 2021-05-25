@@ -85,9 +85,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     config.setLegacyMigration(legacyMigration);
-    if (legacyMigration != null) {
-      config.getChangeLogsScanPackage().add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
-    }
     return getInstance();
   }
 
@@ -194,6 +191,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
 
   protected void beforeBuildRunner() {
     if (config.getLegacyMigration() != null) {
+      config.getChangeLogsScanPackage().add(driver.getLegacyMigrationChangeLogClass(config.getLegacyMigration().isRunAlways()).getPackage().getName());
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
       );

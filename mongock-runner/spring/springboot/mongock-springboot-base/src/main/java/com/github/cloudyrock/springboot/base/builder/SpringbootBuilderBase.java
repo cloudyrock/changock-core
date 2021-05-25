@@ -83,15 +83,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @Override
-  protected void beforeBuildRunner() {
-    if (config.getLegacyMigration() != null) {
-      dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
-      );
-    }
-  }
-
-  @Override
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
     DependencyContext dependencyContext = getDependencyManager().getDependencyContext();
     ApplicationContext springContext = ((SpringDependencyContext)dependencyContext).getSpringContext();

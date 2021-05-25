@@ -18,9 +18,6 @@ public class DependencyManagerWithContext extends DependencyManager implements V
 
   private DependencyContext context;
 
-  public DependencyManagerWithContext() {
-  }
-
   public void setContext(DependencyContext context) {
     this.context = context;
   }
