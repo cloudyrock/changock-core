@@ -1,7 +1,7 @@
 package com.github.cloudyrock.standalone.migration;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.runner.core.builder.migration.MigrationBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 
 import java.util.function.Consumer;

@@ -2,7 +2,7 @@ package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
-import com.github.cloudyrock.mongock.runner.core.builder.migration.MigrationBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;

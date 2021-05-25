@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.runner.core.builder.migration;
+package com.github.cloudyrock.mongock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogScanner;
