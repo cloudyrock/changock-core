@@ -13,6 +13,10 @@ public class SpringDependencyContext implements DependencyContext {
     this.springContext = springContext;
   }
 
+  public ApplicationContext getSpringContext() {
+    return springContext;
+  }
+
   @Override
   public <T> Optional<T> getBean(Class<T> type) {
     try {

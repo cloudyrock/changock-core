@@ -16,10 +16,21 @@ public class DependencyManagerWithContext extends DependencyManager implements V
 
   private static final Logger logger = LoggerFactory.getLogger(DependencyManagerWithContext.class);
 
-  private final DependencyContext context;
+  private DependencyContext context;
 
-  public DependencyManagerWithContext(DependencyContext context) {
+  public DependencyManagerWithContext() {
+  }
+
+  public void setContext(DependencyContext context) {
     this.context = context;
+  }
+
+  public boolean isContextPresent() {
+    return context != null;
+  }
+
+  public DependencyContext getDependencyContext() {
+    return context;
   }
 
   @Override

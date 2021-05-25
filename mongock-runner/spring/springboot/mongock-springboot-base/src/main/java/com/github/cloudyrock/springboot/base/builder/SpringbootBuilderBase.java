@@ -7,6 +7,7 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.MongockEventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
@@ -36,23 +37,20 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
 
-
-  private List<String> activeProfiles;
   private static final String DEFAULT_PROFILE = "default";
 
   protected SpringbootBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
-    super(operation, executorFactory, config);
+    super(operation, executorFactory, config, new DependencyManagerWithContext());
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }
 
   public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
-    this.activeProfiles = getActiveProfilesFromContext(springContext);
-    this.dependencyManager = new DependencyManagerWithContext(new SpringDependencyContext(springContext));
+    (getDependencyManager()).setContext(new SpringDependencyContext(springContext));
     return getInstance();
   }
 
   public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    if(applicationEventPublisher == null) {
+    if (applicationEventPublisher == null) {
       throw new MongockException("EventPublisher cannot e null");
     }
     this.eventPublisher = new MongockEventPublisher(
@@ -64,7 +62,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @Override
-  public BUILDER_TYPE addDependency(String name, Class type, Object instance) {
+  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
     dependencyManager.addDriverDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }
@@ -78,7 +76,6 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   public MongockApplicationRunner<RETURN_TYPE> buildApplicationRunner() {
     return new MongockApplicationRunner<>(buildRunner());
   }
-
 
 
   public MongockInitializingBeanRunner<RETURN_TYPE> buildInitializingBeanRunner() {
@@ -96,8 +93,10 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
 
   @Override
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    DependencyContext dependencyContext = getDependencyManager().getDependencyContext();
+    ApplicationContext springContext = ((SpringDependencyContext)dependencyContext).getSpringContext();
     return annotated -> ProfileUtil.matchesActiveSpringProfile(
-        activeProfiles,
+        getActiveProfilesFromContext(springContext),
         Profile.class,
         annotated,
         (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
@@ -106,7 +105,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   @Override
   public void runValidation() {
     super.runValidation();
-    if (dependencyManager == null) {
+    if (!(getDependencyManager()).isContextPresent()) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
   }
@@ -128,4 +127,9 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
       return name;
     };
   }
+
+  private DependencyManagerWithContext getDependencyManager() {
+    return (DependencyManagerWithContext) dependencyManager;
+  }
+
 }
