@@ -32,11 +32,10 @@ public class TestMongockRunner extends MongockRunner {
 
   public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration> implements MigrationBuilderBase<Builder, Boolean, MongockConfiguration> {
 
-    private DependencyManager dependencyManager = new DependencyManager();
     private String executionId;
 
     private Builder(ExecutorFactory<MongockConfiguration> executorFactory) {
-      super(new MigrationOp(), executorFactory, new MongockConfiguration());
+      super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
     }
 
     public Builder setExecutionId(String executionId) {

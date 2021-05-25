@@ -15,8 +15,7 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
 
 
   protected StandaloneBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
-    super(operation, executorFactory, config);
-    dependencyManager = new DependencyManager();
+    super(operation, executorFactory, config, new DependencyManager());
   }
 
   //TODO javadoc

@@ -11,6 +11,7 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
@@ -231,7 +232,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
   private Executor executor;
 
   protected DummyRunnerBuilder(ExecutorFactory<MongockConfiguration> executorFactory) {
-    super(new MigrationOp(), executorFactory, new MongockConfiguration());
+    super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
   }
 
   void validate() {
@@ -261,7 +262,6 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
   }
 
   public MongockRunner<Boolean> build() {
-    this.operation = new MigrationOp();
     return new MongockRunner<>(
         executor != null ? executor : buildExecutor(),
         buildChangeLogService(),

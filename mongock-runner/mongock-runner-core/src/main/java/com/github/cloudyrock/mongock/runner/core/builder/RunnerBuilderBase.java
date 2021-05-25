@@ -34,21 +34,22 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
-  protected Operation<RETURN_TYPE> operation;
-  protected CONFIG config;
+  protected final DependencyManager dependencyManager;
+  protected final Operation<RETURN_TYPE> operation;
+  protected final CONFIG config;
+  protected final ExecutorFactory<CONFIG> executorFactory;
   protected ConnectionDriver driver;
-  protected DependencyManager dependencyManager;
   protected EventPublisher eventPublisher = EventPublisher.empty();
   protected AnnotationProcessor annotationProcessor;
   protected Function<Class<?>, Object> changeLogInstantiator;
-  protected ExecutorFactory<CONFIG> executorFactory;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
-  protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
+  protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config, DependencyManager dependencyManager) {
     this.executorFactory = executorFactory;
     this.config = config;
     this.operation = operation;
+    this.dependencyManager = dependencyManager;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -84,9 +85,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   
   public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
     config.setLegacyMigration(legacyMigration);
-    if (legacyMigration != null) {
-      config.getChangeLogsScanPackage().add(driver.getLegacyMigrationChangeLogClass(legacyMigration.isRunAlways()).getPackage().getName());
-    }
     return getInstance();
   }
 
@@ -159,6 +157,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
   }
 
+  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
+    dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
+    return getInstance();
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////
   //  Injections setters
   ///////////////////////////////////////////////////////////////////////////////////
@@ -170,10 +173,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   }
 
   
-  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
-    dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
-    return getInstance();
-  }
 
   ///////////////////////////////////////////////////////////////////////////////////
   //  Build methods
@@ -192,6 +191,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
 
   protected void beforeBuildRunner() {
     if (config.getLegacyMigration() != null) {
+      config.getChangeLogsScanPackage().add(driver.getLegacyMigrationChangeLogClass(config.getLegacyMigration().isRunAlways()).getPackage().getName());
       dependencyManager.addStandardDependency(
           new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
       );
