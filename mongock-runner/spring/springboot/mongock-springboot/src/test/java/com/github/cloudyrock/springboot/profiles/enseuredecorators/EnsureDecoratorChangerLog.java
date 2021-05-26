@@ -3,9 +3,9 @@ package com.github.cloudyrock.springboot.profiles.enseuredecorators;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import com.github.cloudyrock.springboot.util.TemplateForTestImplChild;
 import com.github.cloudyrock.springboot.util.CallVerifier;
 import com.github.cloudyrock.springboot.util.TemplateForTestImpl;
+import com.github.cloudyrock.springboot.util.TemplateForTestImplChild;
 
 
 @ChangeLog(order = "01")

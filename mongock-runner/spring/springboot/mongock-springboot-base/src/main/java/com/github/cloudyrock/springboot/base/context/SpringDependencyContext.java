@@ -1,9 +1,10 @@
 package com.github.cloudyrock.springboot.base.context;
 
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyContext;
-import java.util.Optional;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+
+import java.util.Optional;
 
 public class SpringDependencyContext implements DependencyContext {
 

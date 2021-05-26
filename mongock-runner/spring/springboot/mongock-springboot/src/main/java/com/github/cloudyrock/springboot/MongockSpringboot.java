@@ -3,7 +3,6 @@ package com.github.cloudyrock.springboot;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
-import com.github.cloudyrock.springboot.base.builder.migration.MigrationSpringbootBuilder;
 import com.github.cloudyrock.springboot.base.builder.SpringbootBuilderBase;
 
 public final class MongockSpringboot {

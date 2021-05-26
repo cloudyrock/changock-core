@@ -1,9 +1,9 @@
 package com.github.cloudyrock.mongock.runner.core.executor.dependency;
 
 import com.github.cloudyrock.mongock.NonLockGuarded;
-import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

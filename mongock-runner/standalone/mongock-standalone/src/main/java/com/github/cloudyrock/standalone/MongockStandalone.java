@@ -3,7 +3,6 @@ package com.github.cloudyrock.standalone;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
-import com.github.cloudyrock.standalone.migration.MigrationStandaloneBuilder;
 
 public final class MongockStandalone {
 

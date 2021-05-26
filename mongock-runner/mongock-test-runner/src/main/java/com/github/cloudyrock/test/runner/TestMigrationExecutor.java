@@ -2,8 +2,8 @@ package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.lang.reflect.Parameter;
