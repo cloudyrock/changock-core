@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.runner.core.changelogs.executor.test5_with
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.runner.core.util.DummyDependencyClass;
+
 import java.util.concurrent.CountDownLatch;
 
 @ChangeLog(order = "2")

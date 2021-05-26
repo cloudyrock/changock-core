@@ -7,12 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.verification.Times;
 
+import static com.github.cloudyrock.mongock.util.test.ReflectionUtils.isProxy;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
-import static com.github.cloudyrock.mongock.util.test.ReflectionUtils.isProxy;
-import static org.junit.Assert.assertTrue;
 
 
 public class LockGuardProxyTest {

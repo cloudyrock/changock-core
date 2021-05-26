@@ -35,11 +35,11 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
   protected final DependencyManager dependencyManager;
+  protected EventPublisher eventPublisher = EventPublisher.empty();
   protected final Operation<RETURN_TYPE> operation;
   protected final CONFIG config;
   protected final ExecutorFactory<CONFIG> executorFactory;
   protected ConnectionDriver driver;
-  protected EventPublisher eventPublisher = EventPublisher.empty();
   protected AnnotationProcessor annotationProcessor;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;

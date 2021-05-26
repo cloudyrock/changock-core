@@ -1,12 +1,12 @@
 package com.github.cloudyrock.mongock.test.util.decorator;
 
+import com.github.cloudyrock.mongock.NonLockGuarded;
+import com.github.cloudyrock.mongock.NonLockGuardedType;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.decorator.DecoratorBase;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.invoker.LockGuardInvoker;
 import com.github.cloudyrock.mongock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import com.github.cloudyrock.mongock.internal.DecoratorDiverted;
-import com.github.cloudyrock.mongock.NonLockGuarded;
-import com.github.cloudyrock.mongock.NonLockGuardedType;
 import org.mockito.Mockito;
 import org.mockito.invocation.Invocation;
 

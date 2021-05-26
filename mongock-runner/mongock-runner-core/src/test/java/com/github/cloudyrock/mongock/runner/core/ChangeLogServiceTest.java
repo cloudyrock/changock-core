@@ -6,8 +6,8 @@ import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.changelogs.comparator.Comparator1ChangeLog;
 import com.github.cloudyrock.mongock.runner.core.changelogs.comparator.Comparator2ChangeLog;
-import com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.good.ChangeLogCustomConstructor;
 import com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.bad.BadChangeLogCustomConstructor;
+import com.github.cloudyrock.mongock.runner.core.changelogs.instantiator.good.ChangeLogCustomConstructor;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.ChangeLogNoPackage;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package1.ChangeLogMultiPackage1;
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPackage2;
@@ -15,15 +15,14 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.Change
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.function.Function;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
