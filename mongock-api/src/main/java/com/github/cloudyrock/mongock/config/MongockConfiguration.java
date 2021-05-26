@@ -121,7 +121,7 @@ public class MongockConfiguration implements ExecutorConfiguration {
     setLockRepositoryName(getLockRepositoryNameDefault());
   }
 
-  public <T extends MongockConfiguration> void updateFrom(T from) {
+  public void updateFrom(MongockConfiguration from) {
     changeLogRepositoryName = from.getChangeLogRepositoryName();
     indexCreation = from.isIndexCreation();
     lockRepositoryName = from.getLockRepositoryName();
