@@ -1,39 +1,18 @@
 package com.github.cloudyrock.spring.config;
 
-import com.github.cloudyrock.mongock.config.MongockConfiguration;
-
 /**
  * It needs to be loaded explicitly in the Driver importer(example MongoSpringDataImporter.java)
  * So each driver can override the MongockSpringConfiguration in case it adds any new parameter
  */
-public class MongockSpringConfigurationBase extends MongockConfiguration {
+public interface MongockSpringConfigurationBase {
 
 
-  private boolean testEnabled = false;
-  /**
-   * Type of Spring bean Mongock should be: ApplicationRunner(default) or InitializingBean
-   */
-  private SpringRunnerType runnerType = SpringRunnerType.ApplicationRunner;
+  SpringRunnerType getRunnerType();
 
-  public SpringRunnerType getRunnerType() {
-    return runnerType;
-  }
+  void setRunnerType(SpringRunnerType runnerType);
 
-  public void setRunnerType(SpringRunnerType runnerType) {
-    this.runnerType = runnerType;
-  }
+  boolean isTestEnabled();
 
-  public boolean isTestEnabled() {
-    return testEnabled;
-  }
+  void setTestEnabled(boolean testEnabled);
 
-  public void setTestEnabled(boolean testEnabled) {
-    this.testEnabled = testEnabled;
-  }
-
-  public <T extends MongockSpringConfigurationBase> void updateFrom(T from) {
-    super.updateFrom(from);
-    testEnabled = from.isTestEnabled();
-    runnerType = from.getRunnerType();
-  }
 }
