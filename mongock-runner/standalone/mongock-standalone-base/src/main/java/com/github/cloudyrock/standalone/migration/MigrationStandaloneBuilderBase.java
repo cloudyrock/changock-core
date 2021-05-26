@@ -2,6 +2,10 @@ package com.github.cloudyrock.standalone.migration;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
+import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
+import com.github.cloudyrock.mongock.runner.core.event.MigrationFailureEvent;
+import com.github.cloudyrock.mongock.runner.core.event.MigrationStartedEvent;
+import com.github.cloudyrock.mongock.runner.core.event.MigrationSuccessEvent;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 
 import java.util.function.Consumer;
@@ -10,11 +14,11 @@ public interface MigrationStandaloneBuilderBase<BUILDER_TYPE extends MigrationSt
     extends MigrationBuilderBase<BUILDER_TYPE, Boolean, CONFIG> {
 
   //TODO javadoc
-  BUILDER_TYPE setMigrationStartedListener(Runnable migrationStartedListener);
+  BUILDER_TYPE setMigrationStartedListener(Consumer<MigrationStartedEvent> listener);
 
   //TODO javadoc
-  BUILDER_TYPE setMigrationSuccessListener(Consumer<MigrationResult> listener);
+  BUILDER_TYPE setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener);
 
   //TODO javadoc
-  BUILDER_TYPE setMigrationFailureListener(Consumer<Exception> migrationFailureListener);
+  BUILDER_TYPE setMigrationFailureListener(Consumer<MigrationFailureEvent> listener);
 }

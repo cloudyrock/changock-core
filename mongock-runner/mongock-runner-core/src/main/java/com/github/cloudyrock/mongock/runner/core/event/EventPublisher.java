@@ -2,30 +2,57 @@ package com.github.cloudyrock.mongock.runner.core.event;
 
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 
-public interface EventPublisher {
+import java.util.function.Consumer;
 
-  static EventPublisher empty() {
-    return new EventPublisher() {
-      @Override
-      public void publishMigrationStarted() {
-      }
+public class EventPublisher {
 
-      @Override
-      public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
-      }
+  private final Runnable migrationStartedListener;
+  private final Consumer<MigrationResult> migrationSuccessListener;
+  private final Consumer<Exception> migrationFailedListener;
 
-      @Override
-      public void publishMigrationFailedEvent(Exception ex) {
-
-      }
-    };
+  public static EventPublisher empty() {
+    return new EventPublisher();
   }
 
-  void publishMigrationStarted();
+  private EventPublisher() {
+    this(null, null, null);
+  }
 
-  void publishMigrationSuccessEvent(MigrationResult migrationResult);
+  public EventPublisher(Runnable migrationStartedListener,
+                        Consumer<MigrationResult> migrationSuccessListener,
+                        Consumer<Exception> migrationFailedListener) {
+    this.migrationSuccessListener = migrationSuccessListener;
+    this.migrationFailedListener = migrationFailedListener;
+    this.migrationStartedListener = migrationStartedListener;
+  }
 
-  void publishMigrationFailedEvent(Exception ex);
+  public void publishMigrationStarted() {
+    if (migrationStartedListener != null) {
+      migrationStartedListener.run();
+    }
+  }
 
+  public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
+    if (migrationSuccessListener != null) {
+      migrationSuccessListener.accept(migrationResult);
+    }
+  }
 
+  public void publishMigrationFailedEvent(Exception ex) {
+    if (migrationFailedListener != null) {
+      migrationFailedListener.accept(ex);
+    }
+  }
+
+  public Runnable getMigrationStartedListener() {
+    return migrationStartedListener;
+  }
+
+  public Consumer<MigrationResult> getMigrationSuccessListener() {
+    return migrationSuccessListener;
+  }
+
+  public Consumer<Exception> getMigrationFailedListener() {
+    return migrationFailedListener;
+  }
 }
