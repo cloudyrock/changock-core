@@ -12,14 +12,14 @@ import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 
 import java.util.function.Consumer;
 
-public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
-    extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
+public abstract class StandaloneBuilderBase<SELF extends StandaloneBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
+    extends RunnerBuilderBase<SELF, R, CONFIG> {
 
-  protected StandaloneBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
+  protected StandaloneBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     super(operation, executorFactory, config, new DependencyManager());
   }
 
-  public BUILDER_TYPE setMigrationStartedListener(Consumer<MigrationStartedEvent> listener) {
+  public SELF setMigrationStartedListener(Consumer<MigrationStartedEvent> listener) {
     this.eventPublisher = new EventPublisher(
         () -> listener.accept(new MigrationStartedEvent()),
         eventPublisher.getMigrationSuccessListener(),
@@ -27,7 +27,7 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
     return getInstance();
   }
 
-  public BUILDER_TYPE setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener) {
+  public SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener) {
     this.eventPublisher = new EventPublisher(
         eventPublisher.getMigrationStartedListener(),
         result -> listener.accept(new MigrationSuccessEvent(result)),
@@ -35,7 +35,7 @@ public abstract class StandaloneBuilderBase<BUILDER_TYPE extends StandaloneBuild
     return getInstance();
   }
 
-  public BUILDER_TYPE setMigrationFailureListener(Consumer<MigrationFailureEvent> listener) {
+  public SELF setMigrationFailureListener(Consumer<MigrationFailureEvent> listener) {
     this.eventPublisher = new EventPublisher(
         eventPublisher.getMigrationStartedListener(),
         eventPublisher.getMigrationSuccessListener(),

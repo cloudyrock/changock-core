@@ -6,16 +6,16 @@ import org.springframework.boot.ApplicationRunner;
 
 import java.util.Optional;
 
-public class MongockApplicationRunner<RETURN_TYPE> implements ApplicationRunner {
+public class MongockApplicationRunner<R> implements ApplicationRunner {
 
-  private final MongockRunner<RETURN_TYPE> runner;
-  protected Optional<RETURN_TYPE> result;
+  private final MongockRunner<R> runner;
+  protected Optional<R> result;
 
-  public MongockApplicationRunner(MongockRunner<RETURN_TYPE> runner) {
+  public MongockApplicationRunner(MongockRunner<R> runner) {
     this.runner = runner;
   }
 
-  public Optional<RETURN_TYPE> getResult() {
+  public Optional<R> getResult() {
     return result;
   }
 

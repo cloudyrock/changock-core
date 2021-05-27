@@ -5,16 +5,16 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Optional;
 
-public class MongockInitializingBeanRunner<RETURN_TYPE> implements InitializingBean {
+public class MongockInitializingBeanRunner<R> implements InitializingBean {
 
-  private final MongockRunner<RETURN_TYPE> runner;
-  protected Optional<RETURN_TYPE> result;
+  private final MongockRunner<R> runner;
+  protected Optional<R> result;
 
-  public MongockInitializingBeanRunner(MongockRunner<RETURN_TYPE> runner) {
+  public MongockInitializingBeanRunner(MongockRunner<R> runner) {
     this.runner = runner;
   }
 
-  public Optional<RETURN_TYPE> getResult() {
+  public Optional<R> getResult() {
     return result;
   }
 
