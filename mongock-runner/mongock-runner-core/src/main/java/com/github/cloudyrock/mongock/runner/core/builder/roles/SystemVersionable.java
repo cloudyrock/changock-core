@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
-public interface SystemVersionable<BUILDER_TYPE extends SystemVersionable> {
+public interface SystemVersionable<SELF extends SystemVersionable<SELF>> {
   /**
    * Set up the start Version for versioned schema changes.
    * This shouldn't be confused with a supposed change version(Notice, currently changeSet doesn't have version).
@@ -12,7 +12,7 @@ public interface SystemVersionable<BUILDER_TYPE extends SystemVersionable> {
    * @param startSystemVersion Version to start with
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setStartSystemVersion(String startSystemVersion);
+  SELF setStartSystemVersion(String startSystemVersion);
 
   /**
    * Set up the end Version for versioned schema changes.
@@ -25,5 +25,5 @@ public interface SystemVersionable<BUILDER_TYPE extends SystemVersionable> {
    * @param endSystemVersion Version to end with
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setEndSystemVersion(String endSystemVersion);
+  SELF setEndSystemVersion(String endSystemVersion);
 }

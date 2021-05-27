@@ -8,15 +8,15 @@ import com.github.cloudyrock.mongock.runner.core.event.MigrationSuccessEvent;
 
 import java.util.function.Consumer;
 
-public interface MigrationStandaloneBuilderBase<BUILDER_TYPE extends MigrationStandaloneBuilderBase<BUILDER_TYPE, CONFIG>, CONFIG extends MongockConfiguration>
-    extends MigrationBuilderBase<BUILDER_TYPE, Boolean, CONFIG> {
+public interface MigrationStandaloneBuilderBase<SELF extends MigrationStandaloneBuilderBase<SELF, CONFIG>, CONFIG extends MongockConfiguration>
+    extends MigrationBuilderBase<SELF, Boolean, CONFIG> {
 
   //TODO javadoc
-  BUILDER_TYPE setMigrationStartedListener(Consumer<MigrationStartedEvent> listener);
+  SELF setMigrationStartedListener(Consumer<MigrationStartedEvent> listener);
 
   //TODO javadoc
-  BUILDER_TYPE setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener);
+  SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener);
 
   //TODO javadoc
-  BUILDER_TYPE setMigrationFailureListener(Consumer<MigrationFailureEvent> listener);
+  SELF setMigrationFailureListener(Consumer<MigrationFailureEvent> listener);
 }

@@ -8,14 +8,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 
 //TODO javadoc
-public interface MigrationSpringbootBuilderBase<BUILDER_TYPE extends MigrationSpringbootBuilderBase<BUILDER_TYPE, CONFIG>, CONFIG extends MongockConfiguration>
-    extends MigrationBuilderBase<BUILDER_TYPE, Boolean, CONFIG> {
+public interface MigrationSpringbootBuilderBase<SELF extends MigrationSpringbootBuilderBase<SELF, CONFIG>, CONFIG extends MongockConfiguration>
+    extends MigrationBuilderBase<SELF, Boolean, CONFIG> {
 
   //TODO javadoc
-  BUILDER_TYPE setSpringContext(ApplicationContext springContext);
+  SELF setSpringContext(ApplicationContext springContext);
 
   //TODO javadoc
-  BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher);
+  SELF setEventPublisher(ApplicationEventPublisher applicationEventPublisher);
 
   //TODO javadoc
   MongockApplicationRunner<Boolean> buildApplicationRunner();

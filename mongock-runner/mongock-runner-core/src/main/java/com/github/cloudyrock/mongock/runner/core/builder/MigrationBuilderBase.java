@@ -13,16 +13,16 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentifica
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
 
 @SuppressWarnings("all")
-public interface MigrationBuilderBase<BUILDER_TYPE extends MigrationBuilderBase, RETURN_TYPE, CONFIG extends MongockConfiguration>
+public interface MigrationBuilderBase<SELF extends MigrationBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
     extends
-    ChangeLogScanner<BUILDER_TYPE>,
-    ChangeLogWriter<BUILDER_TYPE>,
-    LegacyMigrator<BUILDER_TYPE>,
-    DriverConnectable<BUILDER_TYPE>,
-    Configurable<BUILDER_TYPE, CONFIG>,
-    SystemVersionable<BUILDER_TYPE>,
-    DependencyInjectable<BUILDER_TYPE>,
-    ServiceIdentificable<BUILDER_TYPE>,
-    RunnerBuilder<BUILDER_TYPE, RETURN_TYPE>,
-    SelfInstanstiator<BUILDER_TYPE> {
+    ChangeLogScanner<SELF>,
+    ChangeLogWriter<SELF>,
+    LegacyMigrator<SELF>,
+    DriverConnectable<SELF>,
+    Configurable<SELF, CONFIG>,
+    SystemVersionable<SELF>,
+    DependencyInjectable<SELF>,
+    ServiceIdentificable<SELF>,
+    RunnerBuilder<SELF, R>,
+    SelfInstanstiator<SELF> {
 }

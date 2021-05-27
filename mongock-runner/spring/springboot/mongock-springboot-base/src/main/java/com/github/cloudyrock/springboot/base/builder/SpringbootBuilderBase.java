@@ -31,22 +31,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
-    extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG> {
+public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
+    extends RunnerBuilderBase<SELF, R, CONFIG> {
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
+  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
     super(operation, executorFactory, config, new DependencyManagerWithContext());
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }
 
-  public BUILDER_TYPE setSpringContext(ApplicationContext springContext) {
+  public SELF setSpringContext(ApplicationContext springContext) {
     (getDependencyManager()).setContext(new SpringDependencyContext(springContext));
     return getInstance();
   }
 
-  public BUILDER_TYPE setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+  public SELF setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
     if (applicationEventPublisher == null) {
       throw new MongockException("EventPublisher cannot e null");
     }
@@ -59,7 +59,7 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   }
 
   @Override
-  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
+  public SELF addDependency(String name, Class<?> type, Object instance) {
     dependencyManager.addDriverDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }
@@ -70,12 +70,12 @@ public abstract class SpringbootBuilderBase<BUILDER_TYPE extends SpringbootBuild
   ///////////////////////////////////////////////////
 
 
-  public MongockApplicationRunner<RETURN_TYPE> buildApplicationRunner() {
+  public MongockApplicationRunner<R> buildApplicationRunner() {
     return new MongockApplicationRunner<>(buildRunner());
   }
 
 
-  public MongockInitializingBeanRunner<RETURN_TYPE> buildInitializingBeanRunner() {
+  public MongockInitializingBeanRunner<R> buildInitializingBeanRunner() {
     return new MongockInitializingBeanRunner<>(buildRunner());
   }
 

@@ -3,7 +3,7 @@ package com.github.cloudyrock.mongock.runner.core.builder.roles;
 import java.util.List;
 import java.util.function.Function;
 
-public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
+public interface ChangeLogScanner<SELF extends ChangeLogScanner<SELF>> {
   /**
    * Adds a list of packages to be scanned  to the list. Mongock allows multiple classes and packages
    * Mongock allows multiple packages
@@ -12,7 +12,7 @@ public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
    * @param changeLogsScanPackageList list of packages to be scanned
    * @return builder for fluent interface
    */
-  BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList);
+  SELF addChangeLogsScanPackages(List<String> changeLogsScanPackageList);
 
   /**
    * Adds a package to be scanned  to the list. Mongock allows multiple classes and packages
@@ -21,7 +21,7 @@ public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
    * @param changeLogsScanPackage package to be scanned
    * @return builder for fluent interface
    */
-  BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage);
+  SELF addChangeLogsScanPackage(String changeLogsScanPackage);
 
   /**
    * Adds a list of classes to be scanned  to the list. Mongock allows multiple classes and packages
@@ -31,7 +31,7 @@ public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
    * @param classes list of classes to be scanned
    * @return builder for fluent interface
    */
-  BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes);
+  SELF addChangeLogClasses(List<Class<?>> classes);
 
   /**
    * Adds a class to be scanned  to the list. Mongock allows multiple classes and packages
@@ -40,7 +40,7 @@ public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
    * @param clazz package to be scanned
    * @return builder for fluent interface
    */
-  BUILDER_TYPE addChangeLogClass(Class<?> clazz);
+  SELF addChangeLogClass(Class<?> clazz);
 
   /**
    * Sets a function that will be used to instantiate ChangeLog classes.
@@ -49,5 +49,5 @@ public interface ChangeLogScanner<BUILDER_TYPE extends ChangeLogScanner> {
    * @param changeLogInstantiator the function that will create an instance of a class
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator);
+  SELF setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator);
 }

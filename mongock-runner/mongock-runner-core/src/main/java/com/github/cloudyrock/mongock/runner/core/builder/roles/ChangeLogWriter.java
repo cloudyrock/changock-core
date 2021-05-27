@@ -2,14 +2,14 @@ package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
 import java.util.Map;
 
-public interface ChangeLogWriter<BUILDER_TYPE extends ChangeLogWriter> {
+public interface ChangeLogWriter<SELF extends ChangeLogWriter<SELF>> {
   /**
    * Indicates if the ignored changeSets should be tracked or not
    *
    * @param trackIgnored if the ignored changeSets should be tracked
    * @return builder for fluent interface
    */
-  BUILDER_TYPE setTrackIgnored(boolean trackIgnored);
+  SELF setTrackIgnored(boolean trackIgnored);
 
 
   /**
@@ -20,5 +20,5 @@ public interface ChangeLogWriter<BUILDER_TYPE extends ChangeLogWriter> {
    * @param metadata Custom metadata object  to be added
    * @return builder for fluent interface
    */
-  BUILDER_TYPE withMetadata(Map<String, Object> metadata);
+  SELF withMetadata(Map<String, Object> metadata);
 }

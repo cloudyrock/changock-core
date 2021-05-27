@@ -29,14 +29,14 @@ import java.util.function.Function;
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 
 
-public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<BUILDER_TYPE, RETURN_TYPE, CONFIG>, RETURN_TYPE, CONFIG extends MongockConfiguration>
+public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
     implements Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
   protected final DependencyManager dependencyManager;
   protected EventPublisher eventPublisher = EventPublisher.empty();
-  protected final Operation<RETURN_TYPE> operation;
+  protected final Operation<R> operation;
   protected final CONFIG config;
   protected final ExecutorFactory<CONFIG> executorFactory;
   protected ConnectionDriver driver;
@@ -45,7 +45,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
-  protected RunnerBuilderBase(Operation<RETURN_TYPE> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config, DependencyManager dependencyManager) {
+  protected RunnerBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config, DependencyManager dependencyManager) {
     this.executorFactory = executorFactory;
     this.config = config;
     this.operation = operation;
@@ -57,17 +57,17 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   ///////////////////////////////////////////////////////////////////////////////////
 
   
-  public BUILDER_TYPE addChangeLogsScanPackage(String changeLogsScanPackage) {
+  public SELF addChangeLogsScanPackage(String changeLogsScanPackage) {
     return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
   }
 
   
-  public BUILDER_TYPE addChangeLogClass(Class<?> clazz) {
+  public SELF addChangeLogClass(Class<?> clazz) {
     return addChangeLogClasses(Collections.singletonList(clazz));
   }
 
   
-  public BUILDER_TYPE addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
+  public SELF addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
     if (changeLogsScanPackageList != null) {
       config.getChangeLogsScanPackage().addAll(changeLogsScanPackageList);
     }
@@ -75,7 +75,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   }
 
   
-  public BUILDER_TYPE addChangeLogClasses(List<Class<?>> classes) {
+  public SELF addChangeLogClasses(List<Class<?>> classes) {
     if (classes != null) {
       classes.stream().map(Class::getName).forEach(config.getChangeLogsScanPackage()::add);
     }
@@ -83,81 +83,81 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   }
 
   
-  public BUILDER_TYPE setLegacyMigration(LegacyMigration legacyMigration) {
+  public SELF setLegacyMigration(LegacyMigration legacyMigration) {
     config.setLegacyMigration(legacyMigration);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
+  public SELF setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setEnabled(boolean enabled) {
+  public SELF setEnabled(boolean enabled) {
     this.config.setEnabled(enabled);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setTrackIgnored(boolean trackIgnored) {
+  public SELF setTrackIgnored(boolean trackIgnored) {
     config.setTrackIgnored(trackIgnored);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE dontFailIfCannotAcquireLock() {
+  public SELF dontFailIfCannotAcquireLock() {
     this.config.setThrowExceptionIfCannotObtainLock(false);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setStartSystemVersion(String startSystemVersion) {
+  public SELF setStartSystemVersion(String startSystemVersion) {
     config.setStartSystemVersion(startSystemVersion);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setEndSystemVersion(String endSystemVersion) {
+  public SELF setEndSystemVersion(String endSystemVersion) {
     config.setEndSystemVersion(endSystemVersion);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setServiceIdentifier(String serviceIdentifier) {
+  public SELF setServiceIdentifier(String serviceIdentifier) {
     config.setServiceIdentifier(serviceIdentifier);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE withMetadata(Map<String, Object> metadata) {
+  public SELF withMetadata(Map<String, Object> metadata) {
     config.setMetadata(metadata);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE setConfig(CONFIG newConfig) {
+  public SELF setConfig(CONFIG newConfig) {
     config.updateFrom(newConfig);
     return getInstance();
   }
 
   
-  public BUILDER_TYPE addDependency(Object instance) {
+  public SELF addDependency(Object instance) {
     return addDependency(instance.getClass(), instance);
   }
 
   
-  public BUILDER_TYPE addDependency(String name, Object instance) {
+  public SELF addDependency(String name, Object instance) {
     return addDependency(name, instance.getClass(), instance);
   }
 
   
-  public BUILDER_TYPE addDependency(Class<?> type, Object instance) {
+  public SELF addDependency(Class<?> type, Object instance) {
     return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
   }
 
-  public BUILDER_TYPE addDependency(String name, Class<?> type, Object instance) {
+  public SELF addDependency(String name, Class<?> type, Object instance) {
     dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }
@@ -167,7 +167,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   ///////////////////////////////////////////////////////////////////////////////////
 
   
-  public BUILDER_TYPE setDriver(ConnectionDriver driver) {
+  public SELF setDriver(ConnectionDriver driver) {
     this.driver = driver;
     return getInstance();
   }
@@ -178,7 +178,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   //  Build methods
   ///////////////////////////////////////////////////////////////////////////////////
 
-  public MongockRunner<RETURN_TYPE> buildRunner() {
+  public MongockRunner<R> buildRunner() {
     runValidation();
     beforeBuildRunner();
     return new MongockRunner<>(
@@ -199,7 +199,7 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
   }
 
 
-  protected final Executor<RETURN_TYPE> buildExecutor() {
+  protected final Executor<R> buildExecutor() {
     return executorFactory.getExecutor(
         operation,
         driver,
@@ -256,6 +256,6 @@ public abstract class RunnerBuilderBase<BUILDER_TYPE extends RunnerBuilderBase<B
     }
   }
 
-  public abstract BUILDER_TYPE getInstance();
+  public abstract SELF getInstance();
 
 }
