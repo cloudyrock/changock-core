@@ -56,6 +56,9 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * TODO implement all the configurable methods in interface by getConfig.setXXX();
+   */
   
   public SELF addChangeLogsScanPackage(String changeLogsScanPackage) {
     return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
@@ -140,6 +143,10 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   public SELF setConfig(CONFIG newConfig) {
     config.updateFrom(newConfig);
     return getInstance();
+  }
+
+  public CONFIG getConfig() {
+    return config;
   }
 
   
