@@ -1,13 +1,21 @@
 package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
-public interface DependencyInjectable<SELF extends DependencyInjectable<SELF>> {
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+
+public interface DependencyInjectable<SELF extends DependencyInjectable<SELF>>
+    extends SelfInstanstiator<SELF> {
+
+
   /**
    * Manually adds a dependency to be used in changeLogs, which can be retrieved by its own type
    *
    * @param instance dependency
    * @return builder for fluent interface
    */
-  SELF addDependency(Object instance);
+  default SELF addDependency(Object instance) {
+    return addDependency(instance.getClass(), instance);
+  }
 
   /**
    * Manually adds a dependency to be used in changeLogs, which can be retrieved by a name
@@ -16,7 +24,9 @@ public interface DependencyInjectable<SELF extends DependencyInjectable<SELF>> {
    * @param instance dependency
    * @return builder for fluent interface
    */
-  SELF addDependency(String name, Object instance);
+  default SELF addDependency(String name, Object instance) {
+    return addDependency(name, instance.getClass(), instance);
+  }
 
   /**
    * Manually adds a dependency to be used in changeLogs, which can be retrieved by a type
@@ -25,7 +35,9 @@ public interface DependencyInjectable<SELF extends DependencyInjectable<SELF>> {
    * @param instance dependency
    * @return builder for fluent interface
    */
-  SELF addDependency(Class<?> type, Object instance);
+  default SELF addDependency(Class<?> type, Object instance) {
+    return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
+  }
 
   /**
    * Manually adds a dependency to be used in changeLogs, which can be retrieved by a type or name
@@ -35,5 +47,10 @@ public interface DependencyInjectable<SELF extends DependencyInjectable<SELF>> {
    * @param instance dependency
    * @return builder for fluent interface
    */
-  SELF addDependency(String name, Class<?> type, Object instance);
+  default SELF addDependency(String name, Class<?> type, Object instance)  {
+    getDependencyManager().addStandardDependency(new ChangeSetDependency(name, type, instance));
+    return getInstance();
+  }
+
+  DependencyManager getDependencyManager();
 }

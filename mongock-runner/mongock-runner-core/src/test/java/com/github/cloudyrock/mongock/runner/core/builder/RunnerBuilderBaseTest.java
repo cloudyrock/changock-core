@@ -239,14 +239,14 @@ class DummyMongockConfiguration extends MongockConfiguration {
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, MongockConfiguration>
 implements
     ChangeLogScanner<DummyRunnerBuilder, MongockConfiguration>,
-    ChangeLogWriter<DummyRunnerBuilder>,
-    LegacyMigrator<DummyRunnerBuilder>,
-    DriverConnectable<DummyRunnerBuilder>,
+    ChangeLogWriter<DummyRunnerBuilder, MongockConfiguration>,
+    LegacyMigrator<DummyRunnerBuilder, MongockConfiguration>,
+    DriverConnectable<DummyRunnerBuilder, MongockConfiguration>,
     Configurable<DummyRunnerBuilder, MongockConfiguration>,
-    SystemVersionable<DummyRunnerBuilder>,
+    SystemVersionable<DummyRunnerBuilder, MongockConfiguration>,
     DependencyInjectable<DummyRunnerBuilder>,
-    ServiceIdentificable<DummyRunnerBuilder>,
-    RunnerBuilder<DummyRunnerBuilder, Boolean>,
+    ServiceIdentificable<DummyRunnerBuilder, MongockConfiguration>,
+    RunnerBuilder<DummyRunnerBuilder, Boolean, MongockConfiguration>,
     SelfInstanstiator<DummyRunnerBuilder> {
 
 

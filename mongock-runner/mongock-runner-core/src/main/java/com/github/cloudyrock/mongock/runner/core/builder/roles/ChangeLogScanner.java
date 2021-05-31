@@ -1,6 +1,5 @@
 package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
-import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 
 import java.util.Collections;
@@ -8,7 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface ChangeLogScanner<SELF extends ChangeLogScanner<SELF, CONFIG>, CONFIG extends MongockConfiguration>
-extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF>{
+    extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF> {
 
 
   /**
@@ -25,7 +24,6 @@ extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF>{
     }
     return getInstance();
   }
-
 
 
   /**

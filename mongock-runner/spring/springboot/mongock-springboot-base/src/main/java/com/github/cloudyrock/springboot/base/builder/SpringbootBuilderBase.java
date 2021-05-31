@@ -58,12 +58,6 @@ public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<S
     return getInstance();
   }
 
-  @Override
-  public SELF addDependency(String name, Class<?> type, Object instance) {
-    dependencyManager.addDriverDependency(new ChangeSetDependency(name, type, instance));
-    return getInstance();
-  }
-
 
   ///////////////////////////////////////////////////
   // Build methods
@@ -115,7 +109,7 @@ public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<S
     };
   }
 
-  private DependencyManagerWithContext getDependencyManager() {
+  public DependencyManagerWithContext getDependencyManager() {
     return (DependencyManagerWithContext) dependencyManager;
   }
 
