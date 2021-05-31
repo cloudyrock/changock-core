@@ -5,6 +5,16 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogScanner;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogWriter;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.Configurable;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.DependencyInjectable;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.DriverConnectable;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.LegacyMigrator;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.RunnerBuilder;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.SelfInstanstiator;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentificable;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
@@ -226,7 +236,18 @@ class DummyMongockConfiguration extends MongockConfiguration {
 
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, MongockConfiguration> {
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, MongockConfiguration>
+implements
+    ChangeLogScanner<DummyRunnerBuilder, MongockConfiguration>,
+    ChangeLogWriter<DummyRunnerBuilder>,
+    LegacyMigrator<DummyRunnerBuilder>,
+    DriverConnectable<DummyRunnerBuilder>,
+    Configurable<DummyRunnerBuilder, MongockConfiguration>,
+    SystemVersionable<DummyRunnerBuilder>,
+    DependencyInjectable<DummyRunnerBuilder>,
+    ServiceIdentificable<DummyRunnerBuilder>,
+    RunnerBuilder<DummyRunnerBuilder, Boolean>,
+    SelfInstanstiator<DummyRunnerBuilder> {
 
 
   private Executor executor;

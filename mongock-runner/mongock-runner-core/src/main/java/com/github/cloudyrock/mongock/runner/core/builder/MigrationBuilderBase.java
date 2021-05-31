@@ -15,7 +15,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable
 @SuppressWarnings("all")
 public interface MigrationBuilderBase<SELF extends MigrationBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
     extends
-    ChangeLogScanner<SELF>,
+    ChangeLogScanner<SELF, CONFIG>,
     ChangeLogWriter<SELF>,
     LegacyMigrator<SELF>,
     DriverConnectable<SELF>,

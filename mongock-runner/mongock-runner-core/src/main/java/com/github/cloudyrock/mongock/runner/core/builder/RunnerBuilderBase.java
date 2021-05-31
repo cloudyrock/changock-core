@@ -56,32 +56,8 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   //  Properties setters
   ///////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * TODO implement all the configurable methods in interface by getConfig.setXXX();
-   */
-  
-  public SELF addChangeLogsScanPackage(String changeLogsScanPackage) {
-    return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
-  }
-
-  
-  public SELF addChangeLogClass(Class<?> clazz) {
-    return addChangeLogClasses(Collections.singletonList(clazz));
-  }
-
-  
-  public SELF addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
-    if (changeLogsScanPackageList != null) {
-      config.getChangeLogsScanPackage().addAll(changeLogsScanPackageList);
-    }
-    return getInstance();
-  }
-
-  
-  public SELF addChangeLogClasses(List<Class<?>> classes) {
-    if (classes != null) {
-      classes.stream().map(Class::getName).forEach(config.getChangeLogsScanPackage()::add);
-    }
+  public SELF setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
+    this.changeLogInstantiator = changeLogInstantiator;
     return getInstance();
   }
 
@@ -91,11 +67,7 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
     return getInstance();
   }
 
-  
-  public SELF setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
-    this.changeLogInstantiator = changeLogInstantiator;
-    return getInstance();
-  }
+
 
   
   public SELF setEnabled(boolean enabled) {
