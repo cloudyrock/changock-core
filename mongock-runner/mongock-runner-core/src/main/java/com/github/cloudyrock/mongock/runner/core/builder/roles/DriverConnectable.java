@@ -1,8 +1,10 @@
 package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 
-public interface DriverConnectable<SELF extends DriverConnectable<SELF>> {
+public interface DriverConnectable<SELF extends DriverConnectable<SELF, CONFIG>, CONFIG extends MongockConfiguration>
+    extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF> {
   /**
    * Set the specific connection driver
    * <b>Mandatory</b>
@@ -21,5 +23,8 @@ public interface DriverConnectable<SELF extends DriverConnectable<SELF>> {
    *
    * @return builder for fluent interface
    */
-  SELF dontFailIfCannotAcquireLock();
+  default SELF dontFailIfCannotAcquireLock() {
+    getConfig().setThrowExceptionIfCannotObtainLock(false);
+    return getInstance();
+  }
 }

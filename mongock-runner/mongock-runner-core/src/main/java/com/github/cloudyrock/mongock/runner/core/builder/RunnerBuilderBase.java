@@ -21,9 +21,7 @@ import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
@@ -53,93 +51,15 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-  //  Properties setters
+  //  SETTERS
   ///////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * TODO implement all the configurable methods in interface by getConfig.setXXX();
-   */
-  
-  public SELF addChangeLogsScanPackage(String changeLogsScanPackage) {
-    return addChangeLogsScanPackages(Collections.singletonList(changeLogsScanPackage));
-  }
-
-  
-  public SELF addChangeLogClass(Class<?> clazz) {
-    return addChangeLogClasses(Collections.singletonList(clazz));
-  }
-
-  
-  public SELF addChangeLogsScanPackages(List<String> changeLogsScanPackageList) {
-    if (changeLogsScanPackageList != null) {
-      config.getChangeLogsScanPackage().addAll(changeLogsScanPackageList);
-    }
-    return getInstance();
-  }
-
-  
-  public SELF addChangeLogClasses(List<Class<?>> classes) {
-    if (classes != null) {
-      classes.stream().map(Class::getName).forEach(config.getChangeLogsScanPackage()::add);
-    }
-    return getInstance();
-  }
-
-  
-  public SELF setLegacyMigration(LegacyMigration legacyMigration) {
-    config.setLegacyMigration(legacyMigration);
-    return getInstance();
-  }
-
-  
   public SELF setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
     return getInstance();
   }
 
-  
-  public SELF setEnabled(boolean enabled) {
-    this.config.setEnabled(enabled);
-    return getInstance();
-  }
 
-  
-  public SELF setTrackIgnored(boolean trackIgnored) {
-    config.setTrackIgnored(trackIgnored);
-    return getInstance();
-  }
-
-  
-  public SELF dontFailIfCannotAcquireLock() {
-    this.config.setThrowExceptionIfCannotObtainLock(false);
-    return getInstance();
-  }
-
-  
-  public SELF setStartSystemVersion(String startSystemVersion) {
-    config.setStartSystemVersion(startSystemVersion);
-    return getInstance();
-  }
-
-  
-  public SELF setEndSystemVersion(String endSystemVersion) {
-    config.setEndSystemVersion(endSystemVersion);
-    return getInstance();
-  }
-
-  
-  public SELF setServiceIdentifier(String serviceIdentifier) {
-    config.setServiceIdentifier(serviceIdentifier);
-    return getInstance();
-  }
-
-  
-  public SELF withMetadata(Map<String, Object> metadata) {
-    config.setMetadata(metadata);
-    return getInstance();
-  }
-
-  
   public SELF setConfig(CONFIG newConfig) {
     config.updateFrom(newConfig);
     return getInstance();
@@ -150,36 +70,15 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   }
 
   
-  public SELF addDependency(Object instance) {
-    return addDependency(instance.getClass(), instance);
-  }
-
-  
-  public SELF addDependency(String name, Object instance) {
-    return addDependency(name, instance.getClass(), instance);
-  }
-
-  
-  public SELF addDependency(Class<?> type, Object instance) {
-    return addDependency(ChangeSetDependency.DEFAULT_NAME, type, instance);
-  }
-
-  public SELF addDependency(String name, Class<?> type, Object instance) {
-    dependencyManager.addStandardDependency(new ChangeSetDependency(name, type, instance));
-    return getInstance();
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-  //  Injections setters
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  
   public SELF setDriver(ConnectionDriver driver) {
     this.driver = driver;
     return getInstance();
   }
 
-  
+
+  public DependencyManager getDependencyManager() {
+    return dependencyManager;
+  }
 
   ///////////////////////////////////////////////////////////////////////////////////
   //  Build methods

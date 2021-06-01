@@ -1,6 +1,9 @@
 package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
-public interface ServiceIdentificable<SELF extends ServiceIdentificable<SELF>> {
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+
+public interface ServiceIdentificable<SELF extends ServiceIdentificable<SELF, CONFIG>, CONFIG extends MongockConfiguration>
+    extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF> {
   /**
    * Set up the name of the service running mongock.
    * This will be used as a suffix to the hostname when saving changelogs history in database.
@@ -9,5 +12,8 @@ public interface ServiceIdentificable<SELF extends ServiceIdentificable<SELF>> {
    * @param serviceIdentifier Identifier of the service running mongock
    * @return builder for fluent interface
    */
-  SELF setServiceIdentifier(String serviceIdentifier);
+  default SELF setServiceIdentifier(String serviceIdentifier) {
+    getConfig().setServiceIdentifier(serviceIdentifier);
+    return getInstance();
+  }
 }

@@ -55,8 +55,6 @@ public class SpringMongockApplicationRunnerBaseTest {
     changeEntryService = mock(ChangeEntryService.class);
     driver = mock(ConnectionDriver.class);
     when(driver.getLockManager()).thenReturn(lockManager);
-    when(driver.getLockManager()).thenReturn(lockManager);
-    when(driver.getLockManager()).thenReturn(lockManager);
     when(driver.getChangeEntryService()).thenReturn(changeEntryService);
 
     callVerifier = new CallVerifier();

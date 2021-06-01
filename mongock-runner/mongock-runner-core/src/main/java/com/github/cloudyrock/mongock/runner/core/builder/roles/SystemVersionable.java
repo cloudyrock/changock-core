@@ -1,6 +1,9 @@
 package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
-public interface SystemVersionable<SELF extends SystemVersionable<SELF>> {
+import com.github.cloudyrock.mongock.config.MongockConfiguration;
+
+public interface SystemVersionable<SELF extends SystemVersionable<SELF, CONFIG>, CONFIG extends MongockConfiguration>
+    extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF> {
   /**
    * Set up the start Version for versioned schema changes.
    * This shouldn't be confused with a supposed change version(Notice, currently changeSet doesn't have version).
@@ -12,7 +15,10 @@ public interface SystemVersionable<SELF extends SystemVersionable<SELF>> {
    * @param startSystemVersion Version to start with
    * @return builder for fluent interface
    */
-  SELF setStartSystemVersion(String startSystemVersion);
+  default SELF setStartSystemVersion(String startSystemVersion) {
+    getConfig().setStartSystemVersion(startSystemVersion);
+    return getInstance();
+  }
 
   /**
    * Set up the end Version for versioned schema changes.
@@ -25,5 +31,8 @@ public interface SystemVersionable<SELF extends SystemVersionable<SELF>> {
    * @param endSystemVersion Version to end with
    * @return builder for fluent interface
    */
-  SELF setEndSystemVersion(String endSystemVersion);
+  default SELF setEndSystemVersion(String endSystemVersion) {
+    getConfig().setEndSystemVersion(endSystemVersion);
+    return getInstance();
+  }
 }

@@ -1,6 +1,7 @@
 package com.github.cloudyrock.springboot.base.builder.migration;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
 import com.github.cloudyrock.springboot.base.MongockApplicationRunner;
 import com.github.cloudyrock.springboot.base.MongockInitializingBeanRunner;
@@ -22,4 +23,10 @@ public interface MigrationSpringbootBuilderBase<SELF extends MigrationSpringboot
 
   //TODO javadoc
   MongockInitializingBeanRunner<Boolean> buildInitializingBeanRunner();
+
+  @Override
+  default SELF addDependency(String name, Class<?> type, Object instance) {
+    getDependencyManager().addDriverDependency(new ChangeSetDependency(name, type, instance));
+    return getInstance();
+  }
 }
