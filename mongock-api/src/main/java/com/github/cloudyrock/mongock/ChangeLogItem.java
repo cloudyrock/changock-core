@@ -30,7 +30,7 @@ public class ChangeLogItem {
     this.changeSetElements = changeSetElements;
   }
 
-  private void checkParameters(boolean preMigration, boolean postMigration) {
+  private static void checkParameters(boolean preMigration, boolean postMigration) {
     if (preMigration && postMigration) {
       throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
     }
