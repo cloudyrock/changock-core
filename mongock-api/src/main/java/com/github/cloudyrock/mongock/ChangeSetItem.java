@@ -19,31 +19,14 @@ public class ChangeSetItem {
 
   private final boolean failFast;
 
-  private final boolean preMigration;
-
-  private final boolean postMigration;
-
 
   public ChangeSetItem(String id,
                        String author,
                        String order,
                        boolean runAlways,
                        String systemVersion,
-                       boolean  failFast,
+                       boolean failFast,
                        Method method) {
-    this(id, author, order, runAlways, systemVersion, failFast, false, false, method);
-  }
-
-  public ChangeSetItem(String id,
-                       String author,
-                       String order,
-                       boolean runAlways,
-                       String systemVersion,
-                       boolean  failFast,
-                       boolean preMigration,
-                       boolean postMigration,
-                       Method method) {
-    checkParameters(preMigration, postMigration);
     this.id = id;
     this.author = author;
     this.order = order;
@@ -51,15 +34,8 @@ public class ChangeSetItem {
     this.systemVersion = systemVersion;
     this.method = method;
     this.failFast = failFast;
-    this.preMigration = preMigration;
-    this.postMigration = postMigration;
   }
 
-  private static void checkParameters(boolean preMigration, boolean postMigration) {
-    if (preMigration && postMigration) {
-      throw new IllegalArgumentException("A ChangeSetItem can't be defined to be executed pre and post migration.");
-    }
-  }
 
   public String getId() {
     return id;
@@ -89,17 +65,6 @@ public class ChangeSetItem {
     return failFast;
   }
 
-  public boolean isPreMigration() {
-    return preMigration;
-  }
-
-  public boolean isPostMigration() {
-    return postMigration;
-  }
-
-  public boolean isMigration() {
-    return !isPreMigration() && !isPostMigration();
-  }
 
   @Override
   public boolean equals(Object o) {

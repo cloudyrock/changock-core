@@ -40,8 +40,6 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   @Override
   public ChangeSetItem getChangeSet(Method method) {
     ChangeSet ann = method.getAnnotation(ChangeSet.class);
-    boolean isPre = method.isAnnotationPresent(PreMigration.class);
-    boolean isPost = method.isAnnotationPresent(PostMigration.class);
-    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), isPre, isPost, method);
+    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), method);
   }
 }
