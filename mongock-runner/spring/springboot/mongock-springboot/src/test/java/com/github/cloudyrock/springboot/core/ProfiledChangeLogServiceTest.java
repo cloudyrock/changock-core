@@ -3,7 +3,7 @@ package com.github.cloudyrock.springboot.core;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.MongockAnnotationProcessorDefault;
+import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.spring.util.ProfileUtil;
 import com.github.cloudyrock.springboot.profiles.defaultprofiled.DefaultProfiledChangerLog;
@@ -42,7 +42,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         profileFilter.apply(Collections.singletonList("dev")),
-        new MongockAnnotationProcessorDefault(),
+        new MongockAnnotationProcessor(),
         null
     );
 
@@ -78,7 +78,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         profileFilter.apply(Collections.singletonList("default")),
-        new MongockAnnotationProcessorDefault(),
+        new MongockAnnotationProcessor(),
         null
     );
 
@@ -113,7 +113,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         profileFilter.apply(Collections.singletonList("anotherProfile")),
-        new MongockAnnotationProcessorDefault(),
+        new MongockAnnotationProcessor(),
         null
     );
     assertEquals(0, changeLogService.fetchChangeLogs().size());
@@ -129,7 +129,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         profileFilter.apply(Collections.singletonList("anotherProfile")),
-        new MongockAnnotationProcessorDefault(),
+        new MongockAnnotationProcessor(),
         null
     );
 
@@ -155,7 +155,7 @@ public class ProfiledChangeLogServiceTest {
         "0",
         String.valueOf(Integer.MAX_VALUE),
         profileFilter.apply(Collections.singletonList("default")),
-        new MongockAnnotationProcessorDefault(),
+        new MongockAnnotationProcessor(),
         null
     );
 

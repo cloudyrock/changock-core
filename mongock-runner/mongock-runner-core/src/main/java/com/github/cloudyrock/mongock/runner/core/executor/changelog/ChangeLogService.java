@@ -3,9 +3,8 @@ package com.github.cloudyrock.mongock.runner.core.executor.changelog;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.MongockAnnotationProcessorDefault;
+import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import com.github.cloudyrock.mongock.exception.MongockException;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem, Change
    * @param endSystemVersionInclusive   inclusive ending systemVersion
    */
   public ChangeLogService(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
-    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, new MongockAnnotationProcessorDefault(), null);
+    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, new MongockAnnotationProcessor(), null);
   }
 
   /**
@@ -58,7 +57,7 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem, Change
         startSystemVersionInclusive,
         endSystemVersionInclusive,
         profileFilter,
-        annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessorDefault(),
+        annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor(),
         changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR);
   }
 

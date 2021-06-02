@@ -1,6 +1,8 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.AnnotationProcessor;
+import com.github.cloudyrock.mongock.ChangeSetItem;
+import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
@@ -40,7 +42,6 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   protected final CONFIG config;
   protected final ExecutorFactory<CONFIG> executorFactory;
   protected ConnectionDriver driver;
-  protected AnnotationProcessor annotationProcessor;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
@@ -141,9 +142,13 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
         config.getStartSystemVersion(),
         config.getEndSystemVersion(),
         getAnnotationFilter(),
-        annotationProcessor, // if null, it will take default MongockAnnotationManager
+        getAnnotationProcessor(),
         changeLogInstantiator
     );
+  }
+
+  protected  AnnotationProcessor<ChangeSetItem> getAnnotationProcessor() {
+    return new MongockAnnotationProcessor();
   }
 
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
