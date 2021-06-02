@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
+import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
 
 
 public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
@@ -88,7 +89,7 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
     runValidation();
     beforeBuildRunner();
     return new MongockRunner<>(
-        buildExecutor(),
+        buildExecutor(driver),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
@@ -97,15 +98,22 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
 
   protected void beforeBuildRunner() {
     if (config.getLegacyMigration() != null) {
-      config.getChangeLogsScanPackage().add(driver.getLegacyMigrationChangeLogClass(config.getLegacyMigration().isRunAlways()).getPackage().getName());
-      dependencyManager.addStandardDependency(
-          new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
-      );
+      DriverLegaciable legaciableDriver = this.getDriverLegaciable();
+      if (legaciableDriver != null) {
+        config.getChangeLogsScanPackage().add(legaciableDriver.getLegacyMigrationChangeLogClass(config.getLegacyMigration().isRunAlways()).getPackage().getName());
+        dependencyManager.addStandardDependency(
+            new ChangeSetDependency(LEGACY_MIGRATION_NAME, LegacyMigration.class, config.getLegacyMigration())
+        );
+      }
     }
+  }
+  
+  protected DriverLegaciable getDriverLegaciable() {
+    return this.driver;
   }
 
 
-  protected final Executor<R> buildExecutor() {
+  protected final Executor<R> buildExecutor(ConnectionDriver driver) {
     return executorFactory.getExecutor(
         operation,
         driver,
@@ -143,9 +151,7 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
 
   
   public void runValidation() throws MongockException {
-    if (driver == null) {
-      throw new MongockException("Driver must be injected to Mongock builder");
-    }
+    this.validateDriver();
     if (config.getChangeLogsScanPackage() == null || config.getChangeLogsScanPackage().isEmpty()) {
       throw new MongockException("changeLogsScanPackage must be injected to Mongock builder");
     }
@@ -161,6 +167,13 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
       logger.info("Running Mongock with metadata");
     }
   }
+  
+  protected void validateDriver() throws MongockException {
+    if (driver == null) {
+      throw new MongockException("Driver must be injected to Mongock builder");
+    }
+  }
+
 
   public abstract SELF getInstance();
 

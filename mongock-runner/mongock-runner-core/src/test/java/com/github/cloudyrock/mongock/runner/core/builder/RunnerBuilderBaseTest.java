@@ -284,7 +284,7 @@ implements
 
   public MongockRunner<Boolean> build() {
     return new MongockRunner<>(
-        executor != null ? executor : buildExecutor(),
+        executor != null ? executor : buildExecutor(driver),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
