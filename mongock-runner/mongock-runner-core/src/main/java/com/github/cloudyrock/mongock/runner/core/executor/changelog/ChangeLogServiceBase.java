@@ -1,7 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor.changelog;
 
 import com.github.cloudyrock.mongock.AnnotationProcessor;
-import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeLogItemBase;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
@@ -55,9 +54,6 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
   protected final AnnotationProcessor<CHANGESET> annotationManager;
   protected final Function<Class<?>, Object> changeLogInstantiator;
 
-
-
-
   public ChangeLogServiceBase(List<String> changeLogsBasePackageList,
                               List<Class<?>> changeLogsBaseClassList,
                               String startSystemVersionInclusive,
@@ -88,7 +84,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
         .stream()
         .filter(changeLogClass -> this.profileFilter != null ? this.profileFilter.apply(changeLogClass) : true)
         .map(this::buildChangeLogObject)
-        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator<CHANGELOG>(annotationManager))));
+        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator(annotationManager))));
   }
 
   private Set<Class<?>> mergeChangeLogClassesAndPackages() {
@@ -113,7 +109,6 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
         .collect(Collectors.toList());
   }
 
-  @SuppressWarnings("unchecked")
   private List<Method> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
     final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
     changeSets.sort(new ChangeSetComparator(annotationManager));
@@ -152,11 +147,11 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
   }
 
 
-  private static class ChangeLogComparator<CHANGELOG extends ChangeLogItemBase<?>> implements Comparator<CHANGELOG>, Serializable {
+  private  class ChangeLogComparator implements Comparator<CHANGELOG>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
-    private final AnnotationProcessor annotationManager;
+    private final AnnotationProcessor<CHANGESET> annotationManager;
 
-    ChangeLogComparator(AnnotationProcessor annotationManager) {
+    ChangeLogComparator(AnnotationProcessor<CHANGESET> annotationManager) {
       this.annotationManager = annotationManager;
     }
 
@@ -183,11 +178,11 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
     }
   }
 
-  private static class ChangeSetComparator implements Comparator<Method>, Serializable {
+  private class ChangeSetComparator implements Comparator<Method>, Serializable {
     private static final long serialVersionUID = -854690868262484102L;
-    private final AnnotationProcessor annotationManager;
+    private final AnnotationProcessor<CHANGESET> annotationManager;
 
-    ChangeSetComparator(AnnotationProcessor annotationManager) {
+    ChangeSetComparator(AnnotationProcessor<CHANGESET> annotationManager) {
       this.annotationManager = annotationManager;
     }
 
