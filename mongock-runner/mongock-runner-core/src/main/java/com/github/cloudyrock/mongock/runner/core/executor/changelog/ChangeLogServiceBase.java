@@ -2,8 +2,9 @@ package com.github.cloudyrock.mongock.runner.core.executor.changelog;
 
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeLogItemBase;
 import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
+import com.github.cloudyrock.mongock.MongockAnnotationProcessorDefault;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
@@ -37,9 +38,9 @@ import static java.util.Arrays.asList;
  *
  * @since 27/07/2014
  */
-public class ChangeLogServiceBase implements Validable {
+public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?>, CHANGESET extends ChangeSetItem> implements Validable {
 
-  private static final Function<Class<?>, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
+  protected static final Function<Class<?>, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
       return type.getConstructor().newInstance();
     } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -47,52 +48,31 @@ public class ChangeLogServiceBase implements Validable {
     }
   };
 
-  private final List<String> changeLogsBasePackageList;
-  private final List<Class<?>> changeLogsBaseClassList;
-  private final ArtifactVersion startSystemVersion;
-  private final ArtifactVersion endSystemVersion;
-  private final Function<AnnotatedElement, Boolean> profileFilter;
-  private final AnnotationProcessor annotationManager;
-  private final Function<Class<?>, Object> changeLogInstantiator;
+  protected final List<String> changeLogsBasePackageList;
+  protected final List<Class<?>> changeLogsBaseClassList;
+  protected final ArtifactVersion startSystemVersion;
+  protected final ArtifactVersion endSystemVersion;
+  protected final Function<AnnotatedElement, Boolean> profileFilter;
+  protected final AnnotationProcessor<CHANGESET> annotationManager;
+  protected final Function<Class<?>, Object> changeLogInstantiator;
 
-  /**
-   * @param changeLogsBasePackageList   list of changeLog packages
-   * @param startSystemVersionInclusive inclusive starting systemVersion
-   * @param endSystemVersionInclusive   inclusive ending systemVersion
-   */
-  public ChangeLogServiceBase(List<String> changeLogsBasePackageList, List<Class<?>> changeLogsBaseClassList, String startSystemVersionInclusive, String endSystemVersionInclusive) {
-    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, new MongockAnnotationProcessor(), null);
-  }
 
-  /**
-   * @param changeLogsBasePackageList   list of changeLog packages
-   * @param startSystemVersionInclusive inclusive starting systemVersion
-   * @param endSystemVersionInclusive   inclusive ending systemVersion
-   * @param annotationProcessor         in case the annotations are different from the ones define in mongock-api, its required a class to manage them
-   */
-  public ChangeLogServiceBase(List<String> changeLogsBasePackageList,
-                              List<Class<?>> changeLogsBaseClassList,
-                              String startSystemVersionInclusive,
-                              String endSystemVersionInclusive,
-                              AnnotationProcessor annotationProcessor,
-                              Function<Class<?>, Object> changeLogInstantiator) {
-    this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, annotationProcessor, changeLogInstantiator);
-  }
+
 
   public ChangeLogServiceBase(List<String> changeLogsBasePackageList,
                               List<Class<?>> changeLogsBaseClassList,
                               String startSystemVersionInclusive,
                               String endSystemVersionInclusive,
                               Function<AnnotatedElement, Boolean> profileFilter,
-                              AnnotationProcessor annotationProcessor,
+                              AnnotationProcessor<CHANGESET>  annotationProcessor,
                               Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
     this.changeLogsBaseClassList = changeLogsBaseClassList;
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
     this.profileFilter = profileFilter;
-    this.annotationManager = annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor();
-    this.changeLogInstantiator = changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR;
+    this.annotationManager = annotationProcessor;
+    this.changeLogInstantiator = changeLogInstantiator;
   }
 
   @Override
@@ -104,12 +84,12 @@ public class ChangeLogServiceBase implements Validable {
     }
   }
 
-  public SortedSet<ChangeLogItem> fetchChangeLogs() {
+  public SortedSet<CHANGELOG> fetchChangeLogs() {
     return mergeChangeLogClassesAndPackages()
         .stream()
         .filter(changeLogClass -> this.profileFilter != null ? this.profileFilter.apply(changeLogClass) : true)
         .map(this::buildChangeLogObject)
-        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator(annotationManager))));
+        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator<CHANGELOG>(annotationManager))));
   }
 
   private Set<Class<?>> mergeChangeLogClassesAndPackages() {
@@ -123,17 +103,10 @@ public class ChangeLogServiceBase implements Validable {
     return Stream.concat(packageStream, changeLogsBaseClassList.stream()).collect(Collectors.toSet());
   }
 
-  private ChangeLogItem buildChangeLogObject(Class<?> type) {
-    try {
-      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationManager.getChangeLogOrder(type), annotationManager.getChangeLogFailFast(type), annotationManager.getChangeLogPreMigration(type), annotationManager.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
-    } catch (MongockException ex) {
-      throw ex;
-    } catch (Exception ex) {
-      throw new MongockException(ex);
-    }
-  }
+  protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
 
-  private List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
+
+  protected List<CHANGESET> fetchChangeSetFromClass(Class<?> type) {
     return fetchChangeSetMethodsSorted(type)
         .stream()
         .filter(changeSetMethod -> this.profileFilter != null ? this.profileFilter.apply(changeSetMethod) : true)
@@ -180,7 +153,7 @@ public class ChangeLogServiceBase implements Validable {
   }
 
 
-  private static class ChangeLogComparator implements Comparator<ChangeLogItem>, Serializable {
+  private static class ChangeLogComparator<CHANGELOG extends ChangeLogItemBase<?>> implements Comparator<CHANGELOG>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
     private final AnnotationProcessor annotationManager;
 
@@ -194,7 +167,7 @@ public class ChangeLogServiceBase implements Validable {
      * If both are null or equals, they are compare bby their names
      */
     @Override
-    public int compare(ChangeLogItem changeLog1, ChangeLogItem changeLog2) {
+    public int compare(CHANGELOG changeLog1, CHANGELOG changeLog2) {
       String val1 = annotationManager.getChangeLogOrder(changeLog1.getType());
       String val2 = annotationManager.getChangeLogOrder(changeLog2.getType());
 

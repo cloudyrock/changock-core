@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 
-public class MongockAnnotationProcessor implements AnnotationProcessor {
+public class MongockAnnotationProcessorDefault implements AnnotationProcessor<ChangeSetItem> {
 
   @Override
   public Collection<Class<? extends Annotation>> getChangeLogAnnotationClass() {
