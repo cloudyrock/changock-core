@@ -34,7 +34,7 @@ public class MongockRunnerTest {
     when(changeLogService.fetchChangeLogs()).thenReturn(changeLogItemList);
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
-    new MongockRunner(executor, changeLogService, true, true, eventPublisher)
+    new MongockRunnerImpl(executor, changeLogService, true, true, eventPublisher)
         .execute();
 
     ArgumentCaptor<SortedSet> changeLogCaptor = ArgumentCaptor.forClass(SortedSet.class);
@@ -55,7 +55,7 @@ public class MongockRunnerTest {
 
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
-    new MongockRunner(executor, changeLogService, true, false, eventPublisher).execute();
+    new MongockRunnerImpl(executor, changeLogService, true, false, eventPublisher).execute();
 
     verify(executor, new Times(0)).executeMigration(any());
     verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(MigrationResult.successResult());
@@ -71,7 +71,7 @@ public class MongockRunnerTest {
     doThrow(MongockException.class).when(changeLogService).runValidation();
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
-    new MongockRunner(executor, changeLogService, true, true, eventPublisher).execute();
+    new MongockRunnerImpl(executor, changeLogService, true, true, eventPublisher).execute();
     verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(MigrationResult.successResult());
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
@@ -86,7 +86,7 @@ public class MongockRunnerTest {
     doThrow(MongockException.class).when(changeLogService).fetchChangeLogs();
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
-    new MongockRunner(executor, changeLogService, true, true, eventPublisher).execute();
+    new MongockRunnerImpl(executor, changeLogService, true, true, eventPublisher).execute();
     verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(MigrationResult.successResult());
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
@@ -101,7 +101,7 @@ public class MongockRunnerTest {
     doThrow(MongockException.class).when(executor).executeMigration(any());
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
-    new MongockRunner(executor, changeLogService, true, true, eventPublisher).execute();
+    new MongockRunnerImpl(executor, changeLogService, true, true, eventPublisher).execute();
     verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(MigrationResult.successResult());
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
@@ -132,7 +132,7 @@ public class MongockRunnerTest {
 
     doThrow(MongockException.class).when(changeLogService).runValidation();
 
-    new MongockRunner(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
+    new MongockRunnerImpl(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -144,7 +144,7 @@ public class MongockRunnerTest {
 
     doThrow(MongockException.class).when(changeLogService).fetchChangeLogs();
 
-    new MongockRunner(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
+    new MongockRunnerImpl(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -156,7 +156,7 @@ public class MongockRunnerTest {
 
     doThrow(MongockException.class).when(executor).executeMigration(any());
 
-    new MongockRunner(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
+    new MongockRunnerImpl(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -168,7 +168,7 @@ public class MongockRunnerTest {
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
 
-    new MongockRunner(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
+    new MongockRunnerImpl(executor, changeLogService, true, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -180,7 +180,7 @@ public class MongockRunnerTest {
 
     doThrow(LockCheckException.class).when(executor).executeMigration(any());
 
-    new MongockRunner(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
+    new MongockRunnerImpl(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -194,7 +194,7 @@ public class MongockRunnerTest {
 
     doThrow(RuntimeException.class).when(executor).executeMigration(any());
 
-    new MongockRunner(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
+    new MongockRunnerImpl(executor, changeLogService, false, true, mock(EventPublisher.class)).execute();
 
   }
 
@@ -213,7 +213,7 @@ public class MongockRunnerTest {
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
 
-    new MongockRunner(executor, changeLogService, true, true, eventPublisher)
+    new MongockRunnerImpl(executor, changeLogService, true, true, eventPublisher)
         .execute();
 
 

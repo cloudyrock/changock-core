@@ -10,7 +10,7 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
@@ -26,6 +26,7 @@ import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
 import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 
 
 public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
@@ -88,7 +89,7 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   public MongockRunner<R> buildRunner() {
     runValidation();
     beforeBuildRunner();
-    return new MongockRunner<>(
+    return new MongockRunnerImpl<>(
         buildExecutor(driver),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),

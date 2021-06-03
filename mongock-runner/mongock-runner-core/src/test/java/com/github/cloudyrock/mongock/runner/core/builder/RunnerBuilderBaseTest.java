@@ -21,6 +21,7 @@ import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
@@ -283,7 +284,7 @@ implements
   }
 
   public MongockRunner<Boolean> build() {
-    return new MongockRunner<>(
+    return new MongockRunnerImpl<>(
         executor != null ? executor : buildExecutor(driver),
         buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
