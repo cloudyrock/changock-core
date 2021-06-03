@@ -10,6 +10,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 //TODO: this can become a Util class, no a service: static methods and name is confusing
 
@@ -66,12 +67,21 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem, Change
   @Override
   protected ChangeLogItem buildChangeLogObject(Class<?> type) {
     try {
-      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationManager.getChangeLogOrder(type), annotationManager.getChangeLogFailFast(type), annotationManager.getChangeLogPreMigration(type), annotationManager.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
+      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationProcessor.getChangeLogOrder(type), annotationProcessor.getChangeLogFailFast(type), annotationProcessor.getChangeLogPreMigration(type), annotationProcessor.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
     } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {
       throw new MongockException(ex);
     }
+  }
+
+  @Override
+  protected List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
+    return fetchChangeSetMethodsSorted(type)
+        .stream()
+        .filter(changeSetMethod -> this.profileFilter != null ? this.profileFilter.apply(changeSetMethod) : true)
+        .map(annotationProcessor::getChangeSet)
+        .collect(Collectors.toList());
   }
 
 }

@@ -3,7 +3,7 @@ package com.github.cloudyrock.mongock;
 import java.util.List;
 import java.util.Objects;
 
-public class ChangeLogItemBase<CHANGESET extends ChangeSetItem> {
+public abstract class ChangeLogItemBase {
 
   private final Class<?> type;
 
@@ -17,9 +17,8 @@ public class ChangeLogItemBase<CHANGESET extends ChangeSetItem> {
 
   private final boolean postMigration;
 
-  private final List<CHANGESET> changeSetElements;
 
-  public ChangeLogItemBase(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<CHANGESET> changeSetElements) {
+  public ChangeLogItemBase(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration) {
     checkParameters(preMigration, postMigration);
     this.type = type;
     this.instance = instance;
@@ -27,7 +26,6 @@ public class ChangeLogItemBase<CHANGESET extends ChangeSetItem> {
     this.failFast = failFast;
     this.preMigration = preMigration;
     this.postMigration = postMigration;
-    this.changeSetElements = changeSetElements;
   }
 
   private static void checkParameters(boolean preMigration, boolean postMigration) {
@@ -61,10 +59,7 @@ public class ChangeLogItemBase<CHANGESET extends ChangeSetItem> {
     return postMigration;
   }
 
-  public List<CHANGESET> getChangeSetElements() {
-    return changeSetElements;
-  }
-
+  public abstract List<? extends ChangeSetItem> getChangeSetElements();
 
   @Override
   public boolean equals(Object o) {

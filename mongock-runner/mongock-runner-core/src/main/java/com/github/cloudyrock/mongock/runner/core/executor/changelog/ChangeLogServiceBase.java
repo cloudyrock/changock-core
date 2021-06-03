@@ -36,7 +36,7 @@ import static java.util.Arrays.asList;
  *
  * @since 27/07/2014
  */
-public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?>, CHANGESET extends ChangeSetItem> implements Validable {
+public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase, CHANGESET extends ChangeSetItem> implements Validable {
 
   protected static final Function<Class<?>, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
@@ -51,7 +51,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
   protected final ArtifactVersion startSystemVersion;
   protected final ArtifactVersion endSystemVersion;
   protected final Function<AnnotatedElement, Boolean> profileFilter;
-  protected final AnnotationProcessor<CHANGESET> annotationManager;
+  protected final AnnotationProcessor<CHANGESET> annotationProcessor;
   protected final Function<Class<?>, Object> changeLogInstantiator;
 
   public ChangeLogServiceBase(List<String> changeLogsBasePackageList,
@@ -66,7 +66,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
     this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
     this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
     this.profileFilter = profileFilter;
-    this.annotationManager = annotationProcessor;
+    this.annotationProcessor = annotationProcessor;
     this.changeLogInstantiator = changeLogInstantiator;
   }
 
@@ -84,34 +84,22 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
         .stream()
         .filter(changeLogClass -> this.profileFilter != null ? this.profileFilter.apply(changeLogClass) : true)
         .map(this::buildChangeLogObject)
-        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator(annotationManager))));
+        .collect(Collectors.toCollection(() -> new TreeSet<>(new ChangeLogComparator(annotationProcessor))));
   }
 
   private Set<Class<?>> mergeChangeLogClassesAndPackages() {
     //the following check is needed because reflection library will bring the entire classpath in case the changeLogsBasePackageList is empty
     Stream<Class<?>> packageStream = changeLogsBasePackageList == null || changeLogsBasePackageList.isEmpty()
         ? Stream.empty()
-        : annotationManager.getChangeLogAnnotationClass()
-        .stream()
+        : annotationProcessor.getChangeLogAnnotationClass().stream()
         .map(changeLogClass -> new ArrayList<>(new Reflections(changeLogsBasePackageList).getTypesAnnotatedWith(changeLogClass)))// TODO remove dependency, do own method
         .flatMap(Collection::stream);
     return Stream.concat(packageStream, changeLogsBaseClassList.stream()).collect(Collectors.toSet());
   }
 
-  protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
-
-
-  protected List<CHANGESET> fetchChangeSetFromClass(Class<?> type) {
-    return fetchChangeSetMethodsSorted(type)
-        .stream()
-        .filter(changeSetMethod -> this.profileFilter != null ? this.profileFilter.apply(changeSetMethod) : true)
-        .map(annotationManager::getChangeSet)
-        .collect(Collectors.toList());
-  }
-
-  private List<Method> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
+  protected List<Method> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
     final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
-    changeSets.sort(new ChangeSetComparator(annotationManager));
+    changeSets.sort(new ChangeSetComparator(annotationProcessor));
     return changeSets;
   }
 
@@ -120,8 +108,8 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
     final Set<String> changeSetIds = new HashSet<>();
     final List<Method> changeSetMethods = new ArrayList<>();
     for (final Method method : allMethods) {
-      if (annotationManager.isChangeSetAnnotated(method)) {
-        ChangeSetItem changeSetItem = annotationManager.getChangeSet(method);
+      if (annotationProcessor.isChangeSetAnnotated(method)) {
+        ChangeSetItem changeSetItem = annotationProcessor.getChangeSet(method);
         String id = changeSetItem.getId();
         if (changeSetIds.contains(id)) {
           throw new MongockException(String.format("Duplicated changeset id found: '%s'", id));
@@ -193,5 +181,11 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase<?
       return c1.getOrder().compareTo(c2.getOrder());
     }
   }
+
+
+  protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
+
+  protected abstract List<CHANGESET> fetchChangeSetFromClass(Class<?> type);
+
 
 }
