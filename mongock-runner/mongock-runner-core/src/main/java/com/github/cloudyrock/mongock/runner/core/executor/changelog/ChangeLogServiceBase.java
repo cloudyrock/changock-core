@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
-//TODO: this can become a Util class, no a service: static methods and name is confusing
 
 /**
  * Utilities to deal with reflections and annotations

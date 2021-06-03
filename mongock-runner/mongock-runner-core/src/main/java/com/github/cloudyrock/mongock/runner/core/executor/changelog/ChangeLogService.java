@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-//TODO: this can become a Util class, no a service: static methods and name is confusing
 
 /**
  * Utilities to deal with reflections and annotations
