@@ -8,7 +8,7 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable {
+public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable, DriverLegaciable {
   void initialize();
 
   LockManager getLockManager();
@@ -18,8 +18,6 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
 
   Set<ChangeSetDependency> getDependencies();
-
-  Class getLegacyMigrationChangeLogClass(boolean runAlways);
 
   void setChangeLogRepositoryName(String changeLogRepositoryName);
 
