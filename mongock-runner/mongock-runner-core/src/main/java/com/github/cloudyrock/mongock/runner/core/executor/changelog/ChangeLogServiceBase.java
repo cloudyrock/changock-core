@@ -35,7 +35,7 @@ import static java.util.Arrays.asList;
  *
  * @since 27/07/2014
  */
-public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase, CHANGESET extends ChangeSetItem> implements Validable {
+public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> implements Validable {
 
   protected static final Function<Class<?>, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
@@ -45,27 +45,40 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase, 
     }
   };
 
-  protected final List<String> changeLogsBasePackageList;
-  protected final List<Class<?>> changeLogsBaseClassList;
-  protected final ArtifactVersion startSystemVersion;
-  protected final ArtifactVersion endSystemVersion;
-  protected final Function<AnnotatedElement, Boolean> profileFilter;
-  protected final AnnotationProcessor<CHANGESET> annotationProcessor;
-  protected final Function<Class<?>, Object> changeLogInstantiator;
+  protected final AnnotationProcessor annotationProcessor;
 
-  public ChangeLogServiceBase(List<String> changeLogsBasePackageList,
-                              List<Class<?>> changeLogsBaseClassList,
-                              String startSystemVersionInclusive,
-                              String endSystemVersionInclusive,
-                              Function<AnnotatedElement, Boolean> profileFilter,
-                              AnnotationProcessor<CHANGESET>  annotationProcessor,
-                              Function<Class<?>, Object> changeLogInstantiator) {
-    this.changeLogsBasePackageList = new ArrayList<>(changeLogsBasePackageList);
-    this.changeLogsBaseClassList = changeLogsBaseClassList;
-    this.startSystemVersion = new DefaultArtifactVersion(startSystemVersionInclusive);
-    this.endSystemVersion = new DefaultArtifactVersion(endSystemVersionInclusive);
-    this.profileFilter = profileFilter;
+  protected List<String> changeLogsBasePackageList;
+  protected List<Class<?>> changeLogsBaseClassList;
+  protected ArtifactVersion startSystemVersion;
+  protected ArtifactVersion endSystemVersion;
+  protected Function<AnnotatedElement, Boolean> profileFilter;
+  protected Function<Class<?>, Object> changeLogInstantiator;
+
+  public ChangeLogServiceBase(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
+  }
+
+  public void setChangeLogsBasePackageList(List<String> changeLogsBasePackageList) {
+    this.changeLogsBasePackageList = changeLogsBasePackageList;
+  }
+
+  public void setChangeLogsBaseClassList(List<Class<?>> changeLogsBaseClassList) {
+    this.changeLogsBaseClassList = changeLogsBaseClassList;
+  }
+
+  public void setStartSystemVersion(String startSystemVersion) {
+    this.startSystemVersion = new DefaultArtifactVersion(startSystemVersion);
+  }
+
+  public void setEndSystemVersion(String endSystemVersion) {
+    this.endSystemVersion = new DefaultArtifactVersion(endSystemVersion);
+  }
+
+  public void setProfileFilter(Function<AnnotatedElement, Boolean> profileFilter) {
+    this.profileFilter = profileFilter;
+  }
+
+  public void setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
   }
 
@@ -136,9 +149,9 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase, 
 
   private  class ChangeLogComparator implements Comparator<CHANGELOG>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
-    private final AnnotationProcessor<CHANGESET> annotationManager;
+    private final AnnotationProcessor annotationManager;
 
-    ChangeLogComparator(AnnotationProcessor<CHANGESET> annotationManager) {
+    ChangeLogComparator(AnnotationProcessor annotationManager) {
       this.annotationManager = annotationManager;
     }
 
@@ -165,11 +178,11 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase, 
     }
   }
 
-  private class ChangeSetComparator implements Comparator<Method>, Serializable {
+  private static class ChangeSetComparator implements Comparator<Method>, Serializable {
     private static final long serialVersionUID = -854690868262484102L;
-    private final AnnotationProcessor<CHANGESET> annotationManager;
+    private final AnnotationProcessor annotationManager;
 
-    ChangeSetComparator(AnnotationProcessor<CHANGESET> annotationManager) {
+    ChangeSetComparator(AnnotationProcessor annotationManager) {
       this.annotationManager = annotationManager;
     }
 
@@ -184,7 +197,6 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase, 
 
   protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
 
-  protected abstract List<CHANGESET> fetchChangeSetFromClass(Class<?> type);
 
 
 }

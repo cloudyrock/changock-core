@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
+public interface AnnotationProcessor {
 
   Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
 
@@ -18,5 +18,5 @@ public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
 
   boolean getChangeLogPostMigration(Class<?> type);
 
-  CHANGESET getChangeSet(Method method);
+  ChangeSetItem getChangeSet(Method method);
 }

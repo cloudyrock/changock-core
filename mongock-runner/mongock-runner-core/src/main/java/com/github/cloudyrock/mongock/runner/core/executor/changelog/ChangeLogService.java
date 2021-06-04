@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  *
  * @since 27/07/2014
  */
-public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem, ChangeSetItem> {
+public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
@@ -36,31 +36,29 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem, Change
    * @param annotationProcessor         in case the annotations are different from the ones define in mongock-api, its required a class to manage them
    */
   public ChangeLogService(List<String> changeLogsBasePackageList,
-                              List<Class<?>> changeLogsBaseClassList,
-                              String startSystemVersionInclusive,
-                              String endSystemVersionInclusive,
-                              AnnotationProcessor<ChangeSetItem> annotationProcessor,
-                              Function<Class<?>, Object> changeLogInstantiator) {
+                          List<Class<?>> changeLogsBaseClassList,
+                          String startSystemVersionInclusive,
+                          String endSystemVersionInclusive,
+                          AnnotationProcessor annotationProcessor,
+                          Function<Class<?>, Object> changeLogInstantiator) {
     this(changeLogsBasePackageList, changeLogsBaseClassList, startSystemVersionInclusive, endSystemVersionInclusive, null, annotationProcessor, changeLogInstantiator);
   }
 
   public ChangeLogService(List<String> changeLogsBasePackageList,
-                              List<Class<?>> changeLogsBaseClassList,
-                              String startSystemVersionInclusive,
-                              String endSystemVersionInclusive,
-                              Function<AnnotatedElement, Boolean> profileFilter,
-                              AnnotationProcessor<ChangeSetItem>  annotationProcessor,
-                              Function<Class<?>, Object> changeLogInstantiator) {
-    super(
-        new ArrayList<>(changeLogsBasePackageList),
-        changeLogsBaseClassList,
-        startSystemVersionInclusive,
-        endSystemVersionInclusive,
-        profileFilter,
-        annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor(),
-        changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR);
+                          List<Class<?>> changeLogsBaseClassList,
+                          String startSystemVersionInclusive,
+                          String endSystemVersionInclusive,
+                          Function<AnnotatedElement, Boolean> profileFilter,
+                          AnnotationProcessor annotationProcessor,
+                          Function<Class<?>, Object> changeLogInstantiator) {
+    super(annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor());
+    setChangeLogsBasePackageList(new ArrayList<>(changeLogsBasePackageList));
+    setChangeLogsBaseClassList(changeLogsBaseClassList);
+    setStartSystemVersion(startSystemVersionInclusive);
+    setEndSystemVersion(endSystemVersionInclusive);
+    setProfileFilter(profileFilter);
+    setChangeLogInstantiator(changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR);
   }
-
 
 
   @Override
@@ -74,7 +72,6 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem, Change
     }
   }
 
-  @Override
   protected List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
     return fetchChangeSetMethodsSorted(type)
         .stream()

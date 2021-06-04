@@ -21,10 +21,10 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
 
 
   public MongockRunnerImpl(Executor<T> executor,
-                       ChangeLogService changeLogService,
-                       boolean throwExceptionIfCannotObtainLock,
-                       boolean enabled,
-                       EventPublisher eventPublisher) {
+                           ChangeLogService changeLogService,
+                           boolean throwExceptionIfCannotObtainLock,
+                           boolean enabled,
+                           EventPublisher eventPublisher) {
     this.executor = executor;
     this.chanLogService = changeLogService;
     this.enabled = enabled;

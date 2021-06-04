@@ -147,7 +147,7 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
     );
   }
 
-  protected  AnnotationProcessor<ChangeSetItem> getAnnotationProcessor() {
+  protected  AnnotationProcessor getAnnotationProcessor() {
     return new MongockAnnotationProcessor();
   }
 
