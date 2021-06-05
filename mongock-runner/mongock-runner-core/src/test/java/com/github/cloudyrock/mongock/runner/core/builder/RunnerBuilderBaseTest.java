@@ -237,7 +237,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
 
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, MongockConfiguration>
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, ChangeLogItem, MongockConfiguration>
 implements
     ChangeLogScanner<DummyRunnerBuilder, MongockConfiguration>,
     ChangeLogWriter<DummyRunnerBuilder, MongockConfiguration>,
@@ -253,7 +253,7 @@ implements
 
   private Executor<Boolean> executor;
 
-  protected DummyRunnerBuilder(ExecutorFactory<MongockConfiguration, Boolean> executorFactory) {
+  protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory) {
     super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
   }
 

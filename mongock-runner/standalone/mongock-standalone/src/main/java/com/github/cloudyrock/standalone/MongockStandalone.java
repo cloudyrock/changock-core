@@ -1,5 +1,6 @@
 package com.github.cloudyrock.standalone;
 
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
@@ -11,10 +12,11 @@ public final class MongockStandalone {
     return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
   }
 
-  public static class MigrationBuilderImpl extends StandaloneBuilderBase<MigrationBuilderImpl, Boolean, MongockConfiguration>
-      implements MigrationStandaloneBuilder {
+  public static class MigrationBuilderImpl extends StandaloneBuilderBase<MigrationBuilderImpl, Boolean, ChangeLogItem, MongockConfiguration>
+      implements MigrationStandaloneBuilder
+  {
 
-    private MigrationBuilderImpl(ExecutorFactory<MongockConfiguration, Boolean> executorFactory, MongockConfiguration config) {
+    private MigrationBuilderImpl(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory, MongockConfiguration config) {
       super(new MigrationOp(), executorFactory, config);
     }
 

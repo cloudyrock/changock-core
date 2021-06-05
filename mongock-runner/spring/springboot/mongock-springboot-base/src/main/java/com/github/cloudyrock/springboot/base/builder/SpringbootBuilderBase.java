@@ -1,5 +1,6 @@
 package com.github.cloudyrock.springboot.base.builder;
 
+import com.github.cloudyrock.mongock.ChangeLogItemBase;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
@@ -31,12 +32,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
-    extends RunnerBuilderBase<SELF, R, CONFIG> {
+public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<SELF, R, CHANGELOG, CONFIG>, R, CHANGELOG extends ChangeLogItemBase,CONFIG extends MongockConfiguration>
+    extends RunnerBuilderBase<SELF, R, CHANGELOG, CONFIG> {
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG, R> executorFactory, CONFIG config) {
+  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory, CONFIG config) {
     super(operation, executorFactory, config, new DependencyManagerWithContext());
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }

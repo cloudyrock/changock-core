@@ -1,21 +1,19 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.AnnotationProcessor;
-import com.github.cloudyrock.mongock.ChangeLogItem;
-import com.github.cloudyrock.mongock.ChangeSetItem;
-import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
+import com.github.cloudyrock.mongock.ChangeLogItemBase;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
-import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import org.slf4j.Logger;
@@ -29,13 +27,12 @@ import java.util.List;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
-import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 
 
 public abstract class RunnerBuilderBase<
-    SELF extends RunnerBuilderBase<SELF, R, CONFIG>,
+    SELF extends RunnerBuilderBase<SELF, R, CHANGELOG,CONFIG>,
     R,
+    CHANGELOG extends ChangeLogItemBase,
     CONFIG extends MongockConfiguration>
     implements Validable {
 
@@ -45,13 +42,13 @@ public abstract class RunnerBuilderBase<
   protected EventPublisher eventPublisher = EventPublisher.empty();
   protected final Operation<R> operation;
   protected final CONFIG config;
-  protected final ExecutorFactory<CONFIG, R> executorFactory;
+  protected final ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory;
   protected ConnectionDriver driver;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
-  protected RunnerBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG, R> executorFactory, CONFIG config, DependencyManager dependencyManager) {
+  protected RunnerBuilderBase(Operation<R> operation, ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory, CONFIG config, DependencyManager dependencyManager) {
     this.executorFactory = executorFactory;
     this.config = config;
     this.operation = operation;
