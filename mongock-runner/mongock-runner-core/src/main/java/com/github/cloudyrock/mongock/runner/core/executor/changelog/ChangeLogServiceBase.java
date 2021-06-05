@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -45,14 +46,14 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
     }
   };
 
-  protected final AnnotationProcessor annotationProcessor;
 
-  protected List<String> changeLogsBasePackageList;
-  protected List<Class<?>> changeLogsBaseClassList;
-  protected ArtifactVersion startSystemVersion;
-  protected ArtifactVersion endSystemVersion;
+  private final AnnotationProcessor annotationProcessor;
+  private Function<Class<?>, Object> changeLogInstantiator;
+  private List<String> changeLogsBasePackageList;
+  private List<Class<?>> changeLogsBaseClassList;
+  private ArtifactVersion startSystemVersion;
+  private ArtifactVersion endSystemVersion;
   protected Function<AnnotatedElement, Boolean> profileFilter;
-  protected Function<Class<?>, Object> changeLogInstantiator;
 
   public ChangeLogServiceBase(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
@@ -81,6 +82,35 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
   public void setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
   }
+
+  protected AnnotationProcessor getAnnotationProcessor() {
+    return annotationProcessor;
+  }
+
+  protected List<String> getChangeLogsBasePackageList() {
+    return changeLogsBasePackageList;
+  }
+
+  protected List<Class<?>> getChangeLogsBaseClassList() {
+    return changeLogsBaseClassList;
+  }
+
+  protected ArtifactVersion getStartSystemVersion() {
+    return startSystemVersion;
+  }
+
+  protected ArtifactVersion getEndSystemVersion() {
+    return endSystemVersion;
+  }
+
+  protected Function<AnnotatedElement, Boolean> getProfileFilter() {
+    return profileFilter;
+  }
+
+  protected Optional<Function<Class<?>, Object>> getChangeLogInstantiator() {
+    return Optional.ofNullable(changeLogInstantiator);
+  }
+
 
   @Override
   public void runValidation() throws MongockException {

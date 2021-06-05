@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
  */
 public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
 
+
+  private static final MongockAnnotationProcessor ANN_PROCESSOR = new MongockAnnotationProcessor();
+
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
    * @param startSystemVersionInclusive inclusive starting systemVersion
@@ -51,7 +54,7 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
                           Function<AnnotatedElement, Boolean> profileFilter,
                           AnnotationProcessor annotationProcessor,
                           Function<Class<?>, Object> changeLogInstantiator) {
-    super(annotationProcessor != null ? annotationProcessor : new MongockAnnotationProcessor());
+    this();
     setChangeLogsBasePackageList(new ArrayList<>(changeLogsBasePackageList));
     setChangeLogsBaseClassList(changeLogsBaseClassList);
     setStartSystemVersion(startSystemVersionInclusive);
@@ -60,11 +63,17 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
     setChangeLogInstantiator(changeLogInstantiator != null ? changeLogInstantiator : DEFAULT_CHANGELOG_INSTANTIATOR);
   }
 
+  public ChangeLogService() {
+    super(ANN_PROCESSOR);
+  }
+
 
   @Override
   protected ChangeLogItem buildChangeLogObject(Class<?> type) {
     try {
-      return new ChangeLogItem(type, this.changeLogInstantiator.apply(type), annotationProcessor.getChangeLogOrder(type), annotationProcessor.getChangeLogFailFast(type), annotationProcessor.getChangeLogPreMigration(type), annotationProcessor.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
+      Function<Class<?>, Object> instantiator = getChangeLogInstantiator().orElse(DEFAULT_CHANGELOG_INSTANTIATOR);
+      AnnotationProcessor annProcessor = getAnnotationProcessor();
+      return new ChangeLogItem(type, instantiator.apply(type), annProcessor.getChangeLogOrder(type), annProcessor.getChangeLogFailFast(type), annProcessor.getChangeLogPreMigration(type), annProcessor.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
     } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {
@@ -76,7 +85,7 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
     return fetchChangeSetMethodsSorted(type)
         .stream()
         .filter(changeSetMethod -> this.profileFilter != null ? this.profileFilter.apply(changeSetMethod) : true)
-        .map(annotationProcessor::getChangeSet)
+        .map(getAnnotationProcessor()::getChangeSet)
         .collect(Collectors.toList());
   }
 

@@ -1,6 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.AnnotationProcessor;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
@@ -14,6 +15,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import org.slf4j.Logger;
@@ -136,19 +138,14 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
         changeLogsScanPackage.add(itemPath);
       }
     }
-    return new ChangeLogService(
-        changeLogsScanPackage,
-        changeLogsScanClasses,
-        config.getStartSystemVersion(),
-        config.getEndSystemVersion(),
-        getAnnotationFilter(),
-        getAnnotationProcessor(),
-        changeLogInstantiator
-    );
-  }
-
-  protected  AnnotationProcessor getAnnotationProcessor() {
-    return new MongockAnnotationProcessor();
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBasePackageList(changeLogsScanPackage);
+    changeLogService.setChangeLogsBaseClassList(changeLogsScanClasses);
+    changeLogService.setStartSystemVersion(config.getStartSystemVersion());
+    changeLogService.setEndSystemVersion(config.getEndSystemVersion());
+    changeLogService.setProfileFilter(getAnnotationFilter());
+    changeLogService.setChangeLogInstantiator(changeLogInstantiator);
+    return changeLogService;
   }
 
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {

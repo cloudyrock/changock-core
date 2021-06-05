@@ -1,11 +1,13 @@
 package com.github.cloudyrock.mongock.runner.core.executor.changelog;
 
+import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.pro.ChangeLogItemPro;
 import com.github.cloudyrock.mongock.pro.ChangeSetItemPro;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockAnnotationProcessorPro;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ChangeLogServicePro extends ChangeLogServiceBase<ChangeLogItemPro> {
@@ -20,7 +22,9 @@ public class ChangeLogServicePro extends ChangeLogServiceBase<ChangeLogItemPro> 
   @Override
   protected ChangeLogItemPro buildChangeLogObject(Class<?> type) {
     try {
-      return new ChangeLogItemPro(type, this.changeLogInstantiator.apply(type), annotationProcessor.getChangeLogOrder(type), annotationProcessor.getChangeLogFailFast(type), annotationProcessor.getChangeLogPreMigration(type), annotationProcessor.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
+      Function<Class<?>, Object> instantiator = getChangeLogInstantiator().orElse(DEFAULT_CHANGELOG_INSTANTIATOR);
+      AnnotationProcessor annProcessor = getAnnotationProcessor();
+      return new ChangeLogItemPro(type, instantiator.apply(type), annProcessor.getChangeLogOrder(type), annProcessor.getChangeLogFailFast(type), annProcessor.getChangeLogPreMigration(type), annProcessor.getChangeLogPostMigration(type), fetchChangeSetFromClass(type));
     } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {
