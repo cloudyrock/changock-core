@@ -7,7 +7,7 @@ import java.util.SortedSet;
 
 public class ListChangesExecutor implements Executor<ListChangesResult> {
   @Override
-  public ListChangesResult executeMigration(SortedSet<ChangeLogItem> changeLogs) {
+  public ListChangesResult executeMigration() {
     return new ListChangesResult();
   }
 

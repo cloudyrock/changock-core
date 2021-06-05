@@ -4,7 +4,6 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
-import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,18 +14,15 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
 
   private final boolean enabled;
   private final Executor<T> executor;
-  private final ChangeLogService chanLogService;
   private final boolean throwExceptionIfCannotObtainLock;
   private final EventPublisher eventPublisher;
 
 
   public MongockRunnerImpl(Executor<T> executor,
-                           ChangeLogService changeLogService,
                            boolean throwExceptionIfCannotObtainLock,
                            boolean enabled,
                            EventPublisher eventPublisher) {
     this.executor = executor;
-    this.chanLogService = changeLogService;
     this.enabled = enabled;
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
     this.eventPublisher = eventPublisher;
@@ -52,9 +48,8 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
       return Optional.empty();
     } else {
       try {
-        this.validate();
         eventPublisher.publishMigrationStarted();
-        T result = executor.executeMigration(chanLogService.fetchChangeLogs());
+        T result = executor.executeMigration();
         eventPublisher.publishMigrationSuccessEvent(MigrationResult.successResult());
         return Optional.ofNullable(result);
 
@@ -80,7 +75,4 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
     }
   }
 
-  protected void validate() throws MongockException {
-    chanLogService.runValidation();
-  }
 }

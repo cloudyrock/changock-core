@@ -9,6 +9,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 
@@ -27,8 +28,8 @@ public class TestMongockRunner extends MongockRunnerImpl {
     return new Builder(new ExecutorFactory<>());
   }
 
-  private TestMongockRunner(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+  private TestMongockRunner(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+    super(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
   public static class Builder extends RunnerBuilderBase<Builder, Boolean, ChangeLogItem, MongockConfiguration> implements MigrationBuilderBase<Builder, Boolean, MongockConfiguration> {
@@ -45,7 +46,7 @@ public class TestMongockRunner extends MongockRunnerImpl {
     }
 
     public TestMongockRunner build() {
-      return build(buildExecutorForTest(), buildChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), EventPublisher.empty());
+      return build(buildExecutorForTest(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), EventPublisher.empty());
     }
 
     protected Executor buildExecutorForTest() {
@@ -59,13 +60,18 @@ public class TestMongockRunner extends MongockRunnerImpl {
     }
 
 
-    public TestMongockRunner build(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-      return new TestMongockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+    public TestMongockRunner build(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+      return new TestMongockRunner(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
     @Override
     protected void beforeBuildRunner() {
 
+    }
+
+    @Override
+    protected ChangeLogServiceBase<ChangeLogItem> getChangeLogInstance() {
+      return new ChangeLogService();
     }
 
 

@@ -1,5 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor.operation.change;
 
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
@@ -9,7 +10,7 @@ import java.lang.reflect.Parameter;
 import java.util.function.Function;
 
 @NotThreadSafe
-public class MigrationExecutor extends ChangeExecutorBase<ChangeExecutorConfiguration> {
+public class MigrationExecutor extends ChangeExecutorBase<ChangeLogItem, ChangeExecutorConfiguration> {
 
 
   public MigrationExecutor(ConnectionDriver driver,

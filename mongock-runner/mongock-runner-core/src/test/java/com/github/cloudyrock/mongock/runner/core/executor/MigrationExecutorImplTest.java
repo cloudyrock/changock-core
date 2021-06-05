@@ -113,7 +113,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(trackingIgnored);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
     // then
@@ -176,7 +177,8 @@ public class MigrationExecutorImplTest {
       config.setTrackIgnored(false);
       MigrationExecutor executor = new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config);
       executor
-          .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
+          .executeMigration();
+//          .executeMigration(createInitialChangeLogs(ExecutorWithFailFastChangeLog.class));
     } catch (Exception ex) {
       //ignored
     }
@@ -228,7 +230,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
   @Test
@@ -247,7 +250,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
   @Test
@@ -263,7 +267,8 @@ public class MigrationExecutorImplTest {
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
       new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-          .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+          .executeMigration();
+//          .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
     } catch (Exception ex) {
     }
 
@@ -285,7 +290,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
   @Test
@@ -302,7 +308,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ExecutorWithNonFailFastChangeLog.class));
 
     assertTrue("Changelog's methods have not been fully executed", ExecutorWithNonFailFastChangeLog.latch.await(1, TimeUnit.NANOSECONDS));
     // then
@@ -355,7 +362,8 @@ public class MigrationExecutorImplTest {
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
       new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-          .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
+          .executeMigration();
+//          .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogNonFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
 
@@ -419,7 +427,8 @@ public class MigrationExecutorImplTest {
       config.setServiceIdentifier("myService");
       config.setTrackIgnored(false);
       new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-          .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
+          .executeMigration();
+//          .executeMigration(createInitialChangeLogs(ExecutorWithChangeLogFailFastChangeLog1.class));
     } catch (Exception ex) {
     }
 
@@ -468,7 +477,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ExecutorChangeLog.class));
   }
 
   @Test
@@ -488,7 +498,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
     verify(lockManager, new Times(1)).ensureLockDefault();
@@ -511,7 +522,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
     verify(lockManager, new Times(2)).ensureLockDefault();
@@ -534,7 +546,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
     verify(lockManager, new Times(0)).ensureLockDefault();
@@ -557,7 +570,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogWithInterfaceParameter.class));
 
     // then
     verify(lockManager, new Times(0)).ensureLockDefault();
@@ -590,7 +604,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(LegacyMigrationChangeLog.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(LegacyMigrationChangeLog.class));
 
     // then
     LegacyMigrationChangeLog.latch.await(5, TimeUnit.SECONDS);
@@ -604,7 +619,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogWithNoChangeSet.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogWithNoChangeSet.class));
 
     //then
     ArgumentCaptor<String> changeSetIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -625,7 +641,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecuted.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecuted.class));
 
     //then
     // Lock should not be acquired because all items are already executed.
@@ -648,7 +665,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
     verify(lockManager, new Times(1)).acquireLockDefault();
@@ -674,7 +692,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogAlreadyExecutedRunAlways.class));
 
     //then
     verify(lockManager, new Times(1)).acquireLockDefault();
@@ -695,7 +714,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
 
     // then
     verify(lockManager, new Times(1)).acquireLockDefault();
@@ -723,7 +743,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogPreMigration.class));
 
     // then
     verify(lockManager, new Times(1)).acquireLockDefault();
@@ -751,7 +772,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
 
     // then
     verify(lockManager, new Times(1)).acquireLockDefault();
@@ -779,7 +801,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogPostMigration.class));
 
     // then
     verify(lockManager, new Times(1)).acquireLockDefault();
@@ -811,7 +834,8 @@ public class MigrationExecutorImplTest {
     config.setServiceIdentifier("myService");
     config.setTrackIgnored(false);
     new MigrationExecutor(driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration(createInitialChangeLogs(ChangeLogPrePostMigration.class));
+        .executeMigration();
+//        .executeMigration(createInitialChangeLogs(ChangeLogPrePostMigration.class));
   }
 
   private SortedSet<ChangeLogItem> createInitialChangeLogs(Class<?> executorChangeLogClass) {

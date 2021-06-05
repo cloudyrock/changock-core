@@ -22,6 +22,8 @@ import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
@@ -125,7 +127,9 @@ public class RunnerBuilderBaseTest {
 
 
     ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
-    verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
+    verify(executor, new Times(1))
+        .executeMigration();
+//        .executeMigration(packageCaptors.capture());
 
     ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
     assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
@@ -155,7 +159,9 @@ public class RunnerBuilderBaseTest {
         .execute();
 
     ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
-    verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
+    verify(executor, new Times(1))
+        .executeMigration();
+//    .executeMigration(packageCaptors.capture());
 
     assertEquals(1, new ArrayList<>(new ArrayList<>(packageCaptors.getValue())).size());
 
@@ -174,7 +180,9 @@ public class RunnerBuilderBaseTest {
         .execute();
 
     ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
-    verify(executor, new Times(1)).executeMigration(packageCaptors.capture());
+    verify(executor, new Times(1))
+        .executeMigration();
+//    .executeMigration(packageCaptors.capture());
 
     ArrayList<ChangeLogItem> changeLogItemsList = new ArrayList<>(new ArrayList<>(packageCaptors.getValue()));
     assertEquals(2, changeLogItemsList.size());
@@ -271,6 +279,11 @@ implements
   protected void beforeBuildRunner() {
   }
 
+  @Override
+  protected ChangeLogServiceBase<ChangeLogItem> getChangeLogInstance() {
+    return new ChangeLogService();
+  }
+
 
   @Override
   public DummyRunnerBuilder getInstance() {
@@ -286,7 +299,6 @@ implements
   public MongockRunner<Boolean> build() {
     return new MongockRunnerImpl<>(
         executor != null ? executor : buildExecutor(driver),
-        buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
         mock(EventPublisher.class));

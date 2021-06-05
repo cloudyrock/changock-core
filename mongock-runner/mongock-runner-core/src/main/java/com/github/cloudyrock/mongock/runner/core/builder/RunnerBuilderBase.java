@@ -13,7 +13,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
-import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import org.slf4j.Logger;
@@ -94,7 +94,6 @@ public abstract class RunnerBuilderBase<
     beforeBuildRunner();
     return new MongockRunnerImpl<>(
         buildExecutor(driver),
-        buildChangeLogService(),
         config.isThrowExceptionIfCannotObtainLock(),
         config.isEnabled(),
         eventPublisher);
@@ -127,7 +126,7 @@ public abstract class RunnerBuilderBase<
     );
   }
 
-  protected ChangeLogService buildChangeLogService() {
+  protected ChangeLogServiceBase<CHANGELOG> buildChangeLogService() {
 
     List<Class<?>> changeLogsScanClasses = new ArrayList<>();
     List<String> changeLogsScanPackage = new ArrayList<>();
@@ -138,7 +137,7 @@ public abstract class RunnerBuilderBase<
         changeLogsScanPackage.add(itemPath);
       }
     }
-    ChangeLogService changeLogService = new ChangeLogService();
+    ChangeLogServiceBase<CHANGELOG> changeLogService = getChangeLogInstance();
     changeLogService.setChangeLogsBasePackageList(changeLogsScanPackage);
     changeLogService.setChangeLogsBaseClassList(changeLogsScanClasses);
     changeLogService.setStartSystemVersion(config.getStartSystemVersion());
@@ -177,6 +176,7 @@ public abstract class RunnerBuilderBase<
     }
   }
 
+  protected abstract ChangeLogServiceBase<CHANGELOG> getChangeLogInstance();
 
   public abstract SELF getInstance();
 
