@@ -251,9 +251,9 @@ implements
     SelfInstanstiator<DummyRunnerBuilder> {
 
 
-  private Executor executor;
+  private Executor<Boolean> executor;
 
-  protected DummyRunnerBuilder(ExecutorFactory<MongockConfiguration> executorFactory) {
+  protected DummyRunnerBuilder(ExecutorFactory<MongockConfiguration, Boolean> executorFactory) {
     super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
   }
 

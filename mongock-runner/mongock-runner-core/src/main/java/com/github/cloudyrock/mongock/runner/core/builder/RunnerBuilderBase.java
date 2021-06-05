@@ -33,7 +33,10 @@ import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 
 
-public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
+public abstract class RunnerBuilderBase<
+    SELF extends RunnerBuilderBase<SELF, R, CONFIG>,
+    R,
+    CONFIG extends MongockConfiguration>
     implements Validable {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
@@ -42,13 +45,13 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   protected EventPublisher eventPublisher = EventPublisher.empty();
   protected final Operation<R> operation;
   protected final CONFIG config;
-  protected final ExecutorFactory<CONFIG> executorFactory;
+  protected final ExecutorFactory<CONFIG, R> executorFactory;
   protected ConnectionDriver driver;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
-  protected RunnerBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config, DependencyManager dependencyManager) {
+  protected RunnerBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG, R> executorFactory, CONFIG config, DependencyManager dependencyManager) {
     this.executorFactory = executorFactory;
     this.config = config;
     this.operation = operation;

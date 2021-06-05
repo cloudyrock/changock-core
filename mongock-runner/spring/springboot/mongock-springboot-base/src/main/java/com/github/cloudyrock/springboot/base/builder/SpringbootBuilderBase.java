@@ -36,7 +36,7 @@ public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<S
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
+  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG, R> executorFactory, CONFIG config) {
     super(operation, executorFactory, config, new DependencyManagerWithContext());
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }

@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public abstract class StandaloneBuilderBase<SELF extends StandaloneBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<SELF, R, CONFIG> {
 
-  protected StandaloneBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
+  protected StandaloneBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG, R> executorFactory, CONFIG config) {
     super(operation, executorFactory, config, new DependencyManager());
   }
 

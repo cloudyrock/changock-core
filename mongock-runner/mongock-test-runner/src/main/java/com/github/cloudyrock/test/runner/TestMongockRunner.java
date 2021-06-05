@@ -34,7 +34,7 @@ public class TestMongockRunner extends MongockRunnerImpl {
 
     private String executionId;
 
-    private Builder(ExecutorFactory<MongockConfiguration> executorFactory) {
+    private Builder(ExecutorFactory<MongockConfiguration, Boolean> executorFactory) {
       super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
     }
 

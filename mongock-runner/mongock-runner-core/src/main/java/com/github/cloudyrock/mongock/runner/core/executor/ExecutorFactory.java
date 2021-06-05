@@ -9,26 +9,23 @@ import com.github.cloudyrock.mongock.runner.core.executor.operation.change.Migra
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesOp;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesResult;
 
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
-public class ExecutorFactory<CONFIG extends ExecutorConfiguration> {
+public class ExecutorFactory<CONFIG extends ExecutorConfiguration, R> {
 
   @SuppressWarnings("unchecked")
-  public <M> Executor<M> getExecutor(Operation<M> op,
+  public Executor<R> getExecutor(Operation<R> op,
                                      ConnectionDriver<?> driver,
                                      DependencyManager dependencyManager,
                                      Function<Parameter, String> parameterNameProvider,
                                      CONFIG config) {
     switch (op.getId()) {
 
-      case MigrationOp.ID: return (Executor<M>) new MigrationExecutor(driver, dependencyManager, parameterNameProvider, config);
+      case MigrationOp.ID: return (Executor<R>) new MigrationExecutor(driver, dependencyManager, parameterNameProvider, config);
 
-      case ListChangesOp.ID: return (Executor<M>) new ListChangesExecutor();
+      case ListChangesOp.ID: return (Executor<R>) new ListChangesExecutor();
 
       default: throw  new MongockException("Executor not found for operation: " + op.getId());
     }

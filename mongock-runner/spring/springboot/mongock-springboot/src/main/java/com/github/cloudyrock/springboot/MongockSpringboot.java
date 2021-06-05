@@ -15,7 +15,7 @@ public final class MongockSpringboot {
   public static class MigrationBuilderImpl extends SpringbootBuilderBase<MigrationBuilderImpl, Boolean, MongockConfiguration>
       implements MigrationSpringbootBuilder {
 
-    private MigrationBuilderImpl(ExecutorFactory<MongockConfiguration> executorFactory, MongockConfiguration config) {
+    private MigrationBuilderImpl(ExecutorFactory<MongockConfiguration, Boolean> executorFactory, MongockConfiguration config) {
       super(new MigrationOp(), executorFactory, config);
     }
 
