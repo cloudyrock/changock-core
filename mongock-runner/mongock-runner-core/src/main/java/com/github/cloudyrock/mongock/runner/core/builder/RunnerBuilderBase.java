@@ -16,6 +16,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,11 +115,12 @@ public abstract class RunnerBuilderBase<
   protected DriverLegaciable getDriverLegaciable() {
     return this.driver;
   }
-
+  ChangeLogServiceBase<CHANGELOG> changeLogService = buildChangeLogService();
 
   protected final Executor<R> buildExecutor(ConnectionDriver driver) {
     return executorFactory.getExecutor(
         operation,
+        changeLogService.fetchChangeLogs(),
         driver,
         dependencyManager,
         parameterNameFunction,

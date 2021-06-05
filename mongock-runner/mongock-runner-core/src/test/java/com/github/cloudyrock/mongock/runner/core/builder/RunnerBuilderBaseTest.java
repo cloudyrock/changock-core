@@ -25,6 +25,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
@@ -150,12 +151,15 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
     Executor executor = mock(MigrationExecutor.class);
-    new DummyRunnerBuilder(new ExecutorFactory<>())
+    RunnerBuilderBase builder = runnerBuilderBaseInstance();
+
+    MongockConfiguration config = new MongockConfiguration();
+    config.setChangeLogsScanPackage(Arrays.asList(ChangeLogSuccess11.class.getCanonicalName(), ChangeLogSuccess11.class.getCanonicalName()));
+
+    builder
         .setDriver(driver)
-        .setExecutor(executor)
-        .addChangeLogClass(ChangeLogSuccess11.class)
-        .addChangeLogClass(ChangeLogSuccess11.class)
-        .build()
+        .setConfig(config)
+        .buildRunner()
         .execute();
 
     ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
@@ -166,6 +170,7 @@ public class RunnerBuilderBaseTest {
     assertEquals(1, new ArrayList<>(new ArrayList<>(packageCaptors.getValue())).size());
 
   }
+
 
 
   @Test
@@ -233,6 +238,24 @@ public class RunnerBuilderBaseTest {
     }
     return config;
   }
+
+  private RunnerBuilderBase runnerBuilderBaseInstance() {
+    return new RunnerBuilderBase
+        (new MigrationOp(), new ExecutorFactory<>(), new MongockConfiguration(), new DependencyManager()) {
+
+      @Override
+      protected ChangeLogService getChangeLogInstance() {
+        return new ChangeLogService();
+      }
+
+      @Override
+      public RunnerBuilderBase getInstance() {
+        return this;
+      }
+
+
+    };
+  }
 }
 
 class DummyMongockConfiguration extends MongockConfiguration {
@@ -242,6 +265,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
     this.setLockRepositoryName("lockRepositoryName");
     this.setChangeLogRepositoryName("changeLogRepositoryName");
   }
+
 
 }
 

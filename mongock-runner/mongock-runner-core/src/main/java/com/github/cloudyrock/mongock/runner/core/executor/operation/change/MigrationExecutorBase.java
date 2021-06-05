@@ -40,9 +40,9 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class ChangeExecutorBase<CHANGELOG extends ChangeLogItemBase, CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
+public class MigrationExecutorBase<CHANGELOG extends ChangeLogItemBase, CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ChangeExecutorBase.class);
+  private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
 
   private final Map<String, Object> metadata;
   private final DependencyManager dependencyManager;
@@ -50,21 +50,22 @@ public class ChangeExecutorBase<CHANGELOG extends ChangeLogItemBase, CONFIG exte
   protected final ConnectionDriver driver;
   protected final String serviceIdentifier;
   protected final boolean trackIgnored;
-  protected final SortedSet<CHANGELOG> changeLogs = null;
+  protected final SortedSet<CHANGELOG> changeLogs;
 
   private boolean executionInProgress = false;
 
-
-  protected ChangeExecutorBase(ConnectionDriver driver,
-                               DependencyManager dependencyManager,
-                               Function<Parameter, String> parameterNameProvider,
-                               CONFIG config) {
+  public MigrationExecutorBase(SortedSet<CHANGELOG> changeLogs,
+                                  ConnectionDriver driver,
+                                  DependencyManager dependencyManager,
+                                  Function<Parameter, String> parameterNameProvider,
+                                  CONFIG config) {
     this.driver = driver;
     this.dependencyManager = dependencyManager;
     this.parameterNameProvider = parameterNameProvider;
     this.metadata = config.getMetadata();
     this.serviceIdentifier = config.getServiceIdentifier();
     this.trackIgnored = config.isTrackIgnored();
+    this.changeLogs = changeLogs;
   }
 
   public boolean isExecutionInProgress() {

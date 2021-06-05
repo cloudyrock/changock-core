@@ -19,7 +19,8 @@ public class TestMigrationExecutor extends MigrationExecutor {
                                DependencyManager dependencyManager,
                                Function<Parameter, String> paramNameExtractor,
                                MongockConfiguration config) {
-    super(driver, dependencyManager, paramNameExtractor, config);
+    //todo remove null
+    super(null, driver, dependencyManager, paramNameExtractor, config);
     this.executionId = executionId;
   }
 

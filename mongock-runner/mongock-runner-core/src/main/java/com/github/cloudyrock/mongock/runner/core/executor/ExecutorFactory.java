@@ -6,18 +6,20 @@ import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
+import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutorBase;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.list.ListChangesOp;
 
 import java.lang.reflect.Parameter;
+import java.util.SortedSet;
 import java.util.function.Function;
 
 public class ExecutorFactory<CHANGELOG extends ChangeLogItemBase, CONFIG extends ExecutorConfiguration, R> {
 
   @SuppressWarnings("unchecked")
   public Executor<R> getExecutor(Operation<R> op,
+                                 SortedSet<CHANGELOG> changeLogs,
                                  ConnectionDriver<?> driver,
                                  DependencyManager dependencyManager,
                                  Function<Parameter, String> parameterNameProvider,
@@ -25,7 +27,7 @@ public class ExecutorFactory<CHANGELOG extends ChangeLogItemBase, CONFIG extends
     switch (op.getId()) {
 
       case MigrationOp.ID:
-        return (Executor<R>) new MigrationExecutor(driver, dependencyManager, parameterNameProvider, config);
+        return (Executor<R>) new MigrationExecutorBase<>(changeLogs, driver, dependencyManager, parameterNameProvider, config);
 
       case ListChangesOp.ID:
         return (Executor<R>) new ListChangesExecutor();
