@@ -70,7 +70,8 @@ public class RunnerBuilderBaseTest {
 
   @Before
   public void before() {
-    when(driver.getLegacyMigrationChangeLogClass(Mockito.anyBoolean())).thenReturn(DummyRunnerBuilder.LegacyMigrationChangeLogDummy.class);
+    Class legacyMigrationChangeLogDummyClass = DummyRunnerBuilder.LegacyMigrationChangeLogDummy.class;
+    when(driver.getLegacyMigrationChangeLogClass(Mockito.anyBoolean())).thenReturn(legacyMigrationChangeLogDummyClass);
   }
 
   @Test

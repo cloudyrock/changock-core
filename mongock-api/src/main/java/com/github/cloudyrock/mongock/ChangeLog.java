@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Class containing particular changesets (@{@link ChangeSet})
+ * Class<?> containing particular changesets (@{@link ChangeSet})
  *
  *
  * @see ChangeSet

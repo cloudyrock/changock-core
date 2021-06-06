@@ -17,7 +17,7 @@ public interface InterfaceType {
     return 1;
   }
 
-  default Class getClassType() {
+  default Class<?> getClassType() {
     return Long.class;
   }
 

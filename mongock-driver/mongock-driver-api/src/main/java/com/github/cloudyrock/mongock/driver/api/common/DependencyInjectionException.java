@@ -4,7 +4,7 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 
 public class DependencyInjectionException extends MongockException {
 
-  private final Class wrongParameter;
+  private final Class<?> wrongParameter;
   private final String name;
 
   public DependencyInjectionException(Class wrongParameter) {
@@ -17,7 +17,7 @@ public class DependencyInjectionException extends MongockException {
     this.name = name;
   }
 
-  public Class getWrongParameter() {
+  public Class<?> getWrongParameter() {
     return wrongParameter;
   }
 

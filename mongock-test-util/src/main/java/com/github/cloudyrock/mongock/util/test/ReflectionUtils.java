@@ -40,7 +40,7 @@ public final class ReflectionUtils {
     }
   }
 
-  public static Object getPrivateField(Object object, Class clazz, String fieldName) {
+  public static Object getPrivateField(Object object, Class<?> clazz, String fieldName) {
 
     try {
       Field field = clazz.getDeclaredField(fieldName);

@@ -48,7 +48,7 @@ public class DependencyManager  implements Validable {
   }
 
   @SuppressWarnings("unchecked")
-  private Optional<Object> getDependencyFromStore(Collection<ChangeSetDependency> dependencyStore, Class type, String name) {
+  private Optional<Object> getDependencyFromStore(Collection<ChangeSetDependency> dependencyStore, Class<?> type, String name) {
     boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
     Predicate<ChangeSetDependency> filter = byName
         ? dependency -> name.equals(dependency.getName())

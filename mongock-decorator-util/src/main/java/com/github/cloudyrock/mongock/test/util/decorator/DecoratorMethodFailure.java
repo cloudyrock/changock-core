@@ -7,7 +7,7 @@ public class DecoratorMethodFailure {
 
 
   private static final int MAX_SIZE_ERRORS_MESSAGE = 100;
-  private final Class type;
+  private final Class<?> type;
 
   private final Method method;
 

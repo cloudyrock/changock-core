@@ -17,12 +17,12 @@ public class DecoratorTestCollection extends ArrayList<DecoratorDefinition> {
   }
 
 
-  public DecoratorTestCollection addRawDecorator(Class interfaceType, Class implementingClass) {
+  public DecoratorTestCollection addRawDecorator(Class interfaceType, Class<?> implementingClass) {
     this.add(new DecoratorDefinition(interfaceType, implementingClass));
     return this;
   }
 
-  public boolean contains(Class interfaceType, Class implementingClass) {
+  public boolean contains(Class interfaceType, Class<?> implementingClass) {
     return this.contains(new DecoratorDefinition(interfaceType, implementingClass));
   }
 
