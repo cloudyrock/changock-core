@@ -67,7 +67,7 @@ import static org.mockito.Mockito.when;
 public class MigrationExecutorImplTest {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
-  private ChangeEntryService changeEntryService;
+  private ChangeEntryService<ChangeEntry> changeEntryService;
   private LockManager lockManager;
   private ConnectionDriver<ChangeEntry> driver;
   private TransactionableConnectionDriver transactionableDriver;

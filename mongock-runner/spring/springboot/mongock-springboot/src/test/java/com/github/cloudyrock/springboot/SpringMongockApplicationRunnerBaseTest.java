@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 public class SpringMongockApplicationRunnerBaseTest {
 
-  private ChangeEntryService changeEntryService;
+  private ChangeEntryService<ChangeEntry> changeEntryService;
   private LockManager lockManager;
   private ConnectionDriver<ChangeEntry> driver;
   private CallVerifier callVerifier;
