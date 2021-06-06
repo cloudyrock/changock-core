@@ -62,7 +62,7 @@ public abstract class SpringbootBuilderBase<
     }
     this.eventPublisher = new EventPublisher<>(
         () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
-        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent<>(this, result)),
         result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
     );
     return getInstance();
