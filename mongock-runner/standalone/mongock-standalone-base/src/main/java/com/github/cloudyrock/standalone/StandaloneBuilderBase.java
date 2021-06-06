@@ -38,10 +38,10 @@ public abstract class StandaloneBuilderBase<
     return getInstance();
   }
 
-  public SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener) {
+  public SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent<R>> listener) {
     this.eventPublisher = new EventPublisher<>(
         eventPublisher.getMigrationStartedListener(),
-        result -> listener.accept(new MigrationSuccessEvent(result)),
+        result -> listener.accept(new MigrationSuccessEvent<>(result)),
         eventPublisher.getMigrationFailedListener());
     return getInstance();
   }

@@ -19,7 +19,7 @@ public interface MigrationStandaloneBuilderBase<
   SELF setMigrationStartedListener(Consumer<MigrationStartedEvent> listener);
 
   //TODO javadoc
-  SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener);
+  SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent<Boolean>> listener);
 
   //TODO javadoc
   SELF setMigrationFailureListener(Consumer<MigrationFailureEvent> listener);
