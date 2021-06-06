@@ -48,7 +48,7 @@ public class TestMongockRunner extends MongockRunnerImpl {
     }
 
     public TestMongockRunner build() {
-      return build(buildExecutorForTest(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), EventPublisher.empty());
+      return build(buildExecutorForTest(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), new EventPublisher<>());
     }
 
     protected Executor buildExecutorForTest() {

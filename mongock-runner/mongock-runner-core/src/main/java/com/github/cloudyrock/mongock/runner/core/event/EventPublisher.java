@@ -11,11 +11,8 @@ public class EventPublisher<R> {
   private final Consumer<MigrationSuccessResult<R>> migrationSuccessListener;
   private final Consumer<Exception> migrationFailedListener;
 
-  public static EventPublisher empty() {
-    return new EventPublisher();
-  }
 
-  private EventPublisher() {
+  public EventPublisher() {
     this(null, null, null);
   }
 

@@ -39,13 +39,13 @@ public abstract class RunnerBuilderBase<
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
-  protected final DependencyManager dependencyManager;
-  protected EventPublisher<R> eventPublisher = EventPublisher.empty();
+  protected EventPublisher<R> eventPublisher = new EventPublisher<>();
   protected final Operation<R> operation;
   protected final CONFIG config;
   protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
-  protected ChangeLogServiceBase<CHANGELOG> changeLogService;
+  protected final ChangeLogServiceBase<CHANGELOG> changeLogService;
   protected ConnectionDriver<CHANGE_ENTRY> driver;
+  protected final DependencyManager dependencyManager;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
