@@ -123,21 +123,6 @@ public abstract class RunnerBuilderBase<
     }
   }
 
-  protected DriverLegaciable getDriverLegaciable() {
-    return this.driver;
-  }
-
-  protected final Executor<R> buildExecutor(ConnectionDriver driver) {
-    SortedSet<CHANGELOG> changeLogs = getChangeLogs();
-    return executorFactory.getExecutor(
-        operation,
-        changeLogs,
-        driver,
-        dependencyManager,
-        parameterNameFunction,
-        config
-    );
-  }
 
   private SortedSet<CHANGELOG> getChangeLogs() {
     List<Class<?>> changeLogsScanClasses = new ArrayList<>();
@@ -158,13 +143,11 @@ public abstract class RunnerBuilderBase<
     return changeLogService.fetchChangeLogs();
   }
 
-  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
-    return annotatedElement -> true;
-  }
-
 
   public void validateConfigurationAndInjections() throws MongockException {
-    this.validateDriver();
+    if (driver == null) {
+      throw new MongockException("Driver must be injected to Mongock builder");
+    }
     if (config.getChangeLogsScanPackage() == null || config.getChangeLogsScanPackage().isEmpty()) {
       throw new MongockException("Scan package for changeLogs is not set: use appropriate setter");
     }
@@ -181,10 +164,24 @@ public abstract class RunnerBuilderBase<
     }
   }
 
-  protected void validateDriver() throws MongockException {
-    if (driver == null) {
-      throw new MongockException("Driver must be injected to Mongock builder");
-    }
+
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    return annotatedElement -> true;
+  }
+
+  protected DriverLegaciable getDriverLegaciable() {
+    return this.driver;
+  }
+
+  private Executor<R> buildExecutor(ConnectionDriver driver) {
+    return executorFactory.getExecutor(
+        operation,
+        getChangeLogs(),
+        driver,
+        dependencyManager,
+        parameterNameFunction,
+        config
+    );
   }
 
   public abstract SELF getInstance();

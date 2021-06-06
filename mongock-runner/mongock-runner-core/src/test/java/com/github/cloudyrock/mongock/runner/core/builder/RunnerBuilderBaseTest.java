@@ -270,14 +270,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
     return this;
   }
 
-  public MongockRunner<Boolean> build() {
-    return new MongockRunnerImpl<>(
-        executor != null ? executor : buildExecutor(driver),
-        config.isThrowExceptionIfCannotObtainLock(),
-        config.isEnabled(),
-        mock(EventPublisher.class));
 
-  }
 
   @ChangeLog
   public static class LegacyMigrationChangeLogDummy {
