@@ -69,6 +69,7 @@ public class RunnerBuilderBaseTest {
   public ExpectedException exceptionExpected = ExpectedException.none();
 
   @Before
+  @SuppressWarnings("all")
   public void before() {
     Class legacyMigrationChangeLogDummyClass = DummyRunnerBuilder.LegacyMigrationChangeLogDummy.class;
     when(driver.getLegacyMigrationChangeLogClass(Mockito.anyBoolean())).thenReturn(legacyMigrationChangeLogDummyClass);
