@@ -3,6 +3,7 @@ package com.github.cloudyrock.springboot;
 
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationSuccessEvent;
@@ -25,7 +26,7 @@ public class SpringEventPublisherTest {
         () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
         result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
         result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
-    ).publishMigrationSuccessEvent(MigrationResult.successResult());
+    ).publishMigrationSuccessEvent(new MigrationSuccessResult<>(true));
 
     ArgumentCaptor<SpringMigrationSuccessEvent> eventCaptor = ArgumentCaptor.forClass(SpringMigrationSuccessEvent.class);
     verify(applicationEventPublisher, new Times(1)).publishEvent(eventCaptor.capture());

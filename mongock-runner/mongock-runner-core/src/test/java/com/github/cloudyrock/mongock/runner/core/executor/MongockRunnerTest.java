@@ -8,6 +8,7 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
@@ -49,7 +50,7 @@ public class MongockRunnerTest {
     verify(executor, new Times(0))
         .executeMigration();
 //    .executeMigration(any());
-    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(MigrationResult.successResult());
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(new MigrationSuccessResult<>(true));
     verify(eventPublisher, new Times(0)).publishMigrationFailedEvent(any());
   }
 
@@ -67,7 +68,7 @@ public class MongockRunnerTest {
 
     EventPublisher eventPublisher = mock(EventPublisher.class);
     new MongockRunnerImpl(executor, true, true, eventPublisher).execute();
-    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(MigrationResult.successResult());
+    verify(eventPublisher, new Times(0)).publishMigrationSuccessEvent(new MigrationSuccessResult<>(true));
     verify(eventPublisher, new Times(1)).publishMigrationFailedEvent(any());
 
   }

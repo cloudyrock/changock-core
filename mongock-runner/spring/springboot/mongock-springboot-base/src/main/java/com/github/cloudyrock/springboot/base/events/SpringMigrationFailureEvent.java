@@ -16,7 +16,7 @@ public class SpringMigrationFailureEvent extends ApplicationEvent implements Mon
    */
   public SpringMigrationFailureEvent(Object source, Exception ex) {
     super(source);
-    migrationResult = MigrationResult.failedResult(ex);
+    migrationResult = new MigrationFailedResult(ex);
   }
 
 

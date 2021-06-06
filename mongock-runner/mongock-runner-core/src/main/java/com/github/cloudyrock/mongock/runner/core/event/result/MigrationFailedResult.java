@@ -4,7 +4,7 @@ public class MigrationFailedResult extends MigrationResult {
 
   private final Exception exception;
 
-  protected MigrationFailedResult(Exception exception) {
+  public MigrationFailedResult(Exception exception) {
     super(false);
     this.exception = exception;
   }

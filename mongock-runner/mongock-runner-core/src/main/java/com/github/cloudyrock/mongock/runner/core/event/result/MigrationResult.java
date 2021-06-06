@@ -4,14 +4,6 @@ public class MigrationResult {
 
   private final boolean success;
 
-  public static MigrationResult successResult() {
-    return new MigrationResult(true);
-  }
-
-  public static MigrationFailedResult failedResult(Exception ex) {
-    return new MigrationFailedResult(ex);
-  }
-
   protected MigrationResult(boolean success) {
     this.success = success;
   }

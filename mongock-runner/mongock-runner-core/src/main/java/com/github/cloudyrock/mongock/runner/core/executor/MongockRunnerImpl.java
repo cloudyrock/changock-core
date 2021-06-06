@@ -4,6 +4,7 @@ import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
       try {
         eventPublisher.publishMigrationStarted();
         T result = executor.executeMigration();
-        eventPublisher.publishMigrationSuccessEvent(MigrationResult.successResult());
+        eventPublisher.publishMigrationSuccessEvent(new MigrationSuccessResult<>(result));
       } catch (LockCheckException lockEx) {
         MongockException mongockException = new MongockException(lockEx);
         eventPublisher.publishMigrationFailedEvent(mongockException);

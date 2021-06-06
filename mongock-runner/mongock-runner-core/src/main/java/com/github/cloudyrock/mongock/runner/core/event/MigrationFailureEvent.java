@@ -9,7 +9,7 @@ public class MigrationFailureEvent implements MongockResultEvent {
 
   public MigrationFailureEvent(Exception exception) {
 
-    this.migrationResult = MigrationResult.failedResult(exception);
+    this.migrationResult = new MigrationFailedResult(exception);
   }
 
   public Exception getException() {

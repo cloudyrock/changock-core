@@ -2,6 +2,7 @@ package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +22,7 @@ public class StandaloneEventPublisherTest {
   @Test
   public void shouldCallSuccessListener() {
     Listener listener = new Listener();
-    new EventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationSuccessEvent(MigrationResult.successResult());
+    new EventPublisher(listener::startedListener, listener::successListener,listener::failListener).publishMigrationSuccessEvent(new MigrationSuccessResult<>(true));
     Assert.assertFalse(listener.isStartedCalled());
     Assert.assertTrue(listener.isSuccessCalled());
     Assert.assertFalse(listener.isFailCalled());
@@ -41,7 +42,7 @@ public class StandaloneEventPublisherTest {
 
   @Test
   public void shouldNotBreak_WhenSuccess_ifListenerIsNull() {
-    new EventPublisher(null, null,null).publishMigrationSuccessEvent(MigrationResult.successResult());
+    new EventPublisher(null, null,null).publishMigrationSuccessEvent(new MigrationSuccessResult<>(true));
   }
 
   @Test
