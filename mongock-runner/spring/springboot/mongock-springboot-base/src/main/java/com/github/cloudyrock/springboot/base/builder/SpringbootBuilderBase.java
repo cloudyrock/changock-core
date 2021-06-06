@@ -74,13 +74,13 @@ public abstract class SpringbootBuilderBase<
   ///////////////////////////////////////////////////
 
 
-  public MongockApplicationRunner<R> buildApplicationRunner() {
-    return new MongockApplicationRunner<>(buildRunner());
+  public MongockApplicationRunner buildApplicationRunner() {
+    return new MongockApplicationRunner(buildRunner());
   }
 
 
-  public MongockInitializingBeanRunner<R> buildInitializingBeanRunner() {
-    return new MongockInitializingBeanRunner<>(buildRunner());
+  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
+    return new MongockInitializingBeanRunner(buildRunner());
   }
 
   @Override

@@ -15,7 +15,7 @@ public abstract class MongockContextBase<CONFIG extends MongockConfiguration> {
 
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:ApplicationRunner}'.equals('ApplicationRunner')")
-  public MongockApplicationRunner<?> applicationRunner(ConnectionDriver connectionDriver,
+  public MongockApplicationRunner applicationRunner(ConnectionDriver connectionDriver,
                                                        CONFIG springConfiguration,
                                                        ApplicationContext springContext,
                                                        ApplicationEventPublisher applicationEventPublisher) {
@@ -25,7 +25,7 @@ public abstract class MongockContextBase<CONFIG extends MongockConfiguration> {
 
   @Bean
   @ConditionalOnExpression("'${mongock.runner-type:null}'.equals('InitializingBean')")
-  public MongockInitializingBeanRunner<?> initializingBeanRunner(ConnectionDriver connectionDriver,
+  public MongockInitializingBeanRunner initializingBeanRunner(ConnectionDriver connectionDriver,
                                                                  CONFIG springConfiguration,
                                                                  ApplicationContext springContext,
                                                                  ApplicationEventPublisher applicationEventPublisher) {

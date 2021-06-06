@@ -5,12 +5,12 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Optional;
 
-public class MongockInitializingBeanRunner<R> implements InitializingBean {
+public class MongockInitializingBeanRunner implements InitializingBean {
 
-  private final MongockRunner<R> runner;
+  private final MongockRunner<?> runner;
 
 
-  public MongockInitializingBeanRunner(MongockRunner<R> runner) {
+  public MongockInitializingBeanRunner(MongockRunner<?> runner) {
     this.runner = runner;
   }
 

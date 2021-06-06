@@ -23,10 +23,10 @@ public interface MigrationSpringbootBuilderBase<
   SELF setEventPublisher(ApplicationEventPublisher applicationEventPublisher);
 
   //TODO javadoc
-  MongockApplicationRunner<Boolean> buildApplicationRunner();
+  MongockApplicationRunner buildApplicationRunner();
 
   //TODO javadoc
-  MongockInitializingBeanRunner<Boolean> buildInitializingBeanRunner();
+  MongockInitializingBeanRunner buildInitializingBeanRunner();
 
   @Override
   default SELF addDependency(String name, Class<?> type, Object instance) {

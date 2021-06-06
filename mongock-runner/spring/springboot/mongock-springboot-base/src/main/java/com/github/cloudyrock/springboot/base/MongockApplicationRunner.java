@@ -4,11 +4,11 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-public class MongockApplicationRunner<R> implements ApplicationRunner {
+public class MongockApplicationRunner implements ApplicationRunner {
 
-  private final MongockRunner<R> runner;
+  private final MongockRunner<?> runner;
 
-  public MongockApplicationRunner(MongockRunner<R> runner) {
+  public MongockApplicationRunner(MongockRunner<?> runner) {
     this.runner = runner;
   }
 
