@@ -9,5 +9,5 @@ public interface MongockRunner<T> {
 
   boolean isEnabled();
 
-  Optional<T> execute() throws MongockException;
+  void execute() throws MongockException;
 }

@@ -8,18 +8,14 @@ import java.util.Optional;
 public class MongockInitializingBeanRunner<R> implements InitializingBean {
 
   private final MongockRunner<R> runner;
-  protected Optional<R> result;
+
 
   public MongockInitializingBeanRunner(MongockRunner<R> runner) {
     this.runner = runner;
   }
 
-  public Optional<R> getResult() {
-    return result;
-  }
-
   @Override
   public void afterPropertiesSet() {
-    result = runner.execute();
+    runner.execute();
   }
 }

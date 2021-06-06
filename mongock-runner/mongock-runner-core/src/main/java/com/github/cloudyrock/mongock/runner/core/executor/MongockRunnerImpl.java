@@ -42,17 +42,14 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
     return enabled;
   }
 
-  public Optional<T> execute() throws MongockException {
+  public void execute() throws MongockException {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
-      return Optional.empty();
     } else {
       try {
         eventPublisher.publishMigrationStarted();
         T result = executor.executeMigration();
         eventPublisher.publishMigrationSuccessEvent(MigrationResult.successResult());
-        return Optional.ofNullable(result);
-
       } catch (LockCheckException lockEx) {
         MongockException mongockException = new MongockException(lockEx);
         eventPublisher.publishMigrationFailedEvent(mongockException);
@@ -62,7 +59,6 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
 
         } else {
           logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
-          return Optional.empty();
         }
 
       } catch (Exception ex) {
