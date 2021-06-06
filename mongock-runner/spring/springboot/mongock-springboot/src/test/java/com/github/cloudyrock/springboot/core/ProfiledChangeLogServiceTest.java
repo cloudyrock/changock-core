@@ -31,7 +31,7 @@ public class ProfiledChangeLogServiceTest {
           activeProfiles,
           Profile.class,
           annotated,
-          (AnnotatedElement element) ->element.getAnnotation(Profile.class).value());
+          (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
 
 
   @Test

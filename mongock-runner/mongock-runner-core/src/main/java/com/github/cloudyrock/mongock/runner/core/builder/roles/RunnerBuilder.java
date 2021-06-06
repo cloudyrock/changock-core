@@ -12,7 +12,7 @@ public interface RunnerBuilder<SELF extends RunnerBuilder<SELF, R, CONFIG>, R, C
    * @param enabled Migration process will run only if this option is set to true
    * @return builder for fluent interface
    */
-  default SELF setEnabled(boolean enabled)  {
+  default SELF setEnabled(boolean enabled) {
     getConfig().setEnabled(enabled);
     return getInstance();
   }

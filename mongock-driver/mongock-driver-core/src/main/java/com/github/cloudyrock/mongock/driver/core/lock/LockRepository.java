@@ -12,13 +12,13 @@ public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTI
    * a) If there is an existing lock in the database for the same key and owner {@code (existingLock.key==newLock.key &&
    * existingLoc.owner==newLock.owner)}, then the lock in database is updated/refreshed with the new values. The most
    * common scenario is to extend the lock's expiry date.
-   *
+   * <p>
    * b) If there is a existing lock in the database for the same key and different owner, but expired {@code (existingLock.key==newLock.key &&
    * existingLock.owner!=newLock.owner && now > expiredAt)}, the lock is replaced with the newLock, so the owner of the lock for
    * that key is newLock.owner
-   *
+   * <p>
    * c) If scenario b, but lock is not expired yet, should throw an LockPersistenceException.
-   *
+   * <p>
    * d) If there isn't any lock with key=newLock.key, newLock is inserted.
    *
    * @param newLock lock to replace the existing one or be inserted.
@@ -30,7 +30,7 @@ public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTI
   /**
    * The only goal of this method is to update(mainly to extend the expiry date) the lock in case is already owned. So
    * it requires a Lock for the same key and owner {@code (existingLock.key==newLock.key && existingLoc.owner==newLock.owner)}.
-   *
+   * <p>
    * If there is no lock for the key or it doesn't belong to newLock.owner, a LockPersistenceException is thrown.
    *
    * @param newLock lock to replace the existing one or be inserted.

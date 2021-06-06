@@ -9,7 +9,7 @@ import java.util.concurrent.CountDownLatch;
 @ChangeLog(order = "0")
 public class ExecutorWithNonFailFastChangeLog {
 
-  public final static  CountDownLatch latch = new CountDownLatch(3);
+  public final static CountDownLatch latch = new CountDownLatch(3);
 
   @ChangeSet(author = "executor", id = "newChangeSet1", order = "1")
   public void newChangeSet1(DummyDependencyClass dependency) {
@@ -27,8 +27,6 @@ public class ExecutorWithNonFailFastChangeLog {
   public void newChangeSet2(DummyDependencyClass dependency) {
     latch.countDown();
   }
-
-
 
 
 }

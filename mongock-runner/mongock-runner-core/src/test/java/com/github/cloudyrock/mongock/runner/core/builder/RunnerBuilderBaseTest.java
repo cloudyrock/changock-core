@@ -53,12 +53,10 @@ public class RunnerBuilderBaseTest {
   private static final long LOCK_QUIT_TRY_MILLIS = 3 * 60 * 1000L;
 
   private static final Map<String, Object> METADATA = new HashMap<>();
-  ConnectionDriver<ChangeEntry> driver = mock(ConnectionDriver.class);
-  Map<String, Object> metadata = new HashMap<>();
-
-
   @Rule
   public ExpectedException exceptionExpected = ExpectedException.none();
+  ConnectionDriver<ChangeEntry> driver = mock(ConnectionDriver.class);
+  Map<String, Object> metadata = new HashMap<>();
 
   @Before
   @SuppressWarnings("all")
@@ -189,8 +187,9 @@ public class RunnerBuilderBaseTest {
   }
 
   private RunnerBuilderBase runnerBuilderBaseInstance() {
-   return runnerBuilderBaseInstance(null) ;
+    return runnerBuilderBaseInstance(null);
   }
+
   private RunnerBuilderBase runnerBuilderBaseInstance(ChangeLogService changeLogService) {
     return new RunnerBuilderBase(
         new MigrationOp(),
@@ -265,7 +264,6 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
     this.executor = executor;
     return this;
   }
-
 
 
   @ChangeLog

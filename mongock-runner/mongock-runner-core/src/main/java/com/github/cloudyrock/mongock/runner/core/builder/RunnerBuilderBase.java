@@ -38,14 +38,13 @@ public abstract class RunnerBuilderBase<
     CONFIG extends MongockConfiguration> {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
-
-  protected EventPublisher<R> eventPublisher = new EventPublisher<>();
   protected final Operation<R> operation;
   protected final CONFIG config;
   protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
   protected final ChangeLogServiceBase<CHANGELOG> changeLogService;
-  protected ConnectionDriver<CHANGE_ENTRY> driver;
   protected final DependencyManager dependencyManager;
+  protected EventPublisher<R> eventPublisher = new EventPublisher<>();
+  protected ConnectionDriver<CHANGE_ENTRY> driver;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
@@ -71,16 +70,14 @@ public abstract class RunnerBuilderBase<
     return getInstance();
   }
 
+  public CONFIG getConfig() {
+    return config;
+  }
 
   public SELF setConfig(CONFIG newConfig) {
     config.updateFrom(newConfig);
     return getInstance();
   }
-
-  public CONFIG getConfig() {
-    return config;
-  }
-
 
   public SELF setDriver(ConnectionDriver<CHANGE_ENTRY> driver) {
     this.driver = driver;

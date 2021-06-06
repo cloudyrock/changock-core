@@ -20,7 +20,7 @@ public final class StringUtils {
   }
 
   public static String getSimpleClassName(String changeLogClass) {
-    String[] splitIn =  changeLogClass.split("\\.");
-    return splitIn[splitIn.length -1];
+    String[] splitIn = changeLogClass.split("\\.");
+    return splitIn[splitIn.length - 1];
   }
 }

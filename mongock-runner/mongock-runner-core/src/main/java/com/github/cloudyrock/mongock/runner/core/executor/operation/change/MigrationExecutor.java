@@ -14,8 +14,7 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 @NotThreadSafe
-public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem,ChangeEntry, ChangeExecutorConfiguration> {
-
+public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem, ChangeEntry, ChangeExecutorConfiguration> {
 
 
   public MigrationExecutor(SortedSet<ChangeLogItem> changeLogs,

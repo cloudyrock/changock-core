@@ -36,12 +36,11 @@ import static org.mockito.Mockito.when;
 
 public class SpringMongockInitializingBeanRunnerBaseTest {
 
+  @Rule
+  public ExpectedException exceptionExpected = ExpectedException.none();
   private ChangeEntryService<ChangeEntry> changeEntryService;
   private ConnectionDriver<ChangeEntry> driver;
   private CallVerifier callVerifier;
-
-  @Rule
-  public ExpectedException exceptionExpected = ExpectedException.none();
   private ApplicationContext springContext;
 
   @Before

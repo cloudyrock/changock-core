@@ -88,23 +88,23 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public String getLockRepositoryName() {
-    return lockRepositoryName;
-  }
-
-  @Override
-  public boolean isIndexCreation() {
-    return indexCreation;
-  }
-
-  @Override
   public void setChangeLogRepositoryName(String changeLogRepositoryName) {
     this.changeLogRepositoryName = changeLogRepositoryName;
   }
 
   @Override
+  public String getLockRepositoryName() {
+    return lockRepositoryName;
+  }
+
+  @Override
   public void setLockRepositoryName(String lockRepositoryName) {
     this.lockRepositoryName = lockRepositoryName;
+  }
+
+  @Override
+  public boolean isIndexCreation() {
+    return indexCreation;
   }
 
   @Override

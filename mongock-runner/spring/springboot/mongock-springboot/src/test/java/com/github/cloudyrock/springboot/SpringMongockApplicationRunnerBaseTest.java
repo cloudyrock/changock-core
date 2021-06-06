@@ -41,13 +41,12 @@ import static org.mockito.Mockito.when;
 
 public class SpringMongockApplicationRunnerBaseTest {
 
+  @Rule
+  public ExpectedException exceptionExpected = ExpectedException.none();
   private ChangeEntryService<ChangeEntry> changeEntryService;
   private LockManager lockManager;
   private ConnectionDriver<ChangeEntry> driver;
   private CallVerifier callVerifier;
-
-  @Rule
-  public ExpectedException exceptionExpected = ExpectedException.none();
   private ApplicationContext springContext;
 
   @Before
@@ -215,13 +214,13 @@ public class SpringMongockApplicationRunnerBaseTest {
   }
 
   private void buildAndRun(String packageName) throws Exception {
-      MongockSpringboot
-          .builder()
-          .setDriver(driver)
-          .addChangeLogsScanPackage(packageName)
-          .setSpringContext(springContext)
-          .buildApplicationRunner()
-          .run(null);
+    MongockSpringboot
+        .builder()
+        .setDriver(driver)
+        .addChangeLogsScanPackage(packageName)
+        .setSpringContext(springContext)
+        .buildApplicationRunner()
+        .run(null);
 
   }
 }

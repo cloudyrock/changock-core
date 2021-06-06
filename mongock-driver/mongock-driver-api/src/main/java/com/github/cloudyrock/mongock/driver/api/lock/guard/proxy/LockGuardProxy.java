@@ -23,6 +23,14 @@ public class LockGuardProxy<T> implements InvocationHandler {
     this.proxyFactory = proxyFactory;
   }
 
+  private static boolean shouldTryProxyReturn(List<NonLockGuardedType> methodNoGuardedLockTypes) {
+    return !methodNoGuardedLockTypes.contains(NonLockGuardedType.RETURN) && !methodNoGuardedLockTypes.contains(NonLockGuardedType.NONE);
+  }
+
+  private static boolean shouldMethodBeLockGuarded(List<NonLockGuardedType> noGuardedLockTypes) {
+    return !noGuardedLockTypes.contains(NonLockGuardedType.METHOD) && !noGuardedLockTypes.contains(NonLockGuardedType.NONE);
+  }
+
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     NonLockGuarded nonLockGuarded = method.getAnnotation(NonLockGuarded.class);
@@ -33,14 +41,6 @@ public class LockGuardProxy<T> implements InvocationHandler {
     return shouldTryProxyReturn(noGuardedLockTypes)
         ? proxyFactory.getRawProxy(method.invoke(implementation, args), method.getReturnType())
         : method.invoke(implementation, args);
-  }
-
-  private static boolean shouldTryProxyReturn(List<NonLockGuardedType> methodNoGuardedLockTypes) {
-    return !methodNoGuardedLockTypes.contains(NonLockGuardedType.RETURN) && !methodNoGuardedLockTypes.contains(NonLockGuardedType.NONE);
-  }
-
-  private static boolean shouldMethodBeLockGuarded(List<NonLockGuardedType> noGuardedLockTypes) {
-    return !noGuardedLockTypes.contains(NonLockGuardedType.METHOD) && !noGuardedLockTypes.contains(NonLockGuardedType.NONE);
   }
 
 

@@ -64,14 +64,12 @@ import static org.mockito.Mockito.when;
 
 public class MigrationExecutorImplTest {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-
+  @Rule
+  public ExpectedException exceptionExpected = ExpectedException.none();
   private ChangeEntryService<ChangeEntry> changeEntryService;
   private LockManager lockManager;
   private ConnectionDriver<ChangeEntry> driver;
   private TransactionableConnectionDriver transactionableDriver;
-
-  @Rule
-  public ExpectedException exceptionExpected = ExpectedException.none();
 
   @Before
   public void setUp() {
@@ -818,12 +816,12 @@ public class MigrationExecutorImplTest {
 
 
   private SortedSet<ChangeLogItem> createInitialChangeLogsByPackage(Class<?>... executorChangeLogClass) {
-  List<String> packages = Stream.of(executorChangeLogClass)
-      .map(clazz-> clazz.getPackage().getName())
-      .collect(Collectors.toList());
-  ChangeLogService changeLogService = new ChangeLogService();
-  changeLogService.setChangeLogsBasePackageList(packages);
-  return changeLogService.fetchChangeLogs();
+    List<String> packages = Stream.of(executorChangeLogClass)
+        .map(clazz -> clazz.getPackage().getName())
+        .collect(Collectors.toList());
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBasePackageList(packages);
+    return changeLogService.fetchChangeLogs();
 
   }
 

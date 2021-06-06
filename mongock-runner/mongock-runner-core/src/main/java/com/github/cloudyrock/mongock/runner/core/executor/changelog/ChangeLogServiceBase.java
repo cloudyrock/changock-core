@@ -49,39 +49,15 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
 
 
   private final AnnotationProcessor annotationProcessor;
+  protected Function<AnnotatedElement, Boolean> profileFilter;
   private Function<Class<?>, Object> changeLogInstantiator;
   private List<String> changeLogsBasePackageList = Collections.emptyList();
   private List<Class<?>> changeLogsBaseClassList = Collections.emptyList();
   private ArtifactVersion startSystemVersion = new DefaultArtifactVersion("0");
   private ArtifactVersion endSystemVersion = new DefaultArtifactVersion(String.valueOf(Integer.MAX_VALUE));
-  protected Function<AnnotatedElement, Boolean> profileFilter;
 
   public ChangeLogServiceBase(AnnotationProcessor annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
-  }
-
-  public void setChangeLogsBasePackageList(List<String> changeLogsBasePackageList) {
-    this.changeLogsBasePackageList = changeLogsBasePackageList;
-  }
-
-  public void setChangeLogsBaseClassList(List<Class<?>> changeLogsBaseClassList) {
-    this.changeLogsBaseClassList = changeLogsBaseClassList;
-  }
-
-  public void setStartSystemVersion(String startSystemVersion) {
-    this.startSystemVersion = new DefaultArtifactVersion(startSystemVersion);
-  }
-
-  public void setEndSystemVersion(String endSystemVersion) {
-    this.endSystemVersion = new DefaultArtifactVersion(endSystemVersion);
-  }
-
-  public void setProfileFilter(Function<AnnotatedElement, Boolean> profileFilter) {
-    this.profileFilter = profileFilter;
-  }
-
-  public void setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
-    this.changeLogInstantiator = changeLogInstantiator;
   }
 
   protected AnnotationProcessor getAnnotationProcessor() {
@@ -92,26 +68,49 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
     return changeLogsBasePackageList;
   }
 
+  public void setChangeLogsBasePackageList(List<String> changeLogsBasePackageList) {
+    this.changeLogsBasePackageList = changeLogsBasePackageList;
+  }
+
   protected List<Class<?>> getChangeLogsBaseClassList() {
     return changeLogsBaseClassList;
+  }
+
+  public void setChangeLogsBaseClassList(List<Class<?>> changeLogsBaseClassList) {
+    this.changeLogsBaseClassList = changeLogsBaseClassList;
   }
 
   protected ArtifactVersion getStartSystemVersion() {
     return startSystemVersion;
   }
 
+  public void setStartSystemVersion(String startSystemVersion) {
+    this.startSystemVersion = new DefaultArtifactVersion(startSystemVersion);
+  }
+
   protected ArtifactVersion getEndSystemVersion() {
     return endSystemVersion;
+  }
+
+  public void setEndSystemVersion(String endSystemVersion) {
+    this.endSystemVersion = new DefaultArtifactVersion(endSystemVersion);
   }
 
   protected Function<AnnotatedElement, Boolean> getProfileFilter() {
     return profileFilter;
   }
 
+  public void setProfileFilter(Function<AnnotatedElement, Boolean> profileFilter) {
+    this.profileFilter = profileFilter;
+  }
+
   protected Optional<Function<Class<?>, Object>> getChangeLogInstantiator() {
     return Optional.ofNullable(changeLogInstantiator);
   }
 
+  public void setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
+    this.changeLogInstantiator = changeLogInstantiator;
+  }
 
   @Override
   public void runValidation() throws MongockException {
@@ -177,8 +176,25 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
     return isWithinVersion;
   }
 
+  protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
 
-  private  class ChangeLogComparator implements Comparator<CHANGELOG>, Serializable {
+  private static class ChangeSetComparator implements Comparator<Method>, Serializable {
+    private static final long serialVersionUID = -854690868262484102L;
+    private final AnnotationProcessor annotationManager;
+
+    ChangeSetComparator(AnnotationProcessor annotationManager) {
+      this.annotationManager = annotationManager;
+    }
+
+    @Override
+    public int compare(Method o1, Method o2) {
+      ChangeSetItem c1 = annotationManager.getChangeSet(o1);
+      ChangeSetItem c2 = annotationManager.getChangeSet(o2);
+      return c1.getOrder().compareTo(c2.getOrder());
+    }
+  }
+
+  private class ChangeLogComparator implements Comparator<CHANGELOG>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
     private final AnnotationProcessor annotationManager;
 
@@ -208,26 +224,6 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
 
     }
   }
-
-  private static class ChangeSetComparator implements Comparator<Method>, Serializable {
-    private static final long serialVersionUID = -854690868262484102L;
-    private final AnnotationProcessor annotationManager;
-
-    ChangeSetComparator(AnnotationProcessor annotationManager) {
-      this.annotationManager = annotationManager;
-    }
-
-    @Override
-    public int compare(Method o1, Method o2) {
-      ChangeSetItem c1 = annotationManager.getChangeSet(o1);
-      ChangeSetItem c2 = annotationManager.getChangeSet(o2);
-      return c1.getOrder().compareTo(c2.getOrder());
-    }
-  }
-
-
-  protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
-
 
 
 }

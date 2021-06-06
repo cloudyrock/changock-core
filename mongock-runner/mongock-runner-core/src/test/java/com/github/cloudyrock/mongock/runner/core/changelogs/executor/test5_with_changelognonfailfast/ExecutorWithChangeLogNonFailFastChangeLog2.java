@@ -8,14 +8,14 @@ import java.util.concurrent.CountDownLatch;
 
 @ChangeLog(order = "2")
 public class ExecutorWithChangeLogNonFailFastChangeLog2 {
-  
+
   public final static CountDownLatch latch = new CountDownLatch(2);
 
   @ChangeSet(author = "executor", id = "newChangeSet21", order = "1")
   public void newChangeSet21(DummyDependencyClass dependency) {
     latch.countDown();
   }
- 
+
   @ChangeSet(author = "executor", id = "newChangeSet22", order = "2")
   public void newChangeSet22(DummyDependencyClass dependency) {
     latch.countDown();

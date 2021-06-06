@@ -21,17 +21,17 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   public String getChangeLogOrder(Class<?> type) {
     return type.getAnnotation(ChangeLog.class).order();
   }
-  
+
   @Override
   public boolean getChangeLogFailFast(Class<?> type) {
     return type.getAnnotation(ChangeLog.class).failFast();
   }
-  
+
   @Override
   public boolean getChangeLogPreMigration(Class<?> type) {
     return type.isAnnotationPresent(PreMigration.class);
   }
-  
+
   @Override
   public boolean getChangeLogPostMigration(Class<?> type) {
     return type.isAnnotationPresent(PostMigration.class);

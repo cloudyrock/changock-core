@@ -13,7 +13,8 @@ public class DefaultProfiledChangerLog {
   @Profile("default")
   @ChangeSet(author = "testuser", id = "default-profiled", order = "01")
   public void defaultProfiled() {
-    System.out.println("invoked Pdev1"); }
+    System.out.println("invoked Pdev1");
+  }
 
   @ChangeSet(author = "testuser", id = "no-profiled", order = "02")
   public void noProfiled() {

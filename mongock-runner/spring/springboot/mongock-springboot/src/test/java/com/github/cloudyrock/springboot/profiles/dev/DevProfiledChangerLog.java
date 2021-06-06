@@ -12,7 +12,8 @@ public class DevProfiledChangerLog {
 
   @ChangeSet(author = "testuser", id = "Pdev1", order = "01")
   public void testChangeSet() {
-    System.out.println("invoked Pdev1"); }
+    System.out.println("invoked Pdev1");
+  }
 
   @ChangeSet(author = "testuser", id = "Pdev2", order = "02")
   @Profile("pro")

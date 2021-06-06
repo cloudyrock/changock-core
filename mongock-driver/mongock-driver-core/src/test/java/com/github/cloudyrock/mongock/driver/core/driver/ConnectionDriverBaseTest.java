@@ -50,10 +50,6 @@ public class ConnectionDriverBaseTest {
     private final LockManager lockManager;
 
 
-    private static long minutesToMillis(long minutes) {
-      return minutes * 60 * 1000;
-    }
-
     ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
                                  long maxWaitingForLockMinutesEachTry,
                                  int maxTries,
@@ -68,6 +64,10 @@ public class ConnectionDriverBaseTest {
       this.lockRepository = lockRepository;
       this.changeEntryService = changeEntryService;
       this.lockManager = lockManager;
+    }
+
+    private static long minutesToMillis(long minutes) {
+      return minutes * 60 * 1000;
     }
 
     @Override

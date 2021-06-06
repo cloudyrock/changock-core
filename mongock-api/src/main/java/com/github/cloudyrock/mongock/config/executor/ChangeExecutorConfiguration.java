@@ -4,6 +4,8 @@ import java.util.Map;
 
 public interface ChangeExecutorConfiguration {
   Map<String, Object> getMetadata();
+
   String getServiceIdentifier();
+
   boolean isTrackIgnored();
 }

@@ -51,6 +51,28 @@ public abstract class SpringbootBuilderBase<
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }
 
+  private static List<String> getActiveProfilesFromContext(ApplicationContext springContext) {
+    Environment springEnvironment = springContext.getEnvironment();
+    return springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
+        ? Arrays.asList(springEnvironment.getActiveProfiles())
+        : Collections.singletonList(DEFAULT_PROFILE);
+  }
+
+  private static Function<Parameter, String> buildParameterNameFunctionForSpring() {
+    return parameter -> {
+      String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+      if (name == null) {
+        name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
+      }
+      return name;
+    };
+  }
+
+
+  ///////////////////////////////////////////////////
+  // Build methods
+  ///////////////////////////////////////////////////
+
   public SELF setSpringContext(ApplicationContext springContext) {
     (getDependencyManager()).setContext(new SpringDependencyContext(springContext));
     return getInstance();
@@ -68,16 +90,9 @@ public abstract class SpringbootBuilderBase<
     return getInstance();
   }
 
-
-  ///////////////////////////////////////////////////
-  // Build methods
-  ///////////////////////////////////////////////////
-
-
   public MongockApplicationRunner buildApplicationRunner() {
     return new MongockApplicationRunner(buildRunner());
   }
-
 
   public MongockInitializingBeanRunner buildInitializingBeanRunner() {
     return new MongockInitializingBeanRunner(buildRunner());
@@ -86,7 +101,7 @@ public abstract class SpringbootBuilderBase<
   @Override
   protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
     DependencyContext dependencyContext = getDependencyManager().getDependencyContext();
-    ApplicationContext springContext = ((SpringDependencyContext)dependencyContext).getSpringContext();
+    ApplicationContext springContext = ((SpringDependencyContext) dependencyContext).getSpringContext();
     return annotated -> ProfileUtil.matchesActiveSpringProfile(
         getActiveProfilesFromContext(springContext),
         Profile.class,
@@ -100,23 +115,6 @@ public abstract class SpringbootBuilderBase<
     if (!(getDependencyManager()).isContextPresent()) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }
-  }
-
-  private static List<String> getActiveProfilesFromContext(ApplicationContext springContext) {
-    Environment springEnvironment = springContext.getEnvironment();
-    return springEnvironment != null && CollectionUtils.isNotNullOrEmpty(springEnvironment.getActiveProfiles())
-        ? Arrays.asList(springEnvironment.getActiveProfiles())
-        : Collections.singletonList(DEFAULT_PROFILE);
-  }
-
-  private static Function<Parameter, String> buildParameterNameFunctionForSpring() {
-    return parameter -> {
-      String name = parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
-      if (name == null) {
-        name = parameter.isAnnotationPresent(Qualifier.class) ? parameter.getAnnotation(Qualifier.class).value() : null;
-      }
-      return name;
-    };
   }
 
   public DependencyManagerWithContext getDependencyManager() {

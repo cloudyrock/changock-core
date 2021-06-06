@@ -27,7 +27,7 @@ public abstract class StandaloneBuilderBase<
                                   ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory,
                                   ChangeLogServiceBase<CHANGELOG> changeLogService,
                                   CONFIG config) {
-    super(operation, executorFactory, changeLogService,new DependencyManager(), config);
+    super(operation, executorFactory, changeLogService, new DependencyManager(), config);
   }
 
   public SELF setMigrationStartedListener(Consumer<MigrationStartedEvent> listener) {

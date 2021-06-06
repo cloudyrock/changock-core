@@ -1,7 +1,6 @@
 package com.github.cloudyrock.mongock.driver.core.lock;
 
 /**
- *
  * @since 04/04/2018
  */
 public class LockPersistenceException extends RuntimeException {

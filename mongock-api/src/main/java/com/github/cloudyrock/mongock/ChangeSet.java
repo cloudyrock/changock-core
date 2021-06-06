@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 /**
  * Set of changes to be added to the DB. Many changesets are included in one changelog.
  *
- *
  * @see ChangeLog
  * @since 27/07/2014
  */
@@ -59,6 +58,7 @@ public @interface ChangeSet {
   /**
    * If true, will make the entire migration to break if the changeSet produce an exception or the validation doesn't
    * success. Migration will continue otherwise.
+   *
    * @return failFast
    */
   boolean failFast() default true;

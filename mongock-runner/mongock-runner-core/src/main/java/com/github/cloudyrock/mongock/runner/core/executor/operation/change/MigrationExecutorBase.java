@@ -46,15 +46,13 @@ public abstract class MigrationExecutorBase<
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
-
-  private final DependencyManager dependencyManager;
-  private final Function<Parameter, String> parameterNameProvider;
   protected final ConnectionDriver<CHANGE_ENTRY> driver;
   protected final String serviceIdentifier;
   protected final boolean trackIgnored;
   protected final SortedSet<CHANGELOG> changeLogs;
   protected final Map<String, Object> metadata;
-
+  private final DependencyManager dependencyManager;
+  private final Function<Parameter, String> parameterNameProvider;
   private boolean executionInProgress = false;
 
   public MigrationExecutorBase(SortedSet<CHANGELOG> changeLogs,

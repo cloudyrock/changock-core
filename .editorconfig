@@ -3,7 +3,7 @@
 # top-most EditorConfig file
 root = true
 
-[*.{java,xml,js,html,json,css,scss}]
+[*.{java, xml, js, html, json, css, scss}]
 end_of_line = lf
 charset = utf-8
 indent_style = space

@@ -52,7 +52,7 @@ public class LockGuardProxyFactory {
         && !Utils.isBasicTypeJDK(interfaceType);
   }
 
-  private  boolean isPackageProxiable(String packageName) {
+  private boolean isPackageProxiable(String packageName) {
     return notProxiedPackagePrefixes.stream().noneMatch(packageName::startsWith);
   }
 

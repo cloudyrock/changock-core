@@ -10,7 +10,7 @@ public class ChangeLogStandard {
   public void standard1() {
     // Do nothing
   }
-  
+
   @ChangeSet(author = "executor", id = "standard2", order = "2")
   public void standard2() {
     // Do nothing

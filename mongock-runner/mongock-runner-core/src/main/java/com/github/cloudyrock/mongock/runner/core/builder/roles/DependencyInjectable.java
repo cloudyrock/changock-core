@@ -47,7 +47,7 @@ public interface DependencyInjectable<SELF extends DependencyInjectable<SELF>>
    * @param instance dependency
    * @return builder for fluent interface
    */
-  default SELF addDependency(String name, Class<?> type, Object instance)  {
+  default SELF addDependency(String name, Class<?> type, Object instance) {
     getDependencyManager().addStandardDependency(new ChangeSetDependency(name, type, instance));
     return getInstance();
   }

@@ -9,7 +9,8 @@ import java.util.stream.Stream;
 
 public final class FieldUtil {
 
-  private FieldUtil(){}
+  private FieldUtil() {
+  }
 
   public static List<Field> getAllFields(Class<?> clazz) {
     if (Object.class.equals(clazz)) {

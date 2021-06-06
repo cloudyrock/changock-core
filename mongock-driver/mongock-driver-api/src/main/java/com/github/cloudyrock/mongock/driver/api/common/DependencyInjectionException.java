@@ -30,7 +30,7 @@ public class DependencyInjectionException extends MongockException {
     StringBuilder sb = new StringBuilder("Wrong parameter[")
         .append(getWrongParameter().getSimpleName())
         .append("]");
-    if(name != null) {
+    if (name != null) {
       sb.append(" with name: ")
           .append(name);
     }

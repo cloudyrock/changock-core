@@ -16,7 +16,7 @@ public class DefaultDependencyContext implements DependencyContext {
 
   @Override
   public <T> Optional<T> getBean(Class<T> type) {
-    return (Optional<T>)byType.apply(type);
+    return (Optional<T>) byType.apply(type);
   }
 
   @Override

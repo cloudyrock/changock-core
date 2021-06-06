@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @NotThreadSafe
-public class DependencyManager  implements Validable {
+public class DependencyManager implements Validable {
 
   private final LinkedHashSet<ChangeSetDependency> connectorDependencies;
   private final LinkedHashSet<ChangeSetDependency> standardDependencies;
@@ -55,7 +55,7 @@ public class DependencyManager  implements Validable {
         : dependency -> type.isAssignableFrom(dependency.getType());
 
     Stream<ChangeSetDependency> stream = dependencyStore.stream().filter(filter);
-    if(byName) {
+    if (byName) {
       return stream.map(ChangeSetDependency::getInstance).findFirst();
     } else {
       return stream.reduce((dependency1, dependency2) -> !dependency1.isDefaultNamed() && dependency2.isDefaultNamed() ? dependency2 : dependency1)

@@ -16,8 +16,7 @@ public final class MongockStandalone {
   }
 
   public static class MigrationBuilderImpl extends StandaloneBuilderBase<MigrationBuilderImpl, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration>
-      implements MigrationStandaloneBuilder
-  {
+      implements MigrationStandaloneBuilder {
 
     private MigrationBuilderImpl(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory, MongockConfiguration config) {
       super(new MigrationOp(), executorFactory, new ChangeLogService(), config);

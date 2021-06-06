@@ -17,7 +17,7 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 public class ExecutorFactoryImpl<R>
-implements ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, R>{
+    implements ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, R> {
 
   @SuppressWarnings("unchecked")
   public Executor<R> getExecutor(Operation<R> op,

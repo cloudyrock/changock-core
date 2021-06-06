@@ -42,21 +42,21 @@ public class DependencyManagerWithContext extends DependencyManager implements V
     if (dependencyFromParent.isPresent()) {
       return dependencyFromParent;
     } else if (context != null) {
-        boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
-        Optional<Object> dependencyFromContext = byName ? context.getBean(name) : context.getBean(type);
-        if (dependencyFromContext.isPresent()) {
-          if (lockGuarded) {
-            if (!type.isInterface()) {
-              throw new MongockException(String.format("Parameter of type [%s] must be an interface or be annotated with @%s", type.getSimpleName(), NonLockGuarded.class.getSimpleName()));
-            }
-            return dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
-          } else {
-            return dependencyFromContext;
+      boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
+      Optional<Object> dependencyFromContext = byName ? context.getBean(name) : context.getBean(type);
+      if (dependencyFromContext.isPresent()) {
+        if (lockGuarded) {
+          if (!type.isInterface()) {
+            throw new MongockException(String.format("Parameter of type [%s] must be an interface or be annotated with @%s", type.getSimpleName(), NonLockGuarded.class.getSimpleName()));
           }
+          return dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
         } else {
-          logger.warn("Dependency not found: {}", byName ? name : type.getSimpleName());
-          return Optional.empty();
+          return dependencyFromContext;
         }
+      } else {
+        logger.warn("Dependency not found: {}", byName ? name : type.getSimpleName());
+        return Optional.empty();
+      }
     } else {
       return Optional.empty();
     }

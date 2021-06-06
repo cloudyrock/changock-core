@@ -29,13 +29,13 @@ public class ChangeSetDependency {
   }
 
   private void checkParameters(String name, Class<?> type, Object instance) {
-    if(name == null || name.isEmpty()) {
+    if (name == null || name.isEmpty()) {
       throw new MongockException("dependency name cannot be null/empty");
     }
-    if(type ==null) {
+    if (type == null) {
       throw new MongockException("dependency type cannot be null");
     }
-    if(instance ==null) {
+    if (instance == null) {
       throw new MongockException("dependency instance cannot be null");
     }
   }

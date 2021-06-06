@@ -44,7 +44,6 @@ public class MongockRunnerTest {
   }
 
 
-
   @Test(expected = MongockException.class)
   public void shouldPropagateException_IfFExecuteMigrationFails() {
 
@@ -104,7 +103,6 @@ public class MongockRunnerTest {
     new MongockRunnerImpl(executor, false, true, mock(EventPublisher.class)).execute();
 
   }
-
 
 
   @Test(expected = MongockException.class)

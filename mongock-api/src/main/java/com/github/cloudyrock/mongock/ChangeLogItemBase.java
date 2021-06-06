@@ -46,15 +46,15 @@ public abstract class ChangeLogItemBase {
   public String getOrder() {
     return order;
   }
-  
+
   public boolean isFailFast() {
     return failFast;
   }
-  
+
   public boolean isPreMigration() {
     return preMigration;
   }
-  
+
   public boolean isPostMigration() {
     return postMigration;
   }
