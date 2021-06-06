@@ -37,7 +37,7 @@ public class TestMongockRunner extends MongockRunnerImpl {
     private String executionId;
 
     private Builder(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory) {
-      super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
+      super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
     }
 
     public Builder setExecutionId(String executionId) {
@@ -68,12 +68,6 @@ public class TestMongockRunner extends MongockRunnerImpl {
     protected void beforeBuildRunner() {
 
     }
-
-    @Override
-    protected ChangeLogServiceBase<ChangeLogItem> getChangeLogInstance() {
-      return new ChangeLogService();
-    }
-
 
     @Override
     public Builder getInstance() {

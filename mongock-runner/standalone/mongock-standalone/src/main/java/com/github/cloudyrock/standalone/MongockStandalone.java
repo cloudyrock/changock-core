@@ -19,12 +19,7 @@ public final class MongockStandalone {
   {
 
     private MigrationBuilderImpl(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory, MongockConfiguration config) {
-      super(new MigrationOp(), executorFactory, config);
-    }
-
-    @Override
-    protected ChangeLogServiceBase<ChangeLogItem> getChangeLogInstance() {
-      return new ChangeLogService();
+      super(new MigrationOp(), executorFactory, new ChangeLogService(), config);
     }
 
     @Override

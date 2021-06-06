@@ -2,11 +2,11 @@ package com.github.cloudyrock.springboot.base.builder;
 
 import com.github.cloudyrock.mongock.ChangeLogItemBase;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
@@ -37,8 +37,11 @@ public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<S
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory, CONFIG config) {
-    super(operation, executorFactory, config, new DependencyManagerWithContext());
+  protected SpringbootBuilderBase(Operation<R> operation,
+                                  ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory,
+                                  ChangeLogServiceBase<CHANGELOG> changeLogService,
+                                  CONFIG config) {
+    super(operation, executorFactory, changeLogService, new DependencyManagerWithContext(), config);
     parameterNameFunction = buildParameterNameFunctionForSpring();
   }
 
@@ -86,8 +89,8 @@ public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<S
   }
 
   @Override
-  public void runValidation() {
-    super.runValidation();
+  public void validateConfigurationAndInjections() {
+    super.validateConfigurationAndInjections();
     if (!(getDependencyManager()).isContextPresent()) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }

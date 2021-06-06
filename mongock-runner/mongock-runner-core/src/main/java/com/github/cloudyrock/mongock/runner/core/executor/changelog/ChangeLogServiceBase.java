@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -49,10 +50,10 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItemBase> 
 
   private final AnnotationProcessor annotationProcessor;
   private Function<Class<?>, Object> changeLogInstantiator;
-  private List<String> changeLogsBasePackageList;
-  private List<Class<?>> changeLogsBaseClassList;
-  private ArtifactVersion startSystemVersion;
-  private ArtifactVersion endSystemVersion;
+  private List<String> changeLogsBasePackageList = Collections.emptyList();
+  private List<Class<?>> changeLogsBaseClassList = Collections.emptyList();
+  private ArtifactVersion startSystemVersion = new DefaultArtifactVersion("0");
+  private ArtifactVersion endSystemVersion = new DefaultArtifactVersion(String.valueOf(Integer.MAX_VALUE));
   protected Function<AnnotatedElement, Boolean> profileFilter;
 
   public ChangeLogServiceBase(AnnotationProcessor annotationProcessor) {

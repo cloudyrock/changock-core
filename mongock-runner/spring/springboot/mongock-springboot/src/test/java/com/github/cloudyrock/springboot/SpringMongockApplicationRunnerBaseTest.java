@@ -214,7 +214,8 @@ public class SpringMongockApplicationRunnerBaseTest {
   }
 
   private void buildAndRun(String packageName) throws Exception {
-      MongockSpringboot.builder()
+      MongockSpringboot
+          .builder()
           .setDriver(driver)
           .addChangeLogsScanPackage(packageName)
           .setSpringContext(springContext)

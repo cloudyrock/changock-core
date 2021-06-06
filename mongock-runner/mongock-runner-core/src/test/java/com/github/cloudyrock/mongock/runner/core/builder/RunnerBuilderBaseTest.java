@@ -2,9 +2,9 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeLogItem;
-import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogScanner;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogWriter;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.Configurable;
@@ -15,9 +15,8 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.RunnerBuilder;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SelfInstanstiator;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentificable;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
-import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
-import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
@@ -25,27 +24,27 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.mongock.runner.core.util.LegacyMigrationDummyImpl;
 import com.github.cloudyrock.mongock.util.test.ReflectionUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +61,10 @@ public class RunnerBuilderBaseTest {
   private static final Map<String, Object> METADATA = new HashMap<>();
   ConnectionDriver driver = mock(ConnectionDriver.class);
   Map<String, Object> metadata = new HashMap<>();
+
+
+  @Rule
+  public ExpectedException exceptionExpected = ExpectedException.none();
 
   @Before
   public void before() {
@@ -88,7 +91,7 @@ public class RunnerBuilderBaseTest {
     MongockConfiguration expectedConfig = getConfig(false, PACKAGE_PATH);
     builder.setConfig(expectedConfig);
     //todo check all the properties are set rightly
-    MongockConfiguration actualConfig = (MongockConfiguration)ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
+    MongockConfiguration actualConfig = (MongockConfiguration) ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
     assertEquals(expectedConfig, actualConfig);
   }
 
@@ -116,103 +119,53 @@ public class RunnerBuilderBaseTest {
     verify(builder, new Times(1)).addChangeLogsScanPackages(Collections.singletonList("package3"));
   }
 
-  @Test
-  public void shouldAddSingleClass() {
-    Executor executor = mock(MigrationExecutor.class);
-    new DummyRunnerBuilder(new ExecutorFactory<>())
-        .setDriver(driver)
-        .setExecutor(executor)
-        .addChangeLogClass(ChangeLogSuccess11.class)
-        .build()
-        .execute();
-
-
-    ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
-    verify(executor, new Times(1))
-        .executeMigration();
-//        .executeMigration(packageCaptors.capture());
-
-    ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
-    assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
-    assertEquals("1", changeLogItem.getOrder());
-
-    ChangeSetItem changeSetItem = changeLogItem.getChangeSetElements().get(0);
-    assertEquals("ChangeSet_121", changeSetItem.getId());
-    assertEquals("testUser11", changeSetItem.getAuthor());
-    assertEquals("1", changeSetItem.getOrder());
-    assertTrue(changeSetItem.isRunAlways());
-    assertEquals("1", changeSetItem.getSystemVersion());
-    assertEquals("method_111", changeSetItem.getMethod().getName());
-    assertTrue(changeSetItem.isFailFast());
-
-  }
-
-
-  @Test
-  public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
-    Executor executor = mock(MigrationExecutor.class);
-    RunnerBuilderBase builder = runnerBuilderBaseInstance();
-
-    MongockConfiguration config = new MongockConfiguration();
-    config.setChangeLogsScanPackage(Arrays.asList(ChangeLogSuccess11.class.getCanonicalName(), ChangeLogSuccess11.class.getCanonicalName()));
-
-    builder
-        .setDriver(driver)
-        .setConfig(config)
-        .buildRunner()
-        .execute();
-
-    ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
-    verify(executor, new Times(1))
-        .executeMigration();
-//    .executeMigration(packageCaptors.capture());
-
-    assertEquals(1, new ArrayList<>(new ArrayList<>(packageCaptors.getValue())).size());
-
-  }
-
-
-
-  @Test
-  public void shouldAddClassAndPackage() {
-    Executor executor = mock(MigrationExecutor.class);
-    new DummyRunnerBuilder(new ExecutorFactory<>())
-        .setDriver(driver)
-        .setExecutor(executor)
-        .addChangeLogClass(ChangeLogSuccess11.class)
-        .addChangeLogsScanPackage(ChangeLogSuccess11.class.getPackage().getName())
-        .build()
-        .execute();
-
-    ArgumentCaptor<SortedSet<ChangeLogItem>> packageCaptors = ArgumentCaptor.forClass(SortedSet.class);
-    verify(executor, new Times(1))
-        .executeMigration();
-//    .executeMigration(packageCaptors.capture());
-
-    ArrayList<ChangeLogItem> changeLogItemsList = new ArrayList<>(new ArrayList<>(packageCaptors.getValue()));
-    assertEquals(2, changeLogItemsList.size());
-
-    ChangeLogItem changeLogItem = new ArrayList<>(packageCaptors.getValue()).get(0);
-    assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
-    assertEquals("1", changeLogItem.getOrder());
-
-    ChangeLogItem changeLogItem2 = new ArrayList<>(packageCaptors.getValue()).get(1);
-    assertEquals(ChangeLogSuccess12.class, changeLogItem2.getType());
-    assertEquals("2", changeLogItem2.getOrder());
-  }
 
   @Test
   public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
     DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactory<>()).setDriver(driver));
     builder.setConfig(getConfig(null, "package1", "package2"));
-    MongockConfiguration actualConfig = (MongockConfiguration)ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
+    MongockConfiguration actualConfig = (MongockConfiguration) ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
     assertTrue(actualConfig.getChangeLogsScanPackage().contains("package1"));
     assertTrue(actualConfig.getChangeLogsScanPackage().contains("package2"));
   }
 
+
+  @Test
+  public void shouldPropagateException_IfChangeLogServiceNotValidated() {
+
+    RunnerBuilderBase builder = runnerBuilderBaseInstance();
+    builder.setDriver(driver);
+
+    exceptionExpected.expect(MongockException.class);
+    exceptionExpected.expectMessage("Scan package for changeLogs is not set: use appropriate setter");
+    builder.buildRunner();
+
+
+  }
+
+
+  @Test
+  public void shouldPropagateException_IfFetchingLogsFails() {
+    ChangeLogService changeLogService = mock(ChangeLogService.class);
+    when(changeLogService.fetchChangeLogs()).thenThrow(new RuntimeException("ChangeLogService error"));
+
+    RunnerBuilderBase builder = runnerBuilderBaseInstance(changeLogService);
+    builder.setDriver(driver);
+    MongockConfiguration config = new MongockConfiguration();
+    config.setChangeLogsScanPackage(Collections.singletonList("package"));
+    builder.setConfig(config);
+
+    exceptionExpected.expect(MongockException.class);
+    exceptionExpected.expectMessage("ChangeLogService error");
+    builder.buildRunner();
+
+
+  }
+
+
   private void checkStandardBuilderCalls(DummyRunnerBuilder builder) {
 
-    MongockConfiguration actualConfig = (MongockConfiguration)ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
+    MongockConfiguration actualConfig = (MongockConfiguration) ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
 
     assertTrue(actualConfig.getChangeLogsScanPackage().contains(PACKAGE_PATH) && actualConfig.getChangeLogsScanPackage().size() == 1);
     assertFalse(actualConfig.isEnabled());
@@ -240,13 +193,16 @@ public class RunnerBuilderBaseTest {
   }
 
   private RunnerBuilderBase runnerBuilderBaseInstance() {
-    return new RunnerBuilderBase
-        (new MigrationOp(), new ExecutorFactory<>(), new MongockConfiguration(), new DependencyManager()) {
+   return runnerBuilderBaseInstance(null) ;
+  }
+  private RunnerBuilderBase runnerBuilderBaseInstance(ChangeLogService changeLogService) {
+    return new RunnerBuilderBase(
+        new MigrationOp(),
+        new ExecutorFactory<>(),
+        changeLogService != null ? changeLogService : new ChangeLogService(),
+        new DependencyManager(),
+        new MongockConfiguration()) {
 
-      @Override
-      protected ChangeLogService getChangeLogInstance() {
-        return new ChangeLogService();
-      }
 
       @Override
       public RunnerBuilderBase getInstance() {
@@ -270,7 +226,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
 }
 
 class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, ChangeLogItem, MongockConfiguration>
-implements
+    implements
     ChangeLogScanner<DummyRunnerBuilder, MongockConfiguration>,
     ChangeLogWriter<DummyRunnerBuilder, MongockConfiguration>,
     LegacyMigrator<DummyRunnerBuilder, MongockConfiguration>,
@@ -286,7 +242,7 @@ implements
   private Executor<Boolean> executor;
 
   protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory) {
-    super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
+    super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
   }
 
   void validate() {
@@ -302,12 +258,6 @@ implements
   @Override
   protected void beforeBuildRunner() {
   }
-
-  @Override
-  protected ChangeLogServiceBase<ChangeLogItem> getChangeLogInstance() {
-    return new ChangeLogService();
-  }
-
 
   @Override
   public DummyRunnerBuilder getInstance() {

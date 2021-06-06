@@ -8,6 +8,7 @@ import com.github.cloudyrock.mongock.runner.core.event.MigrationFailureEvent;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationStartedEvent;
 import com.github.cloudyrock.mongock.runner.core.event.MigrationSuccessEvent;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 
@@ -16,8 +17,11 @@ import java.util.function.Consumer;
 public abstract class StandaloneBuilderBase<SELF extends StandaloneBuilderBase<SELF, R, CHANGELOG, CONFIG>, R, CHANGELOG extends ChangeLogItemBase, CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<SELF, R, CHANGELOG, CONFIG> {
 
-  protected StandaloneBuilderBase(Operation<R> operation, ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory, CONFIG config) {
-    super(operation, executorFactory, config, new DependencyManager());
+  protected StandaloneBuilderBase(Operation<R> operation,
+                                  ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory,
+                                  ChangeLogServiceBase<CHANGELOG> changeLogService,
+                                  CONFIG config) {
+    super(operation, executorFactory, changeLogService,new DependencyManager(), config);
   }
 
   public SELF setMigrationStartedListener(Consumer<MigrationStartedEvent> listener) {

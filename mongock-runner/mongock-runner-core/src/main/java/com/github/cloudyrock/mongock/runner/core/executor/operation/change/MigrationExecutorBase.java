@@ -55,10 +55,10 @@ public class MigrationExecutorBase<CHANGELOG extends ChangeLogItemBase, CONFIG e
   private boolean executionInProgress = false;
 
   public MigrationExecutorBase(SortedSet<CHANGELOG> changeLogs,
-                                  ConnectionDriver driver,
-                                  DependencyManager dependencyManager,
-                                  Function<Parameter, String> parameterNameProvider,
-                                  CONFIG config) {
+                               ConnectionDriver driver,
+                               DependencyManager dependencyManager,
+                               Function<Parameter, String> parameterNameProvider,
+                               CONFIG config) {
     this.driver = driver;
     this.dependencyManager = dependencyManager;
     this.parameterNameProvider = parameterNameProvider;
