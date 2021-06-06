@@ -60,7 +60,7 @@ public abstract class SpringbootBuilderBase<
     if (applicationEventPublisher == null) {
       throw new MongockException("EventPublisher cannot e null");
     }
-    this.eventPublisher = new EventPublisher(
+    this.eventPublisher = new EventPublisher<>(
         () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
         result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
         result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))

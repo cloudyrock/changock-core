@@ -31,7 +31,7 @@ public abstract class StandaloneBuilderBase<
   }
 
   public SELF setMigrationStartedListener(Consumer<MigrationStartedEvent> listener) {
-    this.eventPublisher = new EventPublisher(
+    this.eventPublisher = new EventPublisher<>(
         () -> listener.accept(new MigrationStartedEvent()),
         eventPublisher.getMigrationSuccessListener(),
         eventPublisher.getMigrationFailedListener());
@@ -39,7 +39,7 @@ public abstract class StandaloneBuilderBase<
   }
 
   public SELF setMigrationSuccessListener(Consumer<MigrationSuccessEvent> listener) {
-    this.eventPublisher = new EventPublisher(
+    this.eventPublisher = new EventPublisher<>(
         eventPublisher.getMigrationStartedListener(),
         result -> listener.accept(new MigrationSuccessEvent(result)),
         eventPublisher.getMigrationFailedListener());
@@ -47,7 +47,7 @@ public abstract class StandaloneBuilderBase<
   }
 
   public SELF setMigrationFailureListener(Consumer<MigrationFailureEvent> listener) {
-    this.eventPublisher = new EventPublisher(
+    this.eventPublisher = new EventPublisher<>(
         eventPublisher.getMigrationStartedListener(),
         eventPublisher.getMigrationSuccessListener(),
         result -> listener.accept(new MigrationFailureEvent(result)));

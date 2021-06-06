@@ -40,7 +40,7 @@ public abstract class RunnerBuilderBase<
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
 
   protected final DependencyManager dependencyManager;
-  protected EventPublisher eventPublisher = EventPublisher.empty();
+  protected EventPublisher<R> eventPublisher = EventPublisher.empty();
   protected final Operation<R> operation;
   protected final CONFIG config;
   protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
