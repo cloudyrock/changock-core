@@ -4,6 +4,7 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
@@ -13,7 +14,7 @@ public final class MongockSpringboot {
 
   //TODO javadoc
   public static MigrationSpringbootBuilder builder() {
-    return new MigrationBuilderImpl(new ExecutorFactory<>(), new MongockConfiguration());
+    return new MigrationBuilderImpl(new ExecutorFactoryImpl<>(), new MongockConfiguration());
   }
 
   public static class MigrationBuilderImpl extends SpringbootBuilderBase<MigrationBuilderImpl, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration>
