@@ -69,7 +69,7 @@ public class MigrationExecutorImplTest {
 
   private ChangeEntryService changeEntryService;
   private LockManager lockManager;
-  private ConnectionDriver driver;
+  private ConnectionDriver<ChangeEntry> driver;
   private TransactionableConnectionDriver transactionableDriver;
 
   @Rule
@@ -836,6 +836,6 @@ public class MigrationExecutorImplTest {
     when(driver.getDependencies()).thenReturn(dependencies);
   }
 
-  private abstract class TransactionableConnectionDriver implements ConnectionDriver {
+  private abstract static class TransactionableConnectionDriver implements ConnectionDriver<ChangeEntry> {
   }
 }

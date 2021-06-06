@@ -1,12 +1,14 @@
 package com.github.cloudyrock.mongock.driver.api.driver;
 
 
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+
 /**
  * Wrapper util class for testing
  */
-public class TestDriverConnection {
+public class TestDriverConnection<CHENGE_ENTRY extends ChangeEntry> {
 
-  private final ConnectionDriver driver;
+  private final ConnectionDriver<CHENGE_ENTRY> driver;
 
   public TestDriverConnection(ConnectionDriver driver) {
     this.driver = driver;
@@ -17,7 +19,7 @@ public class TestDriverConnection {
     driver.getLockManager().acquireLockDefault();
   }
 
-  public ConnectionDriver getDriver() {
+  public ConnectionDriver<CHENGE_ENTRY> getDriver() {
     return driver;
   }
 }
