@@ -6,6 +6,7 @@ import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
@@ -30,9 +31,10 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 
 
 public abstract class RunnerBuilderBase<
-    SELF extends RunnerBuilderBase<SELF, R, CHANGELOG, CONFIG>,
+    SELF extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
     R,
     CHANGELOG extends ChangeLogItemBase,
+    CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends MongockConfiguration> {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
@@ -41,15 +43,15 @@ public abstract class RunnerBuilderBase<
   protected EventPublisher eventPublisher = EventPublisher.empty();
   protected final Operation<R> operation;
   protected final CONFIG config;
-  protected final ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory;
+  protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
   protected ChangeLogServiceBase<CHANGELOG> changeLogService;
-  protected ConnectionDriver driver;
+  protected ConnectionDriver<CHANGE_ENTRY> driver;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
   protected RunnerBuilderBase(Operation<R> operation,
-                              ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory,
+                              ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory,
                               ChangeLogServiceBase<CHANGELOG> changeLogService,
                               DependencyManager dependencyManager,
                               CONFIG config) {
@@ -80,7 +82,7 @@ public abstract class RunnerBuilderBase<
   }
 
 
-  public SELF setDriver(ConnectionDriver driver) {
+  public SELF setDriver(ConnectionDriver<CHANGE_ENTRY> driver) {
     this.driver = driver;
     return getInstance();
   }
@@ -99,7 +101,7 @@ public abstract class RunnerBuilderBase<
     try {
       beforeBuildRunner();
       return new MongockRunnerImpl<>(
-          buildExecutor(driver),
+          buildExecutor(),
           config.isThrowExceptionIfCannotObtainLock(),
           config.isEnabled(),
           eventPublisher);
@@ -173,7 +175,7 @@ public abstract class RunnerBuilderBase<
     return this.driver;
   }
 
-  private Executor<R> buildExecutor(ConnectionDriver driver) {
+  private Executor<R> buildExecutor() {
     return executorFactory.getExecutor(
         operation,
         getChangeLogs(),

@@ -2,6 +2,7 @@ package com.github.cloudyrock.springboot.base.builder;
 
 import com.github.cloudyrock.mongock.ChangeLogItemBase;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
@@ -32,13 +33,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<SELF, R, CHANGELOG, CONFIG>, R, CHANGELOG extends ChangeLogItemBase,CONFIG extends MongockConfiguration>
-    extends RunnerBuilderBase<SELF, R, CHANGELOG, CONFIG> {
+public abstract class SpringbootBuilderBase<
+    SELF extends SpringbootBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
+    R,
+    CHANGELOG extends ChangeLogItemBase,
+    CHANGE_ENTRY extends ChangeEntry,
+    CONFIG extends MongockConfiguration>
+    extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG> {
 
   private static final String DEFAULT_PROFILE = "default";
 
   protected SpringbootBuilderBase(Operation<R> operation,
-                                  ExecutorFactory<CHANGELOG, CONFIG, R> executorFactory,
+                                  ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory,
                                   ChangeLogServiceBase<CHANGELOG> changeLogService,
                                   CONFIG config) {
     super(operation, executorFactory, changeLogService, new DependencyManagerWithContext(), config);

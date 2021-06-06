@@ -2,6 +2,7 @@ package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
@@ -32,11 +33,11 @@ public class TestMongockRunner extends MongockRunnerImpl {
     super(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, Boolean, ChangeLogItem, MongockConfiguration> implements MigrationBuilderBase<Builder, Boolean, MongockConfiguration> {
+  public static class Builder extends RunnerBuilderBase<Builder, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration> implements MigrationBuilderBase<Builder, ChangeEntry, Boolean, MongockConfiguration> {
 
     private String executionId;
 
-    private Builder(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory) {
+    private Builder(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
       super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
     }
 

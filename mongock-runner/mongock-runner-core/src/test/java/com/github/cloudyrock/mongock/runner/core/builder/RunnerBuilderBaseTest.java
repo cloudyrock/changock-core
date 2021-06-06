@@ -4,6 +4,7 @@ import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogScanner;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ChangeLogWriter;
@@ -225,12 +226,12 @@ class DummyMongockConfiguration extends MongockConfiguration {
 
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, ChangeLogItem, MongockConfiguration>
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration>
     implements
     ChangeLogScanner<DummyRunnerBuilder, MongockConfiguration>,
     ChangeLogWriter<DummyRunnerBuilder, MongockConfiguration>,
     LegacyMigrator<DummyRunnerBuilder, MongockConfiguration>,
-    DriverConnectable<DummyRunnerBuilder, MongockConfiguration>,
+    DriverConnectable<DummyRunnerBuilder, ChangeEntry, MongockConfiguration>,
     Configurable<DummyRunnerBuilder, MongockConfiguration>,
     SystemVersionable<DummyRunnerBuilder, MongockConfiguration>,
     DependencyInjectable<DummyRunnerBuilder>,
@@ -241,7 +242,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
 
   private Executor<Boolean> executor;
 
-  protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem, MongockConfiguration, Boolean> executorFactory) {
+  protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
     super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
   }
 

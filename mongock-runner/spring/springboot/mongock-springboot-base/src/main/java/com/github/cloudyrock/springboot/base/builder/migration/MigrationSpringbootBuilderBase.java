@@ -2,6 +2,7 @@ package com.github.cloudyrock.springboot.base.builder.migration;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
 import com.github.cloudyrock.springboot.base.MongockApplicationRunner;
 import com.github.cloudyrock.springboot.base.MongockInitializingBeanRunner;
@@ -9,8 +10,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 
 //TODO javadoc
-public interface MigrationSpringbootBuilderBase<SELF extends MigrationSpringbootBuilderBase<SELF, CONFIG>, CONFIG extends MongockConfiguration>
-    extends MigrationBuilderBase<SELF, Boolean, CONFIG> {
+public interface MigrationSpringbootBuilderBase<
+    SELF extends MigrationSpringbootBuilderBase<SELF, CHANGE_ENTRY, CONFIG>,
+    CHANGE_ENTRY extends ChangeEntry,
+    CONFIG extends MongockConfiguration>
+    extends MigrationBuilderBase<SELF, CHANGE_ENTRY, Boolean, CONFIG> {
 
   //TODO javadoc
   SELF setSpringContext(ApplicationContext springContext);
