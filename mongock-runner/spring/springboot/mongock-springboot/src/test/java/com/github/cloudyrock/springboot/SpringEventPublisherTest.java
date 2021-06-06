@@ -2,7 +2,6 @@ package com.github.cloudyrock.springboot;
 
 
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;

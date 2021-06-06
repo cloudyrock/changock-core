@@ -1,7 +1,6 @@
 package com.github.cloudyrock.standalone;
 
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import org.junit.Assert;
 import org.junit.Test;

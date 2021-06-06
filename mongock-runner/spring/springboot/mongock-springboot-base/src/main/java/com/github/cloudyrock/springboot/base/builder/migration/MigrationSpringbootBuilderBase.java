@@ -4,8 +4,6 @@ import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
-import com.github.cloudyrock.springboot.base.MongockApplicationRunner;
-import com.github.cloudyrock.springboot.base.MongockInitializingBeanRunner;
 import com.github.cloudyrock.springboot.base.builder.SpringApplicationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;

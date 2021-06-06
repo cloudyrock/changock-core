@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
-import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.PostMigration;
 import com.github.cloudyrock.mongock.PreMigration;
 import com.github.cloudyrock.mongock.pro.ChangeSetItemPro;

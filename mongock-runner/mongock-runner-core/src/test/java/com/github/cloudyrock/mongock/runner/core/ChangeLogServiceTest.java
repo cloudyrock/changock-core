@@ -15,14 +15,8 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.Change
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
-import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
-import com.github.cloudyrock.mongock.runner.core.executor.Executor;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
-import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 import org.junit.Test;
-import org.mockito.internal.verification.Times;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -34,10 +28,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class ChangeLogServiceTest {
 

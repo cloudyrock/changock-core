@@ -3,12 +3,9 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class MongockRunnerImpl<T> implements MongockRunner<T> {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunnerImpl.class);

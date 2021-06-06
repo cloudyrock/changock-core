@@ -1,6 +1,5 @@
 package com.github.cloudyrock.mongock.runner.core.event;
 
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 
 import java.util.function.Consumer;

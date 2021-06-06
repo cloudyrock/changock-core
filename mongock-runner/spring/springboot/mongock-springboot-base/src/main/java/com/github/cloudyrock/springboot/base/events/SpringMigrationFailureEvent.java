@@ -2,7 +2,6 @@ package com.github.cloudyrock.springboot.base.events;
 
 import com.github.cloudyrock.mongock.runner.core.event.MongockResultEvent;
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationFailedResult;
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 import org.springframework.context.ApplicationEvent;
 
 public class SpringMigrationFailureEvent extends ApplicationEvent implements MongockResultEvent {

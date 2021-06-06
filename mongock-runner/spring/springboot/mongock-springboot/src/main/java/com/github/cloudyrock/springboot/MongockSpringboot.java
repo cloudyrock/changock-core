@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
-import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 import com.github.cloudyrock.springboot.base.builder.SpringbootBuilderBase;
 
