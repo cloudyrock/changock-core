@@ -1,6 +1,6 @@
 package com.github.cloudyrock.standalone;
 
-import com.github.cloudyrock.mongock.ChangeLogItemBase;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public abstract class StandaloneBuilderBase<
     SELF extends StandaloneBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
     R,
-    CHANGELOG extends ChangeLogItemBase,
+    CHANGELOG extends ChangeLogItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG> {

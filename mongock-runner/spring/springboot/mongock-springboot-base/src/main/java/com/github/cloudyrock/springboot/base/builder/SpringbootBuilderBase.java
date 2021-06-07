@@ -1,6 +1,6 @@
 package com.github.cloudyrock.springboot.base.builder;
 
-import com.github.cloudyrock.mongock.ChangeLogItemBase;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
@@ -36,7 +36,7 @@ import java.util.function.Function;
 public abstract class SpringbootBuilderBase<
     SELF extends SpringbootBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
     R,
-    CHANGELOG extends ChangeLogItemBase,
+    CHANGELOG extends ChangeLogItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends MongockConfiguration>
     extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG> {

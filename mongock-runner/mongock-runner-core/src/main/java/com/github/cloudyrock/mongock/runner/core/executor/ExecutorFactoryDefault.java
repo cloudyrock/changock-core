@@ -1,6 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
@@ -16,7 +17,7 @@ import java.lang.reflect.Parameter;
 import java.util.SortedSet;
 import java.util.function.Function;
 
-public class ExecutorFactoryImpl<R>
+public class ExecutorFactoryDefault<R>
     implements ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, R> {
 
   @SuppressWarnings("unchecked")

@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor.operation.change;
 
-import com.github.cloudyrock.mongock.ChangeLogItemBase;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
@@ -41,7 +41,7 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED
 
 @NotThreadSafe
 public abstract class MigrationExecutorBase<
-    CHANGELOG extends ChangeLogItemBase,
+    CHANGELOG extends ChangeLogItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 

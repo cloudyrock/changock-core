@@ -8,7 +8,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
-import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryDefault;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
@@ -22,11 +22,11 @@ public class TestMongockRunner extends MongockRunnerImpl {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
   public static Builder builder() {
-    return new Builder(new ExecutorFactoryImpl<>());
+    return new Builder(new ExecutorFactoryDefault<>());
   }
 
   public static Builder testBuilder() {
-    return new Builder(new ExecutorFactoryImpl<>());
+    return new Builder(new ExecutorFactoryDefault<>());
   }
 
   private TestMongockRunner(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {

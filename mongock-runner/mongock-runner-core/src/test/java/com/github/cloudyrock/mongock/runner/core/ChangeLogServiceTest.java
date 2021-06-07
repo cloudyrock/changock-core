@@ -142,10 +142,10 @@ public class ChangeLogServiceTest {
 
   @Test
   public void shouldReturnOnlyChangeSetsWithinSystemVersionRangeInclusive() {
-    List<ChangeSetItem> allChangeSets = getChangeSetItems("0", "9");
+    List<? extends ChangeSetItem> allChangeSets = getChangeSetItems("0", "9");
     assertEquals(6, allChangeSets.size());
 
-    List<ChangeSetItem> systemVersionedChangeSets = getChangeSetItems("2", "4");
+    List<? extends ChangeSetItem> systemVersionedChangeSets = getChangeSetItems("2", "4");
     assertEquals(3, systemVersionedChangeSets.size());
     systemVersionedChangeSets.stream()
         .map(ChangeSetItem::getId)
@@ -167,7 +167,7 @@ public class ChangeLogServiceTest {
         .containsAll(Arrays.asList("ChangeSet_3.0", "ChangeSet_4", "ChangeSet_5", "ChangeSet_6", "ChangeSet_2018"));
   }
 
-  private List<ChangeSetItem> getChangeSetItems(String startingVersion, String endingVersion) {
+  private List<? extends ChangeSetItem> getChangeSetItems(String startingVersion, String endingVersion) {
     return new ArrayList<>(new ChangeLogService(
         Collections.singletonList(ChangeLogSystemVersion.class.getPackage().getName()),
         Collections.emptyList(),

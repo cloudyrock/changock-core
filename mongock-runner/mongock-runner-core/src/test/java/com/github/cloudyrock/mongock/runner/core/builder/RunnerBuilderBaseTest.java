@@ -18,7 +18,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentifica
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
-import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryImpl;
+import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryDefault;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
@@ -67,7 +67,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAssignAllTheParameters() {
-    new DummyRunnerBuilder(new ExecutorFactoryImpl<>())
+    new DummyRunnerBuilder(new ExecutorFactoryDefault<>())
         .setDriver(driver)
         .setEnabled(false)
         .setStartSystemVersion("start")
@@ -81,7 +81,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldCallAllTheMethods_whenSetConfig() {
 
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryImpl<>()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryDefault<>()).setDriver(driver));
     MongockConfiguration expectedConfig = getConfig(false, PACKAGE_PATH);
     builder.setConfig(expectedConfig);
     //todo check all the properties are set rightly
@@ -92,7 +92,7 @@ public class RunnerBuilderBaseTest {
   @Test
   public void shouldThrowExceptionTrueByDefault() {
 
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryImpl<>()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryDefault<>()).setDriver(driver));
     builder.setConfig(getConfig(null, PACKAGE_PATH));
     checkStandardBuilderCalls(builder);
     verify(builder, new Times(0)).dontFailIfCannotAcquireLock();
@@ -104,7 +104,7 @@ public class RunnerBuilderBaseTest {
    */
   @Test
   public void shouldAddMultiplePackages_whenAddingList() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryImpl<>()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryDefault<>()).setDriver(driver));
     builder.addChangeLogsScanPackage("package1");
     builder.addChangeLogsScanPackage("package2");
     builder.addChangeLogsScanPackage("package3");
@@ -116,7 +116,7 @@ public class RunnerBuilderBaseTest {
 
   @Test
   public void shouldAddMultiplePackages_whenMultiplePackagesFromConfig() {
-    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryImpl<>()).setDriver(driver));
+    DummyRunnerBuilder builder = Mockito.spy(new DummyRunnerBuilder(new ExecutorFactoryDefault<>()).setDriver(driver));
     builder.setConfig(getConfig(null, "package1", "package2"));
     MongockConfiguration actualConfig = (MongockConfiguration) ReflectionUtils.getPrivateField(builder, RunnerBuilderBase.class, "config");
     assertTrue(actualConfig.getChangeLogsScanPackage().contains("package1"));
@@ -193,7 +193,7 @@ public class RunnerBuilderBaseTest {
   private RunnerBuilderBase runnerBuilderBaseInstance(ChangeLogService changeLogService) {
     return new RunnerBuilderBase(
         new MigrationOp(),
-        new ExecutorFactoryImpl<>(),
+        new ExecutorFactoryDefault<>(),
         changeLogService != null ? changeLogService : new ChangeLogService(),
         new DependencyManager(),
         new MongockConfiguration()) {

@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import com.github.cloudyrock.mongock.ChangeLogItemBase;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.executor.ExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
@@ -12,7 +12,7 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 public interface ExecutorFactory<
-    CHANGELOG extends ChangeLogItemBase,
+    CHANGELOG extends ChangeLogItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends ExecutorConfiguration, R> {
 

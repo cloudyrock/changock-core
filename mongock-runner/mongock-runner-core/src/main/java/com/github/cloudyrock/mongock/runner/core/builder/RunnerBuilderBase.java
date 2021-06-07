@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.ChangeLogItemBase;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
@@ -33,7 +33,7 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 public abstract class RunnerBuilderBase<
     SELF extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
     R,
-    CHANGELOG extends ChangeLogItemBase,
+    CHANGELOG extends ChangeLogItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends MongockConfiguration> {
 
