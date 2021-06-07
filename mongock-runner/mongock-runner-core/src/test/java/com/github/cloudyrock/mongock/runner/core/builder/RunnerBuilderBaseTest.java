@@ -234,8 +234,6 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
     SelfInstanstiator<DummyRunnerBuilder> {
 
 
-  private Executor<Boolean> executor;
-
   protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
     super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
   }
