@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 /**
  * Set of changes to be added to the DB. Many changesets are included in one changelog.
  *
- *
  * @see ChangeLog
  * @since 27/07/2014
  */
@@ -21,10 +20,10 @@ public @interface NonLockGuarded {
    * <p>Indicates the grade of non-lock-guard applied to a method.
    * Does not have any effect at class level.
    * </p>
+   *
    * @return value
    */
   NonLockGuardedType[] value() default {NonLockGuardedType.METHOD};
-
 
 
 }

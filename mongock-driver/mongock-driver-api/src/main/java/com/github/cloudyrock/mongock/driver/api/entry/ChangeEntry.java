@@ -44,20 +44,6 @@ public class ChangeEntry {
   @Field("executionHostname")
   private final String executionHostname;
 
-  public static ChangeEntry createInstance(String executionId, ChangeState state, ChangeSetItem changeSet, long executionMillis, String executionHostname, Object metadata) {
-    return new ChangeEntry(
-        executionId,
-        changeSet.getId(),
-        changeSet.getAuthor(),
-        new Date(),
-        state,
-        changeSet.getMethod().getDeclaringClass().getName(),
-        changeSet.getMethod().getName(),
-        executionMillis,
-        executionHostname,
-        metadata);
-  }
-
   public ChangeEntry(String executionId,
                      String changeId,
                      String author,
@@ -80,6 +66,19 @@ public class ChangeEntry {
     this.metadata = metadata;
   }
 
+  public static ChangeEntry createInstance(String executionId, ChangeState state, ChangeSetItem changeSet, long executionMillis, String executionHostname, Object metadata) {
+    return new ChangeEntry(
+        executionId,
+        changeSet.getId(),
+        changeSet.getAuthor(),
+        new Date(),
+        state,
+        changeSet.getMethod().getDeclaringClass().getName(),
+        changeSet.getMethod().getName(),
+        executionMillis,
+        executionHostname,
+        metadata);
+  }
 
   public String getExecutionId() {
     return executionId;

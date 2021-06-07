@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Class containing particular changesets (@{@link ChangeSet})
- *
+ * Class<?> containing particular changesets (@{@link ChangeSet})
  *
  * @see ChangeSet
  * @since 27/07/2014
@@ -22,10 +21,11 @@ public @interface ChangeLog {
    * @return order
    */
   String order() default "";
-  
-    /**
+
+  /**
    * If true, will make the entire migration to break if the changeLog produce an exception or the validation doesn't
    * success. Migration will continue otherwise.
+   *
    * @return failFast
    */
   boolean failFast() default true;

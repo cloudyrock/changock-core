@@ -40,20 +40,23 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 
 @NotThreadSafe
-public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
+public abstract class MigrationExecutorBase<
+    CHANGELOG extends ChangeLogItem,
+    CHANGE_ENTRY extends ChangeEntry,
+    CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ChangeExecutorBase.class);
-
-  private final Map<String, Object> metadata;
+  private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
+  protected final ConnectionDriver<CHANGE_ENTRY> driver;
+  protected final String serviceIdentifier;
+  protected final boolean trackIgnored;
+  protected final SortedSet<CHANGELOG> changeLogs;
+  protected final Map<String, Object> metadata;
   private final DependencyManager dependencyManager;
   private final Function<Parameter, String> parameterNameProvider;
   private boolean executionInProgress = false;
-  protected final ConnectionDriver driver;
-  protected final String serviceIdentifier;
-  protected final boolean trackIgnored;
 
-
-  protected ChangeExecutorBase(ConnectionDriver driver,
+  public MigrationExecutorBase(SortedSet<CHANGELOG> changeLogs,
+                               ConnectionDriver<CHANGE_ENTRY> driver,
                                DependencyManager dependencyManager,
                                Function<Parameter, String> parameterNameProvider,
                                CONFIG config) {
@@ -63,13 +66,14 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
     this.metadata = config.getMetadata();
     this.serviceIdentifier = config.getServiceIdentifier();
     this.trackIgnored = config.isTrackIgnored();
+    this.changeLogs = changeLogs;
   }
 
   public boolean isExecutionInProgress() {
     return this.executionInProgress;
   }
 
-  public Boolean executeMigration(SortedSet<ChangeLogItem> changeLogs) {
+  public Boolean executeMigration() {
     initializationAndValidation();
     try (LockManager lockManager = driver.getLockManager()) {
       if (!this.isThereAnyChangeSetItemToBeExecuted(changeLogs)) {
@@ -90,30 +94,30 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
     }
   }
 
-  protected void processMigration(SortedSet<ChangeLogItem> changeLogs, String executionId, String executionHostname) {
-    List<ChangeLogItem> changeLogsMigration = changeLogs.stream().filter(ChangeLogItem::isMigration).collect(Collectors.toList());
+  protected void processMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
+    List<CHANGELOG> changeLogsMigration = changeLogs.stream().filter(CHANGELOG::isMigration).collect(Collectors.toList());
     getTransactioner()
         .orElse(Runnable::run)
         .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
   }
 
-  protected void processPreMigration(SortedSet<ChangeLogItem> changeLogs, String executionId, String executionHostname) {
-    List<ChangeLogItem> changeLogPreMigration = changeLogs.stream().filter(ChangeLogItem::isPreMigration).collect(Collectors.toList());
+  protected void processPreMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
+    List<CHANGELOG> changeLogPreMigration = changeLogs.stream().filter(CHANGELOG::isPreMigration).collect(Collectors.toList());
     processChangeLogs(executionId, executionHostname, changeLogPreMigration);
   }
 
-  protected void processPostMigration(SortedSet<ChangeLogItem> changeLogs, String executionId, String executionHostname) {
-    List<ChangeLogItem> changeLogPostMigration = changeLogs.stream().filter(ChangeLogItem::isPostMigration).collect(Collectors.toList());
+  protected void processPostMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
+    List<CHANGELOG> changeLogPostMigration = changeLogs.stream().filter(CHANGELOG::isPostMigration).collect(Collectors.toList());
     processChangeLogs(executionId, executionHostname, changeLogPostMigration);
   }
 
-  protected void processChangeLogs(String executionId, String executionHostname, Collection<ChangeLogItem> changeLogs) {
-    for (ChangeLogItem changeLog : changeLogs) {
+  protected void processChangeLogs(String executionId, String executionHostname, Collection<CHANGELOG> changeLogs) {
+    for (CHANGELOG changeLog : changeLogs) {
       processSingleChangeLog(executionId, executionHostname, changeLog);
     }
   }
 
-  protected void processSingleChangeLog(String executionId, String executionHostname, ChangeLogItem changeLog) {
+  protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
       for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
         processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
@@ -125,7 +129,7 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
     }
   }
 
-  private void processSingleChangeSet(String executionId, String executionHostname, ChangeLogItem changeLog, ChangeSetItem changeSet) {
+  private void processSingleChangeSet(String executionId, String executionHostname, CHANGELOG changeLog, ChangeSetItem changeSet) {
     try {
       executeAndLogChangeSet(executionId, executionHostname, changeLog.getInstance(), changeSet);
     } catch (Exception e) {
@@ -152,9 +156,9 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
     return hostname;
   }
 
-  private boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<ChangeLogItem> changeLogs) {
+  private boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<CHANGELOG> changeLogs) {
     return changeLogs.stream()
-        .map(ChangeLogItem::getChangeSetElements)
+        .map(CHANGELOG::getChangeSetElements)
         .flatMap(List::stream)
         .anyMatch(changeSetItem -> changeSetItem.isRunAlways() || !this.isAlreadyExecuted(changeSetItem));
   }
@@ -164,7 +168,7 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
   }
 
   protected void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
-    ChangeEntry changeEntry = null;
+    CHANGE_ENTRY changeEntry = null;
     boolean alreadyExecuted = false;
     try {
       if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem)) || changeSetItem.isRunAlways()) {
@@ -192,7 +196,7 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
     }
   }
 
-  private void logChangeEntry(ChangeEntry changeEntry, ChangeSetItem changeSetItem, boolean alreadyExecuted) {
+  private void logChangeEntry(CHANGE_ENTRY changeEntry, ChangeSetItem changeSetItem, boolean alreadyExecuted) {
     switch (changeEntry.getState()) {
       case EXECUTED:
         logger.info("{}APPLIED - {}", alreadyExecuted ? "RE-" : "", changeEntry.toPrettyString());
@@ -206,9 +210,7 @@ public class ChangeExecutorBase<CONFIG extends ChangeExecutorConfiguration> impl
     }
   }
 
-  protected ChangeEntry createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {
-    return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, executionHostname, metadata);
-  }
+  protected abstract CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state);
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();

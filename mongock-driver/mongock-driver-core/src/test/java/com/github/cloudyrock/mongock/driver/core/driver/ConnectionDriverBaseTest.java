@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.driver.core.driver;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
@@ -20,10 +21,10 @@ public class ConnectionDriverBaseTest {
   @Test
   public void shouldInitializeRepositories() {
     // given
-    LockRepository lockRepository = Mockito.mock(LockRepository.class);
-    ChangeEntryService changeEntryService = Mockito.mock(ChangeEntryService.class);
+    LockRepository<ChangeEntry> lockRepository = Mockito.mock(LockRepository.class);
+    ChangeEntryService<ChangeEntry> changeEntryService = Mockito.mock(ChangeEntryService.class);
 
-    ConnectionDriverBase driver = new ConnectionDriverBaseTestImpl(
+    ConnectionDriverBase<ChangeEntry> driver = new ConnectionDriverBaseTestImpl(
         4,
         3,
         3,
@@ -42,22 +43,18 @@ public class ConnectionDriverBaseTest {
   }
 
 
-  static class ConnectionDriverBaseTestImpl extends ConnectionDriverBase {
+  static class ConnectionDriverBaseTestImpl extends ConnectionDriverBase<ChangeEntry> {
 
-    private final LockRepository lockRepository;
-    private final ChangeEntryService changeEntryService;
+    private final LockRepository<ChangeEntry> lockRepository;
+    private final ChangeEntryService<ChangeEntry> changeEntryService;
     private final LockManager lockManager;
 
-
-    private static long minutesToMillis(long minutes) {
-      return minutes * 60 * 1000;
-    }
 
     ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
                                  long maxWaitingForLockMinutesEachTry,
                                  int maxTries,
-                                 LockRepository lockRepository,
-                                 ChangeEntryService changeEntryService,
+                                 LockRepository<ChangeEntry> lockRepository,
+                                 ChangeEntryService<ChangeEntry> changeEntryService,
                                  LockManager lockManager) {
       super(
           minutesToMillis(lockAcquiredForMinutes),
@@ -69,8 +66,12 @@ public class ConnectionDriverBaseTest {
       this.lockManager = lockManager;
     }
 
+    private static long minutesToMillis(long minutes) {
+      return minutes * 60 * 1000;
+    }
+
     @Override
-    protected LockRepository getLockRepository() {
+    protected LockRepository<ChangeEntry> getLockRepository() {
       return lockRepository;
     }
 
@@ -80,7 +81,7 @@ public class ConnectionDriverBaseTest {
     }
 
     @Override
-    public ChangeEntryService getChangeEntryService() {
+    public ChangeEntryService<ChangeEntry> getChangeEntryService() {
       return changeEntryService;
     }
 
@@ -95,7 +96,7 @@ public class ConnectionDriverBaseTest {
     }
 
     @Override
-    public Class getLegacyMigrationChangeLogClass(boolean runAlways) {
+    public Class<?> getLegacyMigrationChangeLogClass(boolean runAlways) {
       return null;
     }
 

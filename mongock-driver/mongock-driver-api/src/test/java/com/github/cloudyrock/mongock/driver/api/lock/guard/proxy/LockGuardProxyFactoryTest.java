@@ -31,7 +31,7 @@ public class LockGuardProxyFactoryTest {
     lockGuardProxyFactory = new LockGuardProxyFactory(lockManager);
   }
 
-  private Object getRawProxy(Object o, Class interfaceType) {
+  private Object getRawProxy(Object o, Class<?> interfaceType) {
     return lockGuardProxyFactory.getRawProxy(o, interfaceType);
   }
 

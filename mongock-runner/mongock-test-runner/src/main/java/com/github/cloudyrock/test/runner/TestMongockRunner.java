@@ -1,11 +1,14 @@
 package com.github.cloudyrock.test.runner;
 
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.builder.MigrationBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryDefault;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
@@ -19,23 +22,23 @@ public class TestMongockRunner extends MongockRunnerImpl {
   private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
   public static Builder builder() {
-    return new Builder(new ExecutorFactory<>());
+    return new Builder(new ExecutorFactoryDefault<>());
   }
 
   public static Builder testBuilder() {
-    return new Builder(new ExecutorFactory<>());
+    return new Builder(new ExecutorFactoryDefault<>());
   }
 
-  private TestMongockRunner(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-    super(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+  private TestMongockRunner(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+    super(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
   }
 
-  public static class Builder extends RunnerBuilderBase<Builder, Boolean, MongockConfiguration> implements MigrationBuilderBase<Builder, Boolean, MongockConfiguration> {
+  public static class Builder extends RunnerBuilderBase<Builder, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration> implements MigrationBuilderBase<Builder, ChangeEntry, Boolean, MongockConfiguration> {
 
     private String executionId;
 
-    private Builder(ExecutorFactory<MongockConfiguration> executorFactory) {
-      super(new MigrationOp(), executorFactory, new MongockConfiguration(), new DependencyManager());
+    private Builder(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
+      super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
     }
 
     public Builder setExecutionId(String executionId) {
@@ -44,7 +47,7 @@ public class TestMongockRunner extends MongockRunnerImpl {
     }
 
     public TestMongockRunner build() {
-      return build(buildExecutorForTest(), buildChangeLogService(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), EventPublisher.empty());
+      return build(buildExecutorForTest(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), new EventPublisher<>());
     }
 
     protected Executor buildExecutorForTest() {
@@ -58,15 +61,14 @@ public class TestMongockRunner extends MongockRunnerImpl {
     }
 
 
-    public TestMongockRunner build(Executor executor, ChangeLogService changeLogService, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-      return new TestMongockRunner(executor, changeLogService, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
+    public TestMongockRunner build(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
+      return new TestMongockRunner(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
     }
 
     @Override
     protected void beforeBuildRunner() {
 
     }
-
 
     @Override
     public Builder getInstance() {

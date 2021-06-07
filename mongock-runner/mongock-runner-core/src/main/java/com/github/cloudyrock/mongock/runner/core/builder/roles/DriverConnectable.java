@@ -2,8 +2,9 @@ package com.github.cloudyrock.mongock.runner.core.builder.roles;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 
-public interface DriverConnectable<SELF extends DriverConnectable<SELF, CONFIG>, CONFIG extends MongockConfiguration>
+public interface DriverConnectable<SELF extends DriverConnectable<SELF, CHANGE_ENTRY, CONFIG>, CHANGE_ENTRY extends ChangeEntry, CONFIG extends MongockConfiguration>
     extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF> {
   /**
    * Set the specific connection driver
@@ -12,7 +13,7 @@ public interface DriverConnectable<SELF extends DriverConnectable<SELF, CONFIG>,
    * @param driver connection driver
    * @return builder for fluent interface
    */
-  SELF setDriver(ConnectionDriver driver);
+  SELF setDriver(ConnectionDriver<CHANGE_ENTRY> driver);
 
   /**
    * Indicates that in case the lock cannot be obtained, therefore the migration is not executed, Mongock won't throw

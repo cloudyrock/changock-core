@@ -1,15 +1,15 @@
 package com.github.cloudyrock.mongock.driver.api.common;
 
-public class ForbiddenParameterException extends DependencyInjectionException{
+public class ForbiddenParameterException extends DependencyInjectionException {
 
-  private final Class replacementClass;
+  private final Class<?> replacementClass;
 
-  public ForbiddenParameterException(Class forbiddenClass, Class replacementClass) {
+  public ForbiddenParameterException(Class forbiddenClass, Class<?> replacementClass) {
     super(forbiddenClass);
     this.replacementClass = replacementClass;
   }
 
-  public Class getReplacementClass() {
+  public Class<?> getReplacementClass() {
     return replacementClass;
   }
 

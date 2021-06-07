@@ -12,7 +12,7 @@ public class ChangeLogPostMigration {
   public void postMigration1() {
     // Do nothing
   }
-  
+
   @ChangeSet(author = "executor", id = "postMigration2", order = "2")
   public void postMigration2() {
     // Do nothing

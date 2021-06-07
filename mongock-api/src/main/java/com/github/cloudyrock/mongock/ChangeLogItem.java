@@ -10,16 +10,16 @@ public class ChangeLogItem {
   private final Object instance;
 
   private final String order;
-  
+
   private final boolean failFast;
-  
+
   private final boolean preMigration;
-  
+
   private final boolean postMigration;
+  private final List<? extends ChangeSetItem> changeSetItems;
 
-  private final List<ChangeSetItem> changeSetElements;
 
-  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<ChangeSetItem> changeSetElements) {
+  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<? extends ChangeSetItem> changeSetElements) {
     checkParameters(preMigration, postMigration);
     this.type = type;
     this.instance = instance;
@@ -27,10 +27,11 @@ public class ChangeLogItem {
     this.failFast = failFast;
     this.preMigration = preMigration;
     this.postMigration = postMigration;
-    this.changeSetElements = changeSetElements;
+
+    this.changeSetItems = changeSetElements;
   }
 
-  private void checkParameters(boolean preMigration, boolean postMigration) {
+  private static void checkParameters(boolean preMigration, boolean postMigration) {
     if (preMigration && postMigration) {
       throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
     }
@@ -48,23 +49,22 @@ public class ChangeLogItem {
   public String getOrder() {
     return order;
   }
-  
+
   public boolean isFailFast() {
     return failFast;
   }
-  
+
   public boolean isPreMigration() {
     return preMigration;
   }
-  
+
   public boolean isPostMigration() {
     return postMigration;
   }
 
-  public List<ChangeSetItem> getChangeSetElements() {
-    return changeSetElements;
+  public List<? extends ChangeSetItem> getChangeSetElements() {
+    return changeSetItems;
   }
-
 
   @Override
   public boolean equals(Object o) {

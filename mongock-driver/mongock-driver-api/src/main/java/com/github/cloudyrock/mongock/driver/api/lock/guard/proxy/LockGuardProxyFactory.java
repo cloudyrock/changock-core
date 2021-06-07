@@ -38,11 +38,11 @@ public class LockGuardProxyFactory {
   }
 
   @SuppressWarnings("unchecked")
-  public Object getRawProxy(Object targetObject, Class interfaceType) {
+  public Object getRawProxy(Object targetObject, Class<?> interfaceType) {
     return shouldBeLockGuardProxied(targetObject, interfaceType) ? createProxy(targetObject, interfaceType) : targetObject;
   }
 
-  private boolean shouldBeLockGuardProxied(Object targetObject, Class interfaceType) {
+  private boolean shouldBeLockGuardProxied(Object targetObject, Class<?> interfaceType) {
     return targetObject != null
         && interfaceType.isInterface()
         && isPackageProxiable(interfaceType.getPackage().getName())
@@ -52,11 +52,11 @@ public class LockGuardProxyFactory {
         && !Utils.isBasicTypeJDK(interfaceType);
   }
 
-  private  boolean isPackageProxiable(String packageName) {
+  private boolean isPackageProxiable(String packageName) {
     return notProxiedPackagePrefixes.stream().noneMatch(packageName::startsWith);
   }
 
-  private Object createProxy(Object r, Class type) {
+  private Object createProxy(Object r, Class<?> type) {
     return Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new LockGuardProxy(r, lockManager, this));
   }
 }

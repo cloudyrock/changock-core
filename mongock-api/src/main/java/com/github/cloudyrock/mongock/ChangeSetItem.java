@@ -20,8 +20,13 @@ public class ChangeSetItem {
   private final boolean failFast;
 
 
-
-  public ChangeSetItem(String id, String author, String order, boolean runAlways, String systemVersion, boolean  failFast, Method method) {
+  public ChangeSetItem(String id,
+                       String author,
+                       String order,
+                       boolean runAlways,
+                       String systemVersion,
+                       boolean failFast,
+                       Method method) {
     this.id = id;
     this.author = author;
     this.order = order;
@@ -30,6 +35,7 @@ public class ChangeSetItem {
     this.method = method;
     this.failFast = failFast;
   }
+
 
   public String getId() {
     return id;
@@ -58,6 +64,7 @@ public class ChangeSetItem {
   public boolean isFailFast() {
     return failFast;
   }
+
 
   @Override
   public boolean equals(Object o) {

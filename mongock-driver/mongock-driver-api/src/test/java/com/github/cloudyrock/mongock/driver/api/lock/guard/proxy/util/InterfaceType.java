@@ -17,18 +17,20 @@ public interface InterfaceType {
     return 1;
   }
 
-  default Class getClassType() {
+  default Class<?> getClassType() {
     return Long.class;
   }
 
-  default void voidMethod(){}
+  default void voidMethod() {
+  }
 
   default NontInterfacedClass getNontInterfacedClass() {
     return new NontInterfacedClass();
   }
 
   @NonLockGuarded
-  default void callMethodNoLockGuarded(){}
+  default void callMethodNoLockGuarded() {
+  }
 
   default InterfaceType getGuardedImpl() {
     return new InterfaceTypeImpl();

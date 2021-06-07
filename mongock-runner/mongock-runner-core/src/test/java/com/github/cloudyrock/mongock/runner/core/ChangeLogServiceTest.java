@@ -13,6 +13,7 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package
 import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package2.ChangeLogMultiPackage2;
 import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
+import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import org.junit.Test;
@@ -141,10 +142,10 @@ public class ChangeLogServiceTest {
 
   @Test
   public void shouldReturnOnlyChangeSetsWithinSystemVersionRangeInclusive() {
-    List<ChangeSetItem> allChangeSets = getChangeSetItems("0", "9");
+    List<? extends ChangeSetItem> allChangeSets = getChangeSetItems("0", "9");
     assertEquals(6, allChangeSets.size());
 
-    List<ChangeSetItem> systemVersionedChangeSets = getChangeSetItems("2", "4");
+    List<? extends ChangeSetItem> systemVersionedChangeSets = getChangeSetItems("2", "4");
     assertEquals(3, systemVersionedChangeSets.size());
     systemVersionedChangeSets.stream()
         .map(ChangeSetItem::getId)
@@ -166,7 +167,7 @@ public class ChangeLogServiceTest {
         .containsAll(Arrays.asList("ChangeSet_3.0", "ChangeSet_4", "ChangeSet_5", "ChangeSet_6", "ChangeSet_2018"));
   }
 
-  private List<ChangeSetItem> getChangeSetItems(String startingVersion, String endingVersion) {
+  private List<? extends ChangeSetItem> getChangeSetItems(String startingVersion, String endingVersion) {
     return new ArrayList<>(new ChangeLogService(
         Collections.singletonList(ChangeLogSystemVersion.class.getPackage().getName()),
         Collections.emptyList(),
@@ -259,7 +260,7 @@ public class ChangeLogServiceTest {
 
 
   @Test
-  public void shouldReturnC() {
+  public void shouldReturnChangelogs() {
     List<ChangeLogItem> changeLogItemList = new ArrayList<>(new ChangeLogService(
         Arrays.asList(Comparator1ChangeLog.class.getPackage().getName()),
         Collections.emptyList(),
@@ -273,5 +274,64 @@ public class ChangeLogServiceTest {
 
   }
 
+
+  @Test
+  public void shouldNotDuplicateWhenAddingSingleClassIfTwice() {
+
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBaseClassList(Arrays.asList(ChangeLogSuccess11.class, ChangeLogSuccess11.class));
+
+    List<ChangeLogItem> changeLogs = new ArrayList<>(changeLogService.fetchChangeLogs());
+
+    assertEquals(1, changeLogs.size());
+
+  }
+
+
+  @Test
+  public void shouldAddClassAndPackage() {
+
+
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBaseClassList(Collections.singletonList(ChangeLogSuccess11.class));
+    changeLogService.setChangeLogsBasePackageList(Collections.singletonList(ChangeLogSuccess11.class.getPackage().getName()));
+
+    List<ChangeLogItem> changeLogItemsList = new ArrayList<>(changeLogService.fetchChangeLogs());
+
+    assertEquals(2, changeLogItemsList.size());
+
+    ChangeLogItem changeLogItem = changeLogItemsList.get(0);
+    assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
+    assertEquals("1", changeLogItem.getOrder());
+
+    ChangeLogItem changeLogItem2 = changeLogItemsList.get(1);
+    assertEquals(ChangeLogSuccess12.class, changeLogItem2.getType());
+    assertEquals("2", changeLogItem2.getOrder());
+  }
+
+  @Test
+  public void shouldAddSingleClass() {
+
+
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBaseClassList(Collections.singletonList(ChangeLogSuccess11.class));
+
+    List<ChangeLogItem> changeLogs = new ArrayList<>(changeLogService.fetchChangeLogs());
+
+
+    ChangeLogItem changeLogItem = changeLogs.get(0);
+    assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
+    assertEquals("1", changeLogItem.getOrder());
+
+    ChangeSetItem changeSetItem = changeLogItem.getChangeSetElements().get(0);
+    assertEquals("ChangeSet_121", changeSetItem.getId());
+    assertEquals("testUser11", changeSetItem.getAuthor());
+    assertEquals("1", changeSetItem.getOrder());
+    assertTrue(changeSetItem.isRunAlways());
+    assertEquals("1", changeSetItem.getSystemVersion());
+    assertEquals("method_111", changeSetItem.getMethod().getName());
+    assertTrue(changeSetItem.isFailFast());
+
+  }
 
 }

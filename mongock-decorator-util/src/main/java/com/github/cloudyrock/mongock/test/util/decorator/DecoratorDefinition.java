@@ -6,19 +6,19 @@ import java.util.Objects;
 public class DecoratorDefinition {
 
 
-  private final Class interfaceType;
-  private final Class implementingType;
+  private final Class<?> interfaceType;
+  private final Class<?> implementingType;
 
   public <T, R extends T> DecoratorDefinition(Class<T> interfaceType, Class<R> implementingType) {
     this.interfaceType = interfaceType;
     this.implementingType = implementingType;
   }
 
-  public Class getInterfaceType() {
+  public Class<?> getInterfaceType() {
     return interfaceType;
   }
 
-  public Class getImplementingType() {
+  public Class<?> getImplementingType() {
     return implementingType;
   }
 

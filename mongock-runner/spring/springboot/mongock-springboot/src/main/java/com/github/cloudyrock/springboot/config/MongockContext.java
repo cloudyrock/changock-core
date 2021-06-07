@@ -2,6 +2,7 @@ package com.github.cloudyrock.springboot.config;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.springboot.MigrationSpringbootBuilder;
 import com.github.cloudyrock.springboot.MongockSpringboot;
 import com.github.cloudyrock.springboot.base.config.MongockContextBase;
@@ -14,12 +15,11 @@ import org.springframework.context.annotation.Import;
 
 @Import(MongockDriverContextSelector.class)
 @ConditionalOnExpression("${mongock.enabled:true}")
-public class MongockContext extends MongockContextBase<MongockConfiguration> {
+public class MongockContext extends MongockContextBase<ChangeEntry, MongockConfiguration> {
 
 
   @Bean
-  @SuppressWarnings("all")
-  public MigrationSpringbootBuilder getBuilder(ConnectionDriver connectionDriver,
+  public MigrationSpringbootBuilder getBuilder(ConnectionDriver<ChangeEntry> connectionDriver,
                                                MongockConfiguration springConfiguration,
                                                ApplicationContext springContext,
                                                ApplicationEventPublisher applicationEventPublisher) {

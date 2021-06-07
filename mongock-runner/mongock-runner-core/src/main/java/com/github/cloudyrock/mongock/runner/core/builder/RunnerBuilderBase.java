@@ -1,17 +1,19 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
-import com.github.cloudyrock.mongock.AnnotationProcessor;
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 import com.github.cloudyrock.mongock.runner.core.executor.MongockRunnerImpl;
-import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import org.slf4j.Logger;
@@ -22,34 +24,41 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
-import com.github.cloudyrock.mongock.driver.api.driver.DriverLegaciable;
-import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 
 
-public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
-    implements Validable {
+public abstract class RunnerBuilderBase<
+    SELF extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
+    R,
+    CHANGELOG extends ChangeLogItem,
+    CHANGE_ENTRY extends ChangeEntry,
+    CONFIG extends MongockConfiguration> {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
-
-  protected final DependencyManager dependencyManager;
-  protected EventPublisher eventPublisher = EventPublisher.empty();
   protected final Operation<R> operation;
   protected final CONFIG config;
-  protected final ExecutorFactory<CONFIG> executorFactory;
-  protected ConnectionDriver driver;
-  protected AnnotationProcessor annotationProcessor;
+  protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
+  protected final ChangeLogServiceBase<CHANGELOG> changeLogService;
+  protected final DependencyManager dependencyManager;
+  protected EventPublisher<R> eventPublisher = new EventPublisher<>();
+  protected ConnectionDriver<CHANGE_ENTRY> driver;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
 
 
-  protected RunnerBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config, DependencyManager dependencyManager) {
-    this.executorFactory = executorFactory;
-    this.config = config;
+  protected RunnerBuilderBase(Operation<R> operation,
+                              ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory,
+                              ChangeLogServiceBase<CHANGELOG> changeLogService,
+                              DependencyManager dependencyManager,
+                              CONFIG config) {
     this.operation = operation;
+    this.executorFactory = executorFactory;
+    this.changeLogService = changeLogService;
     this.dependencyManager = dependencyManager;
+    this.config = config;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -61,18 +70,16 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
     return getInstance();
   }
 
+  public CONFIG getConfig() {
+    return config;
+  }
 
   public SELF setConfig(CONFIG newConfig) {
     config.updateFrom(newConfig);
     return getInstance();
   }
 
-  public CONFIG getConfig() {
-    return config;
-  }
-
-  
-  public SELF setDriver(ConnectionDriver driver) {
+  public SELF setDriver(ConnectionDriver<CHANGE_ENTRY> driver) {
     this.driver = driver;
     return getInstance();
   }
@@ -87,14 +94,20 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
   ///////////////////////////////////////////////////////////////////////////////////
 
   public MongockRunner<R> buildRunner() {
-    runValidation();
-    beforeBuildRunner();
-    return new MongockRunnerImpl<>(
-        buildExecutor(driver),
-        buildChangeLogService(),
-        config.isThrowExceptionIfCannotObtainLock(),
-        config.isEnabled(),
-        eventPublisher);
+    validateConfigurationAndInjections();
+    try {
+      beforeBuildRunner();
+      return new MongockRunnerImpl<>(
+          buildExecutor(),
+          config.isThrowExceptionIfCannotObtainLock(),
+          config.isEnabled(),
+          eventPublisher);
+    } catch (MongockException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new MongockException(ex);
+    }
+
   }
 
   protected void beforeBuildRunner() {
@@ -108,24 +121,9 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
       }
     }
   }
-  
-  protected DriverLegaciable getDriverLegaciable() {
-    return this.driver;
-  }
 
 
-  protected final Executor<R> buildExecutor(ConnectionDriver driver) {
-    return executorFactory.getExecutor(
-        operation,
-        driver,
-        dependencyManager,
-        parameterNameFunction,
-        config
-    );
-  }
-
-  protected ChangeLogService buildChangeLogService() {
-
+  private SortedSet<CHANGELOG> getChangeLogs() {
     List<Class<?>> changeLogsScanClasses = new ArrayList<>();
     List<String> changeLogsScanPackage = new ArrayList<>();
     for (String itemPath : config.getChangeLogsScanPackage()) {
@@ -135,26 +133,22 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
         changeLogsScanPackage.add(itemPath);
       }
     }
-    return new ChangeLogService(
-        changeLogsScanPackage,
-        changeLogsScanClasses,
-        config.getStartSystemVersion(),
-        config.getEndSystemVersion(),
-        getAnnotationFilter(),
-        annotationProcessor, // if null, it will take default MongockAnnotationManager
-        changeLogInstantiator
-    );
+    changeLogService.setChangeLogsBasePackageList(changeLogsScanPackage);
+    changeLogService.setChangeLogsBaseClassList(changeLogsScanClasses);
+    changeLogService.setStartSystemVersion(config.getStartSystemVersion());
+    changeLogService.setEndSystemVersion(config.getEndSystemVersion());
+    changeLogService.setProfileFilter(getAnnotationFilter());
+    changeLogService.setChangeLogInstantiator(changeLogInstantiator);
+    return changeLogService.fetchChangeLogs();
   }
 
-  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
-    return annotatedElement -> true;
-  }
 
-  
-  public void runValidation() throws MongockException {
-    this.validateDriver();
+  public void validateConfigurationAndInjections() throws MongockException {
+    if (driver == null) {
+      throw new MongockException("Driver must be injected to Mongock builder");
+    }
     if (config.getChangeLogsScanPackage() == null || config.getChangeLogsScanPackage().isEmpty()) {
-      throw new MongockException("changeLogsScanPackage must be injected to Mongock builder");
+      throw new MongockException("Scan package for changeLogs is not set: use appropriate setter");
     }
     if (!config.isThrowExceptionIfCannotObtainLock()) {
       logger.warn("throwExceptionIfCannotObtainLock is disabled, which means Mongock will continue even if it's not able to acquire the lock");
@@ -168,13 +162,26 @@ public abstract class RunnerBuilderBase<SELF extends RunnerBuilderBase<SELF, R, 
       logger.info("Running Mongock with metadata");
     }
   }
-  
-  protected void validateDriver() throws MongockException {
-    if (driver == null) {
-      throw new MongockException("Driver must be injected to Mongock builder");
-    }
+
+
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    return annotatedElement -> true;
   }
 
+  protected DriverLegaciable getDriverLegaciable() {
+    return this.driver;
+  }
+
+  private Executor<R> buildExecutor() {
+    return executorFactory.getExecutor(
+        operation,
+        getChangeLogs(),
+        driver,
+        dependencyManager,
+        parameterNameFunction,
+        config
+    );
+  }
 
   public abstract SELF getInstance();
 

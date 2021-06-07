@@ -1,21 +1,33 @@
 package com.github.cloudyrock.mongock.runner.core.executor.operation.change;
 
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.lang.reflect.Parameter;
+import java.util.SortedSet;
 import java.util.function.Function;
 
 @NotThreadSafe
-public class MigrationExecutor extends ChangeExecutorBase<ChangeExecutorConfiguration> {
+public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem, ChangeEntry, ChangeExecutorConfiguration> {
 
 
-  public MigrationExecutor(ConnectionDriver driver,
+  public MigrationExecutor(SortedSet<ChangeLogItem> changeLogs,
+                           ConnectionDriver<ChangeEntry> driver,
                            DependencyManager dependencyManager,
                            Function<Parameter, String> parameterNameProvider,
                            ChangeExecutorConfiguration config) {
-    super(driver, dependencyManager, parameterNameProvider, config);
+    super(changeLogs, driver, dependencyManager, parameterNameProvider, config);
+  }
+
+  @Override
+  protected ChangeEntry createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {
+    return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, executionHostname, metadata);
   }
 }

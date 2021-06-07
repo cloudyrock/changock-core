@@ -22,5 +22,6 @@ public class ChangeLogCustomConstructor {
   }
 
   @ChangeSet(order = "001", id = "test", author = "test")
-  public void migration() {}
+  public void migration() {
+  }
 }

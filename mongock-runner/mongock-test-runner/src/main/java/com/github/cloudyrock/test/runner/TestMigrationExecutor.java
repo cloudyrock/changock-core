@@ -2,6 +2,7 @@ package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
 
@@ -15,11 +16,12 @@ public class TestMigrationExecutor extends MigrationExecutor {
   private final String executionId;
 
   public TestMigrationExecutor(String executionId,
-                               ConnectionDriver driver,
+                               ConnectionDriver<ChangeEntry> driver,
                                DependencyManager dependencyManager,
                                Function<Parameter, String> paramNameExtractor,
                                MongockConfiguration config) {
-    super(driver, dependencyManager, paramNameExtractor, config);
+    //todo remove null
+    super(null, driver, dependencyManager, paramNameExtractor, config);
     this.executionId = executionId;
   }
 

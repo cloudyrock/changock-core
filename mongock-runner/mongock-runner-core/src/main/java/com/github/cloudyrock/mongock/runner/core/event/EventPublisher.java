@@ -1,25 +1,22 @@
 package com.github.cloudyrock.mongock.runner.core.event;
 
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
+import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessResult;
 
 import java.util.function.Consumer;
 
-public class EventPublisher {
+public class EventPublisher<R> {
 
   private final Runnable migrationStartedListener;
-  private final Consumer<MigrationResult> migrationSuccessListener;
+  private final Consumer<MigrationSuccessResult<R>> migrationSuccessListener;
   private final Consumer<Exception> migrationFailedListener;
 
-  public static EventPublisher empty() {
-    return new EventPublisher();
-  }
 
-  private EventPublisher() {
+  public EventPublisher() {
     this(null, null, null);
   }
 
   public EventPublisher(Runnable migrationStartedListener,
-                        Consumer<MigrationResult> migrationSuccessListener,
+                        Consumer<MigrationSuccessResult<R>> migrationSuccessListener,
                         Consumer<Exception> migrationFailedListener) {
     this.migrationSuccessListener = migrationSuccessListener;
     this.migrationFailedListener = migrationFailedListener;
@@ -32,7 +29,7 @@ public class EventPublisher {
     }
   }
 
-  public void publishMigrationSuccessEvent(MigrationResult migrationResult) {
+  public void publishMigrationSuccessEvent(MigrationSuccessResult<R> migrationResult) {
     if (migrationSuccessListener != null) {
       migrationSuccessListener.accept(migrationResult);
     }
@@ -48,7 +45,7 @@ public class EventPublisher {
     return migrationStartedListener;
   }
 
-  public Consumer<MigrationResult> getMigrationSuccessListener() {
+  public Consumer<MigrationSuccessResult<R>> getMigrationSuccessListener() {
     return migrationSuccessListener;
   }
 

@@ -91,13 +91,6 @@ public class LegacyMigration {
   }
 
   //TODO remove this legacy methods
-  /**
-   * @see LegacyMigration#getOrigin()
-   */
-  @Deprecated
-  public void setCollectionName(String collectionName) {
-    this.origin = collectionName;
-  }
 
   /**
    * @see LegacyMigration#setOrigin(String)
@@ -105,5 +98,13 @@ public class LegacyMigration {
   @Deprecated
   public String getCollectionName() {
     return origin;
+  }
+
+  /**
+   * @see LegacyMigration#getOrigin()
+   */
+  @Deprecated
+  public void setCollectionName(String collectionName) {
+    this.origin = collectionName;
   }
 }

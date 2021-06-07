@@ -3,6 +3,7 @@ package com.github.cloudyrock.springboot;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.exception.MongockException;
@@ -35,12 +36,11 @@ import static org.mockito.Mockito.when;
 
 public class SpringMongockInitializingBeanRunnerBaseTest {
 
-  private ChangeEntryService changeEntryService;
-  private ConnectionDriver driver;
-  private CallVerifier callVerifier;
-
   @Rule
   public ExpectedException exceptionExpected = ExpectedException.none();
+  private ChangeEntryService<ChangeEntry> changeEntryService;
+  private ConnectionDriver<ChangeEntry> driver;
+  private CallVerifier callVerifier;
   private ApplicationContext springContext;
 
   @Before

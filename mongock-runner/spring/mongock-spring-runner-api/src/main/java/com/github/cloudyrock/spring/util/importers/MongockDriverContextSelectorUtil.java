@@ -24,16 +24,16 @@ public class MongockDriverContextSelectorUtil {
         .map(ContextImporter::getArtifacts)
         .flatMap(List::stream)
         .forEach(desc -> sb.append("\n\t- '").append(desc.getArtifact()).append("' for ").append(desc.getTitle()));
-    DRIVER_NOT_FOUND_ERROR =  sb.toString();
+    DRIVER_NOT_FOUND_ERROR = sb.toString();
   }
 
 
-  public static  String[] selectImports() {
+  public static String[] selectImports() {
     return contextImporters.stream()
         .map(contextImporter -> contextImporter.getPaths())
         .filter(Objects::nonNull)
         .findFirst()
-        .orElseThrow(() ->  new MongockException(String.format("\n\n%s\n\n", DRIVER_NOT_FOUND_ERROR)));
+        .orElseThrow(() -> new MongockException(String.format("\n\n%s\n\n", DRIVER_NOT_FOUND_ERROR)));
   }
 
 }

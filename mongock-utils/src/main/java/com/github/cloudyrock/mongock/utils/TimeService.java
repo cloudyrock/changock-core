@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Date;
 
 /**
- * Class to manage time operation
+ * Class<?> to manage time operation
  *
  * @since 04/04/2018
  */

@@ -19,12 +19,6 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   Set<ChangeSetDependency> getDependencies();
 
-  void setChangeLogRepositoryName(String changeLogRepositoryName);
-
-  void setLockRepositoryName(String lockRepositoryName);
-
-  void setIndexCreation(boolean indexCreation);
-
   boolean isInitialized();
 
   long getLockAcquiredForMillis();
@@ -35,9 +29,15 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   String getChangeLogRepositoryName();
 
+  void setChangeLogRepositoryName(String changeLogRepositoryName);
+
   String getLockRepositoryName();
 
+  void setLockRepositoryName(String lockRepositoryName);
+
   boolean isIndexCreation();
+
+  void setIndexCreation(boolean indexCreation);
 
   /**
    * Mechanism to disabled transactions in case they are available.
@@ -46,6 +46,7 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   /**
    * If transaction available, returns the Transactioner
+   *
    * @return the Transactioner
    */
   Optional<Transactioner> getTransactioner();

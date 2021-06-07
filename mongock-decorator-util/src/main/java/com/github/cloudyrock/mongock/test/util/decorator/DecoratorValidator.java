@@ -80,7 +80,7 @@ public class DecoratorValidator {
     return result;
   }
 
-  private Collection<DecoratorMethodFailure> getMethodErrorsFromDecorator(DecoratorDefinition decorator, Class interfaceType) {
+  private Collection<DecoratorMethodFailure> getMethodErrorsFromDecorator(DecoratorDefinition decorator, Class<?> interfaceType) {
     Method[] declaredMethods = interfaceType.getDeclaredMethods();
     Collection<DecoratorMethodFailure> methodFailures = Stream.of(declaredMethods)
         .map(method -> getMethodErrorOptional(method, decorator))
@@ -92,7 +92,7 @@ public class DecoratorValidator {
     return methodFailures;
   }
 
-  private Collection<DecoratorMethodFailure> getDecoratorMethodFailuresFromParentInterfaces(DecoratorDefinition decorator, Class interfaceType) {
+  private Collection<DecoratorMethodFailure> getDecoratorMethodFailuresFromParentInterfaces(DecoratorDefinition decorator, Class<?> interfaceType) {
     return Stream.of(interfaceType.getInterfaces())
         .map(type -> getMethodErrorsFromDecorator(decorator, type))
         .flatMap(Collection::stream)

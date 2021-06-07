@@ -11,11 +11,11 @@ public interface AnnotationProcessor {
   boolean isChangeSetAnnotated(Method method);
 
   String getChangeLogOrder(Class<?> type);
-  
+
   boolean getChangeLogFailFast(Class<?> type);
-  
+
   boolean getChangeLogPreMigration(Class<?> type);
-  
+
   boolean getChangeLogPostMigration(Class<?> type);
 
   ChangeSetItem getChangeSet(Method method);

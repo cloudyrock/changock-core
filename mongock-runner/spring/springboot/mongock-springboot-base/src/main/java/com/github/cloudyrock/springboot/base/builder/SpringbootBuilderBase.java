@@ -1,11 +1,13 @@
 package com.github.cloudyrock.springboot.base.builder;
 
+import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
+import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogServiceBase;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyContext;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
@@ -31,65 +33,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
-    extends RunnerBuilderBase<SELF, R, CONFIG> {
+public abstract class SpringbootBuilderBase<
+    SELF extends SpringbootBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
+    R,
+    CHANGELOG extends ChangeLogItem,
+    CHANGE_ENTRY extends ChangeEntry,
+    CONFIG extends MongockConfiguration>
+    extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG> {
 
   private static final String DEFAULT_PROFILE = "default";
 
-  protected SpringbootBuilderBase(Operation<R> operation, ExecutorFactory<CONFIG> executorFactory, CONFIG config) {
-    super(operation, executorFactory, config, new DependencyManagerWithContext());
+  protected SpringbootBuilderBase(Operation<R> operation,
+                                  ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory,
+                                  ChangeLogServiceBase<CHANGELOG> changeLogService,
+                                  CONFIG config) {
+    super(operation, executorFactory, changeLogService, new DependencyManagerWithContext(), config);
     parameterNameFunction = buildParameterNameFunctionForSpring();
-  }
-
-  public SELF setSpringContext(ApplicationContext springContext) {
-    (getDependencyManager()).setContext(new SpringDependencyContext(springContext));
-    return getInstance();
-  }
-
-  public SELF setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    if (applicationEventPublisher == null) {
-      throw new MongockException("EventPublisher cannot e null");
-    }
-    this.eventPublisher = new EventPublisher(
-        () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
-        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent(this, result)),
-        result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
-    );
-    return getInstance();
-  }
-
-
-  ///////////////////////////////////////////////////
-  // Build methods
-  ///////////////////////////////////////////////////
-
-
-  public MongockApplicationRunner<R> buildApplicationRunner() {
-    return new MongockApplicationRunner<>(buildRunner());
-  }
-
-
-  public MongockInitializingBeanRunner<R> buildInitializingBeanRunner() {
-    return new MongockInitializingBeanRunner<>(buildRunner());
-  }
-
-  @Override
-  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
-    DependencyContext dependencyContext = getDependencyManager().getDependencyContext();
-    ApplicationContext springContext = ((SpringDependencyContext)dependencyContext).getSpringContext();
-    return annotated -> ProfileUtil.matchesActiveSpringProfile(
-        getActiveProfilesFromContext(springContext),
-        Profile.class,
-        annotated,
-        (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
-  }
-
-  @Override
-  public void runValidation() {
-    super.runValidation();
-    if (!(getDependencyManager()).isContextPresent()) {
-      throw new MongockException("ApplicationContext from Spring must be injected to Builder");
-    }
   }
 
   private static List<String> getActiveProfilesFromContext(ApplicationContext springContext) {
@@ -107,6 +66,55 @@ public abstract class SpringbootBuilderBase<SELF extends SpringbootBuilderBase<S
       }
       return name;
     };
+  }
+
+
+  ///////////////////////////////////////////////////
+  // Build methods
+  ///////////////////////////////////////////////////
+
+  public SELF setSpringContext(ApplicationContext springContext) {
+    (getDependencyManager()).setContext(new SpringDependencyContext(springContext));
+    return getInstance();
+  }
+
+  public SELF setEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    if (applicationEventPublisher == null) {
+      throw new MongockException("EventPublisher cannot e null");
+    }
+    this.eventPublisher = new EventPublisher<>(
+        () -> applicationEventPublisher.publishEvent(new SpringMigrationStartedEvent(this)),
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationSuccessEvent<>(this, result)),
+        result -> applicationEventPublisher.publishEvent(new SpringMigrationFailureEvent(this, result))
+    );
+    return getInstance();
+  }
+
+  public MongockApplicationRunner buildApplicationRunner() {
+    return new MongockApplicationRunner(buildRunner());
+  }
+
+  public MongockInitializingBeanRunner buildInitializingBeanRunner() {
+    return new MongockInitializingBeanRunner(buildRunner());
+  }
+
+  @Override
+  protected Function<AnnotatedElement, Boolean> getAnnotationFilter() {
+    DependencyContext dependencyContext = getDependencyManager().getDependencyContext();
+    ApplicationContext springContext = ((SpringDependencyContext) dependencyContext).getSpringContext();
+    return annotated -> ProfileUtil.matchesActiveSpringProfile(
+        getActiveProfilesFromContext(springContext),
+        Profile.class,
+        annotated,
+        (AnnotatedElement element) -> element.getAnnotation(Profile.class).value());
+  }
+
+  @Override
+  public void validateConfigurationAndInjections() {
+    super.validateConfigurationAndInjections();
+    if (!(getDependencyManager()).isContextPresent()) {
+      throw new MongockException("ApplicationContext from Spring must be injected to Builder");
+    }
   }
 
   public DependencyManagerWithContext getDependencyManager() {

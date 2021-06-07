@@ -12,5 +12,4 @@ public class Comparator1ChangeLog {
   }
 
 
-
 }

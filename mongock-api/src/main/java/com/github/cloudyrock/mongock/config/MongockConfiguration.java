@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public class MongockConfiguration implements ExecutorConfiguration {
 
+  public static final long DEFAULT_QUIT_TRYING_AFTER_MILLIS = 3 * 60 * 1000L;
   private static final Logger logger = LoggerFactory.getLogger(MongockConfiguration.class);
-
   private final static String LEGACY_DEFAULT_CHANGELOG_REPOSITORY_NAME = "mongockChangeLog";
   private final static String LEGACY_DEFAULT_LOCK_REPOSITORY_NAME = "mongockLock";
   private static final String DEPRECATED_PROPERTY_TEMPLATE =
@@ -21,8 +21,6 @@ public class MongockConfiguration implements ExecutorConfiguration {
           "\nPROPERTY [{}] DEPRECATED. IT WILL BE REMOVED IN NEXT VERSIONS" +
           "\nPlease use the following properties instead: [{}]" +
           "\n\n\n*****************************************************************";
-  public static final long DEFAULT_QUIT_TRYING_AFTER_MILLIS = 3 * 60 * 1000L;
-
   /**
    * Repository name for changeLogs history
    */
@@ -121,6 +119,10 @@ public class MongockConfiguration implements ExecutorConfiguration {
     setLockRepositoryName(getLockRepositoryNameDefault());
   }
 
+  private static long minutesToMillis(int minutes) {
+    return minutes * 60 * 1000L;
+  }
+
   public void updateFrom(MongockConfiguration from) {
     changeLogRepositoryName = from.getChangeLogRepositoryName();
     indexCreation = from.isIndexCreation();
@@ -142,7 +144,6 @@ public class MongockConfiguration implements ExecutorConfiguration {
     maxWaitingForLockMillis = from.getMaxWaitingForLockMillis();
   }
 
-
   public long getLockAcquiredForMillis() {
     return lockAcquiredForMillis;
   }
@@ -157,7 +158,7 @@ public class MongockConfiguration implements ExecutorConfiguration {
    */
   public long getLockQuitTryingAfterMillis() {
     if (lockQuitTryingAfterMillis == null) {
-      if(maxWaitingForLockMillis != null) {
+      if (maxWaitingForLockMillis != null) {
         return maxWaitingForLockMillis * (this.maxTries != null ? this.maxTries : 3);
       } else {
         return DEFAULT_QUIT_TRYING_AFTER_MILLIS;
@@ -203,7 +204,6 @@ public class MongockConfiguration implements ExecutorConfiguration {
   public void setIndexCreation(boolean indexCreation) {
     this.indexCreation = indexCreation;
   }
-
 
   public boolean isTrackIgnored() {
     return trackIgnored;
@@ -269,7 +269,6 @@ public class MongockConfiguration implements ExecutorConfiguration {
     this.metadata = metadata;
   }
 
-
   public Optional<Boolean> getTransactionEnabled() {
     return Optional.ofNullable(transactionEnabled);
   }
@@ -312,18 +311,14 @@ public class MongockConfiguration implements ExecutorConfiguration {
   }
 
   @Deprecated
-  public void setMaxTries(int maxTries) {
-    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxTries", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
-    this.maxTries = maxTries;
-  }
-
-  @Deprecated
   protected Integer getMaxTries() {
     return maxTries;
   }
 
-  private static long minutesToMillis(int minutes) {
-    return minutes * 60 * 1000L;
+  @Deprecated
+  public void setMaxTries(int maxTries) {
+    logger.warn(DEPRECATED_PROPERTY_TEMPLATE, "maxTries", "lockQuitTryingAfterMillis and lockTryFrequencyMillis");
+    this.maxTries = maxTries;
   }
 
   @Override

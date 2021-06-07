@@ -39,6 +39,10 @@ public class DefaultLockManagerTest {
   private TimeService timeUtils;
   private LockManager lockManager;
 
+  private static void assertExceptionMessage(LockCheckException ex) {
+    assertTrue(ex.getMessage().contains("Quit trying lock after 180000 millis due to LockPersistenceException:"));
+  }
+
   @Before
   public void setUp() {
     lockManager = new DefaultLockManager(lockRepository = Mockito.mock(LockRepository.class), timeUtils = Mockito.mock(TimeService.class))
@@ -286,7 +290,6 @@ public class DefaultLockManagerTest {
     fail();
   }
 
-
   @Test
   public void shouldCallRepository_WhenEnsureLock() throws LockPersistenceException, LockCheckException {
     //given
@@ -500,11 +503,6 @@ public class DefaultLockManagerTest {
 
     //then
     assertTrue(lockHeld);
-  }
-
-
-  private static void assertExceptionMessage(LockCheckException ex) {
-    assertTrue(ex.getMessage().contains("Quit trying lock after 180000 millis due to LockPersistenceException:"));
   }
 
   private void assertInsertUpdateCall(Date expirationAt, int invocationTimes)

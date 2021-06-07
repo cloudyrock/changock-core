@@ -1,7 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.event;
 
 import com.github.cloudyrock.mongock.runner.core.event.result.MigrationFailedResult;
-import com.github.cloudyrock.mongock.runner.core.event.result.MigrationResult;
 
 public class MigrationFailureEvent implements MongockResultEvent {
 
@@ -9,7 +8,7 @@ public class MigrationFailureEvent implements MongockResultEvent {
 
   public MigrationFailureEvent(Exception exception) {
 
-    this.migrationResult = MigrationResult.failedResult(exception);
+    this.migrationResult = new MigrationFailedResult(exception);
   }
 
   public Exception getException() {

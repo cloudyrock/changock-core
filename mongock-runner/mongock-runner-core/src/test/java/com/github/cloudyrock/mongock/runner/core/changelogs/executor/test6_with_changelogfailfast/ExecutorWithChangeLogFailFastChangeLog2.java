@@ -11,7 +11,7 @@ public class ExecutorWithChangeLogFailFastChangeLog2 {
   public void newChangeSet21(DummyDependencyClass dependency) {
     throw new RuntimeException("This method should not be executed");
   }
- 
+
   @ChangeSet(author = "executor", id = "newChangeSet22", order = "2")
   public void newChangeSet22(DummyDependencyClass dependency) {
     throw new RuntimeException("This method should not be executed");
