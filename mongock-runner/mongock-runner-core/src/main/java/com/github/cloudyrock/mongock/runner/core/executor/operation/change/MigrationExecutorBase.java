@@ -41,7 +41,8 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED
 
 @NotThreadSafe
 public abstract class MigrationExecutorBase<
-    CHANGELOG extends ChangeLogItem,
+    CHANGELOG extends ChangeLogItem<CHANGESET>,
+    CHANGESET extends ChangeSetItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
@@ -121,7 +122,7 @@ public abstract class MigrationExecutorBase<
 
   protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
-      for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
+      for (CHANGESET changeSet : changeLog.getChangeSetElements()) {
         processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
       }
     } catch (Exception e) {
@@ -131,7 +132,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  private void processSingleChangeSet(String executionId, String executionHostname, CHANGELOG changeLog, ChangeSetItem changeSet) {
+  private void processSingleChangeSet(String executionId, String executionHostname, CHANGELOG changeLog, CHANGESET changeSet) {
     try {
       executeAndLogChangeSet(executionId, executionHostname, changeLog.getInstance(), changeSet);
     } catch (Exception e) {
@@ -161,11 +162,11 @@ public abstract class MigrationExecutorBase<
         .anyMatch(changeSetItem -> changeSetItem.isRunAlways() || !this.isAlreadyExecuted(changeSetItem));
   }
 
-  private boolean isAlreadyExecuted(ChangeSetItem changeSetItem) {
+  private boolean isAlreadyExecuted(CHANGESET changeSetItem) {
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 
-  protected  void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected  void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) throws IllegalAccessException, InvocationTargetException {
     CHANGE_ENTRY changeEntry = null;
     boolean alreadyExecuted = false;
     try {
@@ -194,7 +195,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  private void logChangeEntry(CHANGE_ENTRY changeEntry, ChangeSetItem changeSetItem, boolean alreadyExecuted) {
+  private void logChangeEntry(CHANGE_ENTRY changeEntry, CHANGESET changeSetItem, boolean alreadyExecuted) {
     switch (changeEntry.getState()) {
       case EXECUTED:
         logger.info("{}APPLIED - {}", alreadyExecuted ? "RE-" : "", changeEntry.toPrettyString());
@@ -208,9 +209,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  protected  <CHANGE_SET extends ChangeSetItem> CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, CHANGE_SET changeSetItem, long executionTimeMillis, ChangeState state) {
-    return null;
-  }
+  protected abstract CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, CHANGESET changeSetItem, long executionTimeMillis, ChangeState state);
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();

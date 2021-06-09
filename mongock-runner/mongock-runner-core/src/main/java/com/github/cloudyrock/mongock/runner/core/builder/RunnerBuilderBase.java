@@ -1,6 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
@@ -33,16 +34,17 @@ import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRA
 
 
 public abstract class RunnerBuilderBase<
-    SELF extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGE_ENTRY, CONFIG>,
+    SELF extends RunnerBuilderBase<SELF, R, CHANGELOG, CHANGESET, CHANGE_ENTRY, CONFIG>,
     R,
-    CHANGELOG extends ChangeLogItem,
+    CHANGELOG extends ChangeLogItem<CHANGESET>,
+    CHANGESET extends ChangeSetItem,
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends MongockConfiguration> {
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   protected final Operation<R> operation;
   protected final CONFIG config;//todo make it independent from external configuration
-  protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
+  protected final ExecutorFactory<CHANGELOG, ? extends ChangeSetItem, CHANGE_ENTRY, CONFIG, R> executorFactory;
   protected final ChangeLogServiceBase<CHANGELOG> changeLogService;
   protected final DependencyManager dependencyManager;
   protected EventPublisher<R> eventPublisher = new EventPublisher<>();
@@ -55,7 +57,7 @@ public abstract class RunnerBuilderBase<
 
 
   protected RunnerBuilderBase(Operation<R> operation,
-                              ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory,
+                              ExecutorFactory<CHANGELOG, ? extends ChangeSetItem, CHANGE_ENTRY, CONFIG, R> executorFactory,
                               ChangeLogServiceBase<CHANGELOG> changeLogService,
                               DependencyManager dependencyManager,
                               CONFIG config) {

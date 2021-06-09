@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.runner.core.builder;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
@@ -220,7 +221,7 @@ class DummyMongockConfiguration extends MongockConfiguration {
 
 }
 
-class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration>
+class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, ChangeLogItem<ChangeSetItem>, ChangeSetItem, ChangeEntry, MongockConfiguration>
     implements
     ChangeLogScanner<DummyRunnerBuilder, MongockConfiguration>,
     ChangeLogWriter<DummyRunnerBuilder, MongockConfiguration>,
@@ -233,7 +234,7 @@ class DummyRunnerBuilder extends RunnerBuilderBase<DummyRunnerBuilder, Boolean, 
     RunnerBuilder<DummyRunnerBuilder, Boolean, MongockConfiguration>,
     SelfInstanstiator<DummyRunnerBuilder> {
 
-  protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
+  protected DummyRunnerBuilder(ExecutorFactory<ChangeLogItem<ChangeSetItem>, ChangeSetItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
     super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
   }
 

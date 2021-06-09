@@ -3,7 +3,7 @@ package com.github.cloudyrock.mongock;
 import java.util.List;
 import java.util.Objects;
 
-public class ChangeLogItem {
+public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
 
   private final Class<?> type;
 
@@ -16,10 +16,11 @@ public class ChangeLogItem {
   private final boolean preMigration;
 
   private final boolean postMigration;
-  private final List<? extends ChangeSetItem> changeSetItems;
+
+  private final List<CHANGESET> changeSetItems;
 
 
-  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<? extends ChangeSetItem> changeSetElements) {
+  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<CHANGESET> changeSetElements) {
     checkParameters(preMigration, postMigration);
     this.type = type;
     this.instance = instance;
@@ -36,7 +37,6 @@ public class ChangeLogItem {
       throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
     }
   }
-
 
   public Class<?> getType() {
     return type;
@@ -62,15 +62,16 @@ public class ChangeLogItem {
     return postMigration;
   }
 
-  public List<? extends ChangeSetItem> getChangeSetElements() {
+  public List<CHANGESET> getChangeSetElements() {
     return changeSetItems;
   }
+
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ChangeLogItem)) return false;
-    ChangeLogItem that = (ChangeLogItem) o;
+    if (o == null || getClass() != o.getClass()) return false;
+    ChangeLogItem<?> that = (ChangeLogItem<?>) o;
     return type.equals(that.type);
   }
 

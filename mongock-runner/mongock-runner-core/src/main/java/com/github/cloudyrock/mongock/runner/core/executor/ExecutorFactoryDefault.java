@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
@@ -17,13 +18,12 @@ import java.lang.reflect.Parameter;
 import java.util.SortedSet;
 import java.util.function.Function;
 
-public class ExecutorFactoryDefault<R>
-    implements ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, R> {
+public class ExecutorFactoryDefault<R> implements ExecutorFactory<ChangeLogItem<ChangeSetItem>, ChangeSetItem, ChangeEntry, MongockConfiguration, R> {
 
   @SuppressWarnings("unchecked")
   public Executor<R> getExecutor(Operation<R> op,
                                  String executionId,
-                                 SortedSet<ChangeLogItem> changeLogs,
+                                 SortedSet<ChangeLogItem<ChangeSetItem>> changeLogs,
                                  ConnectionDriver<ChangeEntry> driver,
                                  DependencyManager dependencyManager,
                                  Function<Parameter, String> parameterNameProvider,

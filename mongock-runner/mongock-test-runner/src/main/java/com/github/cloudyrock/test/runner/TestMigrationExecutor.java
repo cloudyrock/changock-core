@@ -1,6 +1,7 @@
 package com.github.cloudyrock.test.runner;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
@@ -17,7 +18,7 @@ public class TestMigrationExecutor extends MigrationExecutor {
 
 
   public TestMigrationExecutor(String executionId,
-                               SortedSet<ChangeLogItem> changeLogs,
+                               SortedSet<ChangeLogItem<ChangeSetItem>> changeLogs,
                                ConnectionDriver<ChangeEntry> driver,
                                DependencyManager dependencyManager,
                                Function<Parameter, String> paramNameExtractor,
