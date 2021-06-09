@@ -22,8 +22,10 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.function.Function;
 
@@ -39,7 +41,7 @@ public abstract class RunnerBuilderBase<
 
   private static final Logger logger = LoggerFactory.getLogger(RunnerBuilderBase.class);
   protected final Operation<R> operation;
-  protected final CONFIG config;
+  protected final CONFIG config;//todo make it independent from external configuration
   protected final ExecutorFactory<CHANGELOG, CHANGE_ENTRY, CONFIG, R> executorFactory;
   protected final ChangeLogServiceBase<CHANGELOG> changeLogService;
   protected final DependencyManager dependencyManager;
@@ -47,6 +49,9 @@ public abstract class RunnerBuilderBase<
   protected ConnectionDriver<CHANGE_ENTRY> driver;
   protected Function<Class<?>, Object> changeLogInstantiator;
   protected Function<Parameter, String> parameterNameFunction = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+
+  //todo move to config
+  private String executionId = String.format("%s-%d", LocalDateTime.now(), new Random().nextInt(999));
 
 
   protected RunnerBuilderBase(Operation<R> operation,
@@ -64,6 +69,11 @@ public abstract class RunnerBuilderBase<
   ///////////////////////////////////////////////////////////////////////////////////
   //  SETTERS
   ///////////////////////////////////////////////////////////////////////////////////
+
+  public SELF setExecutionId(String executionId) {
+    this.executionId = executionId;
+    return getInstance();
+  }
 
   public SELF setChangeLogInstantiator(Function<Class<?>, Object> changeLogInstantiator) {
     this.changeLogInstantiator = changeLogInstantiator;
@@ -143,7 +153,7 @@ public abstract class RunnerBuilderBase<
   }
 
 
-  public void validateConfigurationAndInjections() throws MongockException {
+  protected void validateConfigurationAndInjections() throws MongockException {
     if (driver == null) {
       throw new MongockException("Driver must be injected to Mongock builder");
     }
@@ -173,8 +183,10 @@ public abstract class RunnerBuilderBase<
   }
 
   private Executor<R> buildExecutor() {
+
     return executorFactory.getExecutor(
         operation,
+        executionId,
         getChangeLogs(),
         driver,
         dependencyManager,

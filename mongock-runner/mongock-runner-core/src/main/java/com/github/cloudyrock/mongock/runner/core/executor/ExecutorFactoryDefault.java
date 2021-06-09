@@ -22,6 +22,7 @@ public class ExecutorFactoryDefault<R>
 
   @SuppressWarnings("unchecked")
   public Executor<R> getExecutor(Operation<R> op,
+                                 String executionId,
                                  SortedSet<ChangeLogItem> changeLogs,
                                  ConnectionDriver<ChangeEntry> driver,
                                  DependencyManager dependencyManager,
@@ -30,7 +31,7 @@ public class ExecutorFactoryDefault<R>
     switch (op.getId()) {
 
       case MigrationOp.ID:
-        return (Executor<R>) new MigrationExecutor(changeLogs, driver, dependencyManager, parameterNameProvider, config);
+        return (Executor<R>) new MigrationExecutor(executionId, changeLogs, driver, dependencyManager, parameterNameProvider, config);
 
       case ListChangesOp.ID:
         return (Executor<R>) new ListChangesExecutor();

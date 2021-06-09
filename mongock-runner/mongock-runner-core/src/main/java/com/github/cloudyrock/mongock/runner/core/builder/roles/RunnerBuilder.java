@@ -5,6 +5,9 @@ import com.github.cloudyrock.mongock.runner.core.executor.MongockRunner;
 
 public interface RunnerBuilder<SELF extends RunnerBuilder<SELF, R, CONFIG>, R, CONFIG extends MongockConfiguration>
     extends Configurable<SELF, CONFIG>, SelfInstanstiator<SELF> {
+
+  SELF setExecutionId(String executionId);
+
   /**
    * Feature which enables/disables execution
    * <b>Optional</b> Default value true.

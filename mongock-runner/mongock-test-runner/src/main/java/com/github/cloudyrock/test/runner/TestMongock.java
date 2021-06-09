@@ -14,61 +14,22 @@ import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogSer
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationOp;
 
-import javax.inject.Named;
-import java.lang.reflect.Parameter;
-import java.util.function.Function;
-
-public class TestMongockRunner extends MongockRunnerImpl {
-  private static final Function<Parameter, String> DEFAULT_PARAM_NAME_PROVIDER = parameter -> parameter.isAnnotationPresent(Named.class) ? parameter.getAnnotation(Named.class).value() : null;
+public class TestMongock {
 
   public static Builder builder() {
     return new Builder(new ExecutorFactoryDefault<>());
   }
 
-  public static Builder testBuilder() {
-    return new Builder(new ExecutorFactoryDefault<>());
-  }
-
-  private TestMongockRunner(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-    super(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-  }
-
   public static class Builder extends RunnerBuilderBase<Builder, Boolean, ChangeLogItem, ChangeEntry, MongockConfiguration> implements MigrationBuilderBase<Builder, ChangeEntry, Boolean, MongockConfiguration> {
-
-    private String executionId;
 
     private Builder(ExecutorFactory<ChangeLogItem, ChangeEntry, MongockConfiguration, Boolean> executorFactory) {
       super(new MigrationOp(), executorFactory, new ChangeLogService(), new DependencyManager(), new MongockConfiguration());
     }
 
-    public Builder setExecutionId(String executionId) {
-      this.executionId = executionId;
-      return this;
-    }
-
-    public TestMongockRunner build() {
-      return build(buildExecutorForTest(), config.isThrowExceptionIfCannotObtainLock(), config.isEnabled(), new EventPublisher<>());
-    }
-
-    protected Executor buildExecutorForTest() {
-      return new TestMigrationExecutor(
-          executionId,
-          driver,
-          dependencyManager,
-          DEFAULT_PARAM_NAME_PROVIDER,
-          config
-      );
-    }
-
-
-    public TestMongockRunner build(Executor executor, boolean throwExceptionIfCannotObtainLock, boolean enabled, EventPublisher eventPublisher) {
-      return new TestMongockRunner(executor, throwExceptionIfCannotObtainLock, enabled, eventPublisher);
-    }
-
-    @Override
-    protected void beforeBuildRunner() {
-
-    }
+//    @Override
+//    protected void beforeBuildRunner() {
+//
+//    }
 
     @Override
     public Builder getInstance() {

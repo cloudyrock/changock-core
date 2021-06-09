@@ -54,12 +54,15 @@ public abstract class MigrationExecutorBase<
   private final DependencyManager dependencyManager;
   private final Function<Parameter, String> parameterNameProvider;
   private boolean executionInProgress = false;
+  private final String executionId;
 
-  public MigrationExecutorBase(SortedSet<CHANGELOG> changeLogs,
+  public MigrationExecutorBase(String executionId,
+                               SortedSet<CHANGELOG> changeLogs,
                                ConnectionDriver<CHANGE_ENTRY> driver,
                                DependencyManager dependencyManager,
                                Function<Parameter, String> parameterNameProvider,
                                CONFIG config) {
+    this.executionId = executionId;
     this.driver = driver;
     this.dependencyManager = dependencyManager;
     this.parameterNameProvider = parameterNameProvider;
@@ -81,7 +84,6 @@ public abstract class MigrationExecutorBase<
         return false;
       }
       lockManager.acquireLockDefault();
-      String executionId = generateExecutionId();
       String executionHostname = generateExecutionHostname(executionId);
       logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
       processPreMigration(changeLogs, executionId, executionHostname);
@@ -137,10 +139,6 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  protected String generateExecutionId() {
-    return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
-  }
-
   private String generateExecutionHostname(String executionId) {
     String hostname;
     try {
@@ -167,7 +165,7 @@ public abstract class MigrationExecutorBase<
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 
-  protected void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected  void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     CHANGE_ENTRY changeEntry = null;
     boolean alreadyExecuted = false;
     try {
@@ -210,7 +208,9 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  protected abstract CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state);
+  protected  <CHANGE_SET extends ChangeSetItem> CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, CHANGE_SET changeSetItem, long executionTimeMillis, ChangeState state) {
+    return null;
+  }
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();

@@ -13,13 +13,13 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
   private final boolean enabled;
   private final Executor<T> executor;
   private final boolean throwExceptionIfCannotObtainLock;
-  private final EventPublisher eventPublisher;
+  private final EventPublisher<T> eventPublisher;
 
 
   public MongockRunnerImpl(Executor<T> executor,
                            boolean throwExceptionIfCannotObtainLock,
                            boolean enabled,
-                           EventPublisher eventPublisher) {
+                           EventPublisher<T> eventPublisher) {
     this.executor = executor;
     this.enabled = enabled;
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;

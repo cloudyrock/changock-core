@@ -18,12 +18,13 @@ import java.util.function.Function;
 public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem, ChangeEntry, ChangeExecutorConfiguration> {
 
 
-  public MigrationExecutor(SortedSet<ChangeLogItem> changeLogs,
+  public MigrationExecutor(String executionId,
+                           SortedSet<ChangeLogItem> changeLogs,
                            ConnectionDriver<ChangeEntry> driver,
                            DependencyManager dependencyManager,
                            Function<Parameter, String> parameterNameProvider,
                            ChangeExecutorConfiguration config) {
-    super(changeLogs, driver, dependencyManager, parameterNameProvider, config);
+    super(executionId, changeLogs, driver, dependencyManager, parameterNameProvider, config);
   }
 
   @Override

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
 
 
-  private static final MongockAnnotationProcessor ANN_PROCESSOR = new MongockAnnotationProcessor();
+  private static final MongockAnnotationProcessor DEFAULT_ANNOTATION_PROCESSOR = new MongockAnnotationProcessor();
 
   /**
    * @param changeLogsBasePackageList   list of changeLog packages
@@ -64,7 +64,7 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
   }
 
   public ChangeLogService() {
-    super(ANN_PROCESSOR);
+    super(DEFAULT_ANNOTATION_PROCESSOR);
   }
 
 
