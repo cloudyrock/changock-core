@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  *
  * @since 27/07/2014
  */
-public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem> {
+public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem<ChangeSetItem>> {
 
 
   private static final MongockAnnotationProcessor DEFAULT_ANNOTATION_PROCESSOR = new MongockAnnotationProcessor();

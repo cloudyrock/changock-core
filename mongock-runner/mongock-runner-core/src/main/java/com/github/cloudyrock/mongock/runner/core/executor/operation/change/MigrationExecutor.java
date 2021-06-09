@@ -15,17 +15,18 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 @NotThreadSafe
-public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem, ChangeEntry, ChangeExecutorConfiguration> {
+public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem<ChangeSetItem>, ChangeSetItem, ChangeEntry, ChangeExecutorConfiguration> {
 
 
   public MigrationExecutor(String executionId,
-                           SortedSet<ChangeLogItem> changeLogs,
+                           SortedSet<ChangeLogItem<ChangeSetItem>> changeLogs,
                            ConnectionDriver<ChangeEntry> driver,
                            DependencyManager dependencyManager,
                            Function<Parameter, String> parameterNameProvider,
                            ChangeExecutorConfiguration config) {
     super(executionId, changeLogs, driver, dependencyManager, parameterNameProvider, config);
   }
+
 
   @Override
   protected ChangeEntry createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {

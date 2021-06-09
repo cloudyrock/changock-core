@@ -46,7 +46,7 @@ public class ProfiledChangeLogServiceTest {
         null
     );
 
-    ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
+    ChangeLogItem<ChangeSetItem> changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
     assertEquals(DevProfiledChangerLog.class, changeLog.getType());
     assertEquals(DevProfiledChangerLog.class, changeLog.getInstance().getClass());
     assertEquals("01", changeLog.getOrder());
@@ -82,7 +82,7 @@ public class ProfiledChangeLogServiceTest {
         null
     );
 
-    ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
+    ChangeLogItem<ChangeSetItem> changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
     assertEquals(ProProfiledChangeLog.class, changeLog.getType());
     assertEquals(ProProfiledChangeLog.class, changeLog.getInstance().getClass());
     assertEquals(2, changeLog.getChangeSetElements().size());
@@ -133,7 +133,7 @@ public class ProfiledChangeLogServiceTest {
         null
     );
 
-    ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
+    ChangeLogItem<ChangeSetItem> changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
     assertEquals(UnprofiledChangerLog.class, changeLog.getType());
     assertEquals(UnprofiledChangerLog.class, changeLog.getInstance().getClass());
     assertEquals(1, changeLog.getChangeSetElements().size());
@@ -159,7 +159,7 @@ public class ProfiledChangeLogServiceTest {
         null
     );
 
-    ChangeLogItem changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
+    ChangeLogItem<ChangeSetItem> changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
     assertEquals(DefaultProfiledChangerLog.class, changeLog.getType());
     assertEquals(DefaultProfiledChangerLog.class, changeLog.getInstance().getClass());
     assertEquals("01", changeLog.getOrder());

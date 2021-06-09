@@ -1,6 +1,7 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.driver.api.lock.LockCheckException;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.event.EventPublisher;
@@ -123,15 +124,15 @@ public class MongockRunnerTest {
   @Test
   public void shouldPublishSuccessEvent_whenMigrationSucceed() {
 
-    Executor executor = mock(MigrationExecutor.class);
+    Executor<Boolean> executor = mock(MigrationExecutor.class);
     ChangeLogService changeLogService = mock(ChangeLogService.class);
 
-    SortedSet<ChangeLogItem> changeLogItemList = new TreeSet<>();
+    SortedSet<ChangeLogItem<ChangeSetItem>> changeLogItemList = new TreeSet<>();
     when(changeLogService.fetchChangeLogs()).thenReturn(changeLogItemList);
 
-    EventPublisher eventPublisher = mock(EventPublisher.class);
+    EventPublisher<Boolean> eventPublisher = mock(EventPublisher.class);
 
-    new MongockRunnerImpl(executor, true, true, eventPublisher)
+    new MongockRunnerImpl<Boolean>(executor, true, true, eventPublisher)
         .execute();
   }
 

@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.runner.core.executor;
 
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
+import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.config.LegacyMigrationMappingFields;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
@@ -815,7 +816,7 @@ public class MigrationExecutorImplTest {
   }
 
 
-  private SortedSet<ChangeLogItem> createInitialChangeLogsByPackage(Class<?>... executorChangeLogClass) {
+  private SortedSet<ChangeLogItem<ChangeSetItem>> createInitialChangeLogsByPackage(Class<?>... executorChangeLogClass) {
     List<String> packages = Stream.of(executorChangeLogClass)
         .map(clazz -> clazz.getPackage().getName())
         .collect(Collectors.toList());
