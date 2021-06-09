@@ -167,7 +167,7 @@ public abstract class MigrationExecutorBase<
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 
-  protected void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected  void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, ChangeSetItem changeSetItem) throws IllegalAccessException, InvocationTargetException {
     CHANGE_ENTRY changeEntry = null;
     boolean alreadyExecuted = false;
     try {
@@ -210,7 +210,9 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  protected abstract CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state);
+  protected  <CHANGE_SET extends ChangeSetItem> CHANGE_ENTRY createChangeEntryInstance(String executionId, String executionHostname, CHANGE_SET changeSetItem, long executionTimeMillis, ChangeState state) {
+    return null;
+  }
 
   protected long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance) throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();

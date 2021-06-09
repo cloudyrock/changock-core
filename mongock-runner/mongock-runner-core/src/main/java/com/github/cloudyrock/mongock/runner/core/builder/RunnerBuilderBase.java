@@ -143,7 +143,7 @@ public abstract class RunnerBuilderBase<
   }
 
 
-  public void validateConfigurationAndInjections() throws MongockException {
+  protected void validateConfigurationAndInjections() throws MongockException {
     if (driver == null) {
       throw new MongockException("Driver must be injected to Mongock builder");
     }

@@ -110,7 +110,7 @@ public abstract class SpringbootBuilderBase<
   }
 
   @Override
-  public void validateConfigurationAndInjections() {
+  protected void validateConfigurationAndInjections() {
     super.validateConfigurationAndInjections();
     if (!(getDependencyManager()).isContextPresent()) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
