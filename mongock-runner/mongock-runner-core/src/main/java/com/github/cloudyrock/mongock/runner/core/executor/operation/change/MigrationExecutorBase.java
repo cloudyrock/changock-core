@@ -54,12 +54,15 @@ public abstract class MigrationExecutorBase<
   private final DependencyManager dependencyManager;
   private final Function<Parameter, String> parameterNameProvider;
   private boolean executionInProgress = false;
+  private final String executionId;
 
-  public MigrationExecutorBase(SortedSet<CHANGELOG> changeLogs,
+  public MigrationExecutorBase(String executionId,
+                               SortedSet<CHANGELOG> changeLogs,
                                ConnectionDriver<CHANGE_ENTRY> driver,
                                DependencyManager dependencyManager,
                                Function<Parameter, String> parameterNameProvider,
                                CONFIG config) {
+    this.executionId = executionId;
     this.driver = driver;
     this.dependencyManager = dependencyManager;
     this.parameterNameProvider = parameterNameProvider;
@@ -81,7 +84,6 @@ public abstract class MigrationExecutorBase<
         return false;
       }
       lockManager.acquireLockDefault();
-      String executionId = generateExecutionId();
       String executionHostname = generateExecutionHostname(executionId);
       logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
       processPreMigration(changeLogs, executionId, executionHostname);
@@ -135,10 +137,6 @@ public abstract class MigrationExecutorBase<
     } catch (Exception e) {
       processExceptionOnChangeSetExecution(e, changeSet.getMethod(), changeSet.isFailFast());
     }
-  }
-
-  protected String generateExecutionId() {
-    return String.format("%s-%d", LocalDateTime.now().toString(), new Random().nextInt(999));
   }
 
   private String generateExecutionHostname(String executionId) {
