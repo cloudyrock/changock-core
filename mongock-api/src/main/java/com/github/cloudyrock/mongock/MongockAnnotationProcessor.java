@@ -13,7 +13,7 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   }
 
   @Override
-  public boolean isChangeSetAnnotated(Method method) {
+  public boolean isMethodAnnotatedAsChange(Method method) {
     return method.isAnnotationPresent(ChangeSet.class);
   }
 
@@ -28,17 +28,17 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   }
 
   @Override
-  public boolean getChangeLogPreMigration(Class<?> type) {
+  public boolean isPreMigration(Class<?> type) {
     return type.isAnnotationPresent(PreMigration.class);
   }
 
   @Override
-  public boolean getChangeLogPostMigration(Class<?> type) {
+  public boolean isPostMigration(Class<?> type) {
     return type.isAnnotationPresent(PostMigration.class);
   }
 
   @Override
-  public ChangeSetItem getChangeSet(Method method) {
+  public ChangeSetItem getChangePerformerItem(Method method) {
     ChangeSet ann = method.getAnnotation(ChangeSet.class);
     return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), method);
   }

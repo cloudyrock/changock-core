@@ -150,8 +150,8 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> impl
     final Set<String> changeSetIds = new HashSet<>();
     final List<Method> changeSetMethods = new ArrayList<>();
     for (final Method method : allMethods) {
-      if (annotationProcessor.isChangeSetAnnotated(method)) {
-        ChangeSetItem changeSetItem = annotationProcessor.getChangeSet(method);
+      if (annotationProcessor.isMethodAnnotatedAsChange(method)) {
+        ChangeSetItem changeSetItem = annotationProcessor.getChangePerformerItem(method);
         String id = changeSetItem.getId();
         if (changeSetIds.contains(id)) {
           throw new MongockException(String.format("Duplicated changeset id found: '%s'", id));
@@ -188,8 +188,8 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> impl
 
     @Override
     public int compare(Method o1, Method o2) {
-      ChangeSetItem c1 = annotationManager.getChangeSet(o1);
-      ChangeSetItem c2 = annotationManager.getChangeSet(o2);
+      ChangeSetItem c1 = annotationManager.getChangePerformerItem(o1);
+      ChangeSetItem c2 = annotationManager.getChangePerformerItem(o2);
       return c1.getOrder().compareTo(c2.getOrder());
     }
   }

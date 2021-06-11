@@ -8,15 +8,21 @@ public interface AnnotationProcessor {
 
   Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
 
-  boolean isChangeSetAnnotated(Method method);
+  boolean isMethodAnnotatedAsChange(Method method);
 
   String getChangeLogOrder(Class<?> type);
 
   boolean getChangeLogFailFast(Class<?> type);
 
-  boolean getChangeLogPreMigration(Class<?> type);
+  boolean isPreMigration(Class<?> type);
 
-  boolean getChangeLogPostMigration(Class<?> type);
+  boolean isPostMigration(Class<?> type);
 
-  ChangeSetItem getChangeSet(Method method);
+  /**
+   * This methods return the metatada for a method that is annootated with a moncok annotation that
+   * implies a change. ChangetSet, validation, undo, etc.
+   * @param method
+   * @return
+   */
+  ChangeSetItem getChangePerformerItem(Method method);
 }

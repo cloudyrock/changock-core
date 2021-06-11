@@ -62,7 +62,7 @@ public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
     return postMigration;
   }
 
-  public List<CHANGESET> getChangeSetElements() {
+  public List<CHANGESET> getChangeSetItems() {
     return changeSetItems;
   }
 
