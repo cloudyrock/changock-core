@@ -73,7 +73,7 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem<ChangeS
     try {
       Function<Class<?>, Object> instantiator = getChangeLogInstantiator().orElse(DEFAULT_CHANGELOG_INSTANTIATOR);
       AnnotationProcessor annProcessor = getAnnotationProcessor();
-      return new ChangeLogItem(type, instantiator.apply(type), annProcessor.getChangeLogOrder(type), annProcessor.getChangeLogFailFast(type), annProcessor.isPreMigration(type), annProcessor.isPostMigration(type), fetchChangeSetFromClass(type));
+      return new ChangeLogItem(type, instantiator.apply(type), annProcessor.getChangeLogOrder(type), annProcessor.isFailFast(type), annProcessor.isPreMigration(type), annProcessor.isPostMigration(type), fetchChangeSetFromClass(type));
     } catch (MongockException ex) {
       throw ex;
     } catch (Exception ex) {

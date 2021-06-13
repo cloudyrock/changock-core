@@ -23,8 +23,8 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   }
 
   @Override
-  public boolean getChangeLogFailFast(Class<?> type) {
-    return type.getAnnotation(ChangeLog.class).failFast();
+  public boolean isFailFast(Class<?> changeLogClass) {
+    return changeLogClass.getAnnotation(ChangeLog.class).failFast();
   }
 
   @Override
@@ -38,8 +38,8 @@ public class MongockAnnotationProcessor implements AnnotationProcessor {
   }
 
   @Override
-  public ChangeSetItem getChangePerformerItem(Method method) {
-    ChangeSet ann = method.getAnnotation(ChangeSet.class);
-    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), method);
+  public ChangeSetItem getChangePerformerItem(Method changeSetMethod) {
+    ChangeSet ann = changeSetMethod.getAnnotation(ChangeSet.class);
+    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), changeSetMethod);
   }
 }

@@ -12,17 +12,17 @@ public interface AnnotationProcessor {
 
   String getChangeLogOrder(Class<?> type);
 
-  boolean getChangeLogFailFast(Class<?> type);
+  boolean isFailFast(Class<?> changeLogClass);
 
-  boolean isPreMigration(Class<?> type);
+  boolean isPreMigration(Class<?> changeLogClass);
 
-  boolean isPostMigration(Class<?> type);
+  boolean isPostMigration(Class<?> changeLogClass);
 
   /**
-   * This methods return the metatada for a method that is annootated with a moncok annotation that
-   * implies a change. ChangetSet, validation, undo, etc.
-   * @param method
-   * @return
+   * Returns the metatada associated to a method via a mongock change annotation, which includes
+   * : ChangetSet, validation, undo, etc.
+   * @param changeSetMethod
+   * @return The metadata associated to a change method
    */
-  ChangeSetItem getChangePerformerItem(Method method);
+  ChangeSetItem getChangePerformerItem(Method changeSetMethod);
 }
