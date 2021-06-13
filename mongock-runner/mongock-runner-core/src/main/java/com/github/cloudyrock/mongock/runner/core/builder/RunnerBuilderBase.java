@@ -106,11 +106,15 @@ public abstract class RunnerBuilderBase<
   ///////////////////////////////////////////////////////////////////////////////////
 
   public MongockRunner<R> buildRunner() {
-    validateConfigurationAndInjections();
+    return buildRunner(driver);
+  }
+
+  protected MongockRunner<R> buildRunner(ConnectionDriver<CHANGE_ENTRY> driver) {
+    validateConfigurationAndInjections(driver);
     try {
       beforeBuildRunner();
       return new MongockRunnerImpl<>(
-          buildExecutor(),
+          buildExecutor(driver),
           config.isThrowExceptionIfCannotObtainLock(),
           config.isEnabled(),
           eventPublisher);
@@ -119,7 +123,6 @@ public abstract class RunnerBuilderBase<
     } catch (Exception ex) {
       throw new MongockException(ex);
     }
-
   }
 
   protected void beforeBuildRunner() {
@@ -155,7 +158,7 @@ public abstract class RunnerBuilderBase<
   }
 
 
-  protected void validateConfigurationAndInjections() throws MongockException {
+  protected void validateConfigurationAndInjections(ConnectionDriver<CHANGE_ENTRY> driver) throws MongockException {
     if (driver == null) {
       throw new MongockException("Driver must be injected to Mongock builder");
     }
@@ -184,8 +187,7 @@ public abstract class RunnerBuilderBase<
     return this.driver;
   }
 
-  private Executor<R> buildExecutor() {
-
+  protected Executor<R> buildExecutor(ConnectionDriver<CHANGE_ENTRY> driver) {
     return executorFactory.getExecutor(
         operation,
         executionId,
