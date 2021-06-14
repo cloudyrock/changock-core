@@ -3,6 +3,7 @@ package com.github.cloudyrock.springboot.base.builder;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
+import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.builder.RunnerBuilderBase;
@@ -112,8 +113,8 @@ public abstract class SpringbootBuilderBase<
   }
 
   @Override
-  protected void validateConfigurationAndInjections() {
-    super.validateConfigurationAndInjections();
+  protected void validateConfigurationAndInjections(ConnectionDriver<CHANGE_ENTRY> driver) {
+    super.validateConfigurationAndInjections(driver);
     if (!(getDependencyManager()).isContextPresent()) {
       throw new MongockException("ApplicationContext from Spring must be injected to Builder");
     }

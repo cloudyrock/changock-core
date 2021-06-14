@@ -24,13 +24,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.InetAddress;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -122,7 +120,7 @@ public abstract class MigrationExecutorBase<
 
   protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
-      for (CHANGESET changeSet : changeLog.getChangeSetElements()) {
+      for (CHANGESET changeSet : changeLog.getChangeSetItems()) {
         processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
       }
     } catch (Exception e) {
@@ -132,7 +130,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  private void processSingleChangeSet(String executionId, String executionHostname, CHANGELOG changeLog, CHANGESET changeSet) {
+  protected void processSingleChangeSet(String executionId, String executionHostname, CHANGELOG changeLog, CHANGESET changeSet) {
     try {
       executeAndLogChangeSet(executionId, executionHostname, changeLog.getInstance(), changeSet);
     } catch (Exception e) {
@@ -140,7 +138,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  private String generateExecutionHostname(String executionId) {
+  protected String generateExecutionHostname(String executionId) {
     String hostname;
     try {
       hostname = InetAddress.getLocalHost().getHostName();
@@ -155,14 +153,14 @@ public abstract class MigrationExecutorBase<
     return hostname;
   }
 
-  private boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<CHANGELOG> changeLogs) {
+  protected boolean isThereAnyChangeSetItemToBeExecuted(SortedSet<CHANGELOG> changeLogs) {
     return changeLogs.stream()
-        .map(CHANGELOG::getChangeSetElements)
+        .map(CHANGELOG::getChangeSetItems)
         .flatMap(List::stream)
         .anyMatch(changeSetItem -> changeSetItem.isRunAlways() || !this.isAlreadyExecuted(changeSetItem));
   }
 
-  private boolean isAlreadyExecuted(CHANGESET changeSetItem) {
+  protected boolean isAlreadyExecuted(CHANGESET changeSetItem) {
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 

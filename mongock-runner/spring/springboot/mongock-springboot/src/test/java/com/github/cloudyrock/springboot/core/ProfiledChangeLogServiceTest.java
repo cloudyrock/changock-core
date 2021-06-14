@@ -50,9 +50,9 @@ public class ProfiledChangeLogServiceTest {
     assertEquals(DevProfiledChangerLog.class, changeLog.getType());
     assertEquals(DevProfiledChangerLog.class, changeLog.getInstance().getClass());
     assertEquals("01", changeLog.getOrder());
-    assertEquals(2, changeLog.getChangeSetElements().size());
+    assertEquals(2, changeLog.getChangeSetItems().size());
 
-    ChangeSetItem changeSet = changeLog.getChangeSetElements().get(0);
+    ChangeSetItem changeSet = changeLog.getChangeSetItems().get(0);
     assertEquals("Pdev1", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertFalse(changeSet.isRunAlways());
@@ -60,7 +60,7 @@ public class ProfiledChangeLogServiceTest {
     assertNull(changeSet.getMethod().getAnnotation(Profile.class));
 
 
-    changeSet = changeLog.getChangeSetElements().get(1);
+    changeSet = changeLog.getChangeSetItems().get(1);
     assertEquals("Pdev4", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertTrue(changeSet.isRunAlways());
@@ -85,9 +85,9 @@ public class ProfiledChangeLogServiceTest {
     ChangeLogItem<ChangeSetItem> changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
     assertEquals(ProProfiledChangeLog.class, changeLog.getType());
     assertEquals(ProProfiledChangeLog.class, changeLog.getInstance().getClass());
-    assertEquals(2, changeLog.getChangeSetElements().size());
+    assertEquals(2, changeLog.getChangeSetItems().size());
 
-    ChangeSetItem changeSet = changeLog.getChangeSetElements().get(0);
+    ChangeSetItem changeSet = changeLog.getChangeSetItems().get(0);
     assertEquals("no-profiled", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertFalse(changeSet.isRunAlways());
@@ -95,7 +95,7 @@ public class ProfiledChangeLogServiceTest {
     assertNull(changeSet.getMethod().getAnnotation(Profile.class));
 
 
-    changeSet = changeLog.getChangeSetElements().get(1);
+    changeSet = changeLog.getChangeSetItems().get(1);
     assertEquals("no-pro-profiled", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertTrue(changeSet.isRunAlways());
@@ -136,9 +136,9 @@ public class ProfiledChangeLogServiceTest {
     ChangeLogItem<ChangeSetItem> changeLog = new ArrayList<>(changeLogService.fetchChangeLogs()).get(0);
     assertEquals(UnprofiledChangerLog.class, changeLog.getType());
     assertEquals(UnprofiledChangerLog.class, changeLog.getInstance().getClass());
-    assertEquals(1, changeLog.getChangeSetElements().size());
+    assertEquals(1, changeLog.getChangeSetItems().size());
 
-    ChangeSetItem changeSet = changeLog.getChangeSetElements().get(0);
+    ChangeSetItem changeSet = changeLog.getChangeSetItems().get(0);
     assertEquals("no-profiled", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertFalse(changeSet.isRunAlways());
@@ -163,9 +163,9 @@ public class ProfiledChangeLogServiceTest {
     assertEquals(DefaultProfiledChangerLog.class, changeLog.getType());
     assertEquals(DefaultProfiledChangerLog.class, changeLog.getInstance().getClass());
     assertEquals("01", changeLog.getOrder());
-    assertEquals(2, changeLog.getChangeSetElements().size());
+    assertEquals(2, changeLog.getChangeSetItems().size());
 
-    ChangeSetItem changeSet = changeLog.getChangeSetElements().get(0);
+    ChangeSetItem changeSet = changeLog.getChangeSetItems().get(0);
     assertEquals("default-profiled", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertFalse(changeSet.isRunAlways());
@@ -174,7 +174,7 @@ public class ProfiledChangeLogServiceTest {
     assertEquals(1, profiles.size());
     assertTrue(profiles.contains("default"));
 
-    changeSet = changeLog.getChangeSetElements().get(1);
+    changeSet = changeLog.getChangeSetItems().get(1);
     assertEquals("no-profiled", changeSet.getId());
     assertEquals("testuser", changeSet.getAuthor());
     assertFalse(changeSet.isRunAlways());

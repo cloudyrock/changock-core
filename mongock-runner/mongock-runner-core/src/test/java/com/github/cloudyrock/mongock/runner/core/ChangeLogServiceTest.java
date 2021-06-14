@@ -106,17 +106,17 @@ public class ChangeLogServiceTest {
 
     // Normal
     ChangeLogItem<ChangeSetItem> changeLogItem = changeLogItemList.get(0);
-    assertEquals(1, changeLogItem.getChangeSetElements().size());
-    assertEquals("changeSet_0", changeLogItem.getChangeSetElements().get(0).getId());
+    assertEquals(1, changeLogItem.getChangeSetItems().size());
+    assertEquals("changeSet_0", changeLogItem.getChangeSetItems().get(0).getId());
 
     // With both, one annotated changeSet and a method with no annotation
     changeLogItem = changeLogItemList.get(1);
-    assertEquals(1, changeLogItem.getChangeSetElements().size());
-    assertEquals("changeSet_1", changeLogItem.getChangeSetElements().get(0).getId());
+    assertEquals(1, changeLogItem.getChangeSetItems().size());
+    assertEquals("changeSet_1", changeLogItem.getChangeSetItems().get(0).getId());
 
     // ChangeLog annotated class, with no annotated changeSet
     changeLogItem = changeLogItemList.get(2);
-    assertEquals(0, changeLogItem.getChangeSetElements().size());
+    assertEquals(0, changeLogItem.getChangeSetItems().size());
   }
 
   @Test
@@ -131,13 +131,13 @@ public class ChangeLogServiceTest {
     assertEquals(2, changeLogItemList.size());
     ChangeLogItem<ChangeSetItem> changeLogItem11 = changeLogItemList.get(0);
     validateChangeLog(changeLogItem11, 1);
-    assertEquals(1, changeLogItem11.getChangeSetElements().size());
-    changeLogItem11.getChangeSetElements().forEach(changeSetItem -> validateChangeSet(changeSetItem, 1));
+    assertEquals(1, changeLogItem11.getChangeSetItems().size());
+    changeLogItem11.getChangeSetItems().forEach(changeSetItem -> validateChangeSet(changeSetItem, 1));
 
     ChangeLogItem<ChangeSetItem> changeLogItem12 = changeLogItemList.get(1);
     validateChangeLog(changeLogItem12, 2);
-    assertEquals(1, changeLogItem12.getChangeSetElements().size());
-    changeLogItem12.getChangeSetElements().forEach(changeSetItem -> validateChangeSet(changeSetItem, 2));
+    assertEquals(1, changeLogItem12.getChangeSetItems().size());
+    changeLogItem12.getChangeSetItems().forEach(changeSetItem -> validateChangeSet(changeSetItem, 2));
   }
 
   @Test
@@ -175,7 +175,7 @@ public class ChangeLogServiceTest {
         endingVersion)
         .fetchChangeLogs())
         .get(0)
-        .getChangeSetElements();
+        .getChangeSetItems();
   }
 
 
@@ -190,15 +190,15 @@ public class ChangeLogServiceTest {
 
     assertEquals(2, changeLogItemList.size());
     ChangeLogItem<ChangeSetItem> changeLogPackage = changeLogItemList.get(0);
-    assertEquals(1, changeLogPackage.getChangeSetElements().size());
-    ChangeSetItem changeSet = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals(1, changeLogPackage.getChangeSetItems().size());
+    ChangeSetItem changeSet = changeLogPackage.getChangeSetItems().get(0);
     assertEquals("changeset_package1", changeSet.getId());
     assertEquals("changeSetPackage1", changeSet.getMethod().getName());
 
 
     changeLogPackage = changeLogItemList.get(1);
-    assertEquals(1, changeLogPackage.getChangeSetElements().size());
-    changeSet = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals(1, changeLogPackage.getChangeSetItems().size());
+    changeSet = changeLogPackage.getChangeSetItems().get(0);
     assertEquals("changeset_package2", changeSet.getId());
     assertEquals("changeSetPackage2", changeSet.getMethod().getName());
 
@@ -221,26 +221,26 @@ public class ChangeLogServiceTest {
     //package 1
     assertEquals(3, changeLogItemList.size());
     ChangeLogItem<ChangeSetItem> changeLogPackage = changeLogItemList.get(0);
-    assertEquals(1, changeLogPackage.getChangeSetElements().size());
-    ChangeSetItem changeSet1 = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals(1, changeLogPackage.getChangeSetItems().size());
+    ChangeSetItem changeSet1 = changeLogPackage.getChangeSetItems().get(0);
     assertEquals("changeset_package1", changeSet1.getId());
     assertEquals("changeSetPackage1", changeSet1.getMethod().getName());
 
     //isolated class
     changeLogPackage = changeLogItemList.get(1);
-    assertEquals(2, changeLogPackage.getChangeSetElements().size());
-    ChangeSetItem changeSet2 = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals(2, changeLogPackage.getChangeSetItems().size());
+    ChangeSetItem changeSet2 = changeLogPackage.getChangeSetItems().get(0);
     assertEquals("no_package", changeSet2.getId());
     assertEquals("noPackage", changeSet2.getMethod().getName());
 
-    ChangeSetItem changeSet3 = changeLogPackage.getChangeSetElements().get(1);
+    ChangeSetItem changeSet3 = changeLogPackage.getChangeSetItems().get(1);
     assertEquals("no_package_2", changeSet3.getId());
     assertEquals("noPackage2", changeSet3.getMethod().getName());
 
     //package 2
     changeLogPackage = changeLogItemList.get(2);
-    assertEquals(1, changeLogPackage.getChangeSetElements().size());
-    ChangeSetItem changeSet4 = changeLogPackage.getChangeSetElements().get(0);
+    assertEquals(1, changeLogPackage.getChangeSetItems().size());
+    ChangeSetItem changeSet4 = changeLogPackage.getChangeSetItems().get(0);
     assertEquals("changeset_package2", changeSet4.getId());
     assertEquals("changeSetPackage2", changeSet4.getMethod().getName());
 
@@ -323,7 +323,7 @@ public class ChangeLogServiceTest {
     assertEquals(ChangeLogSuccess11.class, changeLogItem.getType());
     assertEquals("1", changeLogItem.getOrder());
 
-    ChangeSetItem changeSetItem = changeLogItem.getChangeSetElements().get(0);
+    ChangeSetItem changeSetItem = changeLogItem.getChangeSetItems().get(0);
     assertEquals("ChangeSet_121", changeSetItem.getId());
     assertEquals("testUser11", changeSetItem.getAuthor());
     assertEquals("1", changeSetItem.getOrder());

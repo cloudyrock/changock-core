@@ -1,7 +1,6 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
 import com.github.cloudyrock.mongock.ChangeLogItem;
-import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;

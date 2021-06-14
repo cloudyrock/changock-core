@@ -8,15 +8,21 @@ public interface AnnotationProcessor {
 
   Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
 
-  boolean isChangeSetAnnotated(Method method);
+  boolean isMethodAnnotatedAsChange(Method method);
 
   String getChangeLogOrder(Class<?> type);
 
-  boolean getChangeLogFailFast(Class<?> type);
+  boolean isFailFast(Class<?> changeLogClass);
 
-  boolean getChangeLogPreMigration(Class<?> type);
+  boolean isPreMigration(Class<?> changeLogClass);
 
-  boolean getChangeLogPostMigration(Class<?> type);
+  boolean isPostMigration(Class<?> changeLogClass);
 
-  ChangeSetItem getChangeSet(Method method);
+  /**
+   * Returns the metatada associated to a method via a mongock change annotation, which includes
+   * : ChangetSet, validation, undo, etc.
+   * @param changeSetMethod
+   * @return The metadata associated to a change method
+   */
+  ChangeSetItem getChangePerformerItem(Method changeSetMethod);
 }

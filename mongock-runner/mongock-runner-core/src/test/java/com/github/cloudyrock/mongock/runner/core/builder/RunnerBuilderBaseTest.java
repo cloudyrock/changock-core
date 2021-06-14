@@ -17,7 +17,6 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.RunnerBuilder;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SelfInstanstiator;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentificable;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
-import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactory;
 import com.github.cloudyrock.mongock.runner.core.executor.ExecutorFactoryDefault;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
