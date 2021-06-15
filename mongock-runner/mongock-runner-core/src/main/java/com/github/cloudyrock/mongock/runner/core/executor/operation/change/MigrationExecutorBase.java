@@ -97,7 +97,7 @@ public abstract class MigrationExecutorBase<
 
   protected void processMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
     List<CHANGELOG> changeLogsMigration = changeLogs.stream().filter(CHANGELOG::isMigration).collect(Collectors.toList());
-    getTransactioner()
+    driver.getTransactioner()
         .orElse(Runnable::run)
         .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
   }
@@ -259,10 +259,5 @@ public abstract class MigrationExecutorBase<
   }
 
 
-  protected Optional<Transactioner> getTransactioner() {
-    //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
-    //type of the Optional
-    return (Optional<Transactioner>) driver.getTransactioner();
-  }
 
 }
