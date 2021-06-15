@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -37,7 +38,7 @@ import static java.util.Arrays.asList;
  *
  * @since 27/07/2014
  */
-public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> implements Validable {
+public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANGESET>, CHANGESET extends ChangeSetItem> implements Validable {
 
   protected static final Function<Class<?>, Object> DEFAULT_CHANGELOG_INSTANTIATOR = type -> {
     try {
@@ -48,7 +49,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> impl
   };
 
 
-  private final AnnotationProcessor annotationProcessor;
+  private final AnnotationProcessor<CHANGESET> annotationProcessor;
   protected Function<AnnotatedElement, Boolean> profileFilter;
   private Function<Class<?>, Object> changeLogInstantiator;
   private List<String> changeLogsBasePackageList = Collections.emptyList();
@@ -56,11 +57,11 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> impl
   private ArtifactVersion startSystemVersion = new DefaultArtifactVersion("0");
   private ArtifactVersion endSystemVersion = new DefaultArtifactVersion(String.valueOf(Integer.MAX_VALUE));
 
-  public ChangeLogServiceBase(AnnotationProcessor annotationProcessor) {
+  public ChangeLogServiceBase(AnnotationProcessor<CHANGESET> annotationProcessor) {
     this.annotationProcessor = annotationProcessor;
   }
 
-  protected AnnotationProcessor getAnnotationProcessor() {
+  protected AnnotationProcessor<CHANGESET> getAnnotationProcessor() {
     return annotationProcessor;
   }
 
@@ -139,34 +140,42 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> impl
     return Stream.concat(packageStream, changeLogsBaseClassList.stream()).collect(Collectors.toSet());
   }
 
-  protected List<Method> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
-    final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
-    changeSets.sort(new ChangeSetComparator(annotationProcessor));
+  protected List<CHANGESET> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
+    List<CHANGESET> changeSets = getChangeSetWithCompanionMethods(asList(type.getDeclaredMethods()));
+    changeSets.sort(new ChangeSetComparator());
     return changeSets;
   }
 
 
-  private List<Method> filterChangeSetAnnotation(List<Method> allMethods) throws MongockException {
-    final Set<String> changeSetIds = new HashSet<>();
-    final List<Method> changeSetMethods = new ArrayList<>();
-    for (final Method method : allMethods) {
-      if (annotationProcessor.isMethodAnnotatedAsChange(method)) {
-        ChangeSetItem changeSetItem = annotationProcessor.getChangePerformerItem(method);
-        String id = changeSetItem.getId();
-        if (changeSetIds.contains(id)) {
-          throw new MongockException(String.format("Duplicated changeset id found: '%s'", id));
-        }
-        changeSetIds.add(id);
-        if (isChangeSetWithinSystemVersionRange(changeSetItem)) {
-          changeSetMethods.add(method);
-        }
+  private List<CHANGESET> getChangeSetWithCompanionMethods(List<Method> allMethods) throws MongockException {
+    Set<String> changeSetIds = new HashSet<>();
+    // retrieves all the methods annotated with changeSet, preChangeSets, postChangeSets, etc.
+    List<Method> changeSetMethods = allMethods.stream().filter(annotationProcessor::isMethodAnnotatedAsChange).collect(Collectors.toList());
+    // retrieves all the rollback methods
+    Map<String, Method> rollbackMethods = allMethods
+        .stream()
+        .filter(annotationProcessor::isRollback)
+        .collect(Collectors.toMap(annotationProcessor::getId, method -> method));
+
+    //list to be returned
+    List<CHANGESET> result = new ArrayList<>();
+    for (final Method changeSetMethod : changeSetMethods) {
+      String changeSetId = annotationProcessor.getId(changeSetMethod);
+      CHANGESET changeSetItem = annotationProcessor.getChangePerformerItem(changeSetMethod, rollbackMethods.get(changeSetId));
+
+      if (changeSetIds.contains(changeSetId)) {
+        throw new MongockException(String.format("Duplicated changeset id found: '%s'", changeSetId));
+      }
+      changeSetIds.add(changeSetId);
+      if (isChangeSetWithinSystemVersionRange(changeSetItem)) {
+        result.add(changeSetItem);
       }
     }
-    return changeSetMethods;
+    return result;
   }
 
   //todo Create a SystemVersionChecker
-  private boolean isChangeSetWithinSystemVersionRange(ChangeSetItem changeSetAnn) {
+  private boolean isChangeSetWithinSystemVersionRange(CHANGESET changeSetAnn) {
     boolean isWithinVersion = false;
     String versionString = changeSetAnn.getSystemVersion();
     ArtifactVersion version = new DefaultArtifactVersion(versionString);
@@ -178,27 +187,20 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem> impl
 
   protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
 
-  private static class ChangeSetComparator implements Comparator<Method>, Serializable {
+  private class ChangeSetComparator implements Comparator<CHANGESET>, Serializable {
     private static final long serialVersionUID = -854690868262484102L;
-    private final AnnotationProcessor annotationManager;
-
-    ChangeSetComparator(AnnotationProcessor annotationManager) {
-      this.annotationManager = annotationManager;
-    }
 
     @Override
-    public int compare(Method o1, Method o2) {
-      ChangeSetItem c1 = annotationManager.getChangePerformerItem(o1);
-      ChangeSetItem c2 = annotationManager.getChangePerformerItem(o2);
+    public int compare(CHANGESET c1, CHANGESET c2) {
       return c1.getOrder().compareTo(c2.getOrder());
     }
   }
 
   private class ChangeLogComparator implements Comparator<CHANGELOG>, Serializable {
     private static final long serialVersionUID = -358162121872177974L;
-    private final AnnotationProcessor annotationManager;
+    private final AnnotationProcessor<CHANGESET> annotationManager;
 
-    ChangeLogComparator(AnnotationProcessor annotationManager) {
+    ChangeLogComparator(AnnotationProcessor<CHANGESET> annotationManager) {
       this.annotationManager = annotationManager;
     }
 

@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ChangeSetItem {
 
@@ -18,6 +19,7 @@ public class ChangeSetItem {
   private final Method method;
 
   private final boolean failFast;
+  private final Method rollbackMethod;
 
 
   public ChangeSetItem(String id,
@@ -26,14 +28,16 @@ public class ChangeSetItem {
                        boolean runAlways,
                        String systemVersion,
                        boolean failFast,
-                       Method method) {
+                       Method changeSetMethod,
+                       Method rollbackMethod) {
     this.id = id;
     this.author = author;
     this.order = order;
     this.runAlways = runAlways;
     this.systemVersion = systemVersion;
-    this.method = method;
+    this.method = changeSetMethod;
     this.failFast = failFast;
+    this.rollbackMethod = rollbackMethod;
   }
 
 
@@ -65,6 +69,9 @@ public class ChangeSetItem {
     return failFast;
   }
 
+  public Optional<Method> getRollbackMethod() {
+    return Optional.ofNullable(rollbackMethod);
+  }
 
   @Override
   public boolean equals(Object o) {

@@ -45,7 +45,7 @@ public abstract class RunnerBuilderBase<
   protected final Operation<R> operation;
   protected final CONFIG config;//todo make it independent from external configuration
   protected final ExecutorFactory<CHANGELOG, ? extends ChangeSetItem, CHANGE_ENTRY, CONFIG, R> executorFactory;
-  protected final ChangeLogServiceBase<CHANGELOG> changeLogService;
+  protected final ChangeLogServiceBase<CHANGELOG, CHANGESET> changeLogService;
   protected final DependencyManager dependencyManager;
   protected EventPublisher<R> eventPublisher = new EventPublisher<>();
   protected ConnectionDriver<CHANGE_ENTRY> driver;
@@ -58,7 +58,7 @@ public abstract class RunnerBuilderBase<
 
   protected RunnerBuilderBase(Operation<R> operation,
                               ExecutorFactory<CHANGELOG, ? extends ChangeSetItem, CHANGE_ENTRY, CONFIG, R> executorFactory,
-                              ChangeLogServiceBase<CHANGELOG> changeLogService,
+                              ChangeLogServiceBase<CHANGELOG, CHANGESET> changeLogService,
                               DependencyManager dependencyManager,
                               CONFIG config) {
     this.operation = operation;

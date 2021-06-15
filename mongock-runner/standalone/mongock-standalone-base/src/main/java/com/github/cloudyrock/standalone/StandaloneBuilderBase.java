@@ -27,7 +27,7 @@ public abstract class StandaloneBuilderBase<
 
   protected StandaloneBuilderBase(Operation<R> operation,
                                   ExecutorFactory<CHANGELOG, CHANGESET, CHANGE_ENTRY, CONFIG, R> executorFactory,
-                                  ChangeLogServiceBase<CHANGELOG> changeLogService,
+                                  ChangeLogServiceBase<CHANGELOG, CHANGESET> changeLogService,
                                   CONFIG config) {
     super(operation, executorFactory, changeLogService, new DependencyManager(), config);
   }

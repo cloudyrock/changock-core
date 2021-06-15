@@ -4,11 +4,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public interface AnnotationProcessor {
+public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
 
   Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
 
   boolean isMethodAnnotatedAsChange(Method method);
+
+  boolean isRollback(Method method);
 
   String getChangeLogOrder(Class<?> type);
 
@@ -24,5 +26,12 @@ public interface AnnotationProcessor {
    * @param changeSetMethod
    * @return The metadata associated to a change method
    */
-  ChangeSetItem getChangePerformerItem(Method changeSetMethod);
+  default CHANGESET getChangePerformerItem(Method changeSetMethod) {
+    return getChangePerformerItem(changeSetMethod, null);
+  }
+
+
+  CHANGESET getChangePerformerItem(Method changeSetMethod, Method rollbackMethod);
+
+  String getId(Method method);
 }
