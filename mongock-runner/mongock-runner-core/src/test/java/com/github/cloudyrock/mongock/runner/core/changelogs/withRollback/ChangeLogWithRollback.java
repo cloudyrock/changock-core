@@ -3,9 +3,15 @@ package com.github.cloudyrock.mongock.runner.core.changelogs.withRollback;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.Rollback;
+import org.apache.commons.lang3.concurrent.TimedSemaphore;
+
+import java.util.concurrent.CountDownLatch;
 
 @ChangeLog(order = "1")
 public class ChangeLogWithRollback {
+
+  public final static CountDownLatch rollbackCalledLatch = new CountDownLatch(1);
+
 
   @ChangeSet(
       author = "mongock_test",
@@ -18,7 +24,7 @@ public class ChangeLogWithRollback {
 
   @Rollback("changeset_with_rollback_1")
   public void rollbackChangeSetFailing1() {
-
+    rollbackCalledLatch.countDown();
   }
 
 

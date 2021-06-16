@@ -3,22 +3,35 @@ package com.github.cloudyrock.mongock;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 
 public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
 
-  Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
+  default Collection<Class<? extends Annotation>> getChangeLogAnnotationClass() {
+    return Collections.singletonList(ChangeLog.class);
+  }
 
   boolean isMethodAnnotatedAsChange(Method method);
 
-  boolean isRollback(Method method);
+  default boolean isRollback(Method method) {
+    return method.isAnnotationPresent(Rollback.class);
+  }
 
-  String getChangeLogOrder(Class<?> type);
+  default String getChangeLogOrder(Class<?> type) {
+    return type.getAnnotation(ChangeLog.class).order();
+  }
 
-  boolean isFailFast(Class<?> changeLogClass);
+  default boolean isFailFast(Class<?> changeLogClass) {
+    return changeLogClass.getAnnotation(ChangeLog.class).failFast();
+  }
 
-  boolean isPreMigration(Class<?> changeLogClass);
+  default boolean isPreMigration(Class<?> type) {
+    return type.isAnnotationPresent(PreMigration.class);
+  }
 
-  boolean isPostMigration(Class<?> changeLogClass);
+  default boolean isPostMigration(Class<?> type) {
+    return type.isAnnotationPresent(PostMigration.class);
+  }
 
   /**
    * Returns the metatada associated to a method via a mongock change annotation, which includes
@@ -33,5 +46,12 @@ public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
 
   CHANGESET getChangePerformerItem(Method changeSetMethod, Method rollbackMethod);
 
-  String getId(Method method);
+  default String getId(Method method) {
+    if (isRollback(method)) {
+      Rollback ann = method.getAnnotation(Rollback.class);
+      return ann.value();
+    } else {
+      return getChangePerformerItem(method).getId();
+    }
+  }
 }
