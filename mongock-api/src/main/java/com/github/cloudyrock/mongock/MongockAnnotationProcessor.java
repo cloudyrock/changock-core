@@ -52,7 +52,7 @@ public class MongockAnnotationProcessor implements AnnotationProcessor<ChangeSet
   public String getId(Method changeSetMethod) {
     if (isRollback(changeSetMethod)) {
       Rollback ann = changeSetMethod.getAnnotation(Rollback.class);
-      return ann.id();
+      return ann.value();
     } else {
       return getChangePerformerItem(changeSetMethod).getId();
     }

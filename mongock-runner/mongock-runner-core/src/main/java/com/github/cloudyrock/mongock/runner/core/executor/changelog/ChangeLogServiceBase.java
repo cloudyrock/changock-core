@@ -148,25 +148,40 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
 
 
   private List<CHANGESET> getChangeSetWithCompanionMethods(List<Method> allMethods) throws MongockException {
-    Set<String> changeSetIds = new HashSet<>();
+
     // retrieves all the methods annotated with changeSet, preChangeSets, postChangeSets, etc.
     List<Method> changeSetMethods = allMethods.stream().filter(annotationProcessor::isMethodAnnotatedAsChange).collect(Collectors.toList());
+    Set<String> changeSetIds = changeSetMethods.stream().map(annotationProcessor::getId).collect(Collectors.toSet());
+
     // retrieves all the rollback methods
     Map<String, Method> rollbackMethods = allMethods
         .stream()
         .filter(annotationProcessor::isRollback)
+        .peek(method -> {
+          String rollbackId = annotationProcessor.getId(method);
+          if(!changeSetIds.contains(rollbackId)) {
+            throw new MongockException(String.format(
+                "Rollback method[%s] in class[%s] with id[%s] doesn't match any changeSet",
+                method.getName(),
+                method.getDeclaringClass().getSimpleName(),
+                rollbackId));
+          }
+        })
         .collect(Collectors.toMap(annotationProcessor::getId, method -> method));
+
+
 
     //list to be returned
     List<CHANGESET> result = new ArrayList<>();
+    Set<String> changeSetIdsAlreadyProcessed = new HashSet<>();
     for (final Method changeSetMethod : changeSetMethods) {
       String changeSetId = annotationProcessor.getId(changeSetMethod);
       CHANGESET changeSetItem = annotationProcessor.getChangePerformerItem(changeSetMethod, rollbackMethods.get(changeSetId));
 
-      if (changeSetIds.contains(changeSetId)) {
+      if (changeSetIdsAlreadyProcessed.contains(changeSetId)) {
         throw new MongockException(String.format("Duplicated changeset id found: '%s'", changeSetId));
       }
-      changeSetIds.add(changeSetId);
+      changeSetIdsAlreadyProcessed.add(changeSetId);
       if (isChangeSetWithinSystemVersionRange(changeSetItem)) {
         result.add(changeSetItem);
       }

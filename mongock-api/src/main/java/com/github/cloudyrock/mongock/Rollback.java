@@ -21,7 +21,7 @@ public @interface Rollback {
    *
    * @return unique id
    */
-  String id();
+  String value();
 
 
 }
