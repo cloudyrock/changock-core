@@ -140,7 +140,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
     return Stream.concat(packageStream, changeLogsBaseClassList.stream()).collect(Collectors.toSet());
   }
 
-  protected List<CHANGESET> fetchChangeSetMethodsSorted(final Class<?> type) throws MongockException {
+  protected List<CHANGESET> fetchChangeSetMethodsSorted(Class<?> type) throws MongockException {
     List<CHANGESET> changeSets = getChangeSetWithCompanionMethods(asList(type.getDeclaredMethods()));
     changeSets.sort(new ChangeSetComparator());
     return changeSets;
@@ -171,7 +171,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
     //list to be returned
     List<CHANGESET> result = new ArrayList<>();
     Set<String> changeSetIdsAlreadyProcessed = new HashSet<>();
-    for (final Method changeSetMethod : changeSetMethods) {
+    for (Method changeSetMethod : changeSetMethods) {
       String changeSetId = annotationProcessor.getId(changeSetMethod);
       CHANGESET changeSetItem = annotationProcessor.getChangePerformerItem(changeSetMethod, rollbackMethods.get(changeSetId));
       checkChangeSetDuplication(changeSetIdsAlreadyProcessed, changeSetId);
