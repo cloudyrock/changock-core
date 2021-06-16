@@ -29,6 +29,7 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.alread
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.runalways.ChangeLogAlreadyExecutedRunAlways;
 import com.github.cloudyrock.mongock.runner.core.changelogs.skipmigration.withnochangeset.ChangeLogWithNoChangeSet;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withRollback.ChangeLogWithRollback;
+import com.github.cloudyrock.mongock.runner.core.changelogs.withRollback.ChangeLogWithRollbackThrowingException;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.change.MigrationExecutor;
@@ -818,6 +819,7 @@ public class MigrationExecutorImplTest {
 
 
 
+  @Test
   public void shouldRollback_whenChangeSetFails_ifNoTransaction() throws InterruptedException {
     // given
     when(transactionableDriver.getLockManager()).thenReturn(lockManager);
@@ -837,6 +839,39 @@ public class MigrationExecutorImplTest {
 
     assertTrue("Rollback method wasn't executed", ChangeLogWithRollback.rollbackCalledLatch.await(1, TimeUnit.NANOSECONDS));
 
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
+
+    ChangeEntry changeEntry = changeEntryCaptor.getValue();
+    assertEquals(ChangeState.ROLLED_BACK, changeEntry.getState());
+
+  }
+
+  @Test
+  public void shouldReturnFailedChangeEntry_whenRollback_ifThrowsTransaction() throws InterruptedException {
+    // given
+    when(transactionableDriver.getLockManager()).thenReturn(lockManager);
+
+    // when
+    MongockConfiguration config = new MongockConfiguration();
+    config.setServiceIdentifier("myService");
+    config.setTrackIgnored(false);
+
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBaseClassList(Collections.singletonList(ChangeLogWithRollbackThrowingException.class));
+
+    MongockException ex = Assert.assertThrows(
+        MongockException.class,
+        () -> new MigrationExecutor("", changeLogService.fetchChangeLogs(), driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
+            .executeMigration());
+
+    assertTrue("Rollback method wasn't executed", ChangeLogWithRollbackThrowingException.rollbackCalledLatch.await(1, TimeUnit.NANOSECONDS));
+
+    ArgumentCaptor<ChangeEntry> changeEntryCaptor = ArgumentCaptor.forClass(ChangeEntry.class);
+    verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
+
+    ChangeEntry changeEntry = changeEntryCaptor.getValue();
+    assertEquals(ChangeState.FAILED, changeEntry.getState());
 
   }
 

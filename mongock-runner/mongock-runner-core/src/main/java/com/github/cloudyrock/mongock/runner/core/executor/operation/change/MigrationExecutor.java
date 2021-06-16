@@ -31,4 +31,9 @@ public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem<Chang
   protected ChangeEntry createChangeEntryInstance(String executionId, String executionHostname, ChangeSetItem changeSetItem, long executionTimeMillis, ChangeState state) {
     return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, executionHostname, metadata);
   }
+
+  @Override
+  protected boolean isTransactionEnabled() {
+    return driver.getTransactioner().isPresent();
+  }
 }
