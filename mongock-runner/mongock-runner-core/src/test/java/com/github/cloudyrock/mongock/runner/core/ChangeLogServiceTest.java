@@ -14,14 +14,13 @@ import com.github.cloudyrock.mongock.runner.core.changelogs.multipackage.package
 import com.github.cloudyrock.mongock.runner.core.changelogs.systemversion.ChangeLogSystemVersion;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess11;
 import com.github.cloudyrock.mongock.runner.core.changelogs.test1.ChangeLogSuccess12;
+import com.github.cloudyrock.mongock.runner.core.changelogs.withRollback.ChangeLogWithMultipleRollbacks;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withRollback.ChangeLogWithRollback;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withRollback.ChangeLogWithRollbackWithWrongId;
 import com.github.cloudyrock.mongock.runner.core.changelogs.withnoannotations.ChangeLogNormal;
 import com.github.cloudyrock.mongock.runner.core.executor.changelog.ChangeLogService;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -360,11 +359,19 @@ public class ChangeLogServiceTest {
     ChangeLogService changeLogService = new ChangeLogService();
     changeLogService.setChangeLogsBaseClassList(Collections.singletonList(ChangeLogWithRollbackWithWrongId.class));
 
-    Assert.assertThrows(
-        "Rollback method[rollbackChangeSetFailing1] in class[ChangeLogWithRollbackWithWrongId] with id[wrong_id] doesn't match any changeSet",
-        MongockException.class,
-        changeLogService::fetchChangeLogs
-    );
+    MongockException ex = Assert.assertThrows(MongockException.class, changeLogService::fetchChangeLogs);
+    assertEquals("Rollback method[rollbackChangeSetFailing1] in class[ChangeLogWithRollbackWithWrongId] with id[wrong_id] doesn't match any changeSet", ex.getMessage());
+  }
+
+
+  @Test
+  public void shouldThroughExceptionWhenMoreThanOneRollbackMatchingSameChangeSet() {
+    ChangeLogService changeLogService = new ChangeLogService();
+    changeLogService.setChangeLogsBaseClassList(Collections.singletonList(ChangeLogWithMultipleRollbacks.class));
+
+    MongockException ex = Assert.assertThrows(MongockException.class, changeLogService::fetchChangeLogs);
+    assertEquals("Multiple rollbacks matching the same changeSetId[changeset_with_multiple_rollbacks]. Only one rollback allowed per changeSet", ex.getMessage());
+
   }
 
 }

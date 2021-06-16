@@ -154,18 +154,15 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
     Set<String> changeSetIds = changeSetMethods.stream().map(annotationProcessor::getId).collect(Collectors.toSet());
 
     // retrieves all the rollback methods
+    Set<String> rollbacksAlreadyProcessed = new HashSet<>();
     Map<String, Method> rollbackMethods = allMethods
         .stream()
         .filter(annotationProcessor::isRollback)
         .peek(method -> {
           String rollbackId = annotationProcessor.getId(method);
-          if(!changeSetIds.contains(rollbackId)) {
-            throw new MongockException(String.format(
-                "Rollback method[%s] in class[%s] with id[%s] doesn't match any changeSet",
-                method.getName(),
-                method.getDeclaringClass().getSimpleName(),
-                rollbackId));
-          }
+          checkRollbackMatchesChangeSet(changeSetIds, method, rollbackId);
+          checkRollbackDuplication(rollbacksAlreadyProcessed, rollbackId);
+          rollbacksAlreadyProcessed.add(rollbackId);
         })
         .collect(Collectors.toMap(annotationProcessor::getId, method -> method));
 
@@ -177,10 +174,7 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
     for (final Method changeSetMethod : changeSetMethods) {
       String changeSetId = annotationProcessor.getId(changeSetMethod);
       CHANGESET changeSetItem = annotationProcessor.getChangePerformerItem(changeSetMethod, rollbackMethods.get(changeSetId));
-
-      if (changeSetIdsAlreadyProcessed.contains(changeSetId)) {
-        throw new MongockException(String.format("Duplicated changeset id found: '%s'", changeSetId));
-      }
+      checkChangeSetDuplication(changeSetIdsAlreadyProcessed, changeSetId);
       changeSetIdsAlreadyProcessed.add(changeSetId);
       if (isChangeSetWithinSystemVersionRange(changeSetItem)) {
         result.add(changeSetItem);
@@ -239,6 +233,32 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
         return changeLog1.getType().getCanonicalName().compareTo(changeLog2.getType().getCanonicalName());
       }
 
+    }
+  }
+
+
+  private void checkChangeSetDuplication(Set<String> changeSetIdsAlreadyProcessed, String changeSetId) {
+    if (changeSetIdsAlreadyProcessed.contains(changeSetId)) {
+      throw new MongockException(String.format("Duplicated changeset id found: '%s'", changeSetId));
+    }
+  }
+
+  private void checkRollbackMatchesChangeSet(Set<String> changeSetIds, Method method, String rollbackId) {
+    if(!changeSetIds.contains(rollbackId)) {
+      throw new MongockException(String.format(
+          "Rollback method[%s] in class[%s] with id[%s] doesn't match any changeSet",
+          method.getName(),
+          method.getDeclaringClass().getSimpleName(),
+          rollbackId));
+    }
+  }
+
+  private void checkRollbackDuplication(Set<String> rollbacksAlreadyProcessed, String rollbackId) {
+    if(rollbacksAlreadyProcessed.contains(rollbackId)) {
+      throw new MongockException(String.format(
+          "Multiple rollbacks matching the same changeSetId[%s]. Only one rollback allowed per changeSet",
+          rollbackId
+      ));
     }
   }
 
