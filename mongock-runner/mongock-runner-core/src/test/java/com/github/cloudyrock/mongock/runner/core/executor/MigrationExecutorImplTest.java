@@ -871,7 +871,7 @@ public class MigrationExecutorImplTest {
     verify(changeEntryService, new Times(1)).save(changeEntryCaptor.capture());
 
     ChangeEntry changeEntry = changeEntryCaptor.getValue();
-    assertEquals(ChangeState.FAILED, changeEntry.getState());
+    assertEquals(ChangeState.ROLLBACK_FAILED, changeEntry.getState());
 
   }
 

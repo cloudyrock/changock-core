@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
+import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLBACK_FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLED_BACK;
 
 @NotThreadSafe
@@ -200,7 +201,7 @@ public abstract class MigrationExecutorBase<
           try{
             executeChangeSetMethod(method, changelogInstance);
           } catch (Exception rollbackException) {
-            rollbackExecutionState = FAILED;
+            rollbackExecutionState = ROLLBACK_FAILED;
           }
           return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, rollbackExecutionState);
         })
@@ -219,6 +220,12 @@ public abstract class MigrationExecutorBase<
         break;
       case FAILED:
         logger.info("FAILED OVER - {}", changeSetItem.toPrettyString());
+        break;
+      case ROLLED_BACK:
+        logger.info("ROLLED BACK - {}", changeSetItem.toPrettyString());
+        break;
+      case ROLLBACK_FAILED:
+        logger.info("ROLL BACK FAILED- {}", changeSetItem.toPrettyString());
         break;
     }
   }

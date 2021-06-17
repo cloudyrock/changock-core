@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.runner.core.changelogs.withRollback;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.Rollback;
-import org.apache.commons.lang3.concurrent.TimedSemaphore;
 
 import java.util.concurrent.CountDownLatch;
 
