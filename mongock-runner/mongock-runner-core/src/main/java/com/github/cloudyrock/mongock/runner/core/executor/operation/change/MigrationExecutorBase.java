@@ -169,14 +169,17 @@ public abstract class MigrationExecutorBase<
     boolean alreadyExecuted = false;
     try {
       if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem)) || changeSetItem.isRunAlways()) {
+        logger.debug("executing changeSet[{}]", changeSetItem.getId());
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, executionTimeMillis, EXECUTED);
+        logger.debug("successfully executed changeSet[{}]", changeSetItem.getId());
 
       } else {
         changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, IGNORED);
 
       }
     } catch (Exception ex) {
+      logger.debug("failure when executing changeSet[{}]", changeSetItem.getId());
       changeEntry = rollbackIfAppliesAndGetFailedChangeEntry(executionId, executionHostname, changelogInstance, changeSetItem);
       throw ex;
     } finally {
@@ -194,18 +197,29 @@ public abstract class MigrationExecutorBase<
   }
 
   private CHANGE_ENTRY rollbackIfAppliesAndGetFailedChangeEntry(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) {
-    return changeSetItem.getRollbackMethod()
-        .filter(method -> !this.isTransactionEnabled())
-        .map(method -> {
-          ChangeState rollbackExecutionState = ROLLED_BACK;
-          try{
-            executeChangeSetMethod(method, changelogInstance);
-          } catch (Exception rollbackException) {
-            rollbackExecutionState = ROLLBACK_FAILED;
-          }
-          return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, rollbackExecutionState);
-        })
-        .orElseGet(() -> createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED));
+    if(!this.isTransactionEnabled()) {
+      if(changeSetItem.getRollbackMethod().isPresent()) {
+        logger.debug("rolling back changeSet[{}]", changeSetItem.getId());
+        ChangeState rollbackExecutionState = ROLLED_BACK;
+        try{
+          executeChangeSetMethod(changeSetItem.getRollbackMethod().get(), changelogInstance);
+          logger.debug("successfully rolled back changeSet[{}]", changeSetItem.getId());
+        } catch (Exception rollbackException) {
+          logger.debug("failure when rolling back changeSet[{}]", changeSetItem.getId());
+          rollbackExecutionState = ROLLBACK_FAILED;
+        }
+        return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, rollbackExecutionState);
+
+      } else {
+        logger.warn("ChangeSet[{}] failed, but no transaction enabled nor rollback provided", changeSetItem.getId());
+        return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+      }
+
+    } else {
+      logger.debug("changeSet[{}] failed. Rollback delegated to transaction", changeSetItem.getId());
+      return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+    }
+
 
   }
 
