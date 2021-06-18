@@ -33,7 +33,7 @@ public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem<Chang
   }
 
   @Override
-  protected boolean isTransactionEnabled() {
+  protected boolean isTransactionOfAnyKindEnabled() {
     return driver.getTransactioner().isPresent();
   }
 }

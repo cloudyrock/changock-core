@@ -197,7 +197,7 @@ public abstract class MigrationExecutorBase<
   }
 
   private CHANGE_ENTRY rollbackIfAppliesAndGetFailedChangeEntry(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) {
-    if(!this.isTransactionEnabled()) {
+    if(!this.isTransactionOfAnyKindEnabled()) {
       if(changeSetItem.getRollbackMethod().isPresent()) {
         logger.debug("rolling back changeSet[{}]", changeSetItem.getId());
         ChangeState rollbackExecutionState = ROLLED_BACK;
@@ -296,7 +296,7 @@ public abstract class MigrationExecutorBase<
   }
 
 
-  protected abstract boolean isTransactionEnabled();
+  protected abstract boolean isTransactionOfAnyKindEnabled();
 
 
 }
