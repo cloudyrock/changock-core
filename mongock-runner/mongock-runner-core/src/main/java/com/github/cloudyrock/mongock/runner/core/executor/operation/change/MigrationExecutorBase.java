@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
-import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeState;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,6 +34,8 @@ import java.util.stream.Collectors;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
+import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLBACK_FAILED;
+import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLED_BACK;
 
 @NotThreadSafe
 public abstract class MigrationExecutorBase<
@@ -97,7 +97,7 @@ public abstract class MigrationExecutorBase<
 
   protected void processMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
     List<CHANGELOG> changeLogsMigration = changeLogs.stream().filter(CHANGELOG::isMigration).collect(Collectors.toList());
-    getTransactioner()
+    driver.getTransactioner()
         .orElse(Runnable::run)
         .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
   }
@@ -169,15 +169,18 @@ public abstract class MigrationExecutorBase<
     boolean alreadyExecuted = false;
     try {
       if (!(alreadyExecuted = isAlreadyExecuted(changeSetItem)) || changeSetItem.isRunAlways()) {
+        logger.debug("executing changeSet[{}]", changeSetItem.getId());
         final long executionTimeMillis = executeChangeSetMethod(changeSetItem.getMethod(), changelogInstance);
         changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, executionTimeMillis, EXECUTED);
+        logger.debug("successfully executed changeSet[{}]", changeSetItem.getId());
 
       } else {
         changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, IGNORED);
 
       }
     } catch (Exception ex) {
-      changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+      logger.debug("failure when executing changeSet[{}]", changeSetItem.getId());
+      changeEntry = rollbackIfAppliesAndGetFailedChangeEntry(executionId, executionHostname, changelogInstance, changeSetItem);
       throw ex;
     } finally {
       if (changeEntry != null) {
@@ -193,6 +196,34 @@ public abstract class MigrationExecutorBase<
     }
   }
 
+  private CHANGE_ENTRY rollbackIfAppliesAndGetFailedChangeEntry(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) {
+    if(!this.isTransactionOfAnyKindEnabled()) {
+      if(changeSetItem.getRollbackMethod().isPresent()) {
+        logger.debug("rolling back changeSet[{}]", changeSetItem.getId());
+        ChangeState rollbackExecutionState = ROLLED_BACK;
+        try{
+          executeChangeSetMethod(changeSetItem.getRollbackMethod().get(), changelogInstance);
+          logger.debug("successfully rolled back changeSet[{}]", changeSetItem.getId());
+        } catch (Exception rollbackException) {
+          logger.debug("failure when rolling back changeSet[{}]", changeSetItem.getId());
+          rollbackExecutionState = ROLLBACK_FAILED;
+        }
+        return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, rollbackExecutionState);
+
+      } else {
+        logger.warn("ChangeSet[{}] failed, but no transaction enabled nor rollback provided", changeSetItem.getId());
+        return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+      }
+
+    } else {
+      logger.debug("changeSet[{}] failed. Rollback delegated to transaction", changeSetItem.getId());
+      return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+    }
+
+
+  }
+
+
   private void logChangeEntry(CHANGE_ENTRY changeEntry, CHANGESET changeSetItem, boolean alreadyExecuted) {
     switch (changeEntry.getState()) {
       case EXECUTED:
@@ -203,6 +234,12 @@ public abstract class MigrationExecutorBase<
         break;
       case FAILED:
         logger.info("FAILED OVER - {}", changeSetItem.toPrettyString());
+        break;
+      case ROLLED_BACK:
+        logger.info("ROLLED BACK - {}", changeSetItem.toPrettyString());
+        break;
+      case ROLLBACK_FAILED:
+        logger.info("ROLL BACK FAILED- {}", changeSetItem.toPrettyString());
         break;
     }
   }
@@ -247,7 +284,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  @SuppressWarnings("unchecked")
+
   protected void initializationAndValidation() throws MongockException {
     this.executionInProgress = true;
     driver.initialize();
@@ -259,10 +296,7 @@ public abstract class MigrationExecutorBase<
   }
 
 
-  protected Optional<Transactioner> getTransactioner() {
-    //this casting is required because Java Generic is broken. As the connectionDriver is generic, it cannot deduce the
-    //type of the Optional
-    return (Optional<Transactioner>) driver.getTransactioner();
-  }
+  protected abstract boolean isTransactionOfAnyKindEnabled();
+
 
 }

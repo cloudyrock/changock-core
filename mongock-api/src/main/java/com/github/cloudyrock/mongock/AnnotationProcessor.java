@@ -3,20 +3,35 @@ package com.github.cloudyrock.mongock;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 
-public interface AnnotationProcessor {
+public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
 
-  Collection<Class<? extends Annotation>> getChangeLogAnnotationClass();
+  default Collection<Class<? extends Annotation>> getChangeLogAnnotationClass() {
+    return Collections.singletonList(ChangeLog.class);
+  }
 
   boolean isMethodAnnotatedAsChange(Method method);
 
-  String getChangeLogOrder(Class<?> type);
+  default boolean isRollback(Method method) {
+    return method.isAnnotationPresent(Rollback.class);
+  }
 
-  boolean isFailFast(Class<?> changeLogClass);
+  default String getChangeLogOrder(Class<?> type) {
+    return type.getAnnotation(ChangeLog.class).order();
+  }
 
-  boolean isPreMigration(Class<?> changeLogClass);
+  default boolean isFailFast(Class<?> changeLogClass) {
+    return changeLogClass.getAnnotation(ChangeLog.class).failFast();
+  }
 
-  boolean isPostMigration(Class<?> changeLogClass);
+  default boolean isPreMigration(Class<?> type) {
+    return type.isAnnotationPresent(PreMigration.class);
+  }
+
+  default boolean isPostMigration(Class<?> type) {
+    return type.isAnnotationPresent(PostMigration.class);
+  }
 
   /**
    * Returns the metatada associated to a method via a mongock change annotation, which includes
@@ -24,5 +39,19 @@ public interface AnnotationProcessor {
    * @param changeSetMethod
    * @return The metadata associated to a change method
    */
-  ChangeSetItem getChangePerformerItem(Method changeSetMethod);
+  default CHANGESET getChangePerformerItem(Method changeSetMethod) {
+    return getChangePerformerItem(changeSetMethod, null);
+  }
+
+
+  CHANGESET getChangePerformerItem(Method changeSetMethod, Method rollbackMethod);
+
+  default String getId(Method method) {
+    if (isRollback(method)) {
+      Rollback ann = method.getAnnotation(Rollback.class);
+      return ann.value();
+    } else {
+      return getChangePerformerItem(method).getId();
+    }
+  }
 }

@@ -48,7 +48,7 @@ public abstract class SpringbootBuilderBase<
 
   protected SpringbootBuilderBase(Operation<R> operation,
                                   ExecutorFactory<CHANGELOG, CHANGESET, CHANGE_ENTRY, CONFIG, R> executorFactory,
-                                  ChangeLogServiceBase<CHANGELOG> changeLogService,
+                                  ChangeLogServiceBase<CHANGELOG, CHANGESET> changeLogService,
                                   CONFIG config) {
     super(operation, executorFactory, changeLogService, new DependencyManagerWithContext(), config);
     parameterNameFunction = buildParameterNameFunctionForSpring();
