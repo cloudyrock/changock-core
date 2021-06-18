@@ -284,7 +284,7 @@ public abstract class MigrationExecutorBase<
     }
   }
 
-  @SuppressWarnings("unchecked")
+
   protected void initializationAndValidation() throws MongockException {
     this.executionInProgress = true;
     driver.initialize();

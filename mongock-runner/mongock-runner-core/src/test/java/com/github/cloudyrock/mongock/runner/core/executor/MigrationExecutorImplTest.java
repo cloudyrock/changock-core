@@ -832,7 +832,7 @@ public class MigrationExecutorImplTest {
     ChangeLogService changeLogService = new ChangeLogService();
     changeLogService.setChangeLogsBaseClassList(Collections.singletonList(ChangeLogWithRollback.class));
 
-    MongockException ex = Assert.assertThrows(
+    Assert.assertThrows(
         MongockException.class,
         () -> new MigrationExecutor("", changeLogService.fetchChangeLogs(), driver, new DependencyManager(), DEFAULT_PARAM_NAME_PROVIDER, config)
             .executeMigration());
