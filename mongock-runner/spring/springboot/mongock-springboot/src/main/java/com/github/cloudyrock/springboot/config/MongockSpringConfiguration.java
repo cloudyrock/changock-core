@@ -1,8 +1,8 @@
 package com.github.cloudyrock.springboot.config;
 
 import com.github.cloudyrock.mongock.config.MongockConfiguration;
-import com.github.cloudyrock.spring.config.MongockSpringConfigurationBase;
-import com.github.cloudyrock.spring.config.SpringRunnerType;
+import com.github.cloudyrock.springboot.base.config.MongockSpringConfigurationBase;
+import com.github.cloudyrock.springboot.base.config.SpringRunnerType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

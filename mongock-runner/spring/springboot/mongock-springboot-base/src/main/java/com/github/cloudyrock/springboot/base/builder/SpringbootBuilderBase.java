@@ -14,7 +14,7 @@ import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyC
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
-import com.github.cloudyrock.spring.util.ProfileUtil;
+import com.github.cloudyrock.springboot.base.util.ProfileUtil;
 import com.github.cloudyrock.springboot.base.MongockApplicationRunner;
 import com.github.cloudyrock.springboot.base.MongockInitializingBeanRunner;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;

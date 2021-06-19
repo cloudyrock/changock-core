@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring.config;
+package com.github.cloudyrock.springboot.base.config;
 
 /**
  * It needs to be loaded explicitly in the Driver importer(example MongoSpringDataImporter.java)

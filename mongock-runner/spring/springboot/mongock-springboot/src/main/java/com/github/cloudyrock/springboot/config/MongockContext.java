@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.springboot.MigrationSpringbootBuilder;
 import com.github.cloudyrock.springboot.MongockSpringboot;
 import com.github.cloudyrock.springboot.base.config.MongockContextBase;
-import com.github.cloudyrock.springboot.base.config.MongockDriverContextSelector;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
