@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring.util.importers;
+package com.github.cloudyrock.springboot.base.util.importers;
 
 public class ArtifactDescriptor {
 

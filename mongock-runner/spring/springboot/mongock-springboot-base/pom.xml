@@ -37,11 +37,6 @@
 
   <dependencies>
     <!-- MONGOCK -->
-
-    <dependency>
-      <groupId>com.github.cloudyrock.mongock</groupId>
-      <artifactId>mongock-spring-runner-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.github.cloudyrock.mongock</groupId>
       <artifactId>mongock-runner-core</artifactId>

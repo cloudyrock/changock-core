@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring.util;
+package com.github.cloudyrock.springboot.base.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

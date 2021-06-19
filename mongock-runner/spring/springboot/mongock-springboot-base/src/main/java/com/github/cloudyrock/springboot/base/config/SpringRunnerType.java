@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring.config;
+package com.github.cloudyrock.springboot.base.config;
 
 public enum SpringRunnerType {
   InitializingBean, ApplicationRunner
