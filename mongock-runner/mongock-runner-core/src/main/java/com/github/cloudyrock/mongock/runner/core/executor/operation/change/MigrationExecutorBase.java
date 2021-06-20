@@ -14,6 +14,7 @@ import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.runner.core.executor.Executor;
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManager;
 import com.github.cloudyrock.mongock.utils.LogUtils;
+import com.github.cloudyrock.mongock.utils.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.InetAddress;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -44,7 +47,9 @@ public abstract class MigrationExecutorBase<
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
+  private final Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
+
   protected final ConnectionDriver<CHANGE_ENTRY> driver;
   protected final String serviceIdentifier;
   protected final boolean trackIgnored;
@@ -54,6 +59,7 @@ public abstract class MigrationExecutorBase<
   private final Function<Parameter, String> parameterNameProvider;
   private boolean executionInProgress = false;
   private final String executionId;
+
 
   public MigrationExecutorBase(String executionId,
                                SortedSet<CHANGELOG> changeLogs,
@@ -121,12 +127,27 @@ public abstract class MigrationExecutorBase<
   protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
       for (CHANGESET changeSet : changeLog.getChangeSetItems()) {
+        processedChangeSets.push(new Pair<>(changeLog, changeSet));
         processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
       }
     } catch (Exception e) {
       if (changeLog.isFailFast()) {
+        rollbackProcessedChangeSetsIfApply(executionId, executionHostname, processedChangeSets);
         throw e;
       }
+    }
+  }
+
+  protected void rollbackProcessedChangeSetsIfApply(String executionId, String hostname, Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets) {
+    if(!isTransactionOfAnyKindEnabled()) {
+      logger.info("Mongock migration aborted and DB transaction not enabled. Starting manual rollback process");
+      processedChangeSets.forEach(pair -> {
+        try {
+          rollbackIfAppliesAndTrackChangeEntry(executionId, hostname, pair.getFirst().getInstance(), pair.getSecond());
+        } catch (Exception e) {
+          throw e instanceof MongockException ? (MongockException)e : new MongockException(e);
+        }
+      });
     }
   }
 
@@ -164,7 +185,7 @@ public abstract class MigrationExecutorBase<
     return driver.getChangeEntryService().isAlreadyExecuted(changeSetItem.getId(), changeSetItem.getAuthor());
   }
 
-  protected  void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) throws IllegalAccessException, InvocationTargetException {
+  protected void executeAndLogChangeSet(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) throws IllegalAccessException, InvocationTargetException {
     CHANGE_ENTRY changeEntry = null;
     boolean alreadyExecuted = false;
     try {
@@ -180,46 +201,46 @@ public abstract class MigrationExecutorBase<
       }
     } catch (Exception ex) {
       logger.debug("failure when executing changeSet[{}]", changeSetItem.getId());
-      changeEntry = rollbackIfAppliesAndGetFailedChangeEntry(executionId, executionHostname, changelogInstance, changeSetItem);
+      changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
       throw ex;
     } finally {
       if (changeEntry != null) {
         logChangeEntry(changeEntry, changeSetItem, alreadyExecuted);
-        // if not runAlways or, being runAlways, it hasn't been executed before
-        if (!changeSetItem.isRunAlways() || !alreadyExecuted) {
-          //if not ignored or, being ignored, should be tracked anyway
-          if (changeEntry.getState() != IGNORED || trackIgnored) {
-            driver.getChangeEntryService().save(changeEntry);
-          }
-        }
+        trackChangeEntry(changeSetItem, changeEntry, alreadyExecuted);
       }
     }
   }
 
-  private CHANGE_ENTRY rollbackIfAppliesAndGetFailedChangeEntry(String executionId, String executionHostname, Object changelogInstance, CHANGESET changeSetItem) {
-    if(!this.isTransactionOfAnyKindEnabled()) {
-      if(changeSetItem.getRollbackMethod().isPresent()) {
-        logger.debug("rolling back changeSet[{}]", changeSetItem.getId());
-        ChangeState rollbackExecutionState = ROLLED_BACK;
-        try{
-          executeChangeSetMethod(changeSetItem.getRollbackMethod().get(), changelogInstance);
-          logger.debug("successfully rolled back changeSet[{}]", changeSetItem.getId());
-        } catch (Exception rollbackException) {
-          logger.debug("failure when rolling back changeSet[{}]", changeSetItem.getId());
-          rollbackExecutionState = ROLLBACK_FAILED;
-        }
-        return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, rollbackExecutionState);
+  private void trackChangeEntry(CHANGESET changeSetItem, CHANGE_ENTRY changeEntry, boolean alreadyExecuted) {
+    // if not runAlways or, being runAlways, it hasn't been executed before
+    if (!changeSetItem.isRunAlways() || !alreadyExecuted) {
+      //if not ignored or, being ignored, should be tracked anyway
+      if (changeEntry.getState() != IGNORED || trackIgnored) {
+        driver.getChangeEntryService().saveOrUpdate(changeEntry);
+      }
+    }
+  }
 
-      } else {
-        logger.warn("ChangeSet[{}] failed, but no transaction enabled nor rollback provided", changeSetItem.getId());
-        return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+  private void rollbackIfAppliesAndTrackChangeEntry(String executionId, String executionHostname, Object changeLogInstance, CHANGESET changeSetItem) throws InvocationTargetException, IllegalAccessException {
+
+    if (changeSetItem.getRollbackMethod().isPresent()) {
+      logger.debug("rolling back changeSet[{}]", changeSetItem.getId());
+      ChangeState rollbackExecutionState = ROLLED_BACK;
+      try {
+        executeChangeSetMethod(changeSetItem.getRollbackMethod().get(), changeLogInstance);
+        logger.debug("successfully rolled back changeSet[{}]", changeSetItem.getId());
+      } catch (Exception rollbackException) {
+        logger.debug("failure when rolling back changeSet[{}]:\n{}", changeSetItem.getId(), rollbackException.getMessage());
+        rollbackExecutionState = ROLLBACK_FAILED;
+        throw rollbackException;
+      } finally {
+        CHANGE_ENTRY changeEntry = createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, rollbackExecutionState);
+        trackChangeEntry(changeSetItem, changeEntry, false);
       }
 
     } else {
-      logger.debug("changeSet[{}] failed. Rollback delegated to transaction", changeSetItem.getId());
-      return createChangeEntryInstance(executionId, executionHostname, changeSetItem, -1L, FAILED);
+      logger.warn("ChangeSet[{}] does not provide rollback method", changeSetItem.getId());
     }
-
 
   }
 
