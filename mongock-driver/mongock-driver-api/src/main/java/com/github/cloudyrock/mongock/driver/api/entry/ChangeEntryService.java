@@ -26,6 +26,8 @@ public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Pr
    */
   void saveOrUpdate(CHANGE_ENTRY changeEntry) throws MongockException;
 
+  void save(CHANGE_ENTRY changeEntry) throws MongockException;
+
 
 
 }
