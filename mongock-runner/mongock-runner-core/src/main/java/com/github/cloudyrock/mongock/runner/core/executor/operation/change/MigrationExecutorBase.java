@@ -47,8 +47,8 @@ public abstract class MigrationExecutorBase<
     CHANGE_ENTRY extends ChangeEntry,
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
-  private final Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
+  protected Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
 
   protected final ConnectionDriver<CHANGE_ENTRY> driver;
   protected final String serviceIdentifier;
