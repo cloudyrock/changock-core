@@ -32,8 +32,4 @@ public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem<Chang
     return ChangeEntry.createInstance(executionId, state, changeSetItem, executionTimeMillis, executionHostname, metadata);
   }
 
-  @Override
-  protected boolean isTransactionOfAnyKindEnabled() {
-    return globalTransactionEnabled == null ? driver.isTransactionable() : globalTransactionEnabled && driver.isTransactionable();
-  }
 }
