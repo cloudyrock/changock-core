@@ -176,6 +176,22 @@ public abstract class RunnerBuilderBase<
     } else {
       logger.info("Running Mongock with metadata");
     }
+
+    if(config.getTransactionEnabled().isPresent()) {
+      boolean transactionEnabled = config.getTransactionEnabled().get();
+      if(transactionEnabled && !driver.isTransactionable()) {
+        throw new MongockException("property transaction-enabled=true, but transactionManger not provided");
+      }
+
+      if(!transactionEnabled && driver.isTransactionable()) {
+        logger.warn("property transaction-enabled=false, but driver is transactionable");
+      }
+    } else if(driver.isTransactionable()) {
+      logger.warn("Driver is transactionable and property transaction-enabled not provided." +
+          "\nBY DEFAULT MONGOCK WILL RUN IN TRANSACTION MODE." +
+          "\nRecommended to set explicitly property with transaction-enabled('false' If you want to disable transactions or 'true' otherwise");
+    }
+
   }
 
 
