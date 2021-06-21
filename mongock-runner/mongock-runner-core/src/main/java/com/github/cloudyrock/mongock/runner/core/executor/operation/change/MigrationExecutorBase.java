@@ -320,7 +320,9 @@ public abstract class MigrationExecutorBase<
   }
 
 
-  protected abstract boolean isTransactionOfAnyKindEnabled();
+  protected boolean isTransactionOfAnyKindEnabled() {
+    return globalTransactionEnabled == null ? driver.isTransactionable() : globalTransactionEnabled && driver.isTransactionable();
+  }
 
 
 }
