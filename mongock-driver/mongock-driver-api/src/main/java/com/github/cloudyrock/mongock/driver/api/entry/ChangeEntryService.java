@@ -18,7 +18,16 @@ public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Pr
    */
   boolean isAlreadyExecuted(String changeSetId, String author) throws MongockException;
 
+  /**
+   * If there is already an ChangeEntry the same executionId, id and author, it will be updated. Otherwise,
+   * this method will be inserted.
+   * @param changeEntry Entry to be inserted
+   * @throws MongockException if any i/o exception or already inserted
+   */
+  void saveOrUpdate(CHANGE_ENTRY changeEntry) throws MongockException;
+
   void save(CHANGE_ENTRY changeEntry) throws MongockException;
+
 
 
 }
