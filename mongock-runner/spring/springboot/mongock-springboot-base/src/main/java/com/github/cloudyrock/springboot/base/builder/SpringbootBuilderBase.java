@@ -14,13 +14,13 @@ import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyC
 import com.github.cloudyrock.mongock.runner.core.executor.dependency.DependencyManagerWithContext;
 import com.github.cloudyrock.mongock.runner.core.executor.operation.Operation;
 import com.github.cloudyrock.mongock.utils.CollectionUtils;
-import com.github.cloudyrock.springboot.base.util.ProfileUtil;
 import com.github.cloudyrock.springboot.base.MongockApplicationRunner;
 import com.github.cloudyrock.springboot.base.MongockInitializingBeanRunner;
 import com.github.cloudyrock.springboot.base.context.SpringDependencyContext;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationFailureEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationStartedEvent;
 import com.github.cloudyrock.springboot.base.events.SpringMigrationSuccessEvent;
+import com.github.cloudyrock.springboot.base.util.ProfileUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
