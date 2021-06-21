@@ -31,6 +31,8 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 
 public abstract class RunnerBuilderBase<
@@ -176,6 +178,21 @@ public abstract class RunnerBuilderBase<
     } else {
       logger.info("Running Mongock with metadata");
     }
+
+    if(config.getTransactionEnabled().isPresent()) {
+      boolean transactionEnabled = config.getTransactionEnabled().get();
+      if(transactionEnabled && !driver.isTransactionable()) {
+        throw new MongockException("property transaction-enabled=true, but transactionManger not provided");
+      }
+
+      if(!transactionEnabled && driver.isTransactionable()) {
+        logger.warn("property transaction-enabled=false, but transactionManger is present");
+      }
+    } else if(driver.isTransactionable()) {
+      logger.warn("Driver is transactionable and property transaction not provided.\n" +
+          "MONGOCK WILL RUN IN TRANSACTION MODE, but it's recommended to set explicitly the property transactionEnabled");
+    }
+
   }
 
 

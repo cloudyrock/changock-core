@@ -79,22 +79,6 @@ public abstract class MigrationExecutorBase<
     this.trackIgnored = config.isTrackIgnored();
     this.changeLogs = changeLogs;
     this.globalTransactionEnabled = config.getTransactionEnabled().orElse(null);
-    checkTransactionConfigurationConsitency();
-  }
-
-  private void checkTransactionConfigurationConsitency() {
-    if(globalTransactionEnabled == null && driver.isTransactionable()) {
-      logger.warn("Driver is transactionable and property transaction not provided.\n" +
-          "Mongock will run in transaction mode, but it's recommended to set explicitly the property transactionEnabled");
-    }
-
-    if(TRUE.equals(globalTransactionEnabled) && !driver.isTransactionable()) {
-      throw new MongockException("Property transaction enabled set to true, but driver is not transactionable");
-    }
-
-    if(FALSE.equals(globalTransactionEnabled) && driver.isTransactionable()) {
-      logger.warn("Property transactionEnabled is set to false, but driver is transactionable. Mongock will run WITHOUT transaction");
-    }
   }
 
   public boolean isExecutionInProgress() {
