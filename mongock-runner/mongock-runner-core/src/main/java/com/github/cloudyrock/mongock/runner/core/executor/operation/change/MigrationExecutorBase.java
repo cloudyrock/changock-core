@@ -104,6 +104,7 @@ public abstract class MigrationExecutorBase<
   protected void processMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
     List<CHANGELOG> changeLogsMigration = changeLogs.stream().filter(CHANGELOG::isMigration).collect(Collectors.toList());
     driver.getTransactioner()
+        .filter(t -> isTransactionOfAnyKindEnabled())
         .orElse(Runnable::run)
         .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
   }
