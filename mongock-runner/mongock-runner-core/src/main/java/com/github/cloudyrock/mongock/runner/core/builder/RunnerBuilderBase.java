@@ -186,7 +186,7 @@ public abstract class RunnerBuilderBase<
       }
 
       if(!transactionEnabled && driver.isTransactionable()) {
-        logger.warn("property transaction-enabled=false, but transactionManger is present");
+        logger.warn("property transaction-enabled=false, but driver is transactionable");
       }
     } else if(driver.isTransactionable()) {
       logger.warn("Driver is transactionable and property transaction not provided.\n" +
