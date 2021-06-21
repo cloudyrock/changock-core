@@ -52,7 +52,7 @@ public abstract class MigrationExecutorBase<
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
 
   protected final Boolean globalTransactionEnabled;
-  protected final Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
+  protected final Deque<Pair<CHANGELOG, CHANGESET>> potentialChangeSetsToBeRollBacked = new ArrayDeque<>();
   protected final ConnectionDriver<CHANGE_ENTRY> driver;
   protected final String serviceIdentifier;
   protected final boolean trackIgnored;
@@ -85,7 +85,7 @@ public abstract class MigrationExecutorBase<
   private void checkTransactionConfigurationConsitency() {
     if(globalTransactionEnabled == null && driver.isTransactionable()) {
       logger.warn("Driver is transactionable and property transaction not provided.\n" +
-          "Mongock will run in tranction mode, but it's recommended to set explicitly the property transactionEnabled");
+          "Mongock will run in transaction mode, but it's recommended to set explicitly the property transactionEnabled");
     }
 
     if(TRUE.equals(globalTransactionEnabled) && !driver.isTransactionable()) {
@@ -148,12 +148,12 @@ public abstract class MigrationExecutorBase<
   protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
       for (CHANGESET changeSet : changeLog.getChangeSetItems()) {
-        processedChangeSets.push(new Pair<>(changeLog, changeSet));
+        potentialChangeSetsToBeRollBacked.push(new Pair<>(changeLog, changeSet));
         processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
       }
     } catch (Exception e) {
       if (changeLog.isFailFast()) {
-        rollbackProcessedChangeSetsIfApply(executionId, executionHostname, processedChangeSets);
+        rollbackProcessedChangeSetsIfApply(executionId, executionHostname, potentialChangeSetsToBeRollBacked);
         throw e;
       }
     }
