@@ -48,17 +48,18 @@ public abstract class MigrationExecutorBase<
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
-  protected Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
 
+  protected final Boolean globalTransactionEnabled;
+  protected final Deque<Pair<CHANGELOG, CHANGESET>> potentialChangeSetsToBeRollBacked = new ArrayDeque<>();
   protected final ConnectionDriver<CHANGE_ENTRY> driver;
   protected final String serviceIdentifier;
   protected final boolean trackIgnored;
   protected final SortedSet<CHANGELOG> changeLogs;
   protected final Map<String, Object> metadata;
-  private final DependencyManager dependencyManager;
-  private final Function<Parameter, String> parameterNameProvider;
-  private boolean executionInProgress = false;
-  private final String executionId;
+  protected final DependencyManager dependencyManager;
+  protected final Function<Parameter, String> parameterNameProvider;
+  protected boolean executionInProgress = false;
+  protected final String executionId;
 
 
   public MigrationExecutorBase(String executionId,
@@ -75,6 +76,7 @@ public abstract class MigrationExecutorBase<
     this.serviceIdentifier = config.getServiceIdentifier();
     this.trackIgnored = config.isTrackIgnored();
     this.changeLogs = changeLogs;
+    this.globalTransactionEnabled = config.getTransactionEnabled().orElse(null);
   }
 
   public boolean isExecutionInProgress() {
@@ -128,12 +130,12 @@ public abstract class MigrationExecutorBase<
   protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
       for (CHANGESET changeSet : changeLog.getChangeSetItems()) {
-        processedChangeSets.push(new Pair<>(changeLog, changeSet));
+        potentialChangeSetsToBeRollBacked.push(new Pair<>(changeLog, changeSet));
         processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
       }
     } catch (Exception e) {
       if (changeLog.isFailFast()) {
-        rollbackProcessedChangeSetsIfApply(executionId, executionHostname, processedChangeSets);
+        rollbackProcessedChangeSetsIfApply(executionId, executionHostname, potentialChangeSetsToBeRollBacked);
         throw e;
       }
     }

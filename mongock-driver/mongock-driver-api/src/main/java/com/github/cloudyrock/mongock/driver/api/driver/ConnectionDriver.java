@@ -51,4 +51,8 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
    */
   Optional<Transactioner> getTransactioner();
 
+  default boolean isTransactionable() {
+    return getTransactioner().isPresent();
+  }
+
 }

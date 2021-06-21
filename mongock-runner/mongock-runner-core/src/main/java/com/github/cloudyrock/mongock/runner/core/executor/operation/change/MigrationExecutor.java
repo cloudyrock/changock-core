@@ -34,6 +34,6 @@ public class MigrationExecutor extends MigrationExecutorBase<ChangeLogItem<Chang
 
   @Override
   protected boolean isTransactionOfAnyKindEnabled() {
-    return driver.getTransactioner().isPresent();
+    return globalTransactionEnabled == null ? driver.isTransactionable() : globalTransactionEnabled && driver.isTransactionable();
   }
 }
