@@ -39,6 +39,8 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLBACK_FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLED_BACK;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 @NotThreadSafe
 public abstract class MigrationExecutorBase<
@@ -48,17 +50,18 @@ public abstract class MigrationExecutorBase<
     CONFIG extends ChangeExecutorConfiguration> implements Executor<Boolean> {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutorBase.class);
-  protected Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
 
+  protected final Boolean globalTransactionEnabled;
+  protected final Deque<Pair<CHANGELOG, CHANGESET>> processedChangeSets = new ArrayDeque<>();
   protected final ConnectionDriver<CHANGE_ENTRY> driver;
   protected final String serviceIdentifier;
   protected final boolean trackIgnored;
   protected final SortedSet<CHANGELOG> changeLogs;
   protected final Map<String, Object> metadata;
-  private final DependencyManager dependencyManager;
-  private final Function<Parameter, String> parameterNameProvider;
-  private boolean executionInProgress = false;
-  private final String executionId;
+  protected final DependencyManager dependencyManager;
+  protected final Function<Parameter, String> parameterNameProvider;
+  protected boolean executionInProgress = false;
+  protected final String executionId;
 
 
   public MigrationExecutorBase(String executionId,
@@ -75,6 +78,23 @@ public abstract class MigrationExecutorBase<
     this.serviceIdentifier = config.getServiceIdentifier();
     this.trackIgnored = config.isTrackIgnored();
     this.changeLogs = changeLogs;
+    this.globalTransactionEnabled = config.getTransactionEnabled().orElse(null);
+    checkTransactionConfigurationConsitency();
+  }
+
+  private void checkTransactionConfigurationConsitency() {
+    if(globalTransactionEnabled == null && driver.isTransactionable()) {
+      logger.warn("Driver is transactionable and property transaction not provided.\n" +
+          "Mongock will run in tranction mode, but it's recommended to set explicitly the property transactionEnabled");
+    }
+
+    if(TRUE.equals(globalTransactionEnabled) && !driver.isTransactionable()) {
+      throw new MongockException("Property transaction enabled set to true, but driver is not transactionable");
+    }
+
+    if(FALSE.equals(globalTransactionEnabled) && driver.isTransactionable()) {
+      logger.warn("Property transactionEnabled is set to false, but driver is transactionable. Mongock will run WITHOUT transaction");
+    }
   }
 
   public boolean isExecutionInProgress() {
