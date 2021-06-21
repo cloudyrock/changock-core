@@ -31,8 +31,6 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 
 public abstract class RunnerBuilderBase<
@@ -189,8 +187,9 @@ public abstract class RunnerBuilderBase<
         logger.warn("property transaction-enabled=false, but driver is transactionable");
       }
     } else if(driver.isTransactionable()) {
-      logger.warn("Driver is transactionable and property transaction not provided.\n" +
-          "MONGOCK WILL RUN IN TRANSACTION MODE, but it's recommended to set explicitly the property transactionEnabled");
+      logger.warn("Driver is transactionable and property transaction-enabled not provided." +
+          "\nBY DEFAULT MONGOCK WILL RUN IN TRANSACTION MODE." +
+          "\nIf you want to disable transactions, please set property with transaction-enabled=false.");
     }
 
   }

@@ -39,8 +39,6 @@ import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLBACK_FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.ROLLED_BACK;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 @NotThreadSafe
 public abstract class MigrationExecutorBase<
