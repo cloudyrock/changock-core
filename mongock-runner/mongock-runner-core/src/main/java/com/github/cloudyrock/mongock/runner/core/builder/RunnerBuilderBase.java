@@ -180,16 +180,21 @@ public abstract class RunnerBuilderBase<
     if(config.getTransactionEnabled().isPresent()) {
       boolean transactionEnabled = config.getTransactionEnabled().get();
       if(transactionEnabled && !driver.isTransactionable()) {
-        throw new MongockException("property transaction-enabled=true, but transactionManger not provided");
+        throw new MongockException("Property transaction-enabled=true, but transactionManager not provided");
       }
 
       if(!transactionEnabled && driver.isTransactionable()) {
-        logger.warn("property transaction-enabled=false, but driver is transactionable");
+        logger.warn("Property transaction-enabled=false, but driver is transactionable");
       }
-    } else if(driver.isTransactionable()) {
-      logger.warn("Driver is transactionable and property transaction-enabled not provided." +
-          "\nBY DEFAULT MONGOCK WILL RUN IN TRANSACTION MODE." +
-          "\nRecommended to set explicitly property with transaction-enabled('false' If you want to disable transactions or 'true' otherwise");
+    } else {
+      logger.warn("Property transaction-enabled not provided. It will become true as default in next versions. Set explicit value to false in case transaction are not desired.");
+      
+      if(driver.isTransactionable()) {
+        logger.warn("Property transaction-enabled not provided, but driver is transactionable. BY DEFAULT MONGOCK WILL RUN IN TRANSACTION MODE.");
+      }
+      else {
+        logger.warn("Property transaction-enabled not provided and is unknown if driver is transactionable. BY DEFAULT MONGOCK WILL RUN IN NO-TRANSACTION MODE.");
+      }
     }
 
   }
