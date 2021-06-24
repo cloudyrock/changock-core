@@ -187,7 +187,7 @@ public abstract class RunnerBuilderBase<
         logger.warn("Property transaction-enabled=false, but driver is transactionable");
       }
     } else {
-      logger.warn("Property transaction-enabled not provided. Recommended to set explicitly value ('false' if you want to disable transactions or 'true' otherwise). In the future it might be required.");
+      logger.warn("Property transaction-enabled not provided. It will become true as default in next versions. Set explicit value to false in case transaction are not desired.");
       
       if(driver.isTransactionable()) {
         logger.warn("Property transaction-enabled not provided, but driver is transactionable. BY DEFAULT MONGOCK WILL RUN IN TRANSACTION MODE.");
