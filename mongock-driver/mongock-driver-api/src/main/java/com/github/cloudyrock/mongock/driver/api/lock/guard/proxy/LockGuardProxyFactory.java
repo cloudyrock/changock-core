@@ -80,4 +80,18 @@ public class LockGuardProxyFactory {
     return proxyInstance;
   }
 
+  public static boolean isProxy(Object obj) {
+    return isProxyClass(obj.getClass());
+  }
+
+  public static boolean isProxyClass(Class<?> c) {
+    return Proxy.isProxyClass(c) || ProxyFactory.isProxyClass(c);
+  }
+
+  public static void checkProxy(Object obj) {
+    if(!isProxyClass(obj.getClass())) {
+      throw new RuntimeException("Is not proxy");
+    }
+  }
+
 }
