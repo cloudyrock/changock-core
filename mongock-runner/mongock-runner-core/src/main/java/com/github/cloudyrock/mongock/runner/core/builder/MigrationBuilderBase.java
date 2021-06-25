@@ -12,6 +12,7 @@ import com.github.cloudyrock.mongock.runner.core.builder.roles.RunnerBuilder;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SelfInstanstiator;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.ServiceIdentificable;
 import com.github.cloudyrock.mongock.runner.core.builder.roles.SystemVersionable;
+import com.github.cloudyrock.mongock.runner.core.builder.roles.Transactionable;
 
 @SuppressWarnings("all")
 public interface MigrationBuilderBase<
@@ -29,5 +30,6 @@ public interface MigrationBuilderBase<
     DependencyInjectable<SELF>,
     ServiceIdentificable<SELF, CONFIG>,
     RunnerBuilder<SELF, R, CONFIG>,
-    SelfInstanstiator<SELF> {
+    SelfInstanstiator<SELF>,
+    Transactionable<SELF, CONFIG> {
 }
