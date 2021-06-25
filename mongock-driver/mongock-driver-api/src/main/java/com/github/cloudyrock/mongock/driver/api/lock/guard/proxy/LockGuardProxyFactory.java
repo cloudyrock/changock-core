@@ -66,18 +66,18 @@ public class LockGuardProxyFactory {
   }
 
   private Object createProxy(Object impl, Class<?> type) {
+
+    ProxyFactory proxyFactory = new ProxyFactory();
     if (type.isInterface()) {
-      // TODO if do it with javassists, test fails with default methods. Ideally using just one mechanism
-      return Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new LockGuardProxy<>(impl, lockManager, this));
+      proxyFactory.setInterfaces(new Class<?>[]{type});
     } else {
-      ProxyFactory proxyFactory = new ProxyFactory();
       proxyFactory.setSuperclass(type);
-      Object proxyInstance = new ObjenesisStd()
-          .getInstantiatorOf(proxyFactory.createClass())
-          .newInstance();
-      ((javassist.util.proxy.Proxy) proxyInstance).setHandler(new LockGuardMethodHandler<>(impl, lockManager, this));
-      return proxyInstance;
     }
+    Object proxyInstance = new ObjenesisStd()
+        .getInstantiatorOf(proxyFactory.createClass())
+        .newInstance();
+    ((javassist.util.proxy.Proxy) proxyInstance).setHandler(new LockGuardMethodHandler<>(impl, lockManager, this));
+    return proxyInstance;
   }
 
 }
