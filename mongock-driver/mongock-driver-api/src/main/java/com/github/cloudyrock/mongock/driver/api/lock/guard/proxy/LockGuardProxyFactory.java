@@ -2,14 +2,10 @@ package com.github.cloudyrock.mongock.driver.api.lock.guard.proxy;
 
 import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
-import com.github.cloudyrock.mongock.driver.api.lock.guard.invoker.LockGuardInvokerImpl;
 import com.github.cloudyrock.mongock.utils.Utils;
-import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import org.objenesis.ObjenesisStd;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -23,7 +19,6 @@ public class LockGuardProxyFactory {
   private final static List<String> javaPackagePrefixes = Arrays.asList("java.", "com.sun.", "javax.", "jdk.internal.", "sun.");
   private final LockManager lockManager;
   private final Collection<String> notProxiedPackagePrefixes;
-  private final LockGuardInvokerImpl defaultLockGuardInvoker;
 
   public LockGuardProxyFactory(LockManager lockManager) {
     this(lockManager, Collections.emptyList());
@@ -35,7 +30,6 @@ public class LockGuardProxyFactory {
 
   public LockGuardProxyFactory(LockManager lockManager, Collection<String> notProxiedPackagePrefixes) {
     this.lockManager = lockManager;
-    this.defaultLockGuardInvoker = new LockGuardInvokerImpl(lockManager);
     this.notProxiedPackagePrefixes = new ArrayList<>(notProxiedPackagePrefixes);
     this.notProxiedPackagePrefixes.addAll(javaPackagePrefixes);
   }
