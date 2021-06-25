@@ -14,7 +14,8 @@ public final class ReflectionUtils {
   public static Object getImplementationFromLockGuardProxy(Object proxiedObject) {
     try {
       Object lockGuardHandler = getLockGuardProxyHandler(proxiedObject);
-      return ReflectionUtils.getFinalFieldFromObject(lockGuardHandler, "arg$2");
+      Object lockGuardProxy = ReflectionUtils.getFinalFieldFromObject(lockGuardHandler, "lockGuardProxy");
+      return ReflectionUtils.getFinalFieldFromObject(lockGuardProxy, "implementation");
 
     } catch (Exception ex) {
       throw new RuntimeException(ex);

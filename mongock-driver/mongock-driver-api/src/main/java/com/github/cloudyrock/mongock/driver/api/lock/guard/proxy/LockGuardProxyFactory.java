@@ -8,6 +8,8 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import org.objenesis.ObjenesisStd;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -66,19 +68,16 @@ public class LockGuardProxyFactory {
   private Object createProxy(Object impl, Class<?> type) {
     if (type.isInterface()) {
       // TODO if do it with javassists, test fails with default methods. Ideally using just one mechanism
-      return Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new LockGuardProxy(impl, lockManager, this));
+      return Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new LockGuardProxy<>(impl, lockManager, this));
     } else {
       ProxyFactory proxyFactory = new ProxyFactory();
       proxyFactory.setSuperclass(type);
       Object proxyInstance = new ObjenesisStd()
           .getInstantiatorOf(proxyFactory.createClass())
           .newInstance();
-      ((javassist.util.proxy.Proxy) proxyInstance).setHandler(getMethodHandlerFromInvocationHandler(impl));
+      ((javassist.util.proxy.Proxy) proxyInstance).setHandler(new LockGuardMethodHandler<>(impl, lockManager, this));
       return proxyInstance;
     }
   }
 
-  private <T> MethodHandler getMethodHandlerFromInvocationHandler(T impl) {
-    return (o, method, method1, objects) -> new LockGuardProxy<T>(impl, lockManager, this);
-  }
 }
