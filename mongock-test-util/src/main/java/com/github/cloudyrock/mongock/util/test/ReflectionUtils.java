@@ -1,7 +1,10 @@
 package com.github.cloudyrock.mongock.util.test;
 
+import javassist.util.proxy.ProxyFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 
 // Doing nasty things to avoid change production code
 public final class ReflectionUtils {
@@ -10,8 +13,9 @@ public final class ReflectionUtils {
 
   public static Object getImplementationFromLockGuardProxy(Object proxiedObject) {
     try {
-      Object object = java.lang.reflect.Proxy.getInvocationHandler(proxiedObject);
-      return ReflectionUtils.getFinalFieldFromObject(object, "implementation");
+      Object lockGuardHandler = getLockGuardProxyHandler(proxiedObject);
+      Object lockGuardProxy = ReflectionUtils.getFinalFieldFromObject(lockGuardHandler, "lockGuardProxy");
+      return ReflectionUtils.getFinalFieldFromObject(lockGuardProxy, "implementation");
 
     } catch (Exception ex) {
       throw new RuntimeException(ex);
@@ -32,16 +36,22 @@ public final class ReflectionUtils {
   }
 
   public static boolean isProxy(Object object) {
+    return Proxy.isProxyClass(object.getClass()) || ProxyFactory.isProxyClass(object.getClass());
+  }
+
+  private static Object getLockGuardProxyHandler(Object object) {
     try {
-      java.lang.reflect.Proxy.getInvocationHandler(object);
-      return true;
-    } catch (IllegalArgumentException ex) {
-      return !"not a proxy instance".equals(ex.getMessage());
+      return getPrivateField(object, object.getClass(), "h");
+    } catch (Exception ex) {
+      return getPrivateField(object, object.getClass(), "handler");
     }
   }
 
   public static Object getPrivateField(Object object, Class<?> clazz, String fieldName) {
 
+    if(clazz == null) {
+      throw new RuntimeException("field not found");
+    }
     try {
       Field field = clazz.getDeclaredField(fieldName);
       field.setAccessible(true);
@@ -50,7 +60,7 @@ public final class ReflectionUtils {
       if(Object.class.equals(object.getClass())) {
         throw new RuntimeException(e);
       }
-      return getPrivateField(object, object.getClass().getSuperclass(), fieldName);
+      return getPrivateField(object, clazz.getSuperclass(), fieldName);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(e);
     }

@@ -42,13 +42,12 @@ public class LockGuardProxyTest {
     assertTrue(isProxy(proxy.getGuardedImplWithAnnotationMethod()));
   }
 
-  // SHOULD NOT RETURN PROXY
-
   @Test
-  public void shouldNotReturnProxy_IfReturningClassIsNotAnInterface() {
-    assertFalse(isProxy(proxy.getNontInterfacedClass()));
+  public void shouldReturnProxy_IfReturningClassIsNotAnInterface() {
+    assertTrue(isProxy(proxy.getNontInterfacedClass()));
   }
 
+  // SHOULD NOT RETURN PROXY
   @Test
   public void shouldNotReturnProxy_IfReturningIsString() {
     assertFalse(isProxy(proxy.getString()));

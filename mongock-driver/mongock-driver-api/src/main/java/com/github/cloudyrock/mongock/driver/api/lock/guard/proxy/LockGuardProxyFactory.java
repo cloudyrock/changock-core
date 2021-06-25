@@ -3,7 +3,10 @@ package com.github.cloudyrock.mongock.driver.api.lock.guard.proxy;
 import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.utils.Utils;
+import javassist.util.proxy.ProxyFactory;
+import org.objenesis.ObjenesisStd;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +34,6 @@ public class LockGuardProxyFactory {
     this.notProxiedPackagePrefixes.addAll(javaPackagePrefixes);
   }
 
-
   @SuppressWarnings("unchecked")
   public <T> T getProxy(T targetObject, Class<? super T> interfaceType) {
     return (T) getRawProxy(targetObject, interfaceType);
@@ -43,8 +45,9 @@ public class LockGuardProxyFactory {
   }
 
   private boolean shouldBeLockGuardProxied(Object targetObject, Class<?> interfaceType) {
+
     return targetObject != null
-        && interfaceType.isInterface()
+        && !Modifier.isFinal(interfaceType.getModifiers())
         && isPackageProxiable(interfaceType.getPackage().getName())
         && !interfaceType.isAnnotationPresent(NonLockGuarded.class)
         && !targetObject.getClass().isAnnotationPresent(NonLockGuarded.class)
@@ -56,7 +59,33 @@ public class LockGuardProxyFactory {
     return notProxiedPackagePrefixes.stream().noneMatch(packageName::startsWith);
   }
 
-  private Object createProxy(Object r, Class<?> type) {
-    return Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new LockGuardProxy(r, lockManager, this));
+  private Object createProxy(Object impl, Class<?> type) {
+
+    ProxyFactory proxyFactory = new ProxyFactory();
+    if (type.isInterface()) {
+      proxyFactory.setInterfaces(new Class<?>[]{type});
+    } else {
+      proxyFactory.setSuperclass(type);
+    }
+    Object proxyInstance = new ObjenesisStd()
+        .getInstantiatorOf(proxyFactory.createClass())
+        .newInstance();
+    ((javassist.util.proxy.Proxy) proxyInstance).setHandler(new LockGuardMethodHandler<>(impl, lockManager, this));
+    return proxyInstance;
   }
+
+  public static boolean isProxy(Object obj) {
+    return isProxyClass(obj.getClass());
+  }
+
+  public static boolean isProxyClass(Class<?> c) {
+    return Proxy.isProxyClass(c) || ProxyFactory.isProxyClass(c);
+  }
+
+  public static void checkProxy(Object obj) {
+    if(!isProxyClass(obj.getClass())) {
+      throw new RuntimeException("Is not proxy");
+    }
+  }
+
 }
