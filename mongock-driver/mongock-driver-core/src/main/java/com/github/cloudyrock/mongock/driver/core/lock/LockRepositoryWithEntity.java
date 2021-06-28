@@ -1,5 +1,6 @@
 package com.github.cloudyrock.mongock.driver.core.lock;
 
+import com.github.cloudyrock.mongock.driver.core.common.Repository;
 import com.github.cloudyrock.mongock.utils.Process;
 
 /**
