@@ -4,6 +4,6 @@ import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.core.common.EntityRepository;
 
-public interface ChangeEntryRepository<CHANGE_ENTRY extends ChangeEntry, ENTITY_CLASS> extends ChangeEntryService<CHANGE_ENTRY>, EntityRepository<CHANGE_ENTRY, ENTITY_CLASS> {
+public interface ChangeEntryRepositoryWithEntity<CHANGE_ENTRY extends ChangeEntry, ENTITY_CLASS> extends ChangeEntryRepository<CHANGE_ENTRY>, EntityRepository<CHANGE_ENTRY, ENTITY_CLASS> {
 
 }

@@ -6,7 +6,7 @@ import com.github.cloudyrock.mongock.driver.api.driver.Transactioner;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
-import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
+import com.github.cloudyrock.mongock.driver.core.lock.LockRepositoryWithEntity;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -21,7 +21,7 @@ public class ConnectionDriverBaseTest {
   @Test
   public void shouldInitializeRepositories() {
     // given
-    LockRepository lockRepository = Mockito.mock(LockRepository.class);
+    LockRepositoryWithEntity lockRepository = Mockito.mock(LockRepositoryWithEntity.class);
     ChangeEntryService<ChangeEntry> changeEntryService = Mockito.mock(ChangeEntryService.class);
 
     ConnectionDriverBase<ChangeEntry> driver = new ConnectionDriverBaseTestImpl(
@@ -45,7 +45,7 @@ public class ConnectionDriverBaseTest {
 
   static class ConnectionDriverBaseTestImpl extends ConnectionDriverBase<ChangeEntry> {
 
-    private final LockRepository lockRepository;
+    private final LockRepositoryWithEntity lockRepository;
     private final ChangeEntryService<ChangeEntry> changeEntryService;
     private final LockManager lockManager;
 
@@ -53,7 +53,7 @@ public class ConnectionDriverBaseTest {
     ConnectionDriverBaseTestImpl(long lockAcquiredForMinutes,
                                  long maxWaitingForLockMinutesEachTry,
                                  int maxTries,
-                                 LockRepository lockRepository,
+                                 LockRepositoryWithEntity lockRepository,
                                  ChangeEntryService<ChangeEntry> changeEntryService,
                                  LockManager lockManager) {
       super(
@@ -71,7 +71,7 @@ public class ConnectionDriverBaseTest {
     }
 
     @Override
-    protected LockRepository getLockRepository() {
+    protected LockRepositoryWithEntity getLockRepository() {
       return lockRepository;
     }
 

@@ -7,7 +7,7 @@ import com.github.cloudyrock.mongock.utils.field.FieldUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface Repository<DOMAIN_CLASS, ENTITY_CLASS> extends Process {
+public interface EntityRepository<DOMAIN_CLASS, ENTITY_CLASS> extends Process {
 
   /**
    * Transform a domain object to its persistence representation
