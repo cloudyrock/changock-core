@@ -1,11 +1,11 @@
 package com.github.cloudyrock.mongock.driver.core.lock;
 
-import com.github.cloudyrock.mongock.driver.core.common.Repository;
+import com.github.cloudyrock.mongock.utils.Process;
 
 /**
  * <p>Repository interface to manage lock in database, which will be used by LockManager</p>
  */
-public interface LockRepository<ENTITY_CLASS> extends Repository<LockEntry, ENTITY_CLASS> {
+public interface LockRepository extends Process {
 
 
   /**
