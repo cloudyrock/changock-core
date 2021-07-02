@@ -25,14 +25,6 @@ public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
     return changeLogClass.getAnnotation(ChangeLog.class).failFast();
   }
 
-  default boolean isPreMigration(Class<?> type) {
-    return type.isAnnotationPresent(PreMigration.class);
-  }
-
-  default boolean isPostMigration(Class<?> type) {
-    return type.isAnnotationPresent(PostMigration.class);
-  }
-
   /**
    * Returns the metatada associated to a method via a mongock change annotation, which includes
    * : ChangetSet, validation, undo, etc.

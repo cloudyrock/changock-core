@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
@@ -93,9 +92,7 @@ public abstract class MigrationExecutorBase<
       lockManager.acquireLockDefault();
       String executionHostname = generateExecutionHostname(executionId);
       logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
-      processPreMigration(changeLogs, executionId, executionHostname);
       processMigration(changeLogs, executionId, executionHostname);
-      processPostMigration(changeLogs, executionId, executionHostname);
       return true;
     } finally {
       this.executionInProgress = false;
@@ -104,23 +101,12 @@ public abstract class MigrationExecutorBase<
   }
 
   protected void processMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
-    List<CHANGELOG> changeLogsMigration = changeLogs.stream().filter(CHANGELOG::isMigration).collect(Collectors.toList());
     driver.getTransactioner()
         .filter(t -> isTransactionOfAnyKindEnabled())
         .orElse(Runnable::run)
-        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
+        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogs));
   }
-
-  protected void processPreMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
-    List<CHANGELOG> changeLogPreMigration = changeLogs.stream().filter(CHANGELOG::isPreMigration).collect(Collectors.toList());
-    processChangeLogs(executionId, executionHostname, changeLogPreMigration);
-  }
-
-  protected void processPostMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
-    List<CHANGELOG> changeLogPostMigration = changeLogs.stream().filter(CHANGELOG::isPostMigration).collect(Collectors.toList());
-    processChangeLogs(executionId, executionHostname, changeLogPostMigration);
-  }
-
+  
   protected void processChangeLogs(String executionId, String executionHostname, Collection<CHANGELOG> changeLogs) {
     for (CHANGELOG changeLog : changeLogs) {
       processSingleChangeLog(executionId, executionHostname, changeLog);
