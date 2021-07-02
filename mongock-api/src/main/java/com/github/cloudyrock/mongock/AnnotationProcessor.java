@@ -11,7 +11,21 @@ public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
     return Collections.singletonList(ChangeLog.class);
   }
 
-  boolean isMethodAnnotatedAsChange(Method method);
+  default boolean isMethodAnnotatedAsChange(Method method) {
+    return isChangeSet(method) || isBeforeChangeSets(method) || isAfterChangeSets(method);
+  }
+  
+  default boolean isChangeSet(Method method) {
+      return method.isAnnotationPresent(ChangeSet.class);
+  }
+
+  default boolean isBeforeChangeSets(Method method) {
+      return method.isAnnotationPresent(BeforeChangeSets.class);
+  }
+
+  default boolean isAfterChangeSets(Method method) {
+      return method.isAnnotationPresent(AfterChangeSets.class);
+  }
 
   default boolean isRollback(Method method) {
     return method.isAnnotationPresent(Rollback.class);
@@ -46,4 +60,6 @@ public interface AnnotationProcessor<CHANGESET extends ChangeSetItem> {
       return getChangePerformerItem(method).getId();
     }
   }
+  
+  void validateChangeLogClass(Class<?> type);
 }

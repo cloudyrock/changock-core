@@ -194,7 +194,20 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
     return isWithinVersion;
   }
 
-  protected abstract CHANGELOG buildChangeLogObject(Class<?> type);
+  private CHANGELOG buildChangeLogObject(Class<?> changeLogClass) {
+    try {
+      Function<Class<?>, Object> instantiator = getChangeLogInstantiator().orElse(DEFAULT_CHANGELOG_INSTANTIATOR);
+      AnnotationProcessor<CHANGESET> annProcessor = getAnnotationProcessor();
+      annProcessor.validateChangeLogClass(changeLogClass);
+      return buildChangeLogObject(changeLogClass, instantiator, annProcessor);
+    } catch (MongockException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new MongockException(ex);
+    }
+  }
+  
+  protected abstract CHANGELOG buildChangeLogObject(Class<?> changeLogClass, Function<Class<?>, Object> instantiator, AnnotationProcessor<CHANGESET> annProcessor);
 
   private class ChangeSetComparator implements Comparator<CHANGESET>, Serializable {
     private static final long serialVersionUID = -854690868262484102L;
@@ -262,5 +275,27 @@ public abstract class ChangeLogServiceBase<CHANGELOG extends ChangeLogItem<CHANG
     }
   }
 
+  protected List<CHANGESET> fetchListOfChangeSetsFromClass(Class<?> type) {
+      return getAllChanges(type)
+              .filter(changeSetItem -> getAnnotationProcessor().isChangeSet(changeSetItem.getMethod()))
+              .collect(Collectors.toList());
+  }
 
+  protected List<CHANGESET> fetchListOfBeforeChangeSetsFromClass(Class<?> type) {
+      return getAllChanges(type)
+              .filter(changeSetItem -> getAnnotationProcessor().isBeforeChangeSets(changeSetItem.getMethod()))
+              .collect(Collectors.toList());
+  }
+
+  protected List<CHANGESET> fetchListOfAfterChangeSetsFromClass(Class<?> type) {
+      return getAllChanges(type)
+              .filter(changeSetItem -> getAnnotationProcessor().isAfterChangeSets(changeSetItem.getMethod()))
+              .collect(Collectors.toList());
+  }
+
+  private Stream<CHANGESET> getAllChanges(Class<?> type) {
+      return fetchChangeSetMethodsSorted(type)
+              .stream()
+              .filter(changeSet -> this.profileFilter != null ? this.profileFilter.apply(changeSet.getMethod()) : true);
+  }
 }

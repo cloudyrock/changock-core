@@ -14,15 +14,21 @@ public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
   private final boolean failFast;
 
   private final List<CHANGESET> changeSetItems;
+  
+  private final List<CHANGESET> beforeChangeSetsItems;
+  
+  private final List<CHANGESET> afterChangeSetsItems;
 
 
-  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, List<CHANGESET> changeSetElements) {
+  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, List<CHANGESET> changeSetElements, List<CHANGESET> beforeChangeSetsItems, List<CHANGESET> afterChangeSetsItems) {
     this.type = type;
     this.instance = instance;
     this.order = order;
     this.failFast = failFast;
 
     this.changeSetItems = changeSetElements;
+    this.beforeChangeSetsItems = beforeChangeSetsItems;
+    this.afterChangeSetsItems = afterChangeSetsItems;
   }
 
   public Class<?> getType() {
@@ -43,6 +49,14 @@ public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
 
   public List<CHANGESET> getChangeSetItems() {
     return changeSetItems;
+  }
+  
+  public List<CHANGESET> getBeforeItems() {
+    return beforeChangeSetsItems;
+  }
+
+  public List<CHANGESET> getAfterItems() {
+    return afterChangeSetsItems;
   }
 
 
