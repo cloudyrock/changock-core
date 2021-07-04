@@ -43,7 +43,9 @@ public class ChangeEntryTest {
         "systemVersion",
         true,
         ChangeEntryTest.class.getMethod("changeSetMethod"),
-        null
+        null,
+        false,
+        false
     );
 
     Map<String, String> metadata = new HashMap<>();

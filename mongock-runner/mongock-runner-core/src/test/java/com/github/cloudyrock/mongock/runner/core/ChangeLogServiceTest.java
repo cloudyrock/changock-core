@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ChangeLogServiceTest {
 
@@ -234,12 +235,18 @@ public class ChangeLogServiceTest {
     changeLogPackage = changeLogItemList.get(1);
     assertEquals(2, changeLogPackage.getChangeSetItems().size());
     ChangeSetItem changeSet2 = changeLogPackage.getChangeSetItems().get(0);
+    ChangeSetItem changeSet3 = changeLogPackage.getChangeSetItems().get(1);
+    
+    System.out.println("\n\n\n******** " + changeLogPackage.getChangeSetItems().size());
+    System.out.println("\n\n\n******** " + changeSet2.getId());
+    System.out.println("\n\n\n******** " + changeSet3.getId());
+    System.out.println("\n\n\n");
+    
     assertEquals("no_package", changeSet2.getId());
     assertEquals("noPackage", changeSet2.getMethod().getName());
-
-    ChangeSetItem changeSet3 = changeLogPackage.getChangeSetItems().get(1);
     assertEquals("no_package_2", changeSet3.getId());
     assertEquals("noPackage2", changeSet3.getMethod().getName());
+    
 
     //package 2
     changeLogPackage = changeLogItemList.get(2);
@@ -247,7 +254,6 @@ public class ChangeLogServiceTest {
     ChangeSetItem changeSet4 = changeLogPackage.getChangeSetItems().get(0);
     assertEquals("changeset_package2", changeSet4.getId());
     assertEquals("changeSetPackage2", changeSet4.getMethod().getName());
-
   }
 
   private void validateChangeLog(ChangeLogItem<ChangeSetItem> changeLogItem, int number) {

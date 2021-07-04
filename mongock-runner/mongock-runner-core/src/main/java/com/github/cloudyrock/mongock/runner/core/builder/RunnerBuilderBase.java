@@ -31,6 +31,7 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 import static com.github.cloudyrock.mongock.config.MongockConstants.LEGACY_MIGRATION_NAME;
+import com.github.cloudyrock.mongock.config.TransactionStrategy;
 
 
 public abstract class RunnerBuilderBase<
@@ -99,6 +100,11 @@ public abstract class RunnerBuilderBase<
 
   public DependencyManager getDependencyManager() {
     return dependencyManager;
+  }
+  
+  public SELF setTransactionStrategy(TransactionStrategy transactionStrategy) {
+    config.setTransactionStrategy(transactionStrategy);
+    return getInstance();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////

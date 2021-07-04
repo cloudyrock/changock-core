@@ -106,6 +106,8 @@ public class MongockConfiguration implements ExecutorConfiguration {
   private LegacyMigration legacyMigration = null;
 
   private Boolean transactionEnabled;
+  
+  private TransactionStrategy transactionStrategy = TransactionStrategy.CHANGE_LOG;
 
   @Deprecated
   private Integer maxTries;
@@ -140,6 +142,7 @@ public class MongockConfiguration implements ExecutorConfiguration {
     metadata = from.getMetadata();
     legacyMigration = from.getLegacyMigration();
     transactionEnabled = from.getTransactionEnabled().orElse(null);
+    transactionStrategy = from.getTransactionStrategy();
     maxTries = from.getMaxTries();
     maxWaitingForLockMillis = from.getMaxWaitingForLockMillis();
   }
@@ -275,6 +278,14 @@ public class MongockConfiguration implements ExecutorConfiguration {
 
   public void setTransactionEnabled(boolean transactionEnabled) {
     this.transactionEnabled = transactionEnabled;
+  }
+  
+  public TransactionStrategy getTransactionStrategy() {
+      return transactionStrategy;
+  }
+
+  public void setTransactionStrategy(TransactionStrategy transactionStrategy) {
+      this.transactionStrategy = transactionStrategy;
   }
 
   public LegacyMigration getLegacyMigration() {

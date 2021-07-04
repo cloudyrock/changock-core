@@ -3,6 +3,9 @@ package com.github.cloudyrock.mongock.runner.core.executor.operation.change;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.NonLockGuarded;
+import com.github.cloudyrock.mongock.config.TransactionStrategy;
+import static com.github.cloudyrock.mongock.config.TransactionStrategy.CHANGE_LOG;
+import static com.github.cloudyrock.mongock.config.TransactionStrategy.MIGRATION;
 import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
@@ -32,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
@@ -60,6 +62,7 @@ public abstract class MigrationExecutorBase<
   protected final Function<Parameter, String> parameterNameProvider;
   protected boolean executionInProgress = false;
   protected final String executionId;
+  private final TransactionStrategy transactionStrategy;
 
 
   public MigrationExecutorBase(String executionId,
@@ -77,6 +80,7 @@ public abstract class MigrationExecutorBase<
     this.trackIgnored = config.isTrackIgnored();
     this.changeLogs = changeLogs;
     this.globalTransactionEnabled = config.getTransactionEnabled().orElse(null);
+    this.transactionStrategy = config.getTransactionStrategy();
   }
 
   public boolean isExecutionInProgress() {
@@ -93,9 +97,7 @@ public abstract class MigrationExecutorBase<
       lockManager.acquireLockDefault();
       String executionHostname = generateExecutionHostname(executionId);
       logger.info("Mongock starting the data migration sequence id[{}]...", executionId);
-      processPreMigration(changeLogs, executionId, executionHostname);
       processMigration(changeLogs, executionId, executionHostname);
-      processPostMigration(changeLogs, executionId, executionHostname);
       return true;
     } finally {
       this.executionInProgress = false;
@@ -104,23 +106,12 @@ public abstract class MigrationExecutorBase<
   }
 
   protected void processMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
-    List<CHANGELOG> changeLogsMigration = changeLogs.stream().filter(CHANGELOG::isMigration).collect(Collectors.toList());
     driver.getTransactioner()
-        .filter(t -> isTransactionOfAnyKindEnabled())
+        .filter(t -> isTransactionPerMigration())
         .orElse(Runnable::run)
-        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogsMigration));
+        .executeInTransaction(() -> processChangeLogs(executionId, executionHostname, changeLogs));
   }
-
-  protected void processPreMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
-    List<CHANGELOG> changeLogPreMigration = changeLogs.stream().filter(CHANGELOG::isPreMigration).collect(Collectors.toList());
-    processChangeLogs(executionId, executionHostname, changeLogPreMigration);
-  }
-
-  protected void processPostMigration(SortedSet<CHANGELOG> changeLogs, String executionId, String executionHostname) {
-    List<CHANGELOG> changeLogPostMigration = changeLogs.stream().filter(CHANGELOG::isPostMigration).collect(Collectors.toList());
-    processChangeLogs(executionId, executionHostname, changeLogPostMigration);
-  }
-
+  
   protected void processChangeLogs(String executionId, String executionHostname, Collection<CHANGELOG> changeLogs) {
     for (CHANGELOG changeLog : changeLogs) {
       processSingleChangeLog(executionId, executionHostname, changeLog);
@@ -129,15 +120,32 @@ public abstract class MigrationExecutorBase<
 
   protected void processSingleChangeLog(String executionId, String executionHostname, CHANGELOG changeLog) {
     try {
-      for (CHANGESET changeSet : changeLog.getChangeSetItems()) {
-        potentialChangeSetsToBeRollBacked.push(new Pair<>(changeLog, changeSet));
-        processSingleChangeSet(executionId, executionHostname, changeLog, changeSet);
+      //if strategy == changeLog only needs to store the processed changeSets per changeLog
+      if (isTransactionPerChangeLog()) {
+          potentialChangeSetsToBeRollBacked.clear();
       }
+      loopRawChangeSets(executionId, executionHostname, changeLog, changeLog.getBeforeItems());
+      processChangeLogInTransactionIfApplies(executionId, executionHostname, changeLog);
+      loopRawChangeSets(executionId, executionHostname, changeLog, changeLog.getAfterItems());
     } catch (Exception e) {
       if (changeLog.isFailFast()) {
         rollbackProcessedChangeSetsIfApply(executionId, executionHostname, potentialChangeSetsToBeRollBacked);
         throw e;
       }
+    }
+  }
+  
+  protected void processChangeLogInTransactionIfApplies(String executionId, String executionHostname, CHANGELOG changeLog) {
+    driver.getTransactioner()
+          .filter(c -> isTransactionPerChangeLog())
+          .orElse(Runnable::run)
+          .executeInTransaction(() -> loopRawChangeSets(executionId, executionHostname, changeLog, changeLog.getChangeSetItems()));
+  }
+  
+  protected void loopRawChangeSets(String executionId, String executionHostName, CHANGELOG changeLog, List<? extends CHANGESET> changeSets) {
+    for (CHANGESET changeSet : changeSets) {
+      potentialChangeSetsToBeRollBacked.push(new Pair<>(changeLog, changeSet));
+      processSingleChangeSet(executionId, executionHostName, changeLog, changeSet);
     }
   }
 
@@ -324,5 +332,12 @@ public abstract class MigrationExecutorBase<
     return globalTransactionEnabled == null ? driver.isTransactionable() : globalTransactionEnabled && driver.isTransactionable();
   }
 
+  protected final boolean isTransactionPerChangeLog() {
+      return isTransactionOfAnyKindEnabled() && (transactionStrategy == null || transactionStrategy == CHANGE_LOG);
+  }
+
+  protected final boolean isTransactionPerMigration() {
+      return isTransactionOfAnyKindEnabled() && transactionStrategy == MIGRATION;
+  }
 
 }
