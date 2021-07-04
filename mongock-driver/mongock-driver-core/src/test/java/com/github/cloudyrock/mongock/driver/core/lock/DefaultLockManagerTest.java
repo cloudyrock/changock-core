@@ -35,7 +35,7 @@ public class DefaultLockManagerTest {
   private static final Date DONT_CARE_DATE = new Date(0L);
   private static final Date FAR_FUTURE_DATE = new Date(100000L);
 
-  private LockRepository lockRepository;
+  private LockRepositoryWithEntity lockRepository;
   private TimeService timeUtils;
   private LockManager lockManager;
 
@@ -45,7 +45,7 @@ public class DefaultLockManagerTest {
 
   @Before
   public void setUp() {
-    lockManager = new DefaultLockManager(lockRepository = Mockito.mock(LockRepository.class), timeUtils = Mockito.mock(TimeService.class))
+    lockManager = new DefaultLockManager(lockRepository = Mockito.mock(LockRepositoryWithEntity.class), timeUtils = Mockito.mock(TimeService.class))
         .setLockAcquiredForMillis(lockActiveMillis)
         .setLockQuitTryingAfterMillis(quitTryingAfterMillis)
         .setLockTryFrequencyMillis(tryFrequency);
