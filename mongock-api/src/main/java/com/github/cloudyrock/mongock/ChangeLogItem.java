@@ -13,29 +13,22 @@ public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
 
   private final boolean failFast;
 
-  private final boolean preMigration;
-
-  private final boolean postMigration;
-
   private final List<CHANGESET> changeSetItems;
+  
+  private final List<CHANGESET> beforeChangeSetsItems;
+  
+  private final List<CHANGESET> afterChangeSetsItems;
 
 
-  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, boolean preMigration, boolean postMigration, List<CHANGESET> changeSetElements) {
-    checkParameters(preMigration, postMigration);
+  public ChangeLogItem(Class<?> type, Object instance, String order, boolean failFast, List<CHANGESET> changeSetElements, List<CHANGESET> beforeChangeSetsItems, List<CHANGESET> afterChangeSetsItems) {
     this.type = type;
     this.instance = instance;
     this.order = order;
     this.failFast = failFast;
-    this.preMigration = preMigration;
-    this.postMigration = postMigration;
 
     this.changeSetItems = changeSetElements;
-  }
-
-  private static void checkParameters(boolean preMigration, boolean postMigration) {
-    if (preMigration && postMigration) {
-      throw new IllegalArgumentException("A ChangeLog can't be defined to be executed pre and post migration.");
-    }
+    this.beforeChangeSetsItems = beforeChangeSetsItems;
+    this.afterChangeSetsItems = afterChangeSetsItems;
   }
 
   public Class<?> getType() {
@@ -54,16 +47,16 @@ public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
     return failFast;
   }
 
-  public boolean isPreMigration() {
-    return preMigration;
-  }
-
-  public boolean isPostMigration() {
-    return postMigration;
-  }
-
   public List<CHANGESET> getChangeSetItems() {
     return changeSetItems;
+  }
+  
+  public List<CHANGESET> getBeforeItems() {
+    return beforeChangeSetsItems;
+  }
+
+  public List<CHANGESET> getAfterItems() {
+    return afterChangeSetsItems;
   }
 
 
@@ -78,9 +71,5 @@ public class ChangeLogItem<CHANGESET extends ChangeSetItem> {
   @Override
   public int hashCode() {
     return Objects.hash(type);
-  }
-
-  public boolean isMigration() {
-    return !isPreMigration() && !isPostMigration();
   }
 }

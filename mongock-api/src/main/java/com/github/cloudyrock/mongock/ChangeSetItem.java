@@ -19,7 +19,12 @@ public class ChangeSetItem {
   private final Method method;
 
   private final boolean failFast;
+  
   private final Method rollbackMethod;
+  
+  private final boolean beforeChangeSets;
+  
+  private final boolean afterChangeSets;
 
 
   public ChangeSetItem(String id,
@@ -29,7 +34,9 @@ public class ChangeSetItem {
                        String systemVersion,
                        boolean failFast,
                        Method changeSetMethod,
-                       Method rollbackMethod) {
+                       Method rollbackMethod,
+                       boolean beforeChangeSets,
+                       boolean afterChangeSets) {
     this.id = id;
     this.author = author;
     this.order = order;
@@ -38,6 +45,8 @@ public class ChangeSetItem {
     this.method = changeSetMethod;
     this.failFast = failFast;
     this.rollbackMethod = rollbackMethod;
+    this.beforeChangeSets = beforeChangeSets;
+    this.afterChangeSets = afterChangeSets;
   }
 
 
@@ -72,6 +81,14 @@ public class ChangeSetItem {
   public Optional<Method> getRollbackMethod() {
     return Optional.ofNullable(rollbackMethod);
   }
+  
+  public boolean isBeforeChangeSets() {
+    return beforeChangeSets;
+  }
+
+  public boolean isAfterChangeSets() {
+    return afterChangeSets;
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -96,6 +113,8 @@ public class ChangeSetItem {
         ", systemVersion='" + systemVersion + '\'' +
         ", method=" + method +
         ", failFast=" + failFast +
+        ", beforeChangeSets=" + beforeChangeSets +
+        ", afterChangeSets=" + afterChangeSets +
         '}';
   }
 

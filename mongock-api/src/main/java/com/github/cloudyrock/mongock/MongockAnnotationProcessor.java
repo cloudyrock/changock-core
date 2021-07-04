@@ -2,20 +2,10 @@ package com.github.cloudyrock.mongock;
 
 import java.lang.reflect.Method;
 
-public class MongockAnnotationProcessor implements AnnotationProcessor<ChangeSetItem> {
-
-
+public class MongockAnnotationProcessor extends MongockAnnotationProcessorBase<ChangeSetItem> {
+  
   @Override
-  public boolean isMethodAnnotatedAsChange(Method method) {
-    return method.isAnnotationPresent(ChangeSet.class);
+  protected ChangeSetItem createChangeSetItemInstance(String id, String author, String order, boolean runAlways, String systemVersion, boolean failFast, Method method, Method rollbackMethod, boolean beforeChangeSets, boolean afterChangeSets) {
+    return new ChangeSetItem(id, author, order, runAlways, systemVersion, failFast, method, rollbackMethod, beforeChangeSets, afterChangeSets);
   }
-
-
-
-  @Override
-  public ChangeSetItem getChangePerformerItem(Method changeSetMethod, Method rollbackMethod) {
-    ChangeSet ann = changeSetMethod.getAnnotation(ChangeSet.class);
-    return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), ann.failFast(), changeSetMethod, rollbackMethod);
-  }
-
 }

@@ -10,7 +10,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 /**
@@ -69,23 +68,14 @@ public class ChangeLogService extends ChangeLogServiceBase<ChangeLogItem<ChangeS
 
 
   @Override
-  protected ChangeLogItem<ChangeSetItem> buildChangeLogObject(Class<?> type) {
-    try {
-      Function<Class<?>, Object> instantiator = getChangeLogInstantiator().orElse(DEFAULT_CHANGELOG_INSTANTIATOR);
-      AnnotationProcessor<ChangeSetItem> annProcessor = getAnnotationProcessor();
-      return new ChangeLogItem<>(type, instantiator.apply(type), annProcessor.getChangeLogOrder(type), annProcessor.isFailFast(type), annProcessor.isPreMigration(type), annProcessor.isPostMigration(type), fetchChangeSetFromClass(type));
-    } catch (MongockException ex) {
-      throw ex;
-    } catch (Exception ex) {
-      throw new MongockException(ex);
-    }
-  }
-
-  protected List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
-    return fetchChangeSetMethodsSorted(type)
-        .stream()
-        .filter(changeSetItem -> this.profileFilter != null ? this.profileFilter.apply(changeSetItem.getMethod()) : true)
-        .collect(Collectors.toList());
+  protected ChangeLogItem<ChangeSetItem> buildChangeLogObject(Class<?> changeLogClass, Function<Class<?>, Object> instantiator, AnnotationProcessor<ChangeSetItem> annProcessor) {
+      return new ChangeLogItem<>(changeLogClass,
+                                instantiator.apply(changeLogClass),
+                                annProcessor.getChangeLogOrder(changeLogClass),
+                                annProcessor.isFailFast(changeLogClass),
+                                fetchListOfChangeSetsFromClass(changeLogClass),
+                                fetchListOfBeforeChangeSetsFromClass(changeLogClass),
+                                fetchListOfAfterChangeSetsFromClass(changeLogClass));
   }
 
 }
