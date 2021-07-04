@@ -240,6 +240,11 @@ public class ChangeLogServiceTest {
     assertEquals("noPackage", changeSet2.getMethod().getName());
     assertEquals("no_package_2", changeSet3.getId());
     assertEquals("noPackage2", changeSet3.getMethod().getName());
+    
+    System.out.println("\n\n\n******** " + changeLogPackage.getChangeSetItems().size());
+    System.out.println("******** " + changeSet2.getId());
+    System.out.println("******** " + changeSet3.getId());
+    System.out.println("\n\n\n");
 
     //package 2
     changeLogPackage = changeLogItemList.get(2);
