@@ -9,7 +9,7 @@ public class MongockException extends RuntimeException {
     super();
   }
 
-  public MongockException(Exception exception) {
+  public MongockException(Throwable exception) {
     super(exception);
   }
 
