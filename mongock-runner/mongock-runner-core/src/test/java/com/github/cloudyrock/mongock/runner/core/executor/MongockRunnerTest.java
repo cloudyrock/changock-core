@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.internal.verification.Times;
 
-import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

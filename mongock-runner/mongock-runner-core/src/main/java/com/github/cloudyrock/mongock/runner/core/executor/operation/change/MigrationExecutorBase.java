@@ -4,8 +4,6 @@ import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.config.TransactionStrategy;
-import static com.github.cloudyrock.mongock.config.TransactionStrategy.CHANGE_LOG;
-import static com.github.cloudyrock.mongock.config.TransactionStrategy.MIGRATION;
 import com.github.cloudyrock.mongock.config.executor.ChangeExecutorConfiguration;
 import com.github.cloudyrock.mongock.driver.api.common.DependencyInjectionException;
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
@@ -37,6 +35,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.function.Function;
 
+import static com.github.cloudyrock.mongock.config.TransactionStrategy.CHANGE_LOG;
+import static com.github.cloudyrock.mongock.config.TransactionStrategy.MIGRATION;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.EXECUTED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.FAILED;
 import static com.github.cloudyrock.mongock.driver.api.entry.ChangeState.IGNORED;

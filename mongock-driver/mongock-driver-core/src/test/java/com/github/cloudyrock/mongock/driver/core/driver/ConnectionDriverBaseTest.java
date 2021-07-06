@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 

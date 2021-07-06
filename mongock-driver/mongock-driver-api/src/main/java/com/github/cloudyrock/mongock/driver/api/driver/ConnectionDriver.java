@@ -4,7 +4,6 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
-import com.github.cloudyrock.mongock.utils.Process;
 
 import java.io.Closeable;
 import java.util.Optional;
