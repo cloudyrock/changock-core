@@ -12,9 +12,4 @@ public class ListChangesExecutor implements Executor<ListChangesResult> {
   public boolean isExecutionInProgress() {
     return false;
   }
-
-  @Override
-  public void close() {
-
-  }
 }

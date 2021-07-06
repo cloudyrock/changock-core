@@ -7,8 +7,6 @@ import com.github.cloudyrock.mongock.runner.core.event.result.MigrationSuccessRe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public class MongockRunnerImpl<T> implements MongockRunner<T> {
   private static final Logger logger = LoggerFactory.getLogger(MongockRunnerImpl.class);
 
@@ -46,7 +44,6 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
     } else {
-      MongockException thrownException = null;
       try {
         eventPublisher.publishMigrationStarted();
         T result = executor.executeMigration();
@@ -56,7 +53,7 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
         eventPublisher.publishMigrationFailedEvent(mongockException);
         if (throwExceptionIfCannotObtainLock) {
           logger.error("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
-          thrownException = mongockException;
+          throw mongockException;
 
         } else {
           logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION", lockEx);
@@ -66,19 +63,8 @@ public class MongockRunnerImpl<T> implements MongockRunner<T> {
         MongockException exWrapper = MongockException.class.isAssignableFrom(ex.getClass()) ? (MongockException) ex : new MongockException(ex);
         logger.error("Error in mongock process. ABORTED MIGRATION", exWrapper);
         eventPublisher.publishMigrationFailedEvent(exWrapper);
-        thrownException = exWrapper;
+        throw exWrapper;
 
-      } finally {
-        if(executor != null) {
-          try {
-            executor.close();
-          } catch (IOException e) {
-            thrownException = thrownException == null ? new MongockException(e) : thrownException;
-          }
-        }
-        if(thrownException != null) {
-          throw thrownException;
-        }
       }
     }
   }

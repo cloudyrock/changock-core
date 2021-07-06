@@ -115,11 +115,6 @@ public class ConnectionDriverBaseTest {
     public Optional<Transactioner> getTransactioner() {
       return Optional.empty();
     }
-
-    @Override
-    public void close()  {
-      //Does not need to be closed
-    }
   }
 
 

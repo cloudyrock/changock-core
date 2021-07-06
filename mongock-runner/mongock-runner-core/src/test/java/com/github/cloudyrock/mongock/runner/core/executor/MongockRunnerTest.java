@@ -141,7 +141,6 @@ public class MongockRunnerTest {
   public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfChangelogServiceNotValidated() {
 
     Executor executor = new Executor() {
-
       @Override
       public Object executeMigration() {
         throw new LockCheckException("Cannot obtain lock");
@@ -150,11 +149,6 @@ public class MongockRunnerTest {
       @Override
       public boolean isExecutionInProgress() {
         return false;
-      }
-
-      @Override
-      public void close() {
-
       }
     };
 

@@ -1,9 +1,8 @@
 package com.github.cloudyrock.mongock.runner.core.executor;
 
-import java.io.Closeable;
-
-public interface Executor<T> extends Closeable {
+public interface Executor<T> {
   T executeMigration();
+
 
   boolean isExecutionInProgress();
 }
