@@ -4,11 +4,13 @@ import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
+import com.github.cloudyrock.mongock.utils.Process;
 
+import java.io.Closeable;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable, DriverLegaciable {
+public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Validable, DriverLegaciable, Closeable {
   void initialize();
 
   LockManager getLockManager();

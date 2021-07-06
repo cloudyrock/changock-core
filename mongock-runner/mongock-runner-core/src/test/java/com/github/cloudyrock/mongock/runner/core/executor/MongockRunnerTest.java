@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.internal.verification.Times;
 
+import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -141,6 +142,7 @@ public class MongockRunnerTest {
   public void shouldPropagateMongockException_EvenWhenThrowExIfCannotLock_IfChangelogServiceNotValidated() {
 
     Executor executor = new Executor() {
+
       @Override
       public Object executeMigration() {
         throw new LockCheckException("Cannot obtain lock");
@@ -149,6 +151,11 @@ public class MongockRunnerTest {
       @Override
       public boolean isExecutionInProgress() {
         return false;
+      }
+
+      @Override
+      public void close() {
+
       }
     };
 

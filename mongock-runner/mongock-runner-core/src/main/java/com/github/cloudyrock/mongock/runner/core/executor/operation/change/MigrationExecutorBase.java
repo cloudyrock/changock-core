@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -338,6 +339,16 @@ public abstract class MigrationExecutorBase<
 
   protected final boolean isTransactionPerMigration() {
       return isTransactionOfAnyKindEnabled() && transactionStrategy == MIGRATION;
+  }
+
+  public void close() {
+    if(driver != null) {
+      try {
+        driver.close();
+      } catch (IOException e) {
+        throw new MongockException(e);
+      }
+    }
   }
 
 }
