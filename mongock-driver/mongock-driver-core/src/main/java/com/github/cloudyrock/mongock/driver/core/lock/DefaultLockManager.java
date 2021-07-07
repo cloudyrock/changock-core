@@ -43,7 +43,7 @@ public class DefaultLockManager implements LockManager {
 
 
   //injections
-  private final LockRepositoryWithEntity repository;
+  private final LockRepository repository;
   private final TimeService timeUtils;
   /**
    * Owner of the lock
@@ -88,7 +88,7 @@ public class DefaultLockManager implements LockManager {
    * @param timeUtils  time utils service
    */
   //TODO add lock configuration to constructor, make fields finals and move DEFAULTS away
-  public DefaultLockManager(LockRepositoryWithEntity repository, TimeService timeUtils) {
+  public DefaultLockManager(LockRepository repository, TimeService timeUtils) {
     this.repository = repository;
     this.timeUtils = timeUtils;
     this.owner = UUID.randomUUID().toString();//TODO reconsider this
