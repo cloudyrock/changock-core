@@ -16,7 +16,7 @@ import java.util.List;
 
 public class LockGuardProxyFactory {
 
-  private final static List<String> javaPackagePrefixes = Arrays.asList("java.", "com.sun.", "javax.", "jdk.internal.", "sun.");
+  private final static List<String> javaPackagePrefixes = Collections.emptyList();//Arrays.asList("java.", "com.sun.", "javax.", "jdk.internal.", "sun.");
   private final LockManager lockManager;
   private final Collection<String> notProxiedPackagePrefixes;
 
