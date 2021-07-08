@@ -16,6 +16,19 @@ import java.util.List;
 
 public class LockGuardProxyFactory {
 
+
+  static {
+    ProxyFactory.nameGenerator = new ProxyFactory.UniqueName() {
+      private final String sep = "_$$_mongock_" + Integer.toHexString(this.hashCode() & 0xfff) + "_";
+      private int counter = 0;
+
+      @Override
+      public String get(String classname) {
+        return classname + sep + Integer.toHexString(counter++);
+      }
+    };
+  }
+
   private final static List<String> javaPackagePrefixes = Collections.emptyList();//Arrays.asList("java.", "com.sun.", "javax.", "jdk.internal.", "sun.");
   private final LockManager lockManager;
   private final Collection<String> notProxiedPackagePrefixes;

@@ -1,5 +1,7 @@
 package com.github.cloudyrock.mongock.utils;
 
+import java.net.ContentHandlerFactory;
+
 public final class Utils {
 
   private Utils() {
@@ -9,10 +11,18 @@ public final class Utils {
     return clazz.isPrimitive()
         || String.class.equals(clazz)
         || Class.class.equals(clazz)
-        || isWrapper(clazz);
+        || isJDKWrapper(clazz)
+        || isJDKCollection(clazz)
+        || isOtherJDKClassNonProxiable(clazz);
+
+
   }
 
-  private static boolean isWrapper(Class<?> clazz) {
+  private static boolean isOtherJDKClassNonProxiable(Class<?> clazz) {
+    return ContentHandlerFactory.class.isAssignableFrom(clazz);
+  }
+
+  private static boolean isJDKWrapper(Class<?> clazz) {
     return Boolean.class.equals(clazz)
         || Character.class.equals(clazz)
         || Byte.class.equals(clazz)
@@ -22,5 +32,9 @@ public final class Utils {
         || Float.class.equals(clazz)
         || Double.class.equals(clazz)
         || Void.class.equals(clazz);
+  }
+
+  private static boolean isJDKCollection(Class<?> clazz) {
+    return Iterable.class.isAssignableFrom(clazz);
   }
 }
