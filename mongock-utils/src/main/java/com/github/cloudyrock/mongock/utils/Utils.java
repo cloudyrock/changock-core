@@ -2,8 +2,6 @@ package com.github.cloudyrock.mongock.utils;
 
 import java.net.ContentHandlerFactory;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
 
 public final class Utils {
 
