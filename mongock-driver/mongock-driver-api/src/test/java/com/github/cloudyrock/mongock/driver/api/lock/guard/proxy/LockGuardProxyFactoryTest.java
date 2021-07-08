@@ -53,7 +53,7 @@ public class LockGuardProxyFactoryTest {
 
 
   @Test
-  public void shouldReturnProxy2() {
+  public void shouldNotReturnProxyForBasicCollection() {
     assertFalse(isProxy(getRawProxy(new ArrayList<>(), List.class)));
   }
 
@@ -70,8 +70,7 @@ public class LockGuardProxyFactoryTest {
   //failing in local but not in CI
   @Test
   public void shouldReturnProxyWithRightImplementation() {
-    Object implementation = getImplementationFromLockGuardProxy(getRawProxy(new SomeClass(), SomeClass.class));
-    assertEquals(SomeClass.class, implementation.getClass());
+    assertEquals(SomeClass.class, getImplementationFromLockGuardProxy(getRawProxy(new SomeClass(), SomeClass.class)).getClass());
   }
 
   @Test
