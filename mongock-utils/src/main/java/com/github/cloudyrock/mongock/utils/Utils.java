@@ -1,6 +1,9 @@
 package com.github.cloudyrock.mongock.utils;
 
 import java.net.ContentHandlerFactory;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 public final class Utils {
 
@@ -12,13 +15,14 @@ public final class Utils {
         || String.class.equals(clazz)
         || Class.class.equals(clazz)
         || isJDKWrapper(clazz)
-        || isJDKCollection(clazz)
-        || isOtherJDKClassNonProxiable(clazz);
+        || isJDKDataStructure(clazz)
+        || isOtherWellKnownClassesNonProxiable(clazz);
 
 
   }
 
-  private static boolean isOtherJDKClassNonProxiable(Class<?> clazz) {
+  //should be added all the extra classes that shouldn't be proxiable
+  private static boolean isOtherWellKnownClassesNonProxiable(Class<?> clazz) {
     return ContentHandlerFactory.class.isAssignableFrom(clazz);
   }
 
@@ -34,7 +38,9 @@ public final class Utils {
         || Void.class.equals(clazz);
   }
 
-  private static boolean isJDKCollection(Class<?> clazz) {
-    return Iterable.class.isAssignableFrom(clazz);
+  private static boolean isJDKDataStructure(Class<?> clazz) {
+    return Iterable.class.isAssignableFrom(clazz)
+        || Map.class.isAssignableFrom(clazz);
+    //should be added all the JDK data structure that shouldn't be proxied
   }
 }
