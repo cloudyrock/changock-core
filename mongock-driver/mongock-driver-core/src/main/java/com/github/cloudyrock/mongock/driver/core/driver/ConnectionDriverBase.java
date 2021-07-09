@@ -55,12 +55,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     return lockManager;
   }
 
-  @Override
-  public LockManager getManagerAndAcquireLock() {
-    LockManager lockManager = getLockManager();
-    lockManager.acquireLockDefault();
-    return lockManager;
-  }
 
   @Override
   public boolean isInitialized() {
@@ -68,33 +62,8 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public long getLockAcquiredForMillis() {
-    return lockAcquiredForMillis;
-  }
-
-  @Override
-  public long getLockQuitTryingAfterMillis() {
-    return lockQuitTryingAfterMillis;
-  }
-
-  @Override
-  public long getLockTryFrequencyMillis() {
-    return lockTryFrequencyMillis;
-  }
-
-  @Override
-  public String getChangeLogRepositoryName() {
-    return changeLogRepositoryName;
-  }
-
-  @Override
   public void setChangeLogRepositoryName(String changeLogRepositoryName) {
     this.changeLogRepositoryName = changeLogRepositoryName;
-  }
-
-  @Override
-  public String getLockRepositoryName() {
-    return lockRepositoryName;
   }
 
   @Override
@@ -114,7 +83,9 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
 
   protected abstract LockRepository getLockRepository();
 
-  protected abstract void specificInitialization();
+  protected void specificInitialization() {
+    //TODO not mandatory
+  }
 
   @Override
   public void runValidation() throws MongockException {
