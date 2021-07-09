@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.driver.core.driver;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.DefaultLockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
@@ -37,12 +38,15 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     if (!initialized) {
       initialized = true;
       LockRepository lockRepository = this.getLockRepository();
+      lockRepository.setIndexCreation(isIndexCreation());
       lockRepository.initialize();
       lockManager = new DefaultLockManager(lockRepository, TIME_SERVICE)
           .setLockAcquiredForMillis(lockAcquiredForMillis)
           .setLockQuitTryingAfterMillis(lockQuitTryingAfterMillis)
           .setLockTryFrequencyMillis(lockTryFrequencyMillis);
-      getChangeEntryService().initialize();
+      ChangeEntryService<CHANGE_ENTRY> changeEntryService = getChangeEntryService();
+      changeEntryService.setIndexCreation(isIndexCreation());
+      changeEntryService.initialize();
       specificInitialization();
     }
   }
