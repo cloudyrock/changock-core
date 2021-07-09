@@ -4,7 +4,6 @@ import com.github.cloudyrock.mongock.AnnotationProcessor;
 import com.github.cloudyrock.mongock.ChangeLogItem;
 import com.github.cloudyrock.mongock.ChangeSetItem;
 import com.github.cloudyrock.mongock.MongockAnnotationProcessor;
-import com.github.cloudyrock.mongock.exception.MongockException;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;

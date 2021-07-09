@@ -4,7 +4,7 @@ import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.DefaultLockManager;
-import com.github.cloudyrock.mongock.driver.core.lock.LockRepositoryWithEntity;
+import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.TimeService;
 import com.github.cloudyrock.mongock.utils.annotation.NotThreadSafe;
@@ -36,7 +36,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   public final void initialize() {
     if (!initialized) {
       initialized = true;
-      LockRepositoryWithEntity lockRepository = this.getLockRepository();
+      LockRepository lockRepository = this.getLockRepository();
       lockRepository.initialize();
       lockManager = new DefaultLockManager(lockRepository, TIME_SERVICE)
           .setLockAcquiredForMillis(lockAcquiredForMillis)
@@ -112,7 +112,7 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     this.indexCreation = indexCreation;
   }
 
-  protected abstract LockRepositoryWithEntity getLockRepository();
+  protected abstract LockRepository getLockRepository();
 
   protected abstract void specificInitialization();
 
