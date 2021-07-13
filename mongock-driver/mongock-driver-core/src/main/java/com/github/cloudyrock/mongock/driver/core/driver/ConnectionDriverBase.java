@@ -16,15 +16,15 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private static final TimeService TIME_SERVICE = new TimeService();
 
   //Lock
-  private final long lockAcquiredForMillis;
-  private final long lockQuitTryingAfterMillis;
-  private final long lockTryFrequencyMillis;
+  protected final long lockAcquiredForMillis;
+  protected final long lockQuitTryingAfterMillis;
+  protected final long lockTryFrequencyMillis;
 
-  private boolean initialized = false;
-  private LockManager lockManager = null;
-  private String changeLogRepositoryName;
-  private String lockRepositoryName;
-  private boolean indexCreation = true;
+  protected boolean initialized = false;
+  protected LockManager lockManager = null;
+  protected String changeLogRepositoryName;
+  protected String lockRepositoryName;
+  protected boolean indexCreation = true;
 
 
   protected ConnectionDriverBase(long lockAcquiredForMillis, long lockQuitTryingAfterMillis, long lockTryFrequencyMillis) {
