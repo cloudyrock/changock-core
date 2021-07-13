@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.driver.core.common;
+package com.github.cloudyrock.mongock.driver.api.common;
 
 import com.github.cloudyrock.mongock.utils.Process;
 import com.github.cloudyrock.mongock.utils.field.FieldInstance;
