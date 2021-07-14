@@ -1,6 +1,5 @@
 package com.github.cloudyrock.mongock.runner.core.executor.dependency;
 
-import com.github.cloudyrock.mongock.NonLockGuarded;
 import com.github.cloudyrock.mongock.driver.api.common.Validable;
 import com.github.cloudyrock.mongock.driver.api.driver.ChangeSetDependency;
 import com.github.cloudyrock.mongock.exception.MongockException;
@@ -45,14 +44,9 @@ public class DependencyManagerWithContext extends DependencyManager implements V
       boolean byName = name != null && !name.isEmpty() && !ChangeSetDependency.DEFAULT_NAME.equals(name);
       Optional<Object> dependencyFromContext = byName ? context.getBean(name) : context.getBean(type);
       if (dependencyFromContext.isPresent()) {
-        if (lockGuarded) {
-          if (!type.isInterface()) {
-            throw new MongockException(String.format("Parameter of type [%s] must be an interface or be annotated with @%s", type.getSimpleName(), NonLockGuarded.class.getSimpleName()));
-          }
-          return dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
-        } else {
-          return dependencyFromContext;
-        }
+        return lockGuarded
+            ? dependencyFromContext.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type))
+            : dependencyFromContext;
       } else {
         logger.warn("Dependency not found: {}", byName ? name : type.getSimpleName());
         return Optional.empty();

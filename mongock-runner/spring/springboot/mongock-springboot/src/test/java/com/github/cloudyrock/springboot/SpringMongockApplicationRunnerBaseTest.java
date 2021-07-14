@@ -137,21 +137,6 @@ public class SpringMongockApplicationRunnerBaseTest {
   }
 
   @Test
-  public void shouldThrowException_IfChangeSetParameterfNotInterface() throws Exception {
-    // given
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withInterfaceParameter2", "executor")).thenReturn(true);
-    when(changeEntryService.isAlreadyExecuted("withClassNotInterfacedParameter", "executor")).thenReturn(false);
-
-    // then
-    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ChangeLogWithInterfaceParameter.withClassNotInterfacedParameter] : Parameter of type [ClassNotInterfaced] must be an interface or be annotated with @NonLockGuarded");
-
-    // when
-    buildAndRun(ChangeLogWithInterfaceParameter.class.getPackage().getName());
-  }
-
-  @Test
   public void shouldReturnProxy_IfStandardDependency() throws Exception {
     // given
     when(changeEntryService.isAlreadyExecuted("withInterfaceParameter", "executor")).thenReturn(false);
