@@ -1,10 +1,11 @@
 package com.github.cloudyrock.mongock.driver.api.entry;
 
+import com.github.cloudyrock.mongock.driver.api.common.RepositoryIndexable;
 import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.utils.Process;
 
 
-public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends Process {
+public interface ChangeEntryService<CHANGE_ENTRY extends ChangeEntry> extends RepositoryIndexable, Process {
 
   /**
    * <p>Retrieves is a changeSet with given changeSetId and author hasn't been already executed. This means

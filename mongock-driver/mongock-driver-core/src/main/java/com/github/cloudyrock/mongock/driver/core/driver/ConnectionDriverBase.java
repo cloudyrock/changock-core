@@ -2,6 +2,7 @@ package com.github.cloudyrock.mongock.driver.core.driver;
 
 import com.github.cloudyrock.mongock.driver.api.driver.ConnectionDriver;
 import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntry;
+import com.github.cloudyrock.mongock.driver.api.entry.ChangeEntryService;
 import com.github.cloudyrock.mongock.driver.api.lock.LockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.DefaultLockManager;
 import com.github.cloudyrock.mongock.driver.core.lock.LockRepository;
@@ -15,15 +16,15 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   private static final TimeService TIME_SERVICE = new TimeService();
 
   //Lock
-  private final long lockAcquiredForMillis;
-  private final long lockQuitTryingAfterMillis;
-  private final long lockTryFrequencyMillis;
+  protected final long lockAcquiredForMillis;
+  protected final long lockQuitTryingAfterMillis;
+  protected final long lockTryFrequencyMillis;
 
-  private boolean initialized = false;
-  private LockManager lockManager = null;
-  private String changeLogRepositoryName;
-  private String lockRepositoryName;
-  private boolean indexCreation = true;
+  protected boolean initialized = false;
+  protected LockManager lockManager = null;
+  protected String changeLogRepositoryName;
+  protected String lockRepositoryName;
+  protected boolean indexCreation = true;
 
 
   protected ConnectionDriverBase(long lockAcquiredForMillis, long lockQuitTryingAfterMillis, long lockTryFrequencyMillis) {
@@ -37,12 +38,15 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     if (!initialized) {
       initialized = true;
       LockRepository lockRepository = this.getLockRepository();
+      lockRepository.setIndexCreation(isIndexCreation());
       lockRepository.initialize();
       lockManager = new DefaultLockManager(lockRepository, TIME_SERVICE)
           .setLockAcquiredForMillis(lockAcquiredForMillis)
           .setLockQuitTryingAfterMillis(lockQuitTryingAfterMillis)
           .setLockTryFrequencyMillis(lockTryFrequencyMillis);
-      getChangeEntryService().initialize();
+      ChangeEntryService<CHANGE_ENTRY> changeEntryService = getChangeEntryService();
+      changeEntryService.setIndexCreation(isIndexCreation());
+      changeEntryService.initialize();
       specificInitialization();
     }
   }
@@ -55,12 +59,6 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
     return lockManager;
   }
 
-  @Override
-  public LockManager getManagerAndAcquireLock() {
-    LockManager lockManager = getLockManager();
-    lockManager.acquireLockDefault();
-    return lockManager;
-  }
 
   @Override
   public boolean isInitialized() {
@@ -68,33 +66,8 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
   }
 
   @Override
-  public long getLockAcquiredForMillis() {
-    return lockAcquiredForMillis;
-  }
-
-  @Override
-  public long getLockQuitTryingAfterMillis() {
-    return lockQuitTryingAfterMillis;
-  }
-
-  @Override
-  public long getLockTryFrequencyMillis() {
-    return lockTryFrequencyMillis;
-  }
-
-  @Override
-  public String getChangeLogRepositoryName() {
-    return changeLogRepositoryName;
-  }
-
-  @Override
   public void setChangeLogRepositoryName(String changeLogRepositoryName) {
     this.changeLogRepositoryName = changeLogRepositoryName;
-  }
-
-  @Override
-  public String getLockRepositoryName() {
-    return lockRepositoryName;
   }
 
   @Override
@@ -114,7 +87,9 @@ public abstract class ConnectionDriverBase<CHANGE_ENTRY extends ChangeEntry> imp
 
   protected abstract LockRepository getLockRepository();
 
-  protected abstract void specificInitialization();
+  protected void specificInitialization() {
+    //TODO not mandatory
+  }
 
   @Override
   public void runValidation() throws MongockException {

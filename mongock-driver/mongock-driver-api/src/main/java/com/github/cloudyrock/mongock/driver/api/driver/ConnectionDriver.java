@@ -13,25 +13,13 @@ public interface ConnectionDriver<CHANGE_ENTRY extends ChangeEntry> extends Vali
 
   LockManager getLockManager();
 
-  LockManager getManagerAndAcquireLock();
-
   ChangeEntryService<CHANGE_ENTRY> getChangeEntryService();
 
   Set<ChangeSetDependency> getDependencies();
 
   boolean isInitialized();
 
-  long getLockAcquiredForMillis();
-
-  long getLockQuitTryingAfterMillis();
-
-  long getLockTryFrequencyMillis();
-
-  String getChangeLogRepositoryName();
-
   void setChangeLogRepositoryName(String changeLogRepositoryName);
-
-  String getLockRepositoryName();
 
   void setLockRepositoryName(String lockRepositoryName);
 
