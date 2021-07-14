@@ -37,14 +37,9 @@ public class DependencyManager implements Validable {
 
   private Optional<Object> getStandardDependency(Class type, String name, boolean lockGuarded) {
     Optional<Object> dependencyOpt = getDependencyFromStore(standardDependencies, type, name);
-    if (dependencyOpt.isPresent() && lockGuarded) {
-      if (!type.isInterface()) {
-        throw new MongockException(String.format("Parameter of type [%s] must be an interface or be annotated with @%s", type.getSimpleName(), NonLockGuarded.class.getSimpleName()));
-      }
-      return dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type));
-    } else {
-      return dependencyOpt;
-    }
+    return dependencyOpt.isPresent() && lockGuarded
+        ? dependencyOpt.map(instance -> lockGuardProxyFactory.getRawProxy(instance, type))
+        : dependencyOpt;
   }
 
   @SuppressWarnings("unchecked")

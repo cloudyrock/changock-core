@@ -448,27 +448,6 @@ public class MigrationExecutorImplTest {
     assertTrue(entry.getExecutionHostname().endsWith("-myService"));
   }
 
-  @Test
-  @SuppressWarnings("unchecked")
-  public void shouldThrowException_IfChangeSetParameterfNotInterface() {
-    // given
-    when(changeEntryService.isAlreadyExecuted("newChangeSet", "executor")).thenReturn(false);
-    when(changeEntryService.isAlreadyExecuted("withNonLockGuardedParameter", "executor")).thenReturn(true);
-
-    // then
-    exceptionExpected.expect(MongockException.class);
-    exceptionExpected.expectMessage("Error in method[ExecutorChangeLog.newChangeSet] : Parameter of type [DummyDependencyClass] must be an interface or be annotated with @NonLockGuarded");
-
-    // when
-    DependencyManager dependencyManager = new DependencyManager()
-        .setLockGuardProxyFactory(new LockGuardProxyFactory(Mockito.mock(LockManager.class)))
-        .addStandardDependency(new ChangeSetDependency(new DummyDependencyClass()));
-    MongockConfiguration config = new MongockConfiguration();
-    config.setServiceIdentifier("myService");
-    config.setTrackIgnored(false);
-    new MigrationExecutor("", createInitialChangeLogsByPackage(ExecutorChangeLog.class), driver, dependencyManager, DEFAULT_PARAM_NAME_PROVIDER, config)
-        .executeMigration();
-  }
 
   @Test
   @SuppressWarnings("unchecked")
