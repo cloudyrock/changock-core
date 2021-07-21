@@ -74,6 +74,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+<!--      TODO: DS - Add Micronaut in the BOM file -->
 
       <dependency>
         <groupId>com.github.cloudyrock.mongock</groupId>

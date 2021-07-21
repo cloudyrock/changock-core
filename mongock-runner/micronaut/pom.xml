@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>mongock-core</artifactId>
+    <artifactId>mongock-runner</artifactId>
     <groupId>com.github.cloudyrock.mongock</groupId>
     <version>5.0.3.BETA-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>mongock-runner</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-    <module>mongock-runner-core</module>
-    <module>mongock-test-runner</module>
-    <module>spring</module>
-    <module>standalone</module>
-    <module>micronaut</module>
-  </modules>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -25,6 +16,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+    <micronaut.version>2.5.6</micronaut.version>
   </properties>
+
+  <artifactId>micronaut</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>mongock-micronaut-base</module>
+    <module>mongock-micronaut</module>
+  </modules>
 
 </project>
